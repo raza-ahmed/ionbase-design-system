@@ -3,18 +3,19 @@
  *
  * "Would more than one component use this exact value? -> Semantic."
  *
- * The flowchart in the naming spec is correct but relies on judgement at the
- * moment of writing, and judgement failed: Button and Tabs were each given
- * their own `padding-x` tokens for the identical `spacing/16`. That is how the
- * component tier grew to ~41 tokens per component — a rate that reaches ~4,000
- * at 100 components and makes the Figma variables UI unusable.
+ * Concretely: a component geometry token must not duplicate a value the control
+ * scale already provides for the same property. That is the failure this exists
+ * to stop — Button and Tabs were each given their own `padding-x` for the
+ * identical `spacing/16`, which is how the component tier reached ~41 tokens
+ * per component (~4,000 at 100 components) and how the two silently drifted
+ * apart on icon size.
  *
- * This fails the build when two components alias the same primitive for the
- * same property. Such a value is shared by definition and belongs in the
- * control scale.
+ * It deliberately does NOT flag two components sharing a number by coincidence.
+ * A badge's internal gap and a tab track's gap are both 4px and have nothing to
+ * do with each other; flagging that would train everyone to ignore the check.
  *
- * Genuine divergences are declared in `shared-value-exceptions.json` with a
- * reason, so an exception is a decision on the record rather than an accident.
+ * Genuine divergences from the control scale go in
+ * `shared-value-exceptions.json` with a written reason.
  */
 import { readFileSync } from 'node:fs';
 import { join, dirname } from 'node:path';
@@ -27,46 +28,47 @@ const { exceptions } = JSON.parse(
 );
 const excused = new Set(exceptions.map((e) => e.token));
 
-const component = loadCollections().find((c) => c.collection === 'Component');
+const collections = loadCollections();
+const component = collections.find((c) => c.collection === 'Component');
+const semantic = collections.find((c) => c.collection === 'Semantic');
 
-const groups = new Map();
-for (const [name, token] of Object.entries(component.variables)) {
-  if (token.type === 'COLOR') continue; // colour is legitimately per-component
-  if (excused.has(name)) continue;
-  const owner = name.split('/')[0];
+/** property -> set of values the control scale already offers for it. */
+const controlOffers = new Map();
+for (const [name, token] of Object.entries(semantic.variables)) {
+  if (!name.startsWith('control/')) continue;
   const property = name.split('/').at(-1);
-  const key = `${property}|${token.values.Value}`;
-  const entry = groups.get(key) ?? { owners: new Map() };
-  entry.owners.set(owner, name);
-  groups.set(key, entry);
+  const value = token.values[semantic.defaultMode];
+  if (!controlOffers.has(property)) controlOffers.set(property, new Map());
+  controlOffers.get(property).set(value, name);
 }
 
 const violations = [];
-for (const [key, { owners }] of groups) {
-  if (owners.size < 2) continue;
-  const [property, value] = key.split('|');
-  violations.push({ property, value, tokens: [...owners.values()] });
+for (const [name, token] of Object.entries(component.variables)) {
+  if (token.type === 'COLOR') continue; // colour is legitimately per-component
+  if (excused.has(name)) continue;
+  const property = name.split('/').at(-1);
+  const value = token.values.Value;
+  const match = controlOffers.get(property)?.get(value);
+  if (match) violations.push({ name, value, match });
 }
 
-// An exception that no longer diverges is dead weight — flag it too.
-const stale = [];
-for (const e of exceptions) {
-  if (!component.variables[e.token])
-    stale.push(`${e.token} (no longer exists)`);
-}
+// An exception naming a token that no longer exists is dead weight.
+const stale = exceptions
+  .filter((e) => !component.variables[e.token])
+  .map((e) => e.token);
 
 if (violations.length) {
   console.error(
-    `\nSpec Q3 — ${violations.length} shared value(s) in the component tier:\n`,
+    `\nSpec Q3 — ${violations.length} component token(s) duplicate the control scale:\n`,
   );
   for (const v of violations) {
-    console.error(`  ${v.property} = ${v.value}`);
-    for (const t of v.tokens) console.error(`      ${t}`);
+    console.error(`  ${v.name}  =  ${v.value}`);
+    console.error(`      already provided by ${v.match}`);
   }
   console.error(
-    '\nA value more than one component uses belongs in the control scale\n' +
-      '(control/<step>/<property>). Move it there, or declare a deliberate\n' +
-      'divergence in shared-value-exceptions.json with a reason.',
+    '\nRead the control token instead and delete this one, or — if the component\n' +
+      'genuinely must differ — change the value and record why in\n' +
+      'shared-value-exceptions.json.',
   );
 }
 if (stale.length) {
@@ -77,6 +79,9 @@ if (stale.length) {
 }
 if (violations.length || stale.length) process.exit(1);
 
+const geometry = Object.values(component.variables).filter(
+  (t) => t.type !== 'COLOR',
+).length;
 console.log(
-  `Shared values: component tier clean (${Object.keys(component.variables).length} tokens, ${exceptions.length} declared exceptions)`,
+  `Shared values: ${geometry} component geometry tokens, none duplicating the control scale, ${exceptions.length} declared exceptions`,
 );

@@ -685,6 +685,38 @@
       "values": {
         "Value": "{border-width.thick}"
       }
+    },
+    "badge/padding-x": {
+      "type": "FLOAT",
+      "scopes": [],
+      "codeSyntax": "var(--badge-padding-x)",
+      "values": {
+        "Value": "{spacing.8}"
+      }
+    },
+    "badge/padding-y": {
+      "type": "FLOAT",
+      "scopes": [],
+      "codeSyntax": "var(--badge-padding-y)",
+      "values": {
+        "Value": "{spacing.2}"
+      }
+    },
+    "badge/gap": {
+      "type": "FLOAT",
+      "scopes": [],
+      "codeSyntax": "var(--badge-gap)",
+      "values": {
+        "Value": "{spacing.4}"
+      }
+    },
+    "badge/dot/size": {
+      "type": "FLOAT",
+      "scopes": [],
+      "codeSyntax": "var(--badge-dot-size)",
+      "values": {
+        "Value": "{spacing.6}"
+      }
     }
   }
 }

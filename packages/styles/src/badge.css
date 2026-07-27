@@ -1,31 +1,69 @@
-/* Badge Base Styles */
+/*
+ * Badge
+ *
+ * Geometry measured from Figma `Badge` (152:73). Single size, six intents.
+ *
+ * Badge does not read the control scale: at 20px tall it sits below
+ * control/sm's 32px, so it is not a control. Its geometry is genuinely
+ * badge-specific, which is what earns it component tokens.
+ *
+ * `radius/full` and `border-width/thin` stay on the primitives — those are
+ * system constants ("pill", "hairline"), not Badge decisions.
+ */
 .ion-badge {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+
+  /*
+   * Figma's 1px stroke is drawn INSIDE the 20px box, so it does not add height.
+   * A CSS border does, so the vertical padding absorbs it — otherwise the badge
+   * renders 22px against the design's 20px. Same correction as the Tabs
+   * underline indicator.
+   */
+  padding: calc(var(--badge-padding-y) - var(--border-width-thin))
+    var(--badge-padding-x);
+  gap: var(--badge-gap);
   font-family: var(--font-family-sans);
-  font-weight: var(--font-weight-semibold);
+
+  /*
+   * Medium, not semibold. Figma's Badge label is Host Grotesk Medium; this was
+   * semibold in code and is the only typographic mismatch the measurement found.
+   */
+  font-weight: var(--font-weight-medium);
   font-size: var(--font-size-12);
   line-height: var(--type-caption-line-height);
-  padding: var(--spacing-2) var(--spacing-8);
   border-radius: var(--radius-full);
   border-width: var(--border-width-thin);
   border-style: solid;
   user-select: none;
-  gap: var(--spacing-4);
   white-space: nowrap;
 }
 
-/* Badge dot element */
+/*
+ * Dot marker. Figma binds its fill to the intent's foreground, so
+ * `currentcolor` reproduces it without a token per intent.
+ */
 .ion-badge__dot {
-  width: var(--spacing-6);
-  height: var(--spacing-6);
+  width: var(--badge-dot-size);
+  height: var(--badge-dot-size);
   border-radius: var(--radius-full);
   background-color: currentcolor;
   flex-shrink: 0;
 }
 
-/* Intent Modifiers */
+/*
+ * Icon size is deliberately not set here. Figma has it at 14px, which is not on
+ * the spacing scale (2, 4, 6, 8, 12, 16, 20, 24 …), so it is most likely a slip
+ * rather than a decision. Until that is settled the icon inherits `1em` from
+ * @ionbase/icons, matching the 12px label. Resolving it means adding the token
+ * or correcting Figma — not inventing a spacing/14 to enshrine it.
+ */
+.ion-badge svg {
+  flex-shrink: 0;
+}
+
+/* Intent modifiers */
 .ion-badge--neutral {
   background-color: var(--badge-neutral-bg);
   color: var(--badge-neutral-fg);
