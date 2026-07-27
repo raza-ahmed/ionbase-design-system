@@ -24,6 +24,8 @@ export const PROPERTY = new Set([
   'padding-y',
   'size',
   'border-width',
+  'font-size',
+  'font-weight',
   'line-height',
   'letter-spacing',
 ]);

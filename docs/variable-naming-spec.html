@@ -494,10 +494,12 @@ footer{border-top:1px solid var(--g200);padding-top:22px;margin-top:64px;font-si
   <h3>Variant</h3>
   <p>Which version of the component. Present only when the component has more than one and they need different tokens.</p>
   <div class="vocab">
-    <span class="vp vp-var">primary-brand</span><span class="vp vp-var">primary-neutral</span><span class="vp vp-var">secondary</span><span class="vp vp-var">tertiary</span><span class="vp vp-var">destructive</span><span class="vp vp-var">ghost</span><span class="vp vp-var">outline</span><span class="vp vp-var">pill</span><span class="vp vp-var">underline</span>
+    <span class="vp vp-var">primary-brand</span><span class="vp vp-var">primary-neutral</span><span class="vp vp-var">secondary</span><span class="vp vp-var">tertiary</span><span class="vp vp-var">destructive</span><span class="vp vp-var">ghost</span><span class="vp vp-var">outline</span><span class="vp vp-var">pill</span><span class="vp vp-var">underline</span><span class="vp vp-var">small</span><span class="vp vp-var">medium</span><span class="vp vp-var">large</span>
   </div>
   <p><code>pill</code> and <code>underline</code> are navigation shape variants — they describe how a nav item renders its selection affordance, not its intent. Currently used by <code>tabs/*</code>.</p>
-  <p><strong>Sizes are not variants.</strong> Small/medium/large change spacing and type size, which come from Primitives directly. They never produce their own colour tokens.</p>
+  <p><strong>Sizes never produce colour tokens.</strong> <code>small</code> / <code>medium</code> / <code>large</code> change geometry, not hue — there is no such thing as <code>button/small/bg</code>.</p>
+  <p>They <em>may</em> occupy the Variant slot for <strong>geometry</strong> tokens, where the value genuinely differs per size: <span class="tok"><b class="s-comp">button</b><span class="sl">/</span><b class="s-var">small</b><span class="sl">/</span><b class="s-prop">padding-x</b></span>. Earlier guidance said sizes were never variants and should come from Primitives directly in code — that produced a Button whose every size was wrong against Figma, with no token to check it against. A size-varying value that a component must honour is a token like any other.</p>
+  <p>Where a value is the <em>same</em> at every size, omit the slot: <code>button/radius</code>, not three copies of it.</p>
 
   <h3>Part</h3>
   <p>A named piece inside the component. Only create one when the piece needs a token the root doesn't.</p>
@@ -508,7 +510,7 @@ footer{border-top:1px solid var(--g200);padding-top:22px;margin-top:64px;font-si
   <h3>Property</h3>
   <p>The attribute being set. <strong>Closed list — never invent a synonym.</strong> This is the slot where systems rot fastest: <code>bg</code>, <code>background</code>, <code>surface</code>, and <code>fill</code> all meaning the same thing is how a 200-token system becomes unusable.</p>
   <div class="vocab">
-    <span class="vp vp-prop">bg</span><span class="vp vp-prop">fg</span><span class="vp vp-prop">border</span><span class="vp vp-prop">ring</span><span class="vp vp-prop">shadow</span><span class="vp vp-prop">radius</span><span class="vp vp-prop">gap</span><span class="vp vp-prop">padding-x</span><span class="vp vp-prop">padding-y</span><span class="vp vp-prop">size</span><span class="vp vp-prop">border-width</span><span class="vp vp-prop">line-height</span><span class="vp vp-prop">letter-spacing</span>
+    <span class="vp vp-prop">bg</span><span class="vp vp-prop">fg</span><span class="vp vp-prop">border</span><span class="vp vp-prop">ring</span><span class="vp vp-prop">shadow</span><span class="vp vp-prop">radius</span><span class="vp vp-prop">gap</span><span class="vp vp-prop">padding-x</span><span class="vp vp-prop">padding-y</span><span class="vp vp-prop">size</span><span class="vp vp-prop">border-width</span><span class="vp vp-prop">font-size</span><span class="vp vp-prop">font-weight</span><span class="vp vp-prop">line-height</span><span class="vp vp-prop">letter-spacing</span>
   </div>
   <div class="tbl-wrap">
   <table>
@@ -595,8 +597,8 @@ footer{border-top:1px solid var(--g200);padding-top:22px;margin-top:64px;font-si
     <tbody>
       <tr><td>Component</td><td><strong>Open</strong></td><td>Grows freely</td><td>Just use it</td></tr>
       <tr><td>Part</td><td><strong>Open</strong></td><td>Grows freely</td><td>Just use it — but check §11 first</td></tr>
-      <tr><td>Variant</td><td>Semi-closed</td><td>9 words</td><td>Add when a real new variant ships</td></tr>
-      <tr><td>Property</td><td><strong>Closed</strong></td><td>13 words</td><td>Amendment required</td></tr>
+      <tr><td>Variant</td><td>Semi-closed</td><td>12 words</td><td>Add when a real new variant ships</td></tr>
+      <tr><td>Property</td><td><strong>Closed</strong></td><td>15 words</td><td>Amendment required</td></tr>
       <tr><td>State</td><td><strong>Closed</strong></td><td>11 words, composable</td><td>Amendment required</td></tr>
       <tr><td>Intent</td><td><strong>Closed</strong></td><td>7 + <code>on-</code></td><td>Amendment + hue assignment</td></tr>
       <tr><td>Role</td><td><strong>Closed</strong></td><td>10 words</td><td>Amendment — must slot into the order</td></tr>
