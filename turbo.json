@@ -1,5 +1,16 @@
 {
   "$schema": "https://turbo.build/schema.json",
+
+  "//": "globalDependencies lists the root config files that change what a task MEANS. Without them Turbo hashes package contents only, so tightening a lint rule leaves every package cached and the stricter rule never runs - the task reports success without executing. A green build that proves nothing is worse than a slow one.",
+  "globalDependencies": [
+    "stylelint.config.js",
+    "eslint.config.js",
+    ".prettierrc",
+    ".prettierignore",
+    "tsconfig.base.json",
+    "tsconfig.json"
+  ],
+
   "tasks": {
     "build": {
       "dependsOn": ["^build"],

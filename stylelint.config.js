@@ -63,6 +63,36 @@ export default {
         message: 'Raw CSS values are forbidden. Use design token variables defined in @ionbase/tokens (e.g., var(--bg-neutral-default)) instead.',
       },
     ],
+
+    /**
+     * No raw colour inside a shadow.
+     *
+     * Shadows are the one property where geometry and colour share a value.
+     * The offsets (`0 0 0 2px`) are inert and never theme, so requiring them to
+     * be tokens would buy nothing — but a raw colour is a place dark mode has
+     * to be fixed by hand, one per occurrence. This bans the colour half only,
+     * which is why it is a disallowed-list rather than declaration-strict-value.
+     *
+     * Correct:  box-shadow: 0 0 0 2px var(--border-brand-default-focus);
+     *           box-shadow: var(--ion-shadow-button-raised);
+     * Rejected: box-shadow: 0 1px 2px rgb(0 0 0 / 40%);
+     */
+    'declaration-property-value-disallowed-list': {
+      'box-shadow': [/rgba?\(/i, /hsla?\(/i, /#[0-9a-f]{3,8}/i],
+    },
   },
+
+  overrides: [
+    {
+      // elevation.css is where the raw shadow values are *supposed* to live —
+      // it is the one file dark mode has to touch. Everywhere else must
+      // reference --ion-shadow-*, so the override is deliberately this narrow.
+      files: ['**/elevation.css'],
+      rules: {
+        'declaration-property-value-disallowed-list': null,
+      },
+    },
+  ],
+
   ignoreFiles: ['**/dist/**', '**/node_modules/**'],
 };
