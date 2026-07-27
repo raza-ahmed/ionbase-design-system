@@ -1,0 +1,67 @@
+# ---- Dependencies ----
+node_modules/
+.pnpm-store/
+.pnpm-debug.log*
+
+# ---- Build output ----
+dist/
+build/
+lib/
+out/
+*.tsbuildinfo
+
+# ---- Turborepo ----
+.turbo/
+
+# ---- Vite ----
+.vite/
+
+# ---- Storybook ----
+storybook-static/
+*.storybook.log
+
+# ---- Style Dictionary (generated token output) ----
+# Source of truth (DTCG JSON) IS committed; generated CSS/TS is not.
+# Adjust the path to wherever your SD config writes outputs.
+packages/tokens/build/
+
+# ---- Tests / coverage ----
+coverage/
+.nyc_output/
+playwright-report/
+test-results/
+blob-report/
+.playwright/
+
+# ---- Changesets ----
+# Keep .changeset/config.json and pending changesets; ignore nothing here by default.
+
+# ---- Env & secrets ----
+.env
+.env.*
+!.env.example
+*.pem
+figma-token*.txt
+
+# ---- Logs ----
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+logs/
+
+# ---- Caches ----
+.cache/
+.eslintcache
+.stylelintcache
+
+# ---- Editors / IDE ----
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+.idea/
+*.swp
+
+# ---- OS ----
+.DS_Store
+Thumbs.db
