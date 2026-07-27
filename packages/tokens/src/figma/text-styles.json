@@ -1,0 +1,40 @@
+{
+  "source": "figma-text-styles",
+  "count": 20,
+  "$comment": [
+    "Exported by figma/export-text-styles.js. Figma text styles are not variables,",
+    "so the variable export does not cover them.",
+    "",
+    "Each field holds the BOUND VARIABLE NAME, not a resolved value — every style",
+    "in this file is fully bound, so nothing here is a literal. Because fontSize",
+    "and lineHeight point at breakpoint-scoped type/* tokens, the generated CSS",
+    "classes are responsive without a single media query of their own."
+  ],
+
+  "textStyles": {
+    "Display": { "fontFamily": "font/family/sans", "fontWeight": "font/weight/semibold", "fontSize": "type/display", "lineHeight": "type/display/line-height" },
+
+    "Heading/H1": { "fontFamily": "font/family/serif-display", "fontWeight": "font/weight/semibold", "fontSize": "type/h1", "lineHeight": "type/h1/line-height" },
+    "Heading/H2": { "fontFamily": "font/family/serif-display", "fontWeight": "font/weight/semibold", "fontSize": "type/h2", "lineHeight": "type/h2/line-height" },
+    "Heading/H3": { "fontFamily": "font/family/sans", "fontWeight": "font/weight/semibold", "fontSize": "type/h3", "lineHeight": "type/h3/line-height" },
+    "Heading/H4": { "fontFamily": "font/family/sans", "fontWeight": "font/weight/semibold", "fontSize": "type/h4", "lineHeight": "type/h4/line-height" },
+    "Heading/H5": { "fontFamily": "font/family/sans", "fontWeight": "font/weight/semibold", "fontSize": "type/h5", "lineHeight": "type/h5/line-height" },
+    "Heading/H6": { "fontFamily": "font/family/sans", "fontWeight": "font/weight/semibold", "fontSize": "type/h6", "lineHeight": "type/h6/line-height" },
+
+    "Body/Large": { "fontFamily": "font/family/sans", "fontWeight": "font/weight/regular", "fontSize": "type/body-lg", "lineHeight": "type/body-lg/line-height" },
+    "Body/Large Emphasis": { "fontFamily": "font/family/sans", "fontWeight": "font/weight/medium", "fontSize": "type/body-lg", "lineHeight": "type/body-lg/line-height" },
+    "Body/Medium": { "fontFamily": "font/family/sans", "fontWeight": "font/weight/regular", "fontSize": "type/body-md", "lineHeight": "type/body-md/line-height" },
+    "Body/Medium Emphasis": { "fontFamily": "font/family/sans", "fontWeight": "font/weight/medium", "fontSize": "type/body-md", "lineHeight": "type/body-md/line-height" },
+    "Body/Default": { "fontFamily": "font/family/sans", "fontWeight": "font/weight/regular", "fontSize": "type/body", "lineHeight": "type/body/line-height" },
+    "Body/Default Emphasis": { "fontFamily": "font/family/sans", "fontWeight": "font/weight/medium", "fontSize": "type/body", "lineHeight": "type/body/line-height" },
+    "Body/Small": { "fontFamily": "font/family/sans", "fontWeight": "font/weight/regular", "fontSize": "type/body-sm", "lineHeight": "type/body-sm/line-height" },
+    "Body/Small Emphasis": { "fontFamily": "font/family/sans", "fontWeight": "font/weight/medium", "fontSize": "type/body-sm", "lineHeight": "type/body-sm/line-height" },
+
+    "Caption": { "fontFamily": "font/family/sans", "fontWeight": "font/weight/medium", "fontSize": "type/caption", "lineHeight": "type/caption/line-height" },
+
+    "Editorial/Display": { "fontFamily": "font/family/serif", "fontWeight": "font/weight/bold", "fontSize": "type/display", "lineHeight": "type/display/line-height" },
+    "Editorial/H1": { "fontFamily": "font/family/serif", "fontWeight": "font/weight/bold", "fontSize": "type/h1", "lineHeight": "type/h1/line-height" },
+    "Editorial/H2": { "fontFamily": "font/family/serif", "fontWeight": "font/weight/bold", "fontSize": "type/h2", "lineHeight": "type/h2/line-height" },
+    "Editorial/H3": { "fontFamily": "font/family/serif", "fontWeight": "font/weight/bold", "fontSize": "type/h3", "lineHeight": "type/h3/line-height" }
+  }
+}

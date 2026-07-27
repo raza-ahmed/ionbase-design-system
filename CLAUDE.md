@@ -46,6 +46,24 @@ handle the ordering and truncation problems described below.
 Before calling `use_figma`, load the `figma-use` skill — it is a hard
 prerequisite, not advice.
 
+### Styles are a second export, separate from variables
+
+`getLocalVariablesAsync` does not see text styles or effect styles. They need
+their own export, and they behave differently:
+
+- **Text styles** are fully variable-bound, so they go through the pipeline:
+  `figma/export-text-styles.js` → `src/figma/text-styles.json` →
+  `build-typography.mjs` → `dist/css/typography.css`. Never bake a literal in —
+  the generator errors instead, because a literal silently stops matching Figma.
+- **Effect styles (shadows) are NOT variable-bound**, so they cannot be tokens
+  yet. They are hand-authored in `@ionbase/styles/src/elevation.css` as
+  `--ion-shadow-*`. The `--ion-` prefix marks "authored in code"; `--shadow-*`
+  would mean it came from the pipeline. Dark mode overrides those same custom
+  properties — no component file should change.
+
+`loadCollections()` filters on shape, because `src/figma/` now holds both
+variable collections and the text-style export.
+
 ### Generated vs committed
 
 Committed and reviewed: `src/figma/*.json` (the export), `renames.json`,

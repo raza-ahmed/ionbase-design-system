@@ -207,6 +207,7 @@ async function main() {
       '@import "./theme-dark.css";',
       '@import "./breakpoint-tablet.css";',
       '@import "./breakpoint-mobile.css";',
+      '@import "./typography.css";',
       '',
     ].join('\n'),
   );

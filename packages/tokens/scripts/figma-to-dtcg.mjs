@@ -42,10 +42,21 @@ const overrides = JSON.parse(
 );
 const UNITLESS = new Set(overrides.unitless.tokens);
 
+/**
+ * Variable collections only. `src/figma/` also holds exports that are not
+ * variables — text styles, for one — so this filters on shape rather than
+ * assuming every JSON file in the directory is a collection.
+ */
 export function loadCollections() {
   return readdirSync(FIGMA_DIR)
     .filter((f) => f.endsWith('.json'))
-    .map((f) => JSON.parse(readFileSync(join(FIGMA_DIR, f), 'utf8')));
+    .map((f) => JSON.parse(readFileSync(join(FIGMA_DIR, f), 'utf8')))
+    .filter((doc) => doc.variables && doc.collection);
+}
+
+/** The text-style export. Separate API in Figma, separate file here. */
+export function loadTextStyles() {
+  return JSON.parse(readFileSync(join(FIGMA_DIR, 'text-styles.json'), 'utf8'));
 }
 
 /**

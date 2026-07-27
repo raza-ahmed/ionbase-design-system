@@ -71,6 +71,7 @@ a Figma plugin console) with the file open.
 | Node (`scripts/`)                           | Figma (`figma/`)                                        |
 | ------------------------------------------- | ------------------------------------------------------- |
 | `figma-to-dtcg.mjs` — flat export → DTCG    | `export-variables.js` — dump one collection             |
+| `build-typography.mjs` — text styles → CSS  | `export-text-styles.js` — dump the text styles          |
 | `audit-names.mjs` — grammar gate            | `apply-renames.js` — rename/delete variables            |
 | `verify-code-syntax.mjs` — codeSyntax gate  | `resync-code-syntax.js` — rewrite codeSyntax from paths |
 | `verify-renames.mjs` — rename dry run       | `checksum.js` — checksum for sync verification          |
@@ -84,6 +85,10 @@ a Figma plugin console) with the file open.
 1. Run [`figma/export-variables.js`](./figma/export-variables.js) once per
    collection (set `COLLECTION` at the top). Save each result over the matching
    `src/figma/<collection>.json`, verbatim.
+   **If any text style changed**, also run
+   [`figma/export-text-styles.js`](./figma/export-text-styles.js) and save it
+   over `src/figma/text-styles.json` — text styles are a separate Figma API and
+   the variable export does not include them.
 2. Run [`figma/checksum.js`](./figma/checksum.js), then confirm the repo agrees:
    ```bash
    node scripts/verify-export.mjs --expect <count> <checksum>
@@ -118,6 +123,29 @@ from. So the map is always proven before it is applied.
    pnpm build
    ```
 5. Empty out `renames.json` once it's applied.
+
+---
+
+## Typography
+
+The 20 Figma text styles are exported to `src/figma/text-styles.json` and
+generated into `dist/css/typography.css` as utility classes —
+`.ion-text-display`, `.ion-text-h1`…`h6`, `.ion-text-body-{lg,md,sm}`,
+`.ion-text-body`, `.ion-text-caption`, `.ion-text-editorial-*`.
+
+Every style is fully **variable-bound in Figma**, so the export stores token
+names rather than resolved values. The classes therefore reference
+breakpoint-scoped `type/*` tokens and resize across breakpoints without carrying
+a media query of their own. `build-typography.mjs` fails rather than emitting a
+literal if a style is ever unbound.
+
+The Figma `… Emphasis` styles differ from their base in font-weight and nothing
+else, so they collapse to one modifier, `.ion-text--emphasis`. The generator
+asserts that and fails the build if it stops being true.
+
+Effect styles (shadows) are the opposite case — **not** variable-bound, so they
+are hand-authored in `@ionbase/styles/src/elevation.css` and are not part of
+this pipeline.
 
 ---
 
