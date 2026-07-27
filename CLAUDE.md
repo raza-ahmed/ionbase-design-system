@@ -75,6 +75,22 @@ their own export, and they behave differently:
 `loadCollections()` filters on shape, because `src/figma/` now holds both
 variable collections and the text-style export.
 
+### Three layers, and `--ion-*` is not one of them
+
+    primitive        spacing/16                  raw value
+    component token  tabs/medium/item/padding-x  aliases the primitive
+    CSS slot         --ion-tabs-item-padding-x   holds the token, never a value
+
+The `--ion-*` slots are a CSS implementation device: a size modifier reassigns
+one variable instead of restating five declarations. They are not tokens and
+never appear in Figma.
+
+**A Figma component must bind to the component token, not the primitive.**
+Creating `tabs/medium/item/padding-x` and leaving the component on `spacing/16`
+means Figma and code agree only by coincidence — the token is orphaned and
+changing it moves nothing. This was shipped once for Tabs and had to be fixed
+after the fact; check bindings resolve to `<component>/...`, not `spacing/...`.
+
 ### Generated vs committed
 
 Committed and reviewed: `src/figma/*.json` (the export), `renames.json`,
