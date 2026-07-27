@@ -13,6 +13,7 @@
 .ion-button {
   --ion-button-ring: var(--ion-shadow-none);
   --ion-button-elevation: var(--ion-shadow-none);
+  --ion-button-focus-ring: var(--ion-shadow-button-raised-focus);
 
   /*
    * Size is a set of slots defaulting to medium, so a size modifier reassigns
@@ -82,14 +83,23 @@
 }
 
 /*
- * Focus ring — Figma `Button/Raised Focus` / `Button/Surface Focus`.
- * Offset ring first so it sits inside the outer ring; reversing them hides the
- * white gap underneath and the ring reads as one solid band.
+ * Focus ring — generated from the Figma `Button/Raised Focus` and
+ * `Button/Surface Focus` effect styles.
+ *
+ * Previously this was assembled from `--button-offset-ring` / `--button-ring`,
+ * component tokens hand-mapped to the nearest solid semantic colour. That made
+ * the outer ring fully opaque where Figma renders it at 50% alpha, and nothing
+ * caught it: effect styles are not variable-bound, so the token pipeline cannot
+ * see them at all.
  */
+.ion-button--secondary,
+.ion-button--tertiary {
+  --ion-button-focus-ring: var(--ion-shadow-button-surface-focus);
+}
+
 .ion-button:focus-visible,
 .ion-button[data-focused='true'] {
-  --ion-button-ring:
-    0 0 0 2px var(--button-offset-ring), 0 0 0 4px var(--button-ring);
+  --ion-button-ring: var(--ion-button-focus-ring);
 
   outline: none;
 }
@@ -253,6 +263,7 @@
 .ion-button[data-disabled='true'] {
   --ion-button-ring: var(--ion-shadow-none);
   --ion-button-elevation: var(--ion-shadow-none);
+  --ion-button-focus-ring: var(--ion-shadow-button-raised-focus);
 
   background-color: var(--button-bg-disabled);
   color: var(--button-fg-disabled);

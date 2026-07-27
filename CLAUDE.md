@@ -61,11 +61,16 @@ their own export, and they behave differently:
   `figma/export-text-styles.js` → `src/figma/text-styles.json` →
   `build-typography.mjs` → `dist/css/typography.css`. Never bake a literal in —
   the generator errors instead, because a literal silently stops matching Figma.
-- **Effect styles (shadows) are NOT variable-bound**, so they cannot be tokens
-  yet. They are hand-authored in `@ionbase/styles/src/elevation.css` as
-  `--ion-shadow-*`. The `--ion-` prefix marks "authored in code"; `--shadow-*`
-  would mean it came from the pipeline. Dark mode overrides those same custom
-  properties — no component file should change.
+- **Effect styles (shadows) are NOT variable-bound**, so they cannot be tokens:
+  there is nothing to alias. They go through their own export instead —
+  `figma/export-effect-styles.js` → `src/figma/effect-styles.json` →
+  `build-elevation.mjs` → `dist/css/elevation.css` as `--ion-shadow-*`. The
+  `--ion-` prefix marks "not from the token pipeline". Dark mode overrides those
+  same properties — no component file should change.
+
+  **Never hand-write a shadow value.** They were hand-transcribed once and the
+  Button focus ring came out fully opaque where Figma renders it at 50% alpha —
+  invisible to every check, because `tokens:verify` only sees variables.
 
 `loadCollections()` filters on shape, because `src/figma/` now holds both
 variable collections and the text-style export.

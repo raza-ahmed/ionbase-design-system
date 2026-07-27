@@ -208,6 +208,7 @@ async function main() {
       '@import "./breakpoint-tablet.css";',
       '@import "./breakpoint-mobile.css";',
       '@import "./typography.css";',
+      '@import "./elevation.css";',
       '',
     ].join('\n'),
   );

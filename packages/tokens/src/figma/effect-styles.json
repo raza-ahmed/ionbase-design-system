@@ -1,0 +1,418 @@
+{
+  "source": "figma-effect-styles",
+  "count": 14,
+  "$comment": [
+    "Exported by figma/export-effect-styles.js. Effect styles are a third Figma",
+    "API \u2014 neither the variable export nor the text-style export covers them.",
+    "",
+    "They are NOT variable-bound in this file, so they cannot become tokens:",
+    "there is nothing to alias. dist/css/elevation.css is generated from this",
+    "data instead, which is what keeps a shadow from drifting out of the design.",
+    "",
+    "Colours are 0-255 channels plus alpha, exactly as Figma stores them."
+  ],
+  "effectStyles": {
+    "Shadow/xs": [
+      {
+        "type": "DROP_SHADOW",
+        "x": 0,
+        "y": 1,
+        "blur": 2,
+        "spread": 0,
+        "r": 0,
+        "g": 0,
+        "b": 0,
+        "a": 0.05
+      }
+    ],
+    "Shadow/sm": [
+      {
+        "type": "DROP_SHADOW",
+        "x": 0,
+        "y": 1,
+        "blur": 3,
+        "spread": 0,
+        "r": 0,
+        "g": 0,
+        "b": 0,
+        "a": 0.08
+      },
+      {
+        "type": "DROP_SHADOW",
+        "x": 0,
+        "y": 1,
+        "blur": 2,
+        "spread": -1,
+        "r": 0,
+        "g": 0,
+        "b": 0,
+        "a": 0.06
+      }
+    ],
+    "Shadow/md": [
+      {
+        "type": "DROP_SHADOW",
+        "x": 0,
+        "y": 4,
+        "blur": 8,
+        "spread": -2,
+        "r": 0,
+        "g": 0,
+        "b": 0,
+        "a": 0.08
+      },
+      {
+        "type": "DROP_SHADOW",
+        "x": 0,
+        "y": 2,
+        "blur": 4,
+        "spread": -2,
+        "r": 0,
+        "g": 0,
+        "b": 0,
+        "a": 0.06
+      }
+    ],
+    "Shadow/lg": [
+      {
+        "type": "DROP_SHADOW",
+        "x": 0,
+        "y": 12,
+        "blur": 16,
+        "spread": -4,
+        "r": 0,
+        "g": 0,
+        "b": 0,
+        "a": 0.08
+      },
+      {
+        "type": "DROP_SHADOW",
+        "x": 0,
+        "y": 4,
+        "blur": 6,
+        "spread": -2,
+        "r": 0,
+        "g": 0,
+        "b": 0,
+        "a": 0.05
+      }
+    ],
+    "Shadow/xl": [
+      {
+        "type": "DROP_SHADOW",
+        "x": 0,
+        "y": 20,
+        "blur": 24,
+        "spread": -4,
+        "r": 0,
+        "g": 0,
+        "b": 0,
+        "a": 0.1
+      },
+      {
+        "type": "DROP_SHADOW",
+        "x": 0,
+        "y": 8,
+        "blur": 8,
+        "spread": -4,
+        "r": 0,
+        "g": 0,
+        "b": 0,
+        "a": 0.04
+      }
+    ],
+    "Button/Raised": [
+      {
+        "type": "INNER_SHADOW",
+        "x": 0,
+        "y": -3,
+        "blur": 2,
+        "spread": 0,
+        "r": 0,
+        "g": 0,
+        "b": 0,
+        "a": 0.5
+      },
+      {
+        "type": "INNER_SHADOW",
+        "x": 0,
+        "y": 3,
+        "blur": 0.4,
+        "spread": 0,
+        "r": 255,
+        "g": 255,
+        "b": 255,
+        "a": 0.24
+      },
+      {
+        "type": "DROP_SHADOW",
+        "x": 0,
+        "y": 1,
+        "blur": 1,
+        "spread": 0,
+        "r": 7,
+        "g": 10,
+        "b": 13,
+        "a": 0.32
+      },
+      {
+        "type": "DROP_SHADOW",
+        "x": 0,
+        "y": 1,
+        "blur": 2,
+        "spread": 0,
+        "r": 7,
+        "g": 10,
+        "b": 13,
+        "a": 0.16
+      }
+    ],
+    "Button/Raised Hover": [
+      {
+        "type": "INNER_SHADOW",
+        "x": 0,
+        "y": -3,
+        "blur": 2,
+        "spread": 0,
+        "r": 0,
+        "g": 0,
+        "b": 0,
+        "a": 0.6
+      },
+      {
+        "type": "INNER_SHADOW",
+        "x": 0,
+        "y": 3,
+        "blur": 0.4,
+        "spread": 0,
+        "r": 255,
+        "g": 255,
+        "b": 255,
+        "a": 0.28
+      },
+      {
+        "type": "DROP_SHADOW",
+        "x": 0,
+        "y": 1,
+        "blur": 2,
+        "spread": 0,
+        "r": 7,
+        "g": 10,
+        "b": 13,
+        "a": 0.3
+      },
+      {
+        "type": "DROP_SHADOW",
+        "x": 0,
+        "y": 2,
+        "blur": 4,
+        "spread": 0,
+        "r": 7,
+        "g": 10,
+        "b": 13,
+        "a": 0.14
+      }
+    ],
+    "Button/Pressed": [
+      {
+        "type": "INNER_SHADOW",
+        "x": 0,
+        "y": 2,
+        "blur": 2,
+        "spread": 0,
+        "r": 0,
+        "g": 0,
+        "b": 0,
+        "a": 0.4
+      }
+    ],
+    "Button/Surface": [
+      {
+        "type": "INNER_SHADOW",
+        "x": 0,
+        "y": -1,
+        "blur": 2,
+        "spread": 2,
+        "r": 86,
+        "g": 102,
+        "b": 114,
+        "a": 0.1
+      },
+      {
+        "type": "DROP_SHADOW",
+        "x": 0,
+        "y": 1,
+        "blur": 1,
+        "spread": 0,
+        "r": 7,
+        "g": 10,
+        "b": 13,
+        "a": 0.06
+      },
+      {
+        "type": "DROP_SHADOW",
+        "x": 0,
+        "y": 1,
+        "blur": 2,
+        "spread": 0,
+        "r": 7,
+        "g": 10,
+        "b": 13,
+        "a": 0.04
+      }
+    ],
+    "Button/Surface Hover": [
+      {
+        "type": "INNER_SHADOW",
+        "x": 0,
+        "y": -3,
+        "blur": 2,
+        "spread": 0,
+        "r": 0,
+        "g": 0,
+        "b": 0,
+        "a": 0.1
+      },
+      {
+        "type": "INNER_SHADOW",
+        "x": 0,
+        "y": 3,
+        "blur": 0.4,
+        "spread": 0,
+        "r": 255,
+        "g": 255,
+        "b": 255,
+        "a": 0.9
+      },
+      {
+        "type": "DROP_SHADOW",
+        "x": 0,
+        "y": 1,
+        "blur": 2,
+        "spread": 0,
+        "r": 7,
+        "g": 10,
+        "b": 13,
+        "a": 0.08
+      },
+      {
+        "type": "DROP_SHADOW",
+        "x": 0,
+        "y": 2,
+        "blur": 4,
+        "spread": 0,
+        "r": 7,
+        "g": 10,
+        "b": 13,
+        "a": 0.05
+      }
+    ],
+    "Button/Surface Pressed": [
+      {
+        "type": "INNER_SHADOW",
+        "x": 0,
+        "y": 1,
+        "blur": 2,
+        "spread": 0,
+        "r": 0,
+        "g": 0,
+        "b": 0,
+        "a": 0.08
+      }
+    ],
+    "Focus/Ring": [
+      {
+        "type": "DROP_SHADOW",
+        "x": 0,
+        "y": 0,
+        "blur": 0,
+        "spread": 2,
+        "r": 255,
+        "g": 255,
+        "b": 255,
+        "a": 1
+      },
+      {
+        "type": "DROP_SHADOW",
+        "x": 0,
+        "y": 0,
+        "blur": 0,
+        "spread": 4,
+        "r": 221,
+        "g": 224,
+        "b": 228,
+        "a": 1
+      },
+      {
+        "type": "DROP_SHADOW",
+        "x": 0,
+        "y": 0,
+        "blur": 0,
+        "spread": 6,
+        "r": 7,
+        "g": 10,
+        "b": 13,
+        "a": 1
+      },
+      {
+        "type": "DROP_SHADOW",
+        "x": 0,
+        "y": 2,
+        "blur": 6,
+        "spread": 0,
+        "r": 7,
+        "g": 10,
+        "b": 13,
+        "a": 0.2
+      }
+    ],
+    "Button/Raised Focus": [
+      {
+        "type": "DROP_SHADOW",
+        "x": 0,
+        "y": 0,
+        "blur": 0,
+        "spread": 4,
+        "r": 7,
+        "g": 10,
+        "b": 13,
+        "a": 0.5
+      },
+      {
+        "type": "DROP_SHADOW",
+        "x": 0,
+        "y": 0,
+        "blur": 0,
+        "spread": 2,
+        "r": 255,
+        "g": 255,
+        "b": 255,
+        "a": 1
+      }
+    ],
+    "Button/Surface Focus": [
+      {
+        "type": "DROP_SHADOW",
+        "x": 0,
+        "y": 0,
+        "blur": 0,
+        "spread": 4,
+        "r": 7,
+        "g": 10,
+        "b": 13,
+        "a": 0.5
+      },
+      {
+        "type": "DROP_SHADOW",
+        "x": 0,
+        "y": 0,
+        "blur": 0,
+        "spread": 2,
+        "r": 255,
+        "g": 255,
+        "b": 255,
+        "a": 1
+      }
+    ]
+  }
+}
