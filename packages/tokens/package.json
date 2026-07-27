@@ -5,11 +5,30 @@
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./css": "./dist/css/index.css",
+    "./css/*": "./dist/css/*"
+  },
+  "files": [
+    "dist"
+  ],
   "scripts": {
-    "dev": "tsc --watch",
-    "build": "tsc",
+    "dev": "node scripts/figma-to-dtcg.mjs && node scripts/build-css.mjs && node scripts/build-ts.mjs && tsc --watch",
+    "build": "pnpm run tokens:dtcg && pnpm run tokens:audit && pnpm run tokens:verify && pnpm run tokens:css && pnpm run tokens:ts && tsc",
+    "tokens:dtcg": "node scripts/figma-to-dtcg.mjs",
+    "tokens:verify": "node scripts/verify-code-syntax.mjs",
+    "tokens:css": "node scripts/build-css.mjs",
+    "tokens:ts": "node scripts/build-ts.mjs",
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
-    "format": "prettier --check ."
+    "format": "prettier --check .",
+    "tokens:audit": "node scripts/audit-names.mjs"
+  },
+  "devDependencies": {
+    "style-dictionary": "^4"
   }
 }

@@ -20,9 +20,12 @@ out/
 storybook-static/
 *.storybook.log
 
-# ---- Style Dictionary (generated token output) ----
-# Source of truth (DTCG JSON) IS committed; generated CSS/TS is not.
-# Adjust the path to wherever your SD config writes outputs.
+# ---- Tokens (generated output) ----
+# Committed source of truth is packages/tokens/src/figma/ — the flat Figma
+# export. Everything below is derived from it by `pnpm build` and must not be
+# hand-edited or reviewed:
+packages/tokens/src/dtcg/
+packages/tokens/src/generated/
 packages/tokens/build/
 
 # ---- Tests / coverage ----
@@ -65,3 +68,6 @@ logs/
 # ---- OS ----
 .DS_Store
 Thumbs.db
+
+# ---- internal files ----
+IONBASE-BUILD.md

@@ -1,0 +1,114 @@
+{
+  "$comment": [
+    "Reviewed rename map, applied to Figma by scripts/apply-renames.mjs.",
+    "Figma renames are non-destructive: aliases and instance bindings are by",
+    "variable ID, so nothing rebinds. codeSyntax.WEB is rewritten from the new",
+    "path in the same pass, which is what clears known-defects.json.",
+    "",
+    "Decisions behind this map are recorded in docs/token-migration-plan.md.",
+    "Entries are removed once applied and verified."
+  ],
+
+  "primitives": {
+    "font/family/serif 2": "font/family/serif-display"
+  },
+
+  "semantic": {
+    "bg/default": "bg/neutral/default",
+    "bg/subtle": "bg/neutral/subtle",
+    "bg/muted": "bg/neutral/muted",
+    "bg/emphasis": "bg/neutral/emphasis",
+    "bg/emphasis/hover": "bg/neutral/emphasis/hover",
+    "bg/emphasis/pressed": "bg/neutral/emphasis/pressed",
+    "bg/inverse": "bg/neutral/inverse",
+
+    "bg/brand": "bg/brand/default",
+    "bg/brand/hover": "bg/brand/default/hover",
+    "bg/brand/pressed": "bg/brand/default/pressed",
+    "bg/tint": "bg/brand/tint",
+
+    "bg/danger": "bg/danger/default",
+    "bg/danger/hover": "bg/danger/default/hover",
+    "bg/danger/pressed": "bg/danger/default/pressed",
+
+    "fg/default": "fg/neutral/emphasis",
+    "fg/body": "fg/neutral/default",
+    "fg/secondary": "fg/neutral/secondary",
+    "fg/secondary/hover": "fg/neutral/secondary/hover",
+    "fg/subtle": "fg/neutral/subtle",
+    "fg/muted": "fg/neutral/muted",
+
+    "fg/link": "fg/link/default",
+    "fg/link-hover": "fg/link/default/hover",
+
+    "fg/success": "fg/success/default",
+    "fg/warning": "fg/warning/default",
+    "fg/danger": "fg/danger/default",
+    "fg/info": "fg/info/default",
+
+    "border/muted": "border/neutral/muted",
+    "border/default": "border/neutral/default",
+    "border/emphasized": "border/neutral/emphasized",
+    "border/strong": "border/neutral/strong",
+    "border/bold": "border/neutral/bold",
+    "border/emphasis": "border/neutral/emphasis",
+
+    "border/brand": "border/brand/default",
+    "border/tint": "border/brand/tint",
+
+    "border/success": "border/success/default",
+    "border/warning": "border/warning/default",
+    "border/danger": "border/danger/default",
+    "border/info": "border/info/default",
+
+    "bg/disabled": "bg/neutral/disabled",
+    "fg/disabled": "fg/neutral/disabled",
+    "border/disabled": "border/neutral/disabled",
+
+    "bg/overlay": "bg/scrim/default",
+    "bg/hover-wash": "bg/scrim/subtle",
+
+    "fg/on-emphasis": "fg/on-neutral/emphasis",
+    "border/focus": "border/brand/default/focus"
+  },
+
+  "component": {
+    "button/disabled/bg": "button/bg/disabled",
+    "button/disabled/fg": "button/fg/disabled",
+    "button/disabled/border": "button/border/disabled",
+
+    "button/ring/offset": "button/offset/ring",
+    "button/ring/inner": "button/inner/ring",
+
+    "tabs/pill/item/bg/selected-hover": "tabs/pill/item/bg/hover-selected",
+    "table/row/bg/selected-hover": "table/row/bg/hover-selected",
+    "table/row/bg/striped": "table/striped/row/bg"
+  },
+
+  "delete": {
+    "table/cell/fg/muted": "Pass-through to {fg.muted} with no component-tier decision behind it. Spec Rule 06 — consumers use fg/neutral/muted directly."
+  },
+
+  "unchanged": {
+    "$comment": "Already spec-legal. Listed so the map is a complete account of the semantic tier.",
+    "names": [
+      "bg/brand/subtle",
+      "bg/danger/subtle",
+      "bg/danger/emphasis",
+      "bg/success/subtle",
+      "bg/success/emphasis",
+      "bg/warning/subtle",
+      "bg/warning/emphasis",
+      "bg/info/subtle",
+      "bg/info/emphasis",
+      "fg/on-brand",
+      "fg/on-danger",
+      "border/brand/strong",
+      "border/danger/strong"
+    ]
+  },
+
+  "open": {
+    "$comment": "Empty — every name in the file is now accounted for."
+  }
+}

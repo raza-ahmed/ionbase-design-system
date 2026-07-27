@@ -1,1 +1,8 @@
 dist/
+
+# Token data, all machine-produced. src/figma/* mirrors the Figma export one
+# token per line, which reviews as a clean diff when values change; Prettier
+# would explode each entry to six lines and bury the signal.
+src/figma/
+src/dtcg/
+src/generated/

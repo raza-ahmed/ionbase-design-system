@@ -1,0 +1,16 @@
+{
+  "$comment": [
+    "Defects in the Figma file itself, tracked here so the build stays green while",
+    "they are outstanding and fails the moment one is fixed (see verify-code-syntax.mjs).",
+    "Each fix is a Figma edit; re-export, then delete the entry.",
+    "",
+    "File: gaLbGd0QNb1fUl6BjSpfBA (IonBase Design System)",
+    "",
+    "EMPTY — all 11 code-syntax defects (CS-001..010, DUP-001) were cleared by the",
+    "2026-07-27 naming migration, which rewrote codeSyntax.WEB from the token path",
+    "for all 296 variables. Every CSS variable name is now claimed by exactly one",
+    "token. Add entries here only if a future export finds new ones."
+  ],
+
+  "codeSyntax": []
+}

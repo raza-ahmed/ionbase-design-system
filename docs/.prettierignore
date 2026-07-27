@@ -1,1 +1,5 @@
 dist/
+
+# Hand-authored spec document with embedded CSS/JS.
+# Prettier reflows it into an unreviewable diff; formatting is not the point here.
+variable-naming-spec.html
