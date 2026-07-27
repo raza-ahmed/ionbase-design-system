@@ -1,0 +1,109 @@
+/* Table Container for horizontal overflow */
+.ion-table-container {
+  width: 100%;
+  overflow-x: auto;
+  border: var(--border-width-thin) solid var(--table-border);
+  border-radius: var(--radius-8);
+}
+
+/* Table Base */
+.ion-table {
+  width: 100%;
+  border-collapse: collapse;
+  border-spacing: 0;
+  font-family: var(--font-family-sans);
+  font-size: var(--font-size-14);
+  line-height: var(--type-body-sm-line-height);
+  text-align: left;
+}
+
+/* Table Header Row */
+.ion-table__header {
+  background-color: var(--table-header-bg);
+  color: var(--table-header-fg);
+  font-weight: var(--font-weight-semibold);
+  border-bottom: var(--border-width-thin) solid var(--table-border);
+}
+
+/* Table Row base and states */
+.ion-table__row {
+  background-color: var(--table-row-bg);
+  border-bottom: var(--border-width-thin) solid var(--table-border);
+  transition: background-color 150ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Row Hover State */
+.ion-table__row:hover,
+.ion-table__row[data-hovered="true"] {
+  background-color: var(--table-row-bg-hover);
+}
+
+/* Row Selected State */
+.ion-table__row.is-selected,
+.ion-table__row[data-selected="true"] {
+  background-color: var(--table-row-bg-selected);
+}
+
+/* Row Selected Hover State */
+.ion-table__row.is-selected:hover,
+.ion-table__row[data-selected="true"]:hover,
+.ion-table__row[data-selected="true"][data-hovered="true"] {
+  background-color: var(--table-row-bg-hover-selected);
+}
+
+/* Striped Rows (via modifier on row or via table class) */
+.ion-table__row--striped,
+.ion-table--striped .ion-table__row:nth-child(even) {
+  background-color: var(--table-striped-row-bg);
+}
+
+/* Striped Row Hover / Selection Overrides */
+.ion-table__row--striped:hover,
+.ion-table--striped .ion-table__row:nth-child(even):hover,
+.ion-table__row--striped[data-hovered="true"],
+.ion-table--striped .ion-table__row:nth-child(even)[data-hovered="true"] {
+  background-color: var(--table-row-bg-hover);
+}
+
+.ion-table__row--striped.is-selected,
+.ion-table--striped .ion-table__row:nth-child(even).is-selected,
+.ion-table__row--striped[data-selected="true"],
+.ion-table--striped .ion-table__row:nth-child(even)[data-selected="true"] {
+  background-color: var(--table-row-bg-selected);
+}
+
+/* Cells Base (th, td) */
+.ion-table__header-cell,
+.ion-table__cell {
+  padding: var(--spacing-12) var(--spacing-16); /* Default / Medium density */
+  vertical-align: middle;
+}
+
+.ion-table__cell {
+  color: var(--table-cell-fg);
+}
+
+/* Alignment Modifiers */
+.ion-table__header-cell--align-right,
+.ion-table__cell--align-right {
+  text-align: right;
+}
+
+.ion-table__header-cell--align-center,
+.ion-table__cell--align-center {
+  text-align: center;
+}
+
+/* Density Modifiers */
+
+/* Compact Density */
+.ion-table--compact .ion-table__header-cell,
+.ion-table--compact .ion-table__cell {
+  padding: var(--spacing-8) var(--spacing-12);
+}
+
+/* Spacious Density */
+.ion-table--spacious .ion-table__header-cell,
+.ion-table--spacious .ion-table__cell {
+  padding: var(--spacing-16) var(--spacing-24);
+}

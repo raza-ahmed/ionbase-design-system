@@ -1,0 +1,175 @@
+/* Button base styles */
+.ion-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-family-sans);
+  font-weight: var(--font-weight-medium);
+  text-decoration: none;
+  cursor: pointer;
+  user-select: none;
+  border-style: solid;
+  border-width: var(--border-width-thin);
+  border-radius: var(--radius-6);
+  font-size: var(--font-size-14);
+  line-height: var(--type-body-sm-line-height);
+  padding: var(--spacing-8) var(--spacing-16);
+  gap: var(--spacing-8);
+  transition: 
+    background-color 150ms cubic-bezier(0.4, 0, 0.2, 1),
+    border-color 150ms cubic-bezier(0.4, 0, 0.2, 1),
+    box-shadow 150ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Sizing Modifiers */
+.ion-button--sm {
+  font-size: var(--font-size-12);
+  line-height: var(--type-caption-line-height);
+  padding: var(--spacing-6) var(--spacing-12);
+  border-radius: var(--radius-4);
+}
+
+.ion-button--lg {
+  font-size: var(--font-size-16);
+  line-height: var(--type-body-line-height);
+  padding: var(--spacing-12) var(--spacing-20);
+  border-radius: var(--radius-8);
+}
+
+/* Focus States (Double ring outline) */
+.ion-button:focus-visible,
+.ion-button[data-focused="true"] {
+  outline: none;
+  box-shadow: 
+    0 0 0 2px var(--button-offset-ring),
+    0 0 0 4px var(--button-ring);
+}
+
+/* Primary Brand Variant */
+.ion-button--primary-brand {
+  background-color: var(--button-primary-brand-bg);
+  color: var(--button-primary-brand-fg);
+  border-color: var(--button-primary-brand-border);
+}
+
+.ion-button--primary-brand:hover,
+.ion-button--primary-brand[data-hovered="true"] {
+  background-color: var(--button-primary-brand-bg-hover);
+}
+
+.ion-button--primary-brand:active,
+.ion-button--primary-brand[data-pressed="true"] {
+  background-color: var(--button-primary-brand-bg-pressed);
+}
+
+/* Primary Neutral Variant */
+.ion-button--primary-neutral {
+  background-color: var(--button-primary-neutral-bg);
+  color: var(--button-primary-neutral-fg);
+  border-color: var(--button-primary-neutral-border);
+}
+
+.ion-button--primary-neutral:hover,
+.ion-button--primary-neutral[data-hovered="true"] {
+  background-color: var(--button-primary-neutral-bg-hover);
+}
+
+.ion-button--primary-neutral:active,
+.ion-button--primary-neutral[data-pressed="true"] {
+  background-color: var(--button-primary-neutral-bg-pressed);
+}
+
+/* Secondary Variant */
+.ion-button--secondary {
+  background-color: var(--button-secondary-bg);
+  color: var(--button-secondary-fg);
+  border-color: var(--button-secondary-border);
+}
+
+.ion-button--secondary:hover,
+.ion-button--secondary[data-hovered="true"] {
+  background-color: var(--button-secondary-bg-hover);
+  border-color: var(--button-secondary-border-hover);
+}
+
+.ion-button--secondary:active,
+.ion-button--secondary[data-pressed="true"] {
+  background-color: var(--button-secondary-bg-pressed);
+}
+
+/* Tertiary Variant */
+.ion-button--tertiary {
+  background-color: transparent;
+  color: var(--button-tertiary-fg);
+  border-color: transparent;
+}
+
+.ion-button--tertiary:hover,
+.ion-button--tertiary[data-hovered="true"] {
+  background-color: var(--button-tertiary-bg-hover);
+}
+
+.ion-button--tertiary:active,
+.ion-button--tertiary[data-pressed="true"] {
+  background-color: var(--button-tertiary-bg-pressed);
+}
+
+/* Destructive Variant */
+.ion-button--destructive {
+  background-color: var(--button-destructive-bg);
+  color: var(--button-destructive-fg);
+  border-color: var(--button-destructive-border);
+}
+
+.ion-button--destructive:hover,
+.ion-button--destructive[data-hovered="true"] {
+  background-color: var(--button-destructive-bg-hover);
+}
+
+.ion-button--destructive:active,
+.ion-button--destructive[data-pressed="true"] {
+  background-color: var(--button-destructive-bg-pressed);
+}
+
+/* Disabled State */
+.ion-button:disabled,
+.ion-button[data-disabled="true"] {
+  background-color: var(--button-bg-disabled);
+  color: var(--button-fg-disabled);
+  border-color: var(--button-border-disabled);
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.ion-button--tertiary:disabled,
+.ion-button--tertiary[data-disabled="true"] {
+  background-color: transparent;
+  border-color: transparent;
+}
+
+/* Icon Containers & Alignment */
+.ion-button__icon-start,
+.ion-button__icon-end {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.ion-button__icon-start svg,
+.ion-button__icon-end svg {
+  width: var(--spacing-16);
+  height: var(--spacing-16);
+}
+
+.ion-button--sm .ion-button__icon-start svg,
+.ion-button--sm .ion-button__icon-end svg {
+  width: var(--spacing-12);
+  height: var(--spacing-12);
+}
+
+.ion-button--lg .ion-button__icon-start svg,
+.ion-button--lg .ion-button__icon-end svg {
+  width: var(--spacing-20);
+  height: var(--spacing-20);
+}

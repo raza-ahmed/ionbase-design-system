@@ -1,0 +1,68 @@
+/** @type {import('stylelint').Config} */
+export default {
+  extends: ['stylelint-config-standard'],
+  plugins: ['stylelint-declaration-strict-value'],
+  rules: {
+    // Prevent hex colors in styles
+    'color-no-hex': true,
+
+    // Allow BEM selectors (e.g. .ion-button--primary-brand, .ion-tabs__item)
+    'selector-class-pattern': null,
+    
+    // Prevent raw values for design-critical properties and force design token variables
+    'scale-unlimited/declaration-strict-value': [
+      [
+        'color',
+        'background-color',
+        'border-color',
+        'border-top-color',
+        'border-bottom-color',
+        'border-left-color',
+        'border-right-color',
+        'outline-color',
+        'font-size',
+        'font-family',
+        'font-weight',
+        'line-height',
+        'margin',
+        'margin-top',
+        'margin-bottom',
+        'margin-left',
+        'margin-right',
+        'padding',
+        'padding-top',
+        'padding-bottom',
+        'padding-left',
+        'padding-right',
+        'gap',
+        'border-radius',
+        'border-top-left-radius',
+        'border-top-right-radius',
+        'border-bottom-left-radius',
+        'border-bottom-right-radius',
+        'border-width',
+        'border-top-width',
+        'border-bottom-width',
+        'border-left-width',
+        'border-right-width',
+      ],
+      {
+        ignoreValues: [
+          'inherit',
+          'transparent',
+          'currentColor',
+          'currentcolor',
+          '0',
+          'none',
+          'auto',
+          'normal',
+          '100%',
+          'max-content',
+          'min-content',
+        ],
+        message: 'Raw CSS values are forbidden. Use design token variables defined in @ionbase/tokens (e.g., var(--bg-neutral-default)) instead.',
+      },
+    ],
+  },
+  ignoreFiles: ['**/dist/**', '**/node_modules/**'],
+};

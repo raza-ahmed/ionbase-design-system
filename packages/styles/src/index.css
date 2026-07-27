@@ -1,0 +1,16 @@
+@import url("@ionbase/tokens/css");
+@import url("./button.css");
+@import url("./tabs.css");
+@import url("./badge.css");
+@import url("./table.css");
+
+/* Global baseline resets using token variables only */
+body {
+  font-family: var(--font-family-sans);
+  font-size: var(--type-body);
+  line-height: var(--type-body-line-height);
+  background-color: var(--bg-neutral-default);
+  color: var(--fg-neutral-default);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}

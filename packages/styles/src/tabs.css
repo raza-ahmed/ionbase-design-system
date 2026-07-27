@@ -1,0 +1,125 @@
+/* Tabs Track Layouts */
+.ion-tabs__track {
+  display: flex;
+  align-items: center;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+/* Underline variant track */
+.ion-tabs__track--underline {
+  border-bottom: var(--border-width-thin) solid var(--tabs-underline-track-border);
+  gap: var(--spacing-24);
+}
+
+/* Pill variant track */
+.ion-tabs__track--pill {
+  background-color: var(--tabs-pill-track-bg);
+  padding: var(--spacing-4);
+  border-radius: var(--radius-8);
+  gap: var(--spacing-4);
+  display: inline-flex;
+}
+
+/* Tab Item Base styles */
+.ion-tabs__item {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-family-sans);
+  font-weight: var(--font-weight-medium);
+  font-size: var(--font-size-14);
+  text-decoration: none;
+  cursor: pointer;
+  user-select: none;
+  transition: 
+    color 150ms cubic-bezier(0.4, 0, 0.2, 1),
+    background-color 150ms cubic-bezier(0.4, 0, 0.2, 1),
+    border-color 150ms cubic-bezier(0.4, 0, 0.2, 1),
+    box-shadow 150ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Underline variant item */
+.ion-tabs__item--underline {
+  color: var(--tabs-underline-item-fg);
+  background-color: transparent;
+  border: none;
+  border-bottom: var(--border-width-thick) solid transparent;
+  padding: var(--spacing-12) var(--spacing-4);
+  /* stylelint-disable-next-line scale-unlimited/declaration-strict-value */
+  margin-bottom: -1px; /* Align border with track border */
+}
+
+.ion-tabs__item--underline:hover,
+.ion-tabs__item--underline[data-hovered="true"] {
+  color: var(--tabs-underline-item-fg-hover);
+}
+
+.ion-tabs__item--underline.is-selected,
+.ion-tabs__item--underline[data-selected="true"] {
+  color: var(--tabs-underline-item-fg-selected);
+  border-bottom-color: var(--tabs-underline-item-border-selected);
+}
+
+.ion-tabs__item--underline:focus-visible,
+.ion-tabs__item--underline[data-focused="true"] {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--border-brand-default-focus);
+  border-radius: var(--radius-4);
+}
+
+/* Pill variant item */
+.ion-tabs__item--pill {
+  color: var(--tabs-pill-item-fg);
+  background-color: transparent;
+  border: none;
+  padding: var(--spacing-8) var(--spacing-16);
+  border-radius: var(--radius-6);
+}
+
+.ion-tabs__item--pill:hover,
+.ion-tabs__item--pill[data-hovered="true"] {
+  color: var(--tabs-pill-item-fg-hover);
+  background-color: var(--tabs-pill-item-bg-hover);
+}
+
+.ion-tabs__item--pill.is-selected,
+.ion-tabs__item--pill[data-selected="true"] {
+  color: var(--tabs-pill-item-fg-selected);
+  background-color: var(--tabs-pill-item-bg-selected);
+}
+
+/* Pill variant item: hovered while selected */
+.ion-tabs__item--pill.is-selected:hover,
+.ion-tabs__item--pill[data-selected="true"]:hover,
+.ion-tabs__item--pill[data-selected="true"][data-hovered="true"] {
+  background-color: var(--tabs-pill-item-bg-hover-selected);
+}
+
+.ion-tabs__item--pill:focus-visible,
+.ion-tabs__item--pill[data-focused="true"] {
+  outline: none;
+  box-shadow: 
+    0 0 0 2px var(--button-offset-ring),
+    0 0 0 4px var(--button-ring);
+}
+
+/* Disabled state for all tab items */
+.ion-tabs__item:disabled,
+.ion-tabs__item[data-disabled="true"] {
+  color: var(--fg-neutral-disabled);
+  cursor: not-allowed;
+  pointer-events: none;
+  box-shadow: none;
+}
+
+.ion-tabs__item--underline:disabled,
+.ion-tabs__item--underline[data-disabled="true"] {
+  border-bottom-color: transparent;
+}
+
+.ion-tabs__item--pill:disabled,
+.ion-tabs__item--pill[data-disabled="true"] {
+  background-color: transparent;
+}

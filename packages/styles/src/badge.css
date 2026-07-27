@@ -1,0 +1,63 @@
+/* Badge Base Styles */
+.ion-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-family-sans);
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--font-size-12);
+  line-height: var(--type-caption-line-height);
+  padding: var(--spacing-2) var(--spacing-8);
+  border-radius: var(--radius-full);
+  border-width: var(--border-width-thin);
+  border-style: solid;
+  user-select: none;
+  gap: var(--spacing-4);
+  white-space: nowrap;
+}
+
+/* Badge dot element */
+.ion-badge__dot {
+  width: var(--spacing-6);
+  height: var(--spacing-6);
+  border-radius: var(--radius-full);
+  background-color: currentcolor;
+  flex-shrink: 0;
+}
+
+/* Intent Modifiers */
+.ion-badge--neutral {
+  background-color: var(--badge-neutral-bg);
+  color: var(--badge-neutral-fg);
+  border-color: var(--badge-neutral-border);
+}
+
+.ion-badge--brand {
+  background-color: var(--badge-brand-bg);
+  color: var(--badge-brand-fg);
+  border-color: var(--badge-brand-border);
+}
+
+.ion-badge--success {
+  background-color: var(--badge-success-bg);
+  color: var(--badge-success-fg);
+  border-color: var(--badge-success-border);
+}
+
+.ion-badge--warning {
+  background-color: var(--badge-warning-bg);
+  color: var(--badge-warning-fg);
+  border-color: var(--badge-warning-border);
+}
+
+.ion-badge--danger {
+  background-color: var(--badge-danger-bg);
+  color: var(--badge-danger-fg);
+  border-color: var(--badge-danger-border);
+}
+
+.ion-badge--info {
+  background-color: var(--badge-info-bg);
+  color: var(--badge-info-fg);
+  border-color: var(--badge-info-border);
+}
