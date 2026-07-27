@@ -27,6 +27,9 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>((props, forward
     ...restProps
   } = props;
 
+  // Prevent spreading custom react-aria prop to native DOM button element
+  delete (restProps as Record<string, unknown>).isDisabled;
+
   const domRef = useRef<HTMLButtonElement>(null);
   // Safely forward the DOM node to consumers
   useImperativeHandle(forwardedRef, () => domRef.current!);
