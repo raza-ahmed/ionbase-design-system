@@ -18,7 +18,9 @@
     "@ionbase/react": "workspace:*",
     "@ionbase/styles": "workspace:*",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "@ionbase/icons": "workspace:*",
+    "lucide-react": "^1.27.0"
   },
   "devDependencies": {
     "@chromatic-com/storybook": "^5.2.1",

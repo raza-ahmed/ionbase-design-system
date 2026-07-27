@@ -22,9 +22,9 @@ export default tseslint.config(eslint.configs.recommended, ...tseslint.configs.r
     globals: { console: 'readonly', process: 'readonly' },
   },
 }, {
-  // packages/tokens/figma/* never runs here — it is pasted into the Figma
+  // Any packages/*/figma/* file never runs here — it is pasted into the Figma
   // Plugin API, where `figma` is a global and top-level await is allowed.
-  files: ['packages/tokens/figma/**/*.js'],
+  files: ['packages/*/figma/**/*.js'],
   languageOptions: {
     sourceType: 'module',
     globals: { figma: 'readonly' },
