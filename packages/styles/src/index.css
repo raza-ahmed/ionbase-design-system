@@ -5,6 +5,21 @@
 @import url('./badge.css');
 @import url('./table.css');
 
+/*
+ * Every IonBase element is border-box.
+ *
+ * Not cosmetic: `<button>` inherits border-box from the UA stylesheet but
+ * `<div>` does not, so a component built on a div sized its min-height against
+ * the CONTENT box and came out 16px taller than the design. Button looked
+ * correct only by accident of its tag name.
+ *
+ * Scoped to `ion-` classes so the design system never restyles a host app.
+ */
+[class^='ion-'],
+[class*=' ion-'] {
+  box-sizing: border-box;
+}
+
 /* Global baseline resets using token variables only */
 body {
   font-family: var(--font-family-sans);

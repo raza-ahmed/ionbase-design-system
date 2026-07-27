@@ -24,6 +24,7 @@
 }
 
 .ion-tabs__track--underline.ion-tabs__track--horizontal {
+  display: inline-flex;
   gap: var(--tabs-underline-track-gap);
   border-bottom: var(--tabs-underline-track-border-width) solid
     var(--tabs-underline-track-border);
@@ -101,6 +102,16 @@
   color: var(--tabs-underline-item-fg);
   border-bottom: var(--tabs-underline-item-border-width-selected) solid
     transparent;
+
+  /*
+   * Figma draws the indicator as an INSIDE stroke, so it does not add height.
+   * Absorbing it into the bottom padding keeps the item at exactly its token
+   * height instead of 2px taller than every other variant.
+   */
+  padding-bottom: calc(
+    var(--ion-tabs-item-padding-y) -
+      var(--tabs-underline-item-border-width-selected)
+  );
 
   /* Overlap the track's own border so the indicator replaces it rather than
      stacking below it. */

@@ -165,3 +165,31 @@ export const StateAttributes: Story = {
     await expect(tabs[1]).not.toHaveAttribute('data-hovered');
   },
 };
+
+/*
+ * Rendered geometry, not token values.
+ *
+ * The tokens were correct and every value assert-checked, yet items shipped
+ * 16px too tall: `<button>` inherits border-box from the UA stylesheet but
+ * `<div>` does not, so `min-height` sized against the content box. Asserting
+ * the measured box is the only check that catches that class of bug.
+ */
+export const RenderedHeightMatchesTokens: Story = {
+  render: (args) => (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+      {(['sm', 'md', 'lg'] as const).map((size) => (
+        <Tabs {...args} key={size} size={size} aria-label={size}>
+          {items}
+        </Tabs>
+      ))}
+    </div>
+  ),
+  play: async ({ canvas }) => {
+    const expected: Record<string, number> = { sm: 32, md: 40, lg: 48 };
+    for (const [size, height] of Object.entries(expected)) {
+      const list = canvas.getByRole('tablist', { name: size });
+      const tab = list.querySelector('.ion-tabs__item') as HTMLElement;
+      await expect(Math.round(tab.getBoundingClientRect().height)).toBe(height);
+    }
+  },
+};
