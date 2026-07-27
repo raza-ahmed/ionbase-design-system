@@ -18,7 +18,7 @@
   ],
   "scripts": {
     "dev": "node scripts/figma-to-dtcg.mjs && node scripts/build-css.mjs && node scripts/build-ts.mjs && tsc --watch",
-    "build": "pnpm run tokens:dtcg && pnpm run tokens:audit && pnpm run tokens:verify && pnpm run tokens:css && pnpm run tokens:typography && pnpm run tokens:elevation && pnpm run tokens:ts && tsc",
+    "build": "pnpm run tokens:dtcg && pnpm run tokens:audit && pnpm run tokens:shared && pnpm run tokens:verify && pnpm run tokens:css && pnpm run tokens:typography && pnpm run tokens:elevation && pnpm run tokens:ts && tsc",
     "tokens:dtcg": "node scripts/figma-to-dtcg.mjs",
     "tokens:verify": "node scripts/verify-code-syntax.mjs",
     "tokens:css": "node scripts/build-css.mjs",
@@ -31,7 +31,8 @@
     "tokens:renames": "node scripts/verify-renames.mjs",
     "tokens:sync": "node scripts/verify-export.mjs",
     "tokens:typography": "node scripts/build-typography.mjs",
-    "tokens:elevation": "node scripts/build-elevation.mjs"
+    "tokens:elevation": "node scripts/build-elevation.mjs",
+    "tokens:shared": "node scripts/verify-shared-values.mjs"
   },
   "devDependencies": {
     "style-dictionary": "^4"

@@ -330,7 +330,7 @@
         "Light": "{color.gray.900}",
         "Dark": "{color.gray.50}"
       },
-      "description": "The strong default foreground — headings and primary text."
+      "description": "The strong default foreground \u2014 headings and primary text."
     },
     "fg/neutral/body": {
       "type": "COLOR",
@@ -503,7 +503,7 @@
         "Light": "{color.red.600}",
         "Dark": "{color.red.400}"
       },
-      "description": "Error and destructive text/icons — form error messages, invalid field hints."
+      "description": "Error and destructive text/icons \u2014 form error messages, invalid field hints."
     },
     "fg/info/default": {
       "type": "COLOR",
@@ -707,6 +707,162 @@
       "values": {
         "Light": "{color.purple.200}",
         "Dark": "{color.purple.800}"
+      }
+    },
+    "control/sm/size": {
+      "type": "FLOAT",
+      "scopes": [
+        "WIDTH_HEIGHT",
+        "GAP"
+      ],
+      "codeSyntax": "var(--control-sm-size)",
+      "values": {
+        "Light": "{spacing.32}",
+        "Dark": "{spacing.32}"
+      }
+    },
+    "control/md/size": {
+      "type": "FLOAT",
+      "scopes": [
+        "WIDTH_HEIGHT",
+        "GAP"
+      ],
+      "codeSyntax": "var(--control-md-size)",
+      "values": {
+        "Light": "{spacing.40}",
+        "Dark": "{spacing.40}"
+      }
+    },
+    "control/lg/size": {
+      "type": "FLOAT",
+      "scopes": [
+        "WIDTH_HEIGHT",
+        "GAP"
+      ],
+      "codeSyntax": "var(--control-lg-size)",
+      "values": {
+        "Light": "{spacing.48}",
+        "Dark": "{spacing.48}"
+      }
+    },
+    "control/sm/padding-x": {
+      "type": "FLOAT",
+      "scopes": [
+        "WIDTH_HEIGHT",
+        "GAP"
+      ],
+      "codeSyntax": "var(--control-sm-padding-x)",
+      "values": {
+        "Light": "{spacing.12}",
+        "Dark": "{spacing.12}"
+      }
+    },
+    "control/md/padding-x": {
+      "type": "FLOAT",
+      "scopes": [
+        "WIDTH_HEIGHT",
+        "GAP"
+      ],
+      "codeSyntax": "var(--control-md-padding-x)",
+      "values": {
+        "Light": "{spacing.16}",
+        "Dark": "{spacing.16}"
+      }
+    },
+    "control/lg/padding-x": {
+      "type": "FLOAT",
+      "scopes": [
+        "WIDTH_HEIGHT",
+        "GAP"
+      ],
+      "codeSyntax": "var(--control-lg-padding-x)",
+      "values": {
+        "Light": "{spacing.20}",
+        "Dark": "{spacing.20}"
+      }
+    },
+    "control/sm/gap": {
+      "type": "FLOAT",
+      "scopes": [
+        "WIDTH_HEIGHT",
+        "GAP"
+      ],
+      "codeSyntax": "var(--control-sm-gap)",
+      "values": {
+        "Light": "{spacing.6}",
+        "Dark": "{spacing.6}"
+      }
+    },
+    "control/md/gap": {
+      "type": "FLOAT",
+      "scopes": [
+        "WIDTH_HEIGHT",
+        "GAP"
+      ],
+      "codeSyntax": "var(--control-md-gap)",
+      "values": {
+        "Light": "{spacing.8}",
+        "Dark": "{spacing.8}"
+      }
+    },
+    "control/lg/gap": {
+      "type": "FLOAT",
+      "scopes": [
+        "WIDTH_HEIGHT",
+        "GAP"
+      ],
+      "codeSyntax": "var(--control-lg-gap)",
+      "values": {
+        "Light": "{spacing.8}",
+        "Dark": "{spacing.8}"
+      }
+    },
+    "control/sm/icon/size": {
+      "type": "FLOAT",
+      "scopes": [
+        "WIDTH_HEIGHT",
+        "GAP"
+      ],
+      "codeSyntax": "var(--control-sm-icon-size)",
+      "values": {
+        "Light": "{spacing.16}",
+        "Dark": "{spacing.16}"
+      }
+    },
+    "control/md/icon/size": {
+      "type": "FLOAT",
+      "scopes": [
+        "WIDTH_HEIGHT",
+        "GAP"
+      ],
+      "codeSyntax": "var(--control-md-icon-size)",
+      "values": {
+        "Light": "{spacing.24}",
+        "Dark": "{spacing.24}"
+      }
+    },
+    "control/lg/icon/size": {
+      "type": "FLOAT",
+      "scopes": [
+        "WIDTH_HEIGHT",
+        "GAP"
+      ],
+      "codeSyntax": "var(--control-lg-icon-size)",
+      "values": {
+        "Light": "{spacing.24}",
+        "Dark": "{spacing.24}"
+      }
+    },
+    "control/border-width": {
+      "type": "FLOAT",
+      "scopes": [
+        "WIDTH_HEIGHT",
+        "GAP"
+      ],
+      "codeSyntax": "var(--control-border-width)",
+      "values": {
+        "Light": "{border-width.thin}",
+        "Dark": "{border-width.thin}"
       }
     }
   }

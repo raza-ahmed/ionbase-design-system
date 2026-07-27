@@ -75,8 +75,13 @@ const INTENT = new Set([
   'info',
 ]);
 
-/** Roots that are Primitive or Breakpoint scales rather than component names. */
+/**
+ * Roots that name a *scale* rather than a component or a property.
+ * `control` is the shared size ramp every control reads from — see the spec's
+ * Q3: a value more than one component uses lives here, not in the component tier.
+ */
 const SCALE_ROOTS = new Set([
+  'control',
   'color',
   'spacing',
   'radius',

@@ -26,7 +26,7 @@
 .ion-tabs__track--underline.ion-tabs__track--horizontal {
   display: inline-flex;
   gap: var(--tabs-underline-track-gap);
-  border-bottom: var(--tabs-underline-track-border-width) solid
+  border-bottom: var(--control-border-width) solid
     var(--tabs-underline-track-border);
 }
 
@@ -42,10 +42,10 @@
 
 /* Item */
 .ion-tabs__item {
-  --ion-tabs-item-size: var(--tabs-medium-item-size);
-  --ion-tabs-item-padding-x: var(--tabs-medium-item-padding-x);
+  --ion-tabs-item-size: var(--control-md-size);
+  --ion-tabs-item-padding-x: var(--control-md-padding-x);
   --ion-tabs-item-padding-y: var(--tabs-medium-item-padding-y);
-  --ion-tabs-item-gap: var(--tabs-medium-item-gap);
+  --ion-tabs-item-gap: var(--control-md-gap);
   --ion-tabs-icon-size: var(--tabs-medium-icon-size);
 
   /*
@@ -78,20 +78,20 @@
 }
 
 .ion-tabs__item--sm {
-  --ion-tabs-item-size: var(--tabs-small-item-size);
-  --ion-tabs-item-padding-x: var(--tabs-small-item-padding-x);
+  --ion-tabs-item-size: var(--control-sm-size);
+  --ion-tabs-item-padding-x: var(--control-sm-padding-x);
   --ion-tabs-item-padding-y: var(--tabs-small-item-padding-y);
-  --ion-tabs-item-gap: var(--tabs-small-item-gap);
-  --ion-tabs-icon-size: var(--tabs-small-icon-size);
+  --ion-tabs-item-gap: var(--control-sm-gap);
+  --ion-tabs-icon-size: var(--control-sm-icon-size);
   --ion-tabs-item-font-size: var(--type-body-sm);
   --ion-tabs-item-line-height: var(--type-body-sm-line-height);
 }
 
 .ion-tabs__item--lg {
-  --ion-tabs-item-size: var(--tabs-large-item-size);
-  --ion-tabs-item-padding-x: var(--tabs-large-item-padding-x);
+  --ion-tabs-item-size: var(--control-lg-size);
+  --ion-tabs-item-padding-x: var(--control-lg-padding-x);
   --ion-tabs-item-padding-y: var(--tabs-large-item-padding-y);
-  --ion-tabs-item-gap: var(--tabs-large-item-gap);
+  --ion-tabs-item-gap: var(--control-lg-gap);
   --ion-tabs-icon-size: var(--tabs-large-icon-size);
   --ion-tabs-item-font-size: var(--type-body-lg);
   --ion-tabs-item-line-height: var(--type-body-lg-line-height);
@@ -115,7 +115,7 @@
 
   /* Overlap the track's own border so the indicator replaces it rather than
      stacking below it. */
-  margin-bottom: calc(-1 * var(--tabs-underline-track-border-width));
+  margin-bottom: calc(-1 * var(--control-border-width));
 }
 
 /*

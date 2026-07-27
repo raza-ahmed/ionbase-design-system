@@ -762,6 +762,34 @@ footer{border-top:1px solid var(--g200);padding-top:22px;margin-top:64px;font-si
   <h2>Where does my token go?</h2>
   <p class="h2sub">Work down. The first “yes” is your answer.</p>
 
+  <div class="note n-warn">
+    <span class="note-t">The one rule that keeps this system small</span>
+    <p><strong>A component token exists only when that component needs to <em>differ</em>.</strong> If the value is the same one another component uses, it is not a Button value or a Tabs value — it is a system value, and it belongs in the <strong>control scale</strong>. Bind the shared token and create nothing.</p>
+    <p>This is not a style preference, it is the difference between a design system and a spreadsheet. A fully tokenised component runs to roughly 40 tokens. At that rate 100 components is <strong>4,000 variables</strong> — unmanageable to reason about and slow enough to make Figma's variables UI painful. Reading from the control scale takes the same 100 components to a few hundred.</p>
+    <p>It also prevents silent divergence. When Button and Tabs each owned their own <code>padding-x</code>, nothing forced them to agree — and they quietly stopped agreeing on icon size. One scale means <code>md</code> means one thing everywhere.</p>
+  </div>
+
+  <h3>The control scale</h3>
+  <p>The shared size ramp every control reads from. Defined once, in Semantic:</p>
+  <div class="tbl-wrap">
+  <table>
+    <thead><tr><th>Token</th><th>sm</th><th>md</th><th>lg</th></tr></thead>
+    <tbody>
+      <tr><td><code>control/&lt;step&gt;/size</code></td><td>32</td><td>40</td><td>48</td></tr>
+      <tr><td><code>control/&lt;step&gt;/padding-x</code></td><td>12</td><td>16</td><td>20</td></tr>
+      <tr><td><code>control/&lt;step&gt;/gap</code></td><td>6</td><td>8</td><td>8</td></tr>
+      <tr><td><code>control/&lt;step&gt;/icon/size</code></td><td>16</td><td>24</td><td>24</td></tr>
+      <tr><td><code>control/border-width</code></td><td colspan="3">1 — size-invariant, so no step slot</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p>A component that genuinely diverges keeps its own token <em>and</em> an entry in <code>packages/tokens/shared-value-exceptions.json</code> giving the reason. <code>tabs/medium/icon/size</code> is the current example: Tabs uses a 20px icon where the scale says 24, because its horizontal rhythm is denser. An exception you cannot write a reason for is not an exception.</p>
+
+  <div class="note">
+    <span class="note-t">Enforced, not trusted</span>
+    <p>The flowchart below is correct but depends on judgement at the moment of writing, and judgement failed — Button and Tabs were each given a <code>padding-x</code> token for the identical <code>spacing/16</code>. <code>scripts/verify-shared-values.mjs</code> now fails the build when two components alias the same primitive for the same property, and flags exceptions that no longer diverge. Rules that are only written get broken; this one is checked.</p>
+  </div>
+
   <div class="flow">
     <div class="fstep">
       <span class="fq">Q1</span>

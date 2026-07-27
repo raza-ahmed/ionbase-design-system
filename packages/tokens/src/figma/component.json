@@ -566,126 +566,6 @@
         "Value": "{radius.8}"
       }
     },
-    "button/border-width": {
-      "type": "FLOAT",
-      "scopes": [],
-      "codeSyntax": "var(--button-border-width)",
-      "values": {
-        "Value": "{border-width.thin}"
-      }
-    },
-    "button/small/size": {
-      "type": "FLOAT",
-      "scopes": [],
-      "codeSyntax": "var(--button-small-size)",
-      "values": {
-        "Value": "{spacing.32}"
-      }
-    },
-    "button/small/padding-x": {
-      "type": "FLOAT",
-      "scopes": [],
-      "codeSyntax": "var(--button-small-padding-x)",
-      "values": {
-        "Value": "{spacing.12}"
-      }
-    },
-    "button/small/gap": {
-      "type": "FLOAT",
-      "scopes": [],
-      "codeSyntax": "var(--button-small-gap)",
-      "values": {
-        "Value": "{spacing.6}"
-      }
-    },
-    "button/small/icon/size": {
-      "type": "FLOAT",
-      "scopes": [],
-      "codeSyntax": "var(--button-small-icon-size)",
-      "values": {
-        "Value": "{spacing.16}"
-      }
-    },
-    "button/medium/size": {
-      "type": "FLOAT",
-      "scopes": [],
-      "codeSyntax": "var(--button-medium-size)",
-      "values": {
-        "Value": "{spacing.40}"
-      }
-    },
-    "button/medium/padding-x": {
-      "type": "FLOAT",
-      "scopes": [],
-      "codeSyntax": "var(--button-medium-padding-x)",
-      "values": {
-        "Value": "{spacing.16}"
-      }
-    },
-    "button/medium/gap": {
-      "type": "FLOAT",
-      "scopes": [],
-      "codeSyntax": "var(--button-medium-gap)",
-      "values": {
-        "Value": "{spacing.8}"
-      }
-    },
-    "button/medium/icon/size": {
-      "type": "FLOAT",
-      "scopes": [],
-      "codeSyntax": "var(--button-medium-icon-size)",
-      "values": {
-        "Value": "{spacing.24}"
-      }
-    },
-    "button/large/size": {
-      "type": "FLOAT",
-      "scopes": [],
-      "codeSyntax": "var(--button-large-size)",
-      "values": {
-        "Value": "{spacing.48}"
-      }
-    },
-    "button/large/padding-x": {
-      "type": "FLOAT",
-      "scopes": [],
-      "codeSyntax": "var(--button-large-padding-x)",
-      "values": {
-        "Value": "{spacing.20}"
-      }
-    },
-    "button/large/gap": {
-      "type": "FLOAT",
-      "scopes": [],
-      "codeSyntax": "var(--button-large-gap)",
-      "values": {
-        "Value": "{spacing.8}"
-      }
-    },
-    "button/large/icon/size": {
-      "type": "FLOAT",
-      "scopes": [],
-      "codeSyntax": "var(--button-large-icon-size)",
-      "values": {
-        "Value": "{spacing.24}"
-      }
-    },
-    "tabs/small/item/size": {
-      "type": "FLOAT",
-      "scopes": [],
-      "codeSyntax": "var(--tabs-small-item-size)",
-      "values": {
-        "Value": "{spacing.32}"
-      }
-    },
-    "tabs/small/item/padding-x": {
-      "type": "FLOAT",
-      "scopes": [],
-      "codeSyntax": "var(--tabs-small-item-padding-x)",
-      "values": {
-        "Value": "{spacing.12}"
-      }
-    },
     "tabs/small/item/padding-y": {
       "type": "FLOAT",
       "scopes": [],
@@ -694,50 +574,10 @@
         "Value": "{spacing.6}"
       }
     },
-    "tabs/small/item/gap": {
-      "type": "FLOAT",
-      "scopes": [],
-      "codeSyntax": "var(--tabs-small-item-gap)",
-      "values": {
-        "Value": "{spacing.6}"
-      }
-    },
-    "tabs/small/icon/size": {
-      "type": "FLOAT",
-      "scopes": [],
-      "codeSyntax": "var(--tabs-small-icon-size)",
-      "values": {
-        "Value": "{spacing.16}"
-      }
-    },
-    "tabs/medium/item/size": {
-      "type": "FLOAT",
-      "scopes": [],
-      "codeSyntax": "var(--tabs-medium-item-size)",
-      "values": {
-        "Value": "{spacing.40}"
-      }
-    },
-    "tabs/medium/item/padding-x": {
-      "type": "FLOAT",
-      "scopes": [],
-      "codeSyntax": "var(--tabs-medium-item-padding-x)",
-      "values": {
-        "Value": "{spacing.16}"
-      }
-    },
     "tabs/medium/item/padding-y": {
       "type": "FLOAT",
       "scopes": [],
       "codeSyntax": "var(--tabs-medium-item-padding-y)",
-      "values": {
-        "Value": "{spacing.8}"
-      }
-    },
-    "tabs/medium/item/gap": {
-      "type": "FLOAT",
-      "scopes": [],
-      "codeSyntax": "var(--tabs-medium-item-gap)",
       "values": {
         "Value": "{spacing.8}"
       }
@@ -750,34 +590,10 @@
         "Value": "{spacing.20}"
       }
     },
-    "tabs/large/item/size": {
-      "type": "FLOAT",
-      "scopes": [],
-      "codeSyntax": "var(--tabs-large-item-size)",
-      "values": {
-        "Value": "{spacing.48}"
-      }
-    },
-    "tabs/large/item/padding-x": {
-      "type": "FLOAT",
-      "scopes": [],
-      "codeSyntax": "var(--tabs-large-item-padding-x)",
-      "values": {
-        "Value": "{spacing.20}"
-      }
-    },
     "tabs/large/item/padding-y": {
       "type": "FLOAT",
       "scopes": [],
       "codeSyntax": "var(--tabs-large-item-padding-y)",
-      "values": {
-        "Value": "{spacing.8}"
-      }
-    },
-    "tabs/large/item/gap": {
-      "type": "FLOAT",
-      "scopes": [],
-      "codeSyntax": "var(--tabs-large-item-gap)",
       "values": {
         "Value": "{spacing.8}"
       }
@@ -852,14 +668,6 @@
       "codeSyntax": "var(--tabs-underline-track-gap)",
       "values": {
         "Value": "{spacing.4}"
-      }
-    },
-    "tabs/underline/track/border-width": {
-      "type": "FLOAT",
-      "scopes": [],
-      "codeSyntax": "var(--tabs-underline-track-border-width)",
-      "values": {
-        "Value": "{border-width.thin}"
       }
     },
     "tabs/item/ring": {

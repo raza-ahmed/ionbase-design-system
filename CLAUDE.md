@@ -75,11 +75,28 @@ their own export, and they behave differently:
 `loadCollections()` filters on shape, because `src/figma/` now holds both
 variable collections and the text-style export.
 
+### Component tokens are the exception, not the default
+
+**A component token exists only when that component needs to DIFFER.** If the
+value is one another component also uses, it belongs in the shared control
+scale (`control/<step>/<property>`, Semantic tier) — bind that and create
+nothing. This is spec Q3/Q4 and Rule 07.
+
+Ignoring it does not just add clutter: a fully tokenised component runs to ~40
+tokens, which is ~4,000 at 100 components, and it lets components silently
+diverge (Button and Tabs each owned `padding-x` and quietly stopped agreeing on
+icon size).
+
+`scripts/verify-shared-values.mjs` fails the build when two components alias
+the same primitive for the same property. Genuine divergences go in
+`shared-value-exceptions.json` with a written reason.
+
 ### Three layers, and `--ion-*` is not one of them
 
-    primitive        spacing/16                  raw value
-    component token  tabs/medium/item/padding-x  aliases the primitive
-    CSS slot         --ion-tabs-item-padding-x   holds the token, never a value
+    primitive        spacing/16                 raw value
+    control scale    control/md/padding-x       shared meaning — most things stop here
+    component token  tabs/medium/icon/size      ONLY when the component diverges
+    CSS slot         --ion-tabs-item-padding-x  holds a token, never a value
 
 The `--ion-*` slots are a CSS implementation device: a size modifier reassigns
 one variable instead of restating five declarations. They are not tokens and

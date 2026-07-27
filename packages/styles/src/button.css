@@ -20,10 +20,10 @@
    * four variables instead of restating four declarations. It also means the
    * icon rule below needs no per-size overrides at all.
    */
-  --ion-button-size: var(--button-medium-size);
-  --ion-button-padding-x: var(--button-medium-padding-x);
-  --ion-button-gap: var(--button-medium-gap);
-  --ion-button-icon-size: var(--button-medium-icon-size);
+  --ion-button-size: var(--control-md-size);
+  --ion-button-padding-x: var(--control-md-padding-x);
+  --ion-button-gap: var(--control-md-gap);
+  --ion-button-icon-size: var(--control-md-icon-size);
 
   /*
    * Typography comes from the type ramp, not from button tokens. In Figma the
@@ -57,7 +57,7 @@
   cursor: pointer;
   user-select: none;
   border-style: solid;
-  border-width: var(--button-border-width);
+  border-width: var(--control-border-width);
   border-radius: var(--button-radius);
   transition:
     background-color 150ms cubic-bezier(0.4, 0, 0.2, 1),
@@ -67,19 +67,19 @@
 
 /* Size modifiers — radius, border-width and font-weight are size-invariant. */
 .ion-button--sm {
-  --ion-button-size: var(--button-small-size);
-  --ion-button-padding-x: var(--button-small-padding-x);
-  --ion-button-gap: var(--button-small-gap);
-  --ion-button-icon-size: var(--button-small-icon-size);
+  --ion-button-size: var(--control-sm-size);
+  --ion-button-padding-x: var(--control-sm-padding-x);
+  --ion-button-gap: var(--control-sm-gap);
+  --ion-button-icon-size: var(--control-sm-icon-size);
   --ion-button-font-size: var(--type-body-sm);
   --ion-button-line-height: var(--type-body-sm-line-height);
 }
 
 .ion-button--lg {
-  --ion-button-size: var(--button-large-size);
-  --ion-button-padding-x: var(--button-large-padding-x);
-  --ion-button-gap: var(--button-large-gap);
-  --ion-button-icon-size: var(--button-large-icon-size);
+  --ion-button-size: var(--control-lg-size);
+  --ion-button-padding-x: var(--control-lg-padding-x);
+  --ion-button-gap: var(--control-lg-gap);
+  --ion-button-icon-size: var(--control-lg-icon-size);
 }
 
 /*

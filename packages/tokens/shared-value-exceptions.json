@@ -1,0 +1,25 @@
+{
+  "$comment": [
+    "Component-tier geometry tokens that deliberately diverge from the control",
+    "scale. Checked by scripts/verify-shared-values.mjs.",
+    "",
+    "The default answer is NO exception: a value more than one component uses",
+    "belongs in control/<step>/<property>. An entry here is a design decision on",
+    "the record, not a shortcut — if you cannot write the reason, it is not one."
+  ],
+
+  "exceptions": [
+    {
+      "token": "tabs/medium/icon/size",
+      "diverges": "control/md/icon/size (24)",
+      "value": "20",
+      "reason": "Tabs sit in a denser horizontal rhythm than buttons; Figma Tabs Item 156:259 uses 20px at Medium and Large where Button uses 24px. Confirmed against the design file, not inferred."
+    },
+    {
+      "token": "tabs/large/icon/size",
+      "diverges": "control/lg/icon/size (24)",
+      "value": "20",
+      "reason": "Same as tabs/medium/icon/size — Tabs' icon does not grow past 20px."
+    }
+  ]
+}
