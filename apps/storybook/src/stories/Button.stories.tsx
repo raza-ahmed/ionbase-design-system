@@ -9,7 +9,13 @@ const meta: Meta<typeof Button> = {
   argTypes: {
     variant: {
       control: 'select',
-      options: ['primary-brand', 'primary-neutral', 'secondary', 'tertiary', 'destructive'],
+      options: [
+        'primary-brand',
+        'primary-neutral',
+        'secondary',
+        'tertiary',
+        'destructive',
+      ],
     },
     size: {
       control: 'select',
@@ -69,12 +75,29 @@ const ArrowRightIcon = () => (
 // Template for rendering side-by-side components
 export const AllVariants: Story = {
   render: (args) => (
-    <div style={{ display: 'flex', gap: '16px', alignItems: 'center', flexWrap: 'wrap' }}>
-      <Button {...args} variant="primary-brand">Primary Brand</Button>
-      <Button {...args} variant="primary-neutral">Primary Neutral</Button>
-      <Button {...args} variant="secondary">Secondary</Button>
-      <Button {...args} variant="tertiary">Tertiary</Button>
-      <Button {...args} variant="destructive">Destructive</Button>
+    <div
+      style={{
+        display: 'flex',
+        gap: '16px',
+        alignItems: 'center',
+        flexWrap: 'wrap',
+      }}
+    >
+      <Button {...args} variant="primary-brand">
+        Primary Brand
+      </Button>
+      <Button {...args} variant="primary-neutral">
+        Primary Neutral
+      </Button>
+      <Button {...args} variant="secondary">
+        Secondary
+      </Button>
+      <Button {...args} variant="tertiary">
+        Tertiary
+      </Button>
+      <Button {...args} variant="destructive">
+        Destructive
+      </Button>
     </div>
   ),
 };
@@ -82,16 +105,29 @@ export const AllVariants: Story = {
 export const AllSizes: Story = {
   render: (args) => (
     <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
-      <Button {...args} size="sm">Small</Button>
-      <Button {...args} size="md">Medium</Button>
-      <Button {...args} size="lg">Large</Button>
+      <Button {...args} size="sm">
+        Small
+      </Button>
+      <Button {...args} size="md">
+        Medium
+      </Button>
+      <Button {...args} size="lg">
+        Large
+      </Button>
     </div>
   ),
 };
 
 export const WithIcons: Story = {
   render: (args) => (
-    <div style={{ display: 'flex', gap: '16px', alignItems: 'center', flexWrap: 'wrap' }}>
+    <div
+      style={{
+        display: 'flex',
+        gap: '16px',
+        alignItems: 'center',
+        flexWrap: 'wrap',
+      }}
+    >
       <Button {...args} startIcon={<PlusIcon />}>
         Start Icon
       </Button>
@@ -113,12 +149,29 @@ export const WithIcons: Story = {
 
 export const Disabled: Story = {
   render: (args) => (
-    <div style={{ display: 'flex', gap: '16px', alignItems: 'center', flexWrap: 'wrap' }}>
-      <Button {...args} isDisabled variant="primary-brand">Primary Brand</Button>
-      <Button {...args} isDisabled variant="primary-neutral">Primary Neutral</Button>
-      <Button {...args} isDisabled variant="secondary">Secondary</Button>
-      <Button {...args} isDisabled variant="tertiary">Tertiary</Button>
-      <Button {...args} isDisabled variant="destructive">Destructive</Button>
+    <div
+      style={{
+        display: 'flex',
+        gap: '16px',
+        alignItems: 'center',
+        flexWrap: 'wrap',
+      }}
+    >
+      <Button {...args} isDisabled variant="primary-brand">
+        Primary Brand
+      </Button>
+      <Button {...args} isDisabled variant="primary-neutral">
+        Primary Neutral
+      </Button>
+      <Button {...args} isDisabled variant="secondary">
+        Secondary
+      </Button>
+      <Button {...args} isDisabled variant="tertiary">
+        Tertiary
+      </Button>
+      <Button {...args} isDisabled variant="destructive">
+        Destructive
+      </Button>
     </div>
   ),
 };

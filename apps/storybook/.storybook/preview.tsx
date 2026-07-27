@@ -5,7 +5,7 @@ import '@ionbase/styles/src/index.css';
 // Custom theme switcher decorator
 const withTheme: Decorator = (Story, context) => {
   const theme = context.globals.theme || 'light';
-  
+
   React.useEffect(() => {
     // Set the data-theme attribute on document root so our token overrides apply
     document.documentElement.setAttribute('data-theme', theme);

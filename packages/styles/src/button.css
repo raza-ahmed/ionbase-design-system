@@ -1,5 +1,20 @@
-/* Button base styles */
+/*
+ * Button
+ *
+ * The focus ring and the elevation are two independent slots composed into one
+ * box-shadow, rather than separate rules racing on specificity. A variant sets
+ * its elevation, `:focus-visible` sets its ring, and neither has to know about
+ * the other — otherwise `--primary-brand:active` (0,2,0) and `:focus-visible`
+ * (0,2,0) tie, and whichever is written last silently wins.
+ *
+ * Ring stays on tokens so it themes. Elevation comes from elevation.css, which
+ * is hand-authored — Figma effect styles are not variables and are not exported.
+ */
 .ion-button {
+  --ion-button-ring: var(--ion-shadow-none);
+  --ion-button-elevation: var(--ion-shadow-none);
+
+  box-shadow: var(--ion-button-ring), var(--ion-button-elevation);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -15,7 +30,7 @@
   line-height: var(--type-body-sm-line-height);
   padding: var(--spacing-8) var(--spacing-16);
   gap: var(--spacing-8);
-  transition: 
+  transition:
     background-color 150ms cubic-bezier(0.4, 0, 0.2, 1),
     border-color 150ms cubic-bezier(0.4, 0, 0.2, 1),
     box-shadow 150ms cubic-bezier(0.4, 0, 0.2, 1);
@@ -36,68 +51,90 @@
   border-radius: var(--radius-8);
 }
 
-/* Focus States (Double ring outline) */
+/*
+ * Focus ring — Figma `Button/Raised Focus` / `Button/Surface Focus`.
+ * Offset ring first so it sits inside the outer ring; reversing them hides the
+ * white gap underneath and the ring reads as one solid band.
+ */
 .ion-button:focus-visible,
-.ion-button[data-focused="true"] {
+.ion-button[data-focused='true'] {
+  --ion-button-ring:
+    0 0 0 2px var(--button-offset-ring), 0 0 0 4px var(--button-ring);
+
   outline: none;
-  box-shadow: 
-    0 0 0 2px var(--button-offset-ring),
-    0 0 0 4px var(--button-ring);
 }
 
 /* Primary Brand Variant */
 .ion-button--primary-brand {
+  --ion-button-elevation: var(--ion-shadow-button-raised);
+
   background-color: var(--button-primary-brand-bg);
   color: var(--button-primary-brand-fg);
   border-color: var(--button-primary-brand-border);
 }
 
 .ion-button--primary-brand:hover,
-.ion-button--primary-brand[data-hovered="true"] {
+.ion-button--primary-brand[data-hovered='true'] {
+  --ion-button-elevation: var(--ion-shadow-button-raised-hover);
+
   background-color: var(--button-primary-brand-bg-hover);
 }
 
 .ion-button--primary-brand:active,
-.ion-button--primary-brand[data-pressed="true"] {
+.ion-button--primary-brand[data-pressed='true'] {
+  --ion-button-elevation: var(--ion-shadow-button-pressed);
+
   background-color: var(--button-primary-brand-bg-pressed);
 }
 
 /* Primary Neutral Variant */
 .ion-button--primary-neutral {
+  --ion-button-elevation: var(--ion-shadow-button-raised);
+
   background-color: var(--button-primary-neutral-bg);
   color: var(--button-primary-neutral-fg);
   border-color: var(--button-primary-neutral-border);
 }
 
 .ion-button--primary-neutral:hover,
-.ion-button--primary-neutral[data-hovered="true"] {
+.ion-button--primary-neutral[data-hovered='true'] {
+  --ion-button-elevation: var(--ion-shadow-button-raised-hover);
+
   background-color: var(--button-primary-neutral-bg-hover);
 }
 
 .ion-button--primary-neutral:active,
-.ion-button--primary-neutral[data-pressed="true"] {
+.ion-button--primary-neutral[data-pressed='true'] {
+  --ion-button-elevation: var(--ion-shadow-button-pressed);
+
   background-color: var(--button-primary-neutral-bg-pressed);
 }
 
 /* Secondary Variant */
 .ion-button--secondary {
+  --ion-button-elevation: var(--ion-shadow-button-surface);
+
   background-color: var(--button-secondary-bg);
   color: var(--button-secondary-fg);
   border-color: var(--button-secondary-border);
 }
 
 .ion-button--secondary:hover,
-.ion-button--secondary[data-hovered="true"] {
+.ion-button--secondary[data-hovered='true'] {
+  --ion-button-elevation: var(--ion-shadow-button-surface-hover);
+
   background-color: var(--button-secondary-bg-hover);
   border-color: var(--button-secondary-border-hover);
 }
 
 .ion-button--secondary:active,
-.ion-button--secondary[data-pressed="true"] {
+.ion-button--secondary[data-pressed='true'] {
+  --ion-button-elevation: var(--ion-shadow-button-surface-pressed);
+
   background-color: var(--button-secondary-bg-pressed);
 }
 
-/* Tertiary Variant */
+/* Tertiary Variant — intentionally flat; a ghost button has no surface to raise. */
 .ion-button--tertiary {
   background-color: transparent;
   color: var(--button-tertiary-fg);
@@ -105,44 +142,52 @@
 }
 
 .ion-button--tertiary:hover,
-.ion-button--tertiary[data-hovered="true"] {
+.ion-button--tertiary[data-hovered='true'] {
   background-color: var(--button-tertiary-bg-hover);
 }
 
 .ion-button--tertiary:active,
-.ion-button--tertiary[data-pressed="true"] {
+.ion-button--tertiary[data-pressed='true'] {
   background-color: var(--button-tertiary-bg-pressed);
 }
 
 /* Destructive Variant */
 .ion-button--destructive {
+  --ion-button-elevation: var(--ion-shadow-button-raised);
+
   background-color: var(--button-destructive-bg);
   color: var(--button-destructive-fg);
   border-color: var(--button-destructive-border);
 }
 
 .ion-button--destructive:hover,
-.ion-button--destructive[data-hovered="true"] {
+.ion-button--destructive[data-hovered='true'] {
+  --ion-button-elevation: var(--ion-shadow-button-raised-hover);
+
   background-color: var(--button-destructive-bg-hover);
 }
 
 .ion-button--destructive:active,
-.ion-button--destructive[data-pressed="true"] {
+.ion-button--destructive[data-pressed='true'] {
+  --ion-button-elevation: var(--ion-shadow-button-pressed);
+
   background-color: var(--button-destructive-bg-pressed);
 }
 
 /* Disabled State */
 .ion-button:disabled,
-.ion-button[data-disabled="true"] {
+.ion-button[data-disabled='true'] {
+  --ion-button-ring: var(--ion-shadow-none);
+  --ion-button-elevation: var(--ion-shadow-none);
+
   background-color: var(--button-bg-disabled);
   color: var(--button-fg-disabled);
   border-color: var(--button-border-disabled);
   cursor: not-allowed;
-  box-shadow: none;
 }
 
 .ion-button--tertiary:disabled,
-.ion-button--tertiary[data-disabled="true"] {
+.ion-button--tertiary[data-disabled='true'] {
   background-color: transparent;
   border-color: transparent;
 }

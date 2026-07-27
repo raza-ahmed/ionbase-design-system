@@ -34,20 +34,20 @@
 
 /* Row Hover State */
 .ion-table__row:hover,
-.ion-table__row[data-hovered="true"] {
+.ion-table__row[data-hovered='true'] {
   background-color: var(--table-row-bg-hover);
 }
 
 /* Row Selected State */
 .ion-table__row.is-selected,
-.ion-table__row[data-selected="true"] {
+.ion-table__row[data-selected='true'] {
   background-color: var(--table-row-bg-selected);
 }
 
 /* Row Selected Hover State */
 .ion-table__row.is-selected:hover,
-.ion-table__row[data-selected="true"]:hover,
-.ion-table__row[data-selected="true"][data-hovered="true"] {
+.ion-table__row[data-selected='true']:hover,
+.ion-table__row[data-selected='true'][data-hovered='true'] {
   background-color: var(--table-row-bg-hover-selected);
 }
 
@@ -60,15 +60,15 @@
 /* Striped Row Hover / Selection Overrides */
 .ion-table__row--striped:hover,
 .ion-table--striped .ion-table__row:nth-child(even):hover,
-.ion-table__row--striped[data-hovered="true"],
-.ion-table--striped .ion-table__row:nth-child(even)[data-hovered="true"] {
+.ion-table__row--striped[data-hovered='true'],
+.ion-table--striped .ion-table__row:nth-child(even)[data-hovered='true'] {
   background-color: var(--table-row-bg-hover);
 }
 
 .ion-table__row--striped.is-selected,
 .ion-table--striped .ion-table__row:nth-child(even).is-selected,
-.ion-table__row--striped[data-selected="true"],
-.ion-table--striped .ion-table__row:nth-child(even)[data-selected="true"] {
+.ion-table__row--striped[data-selected='true'],
+.ion-table--striped .ion-table__row:nth-child(even)[data-selected='true'] {
   background-color: var(--table-row-bg-selected);
 }
 
