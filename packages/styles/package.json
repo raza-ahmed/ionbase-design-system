@@ -10,7 +10,8 @@
       "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
     },
-    "./css/*": "./dist/css/*"
+    "./css/*": "./dist/css/*",
+    "./src/*": "./src/*"
   },
   "scripts": {
     "dev": "tsc --watch",
