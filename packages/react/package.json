@@ -23,6 +23,9 @@
   },
   "dependencies": {
     "@ionbase/styles": "workspace:*",
-    "react-aria": "^3.34.0"
+    "@react-stately/collections": "^3.13.1",
+    "@react-types/shared": "^3.36.0",
+    "react-aria": "^3.34.0",
+    "react-stately": "^3.48.0"
   }
 }

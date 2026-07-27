@@ -1,4 +1,20 @@
-/* Tabs Track Layouts */
+/*
+ * Tabs
+ *
+ * Geometry measured from Figma `Tabs Item` (156:259) and `Tabs` (157:126).
+ * Both types share padding, gap and height; only radius and the selected
+ * indicator differ, so size lives on the item and type lives on the track.
+ *
+ * Size is a set of slots defaulting to medium — a size modifier reassigns five
+ * variables rather than restating five declarations, and the icon rule needs no
+ * per-size override.
+ *
+ * Only the horizontal orientation is implemented. Figma also defines vertical;
+ * the track modifier is named `--horizontal` so vertical is additive rather
+ * than a rename.
+ */
+
+/* Track */
 .ion-tabs__track {
   display: flex;
   align-items: center;
@@ -7,120 +23,189 @@
   padding: 0;
 }
 
-/* Underline variant track */
-.ion-tabs__track--underline {
-  border-bottom: var(--border-width-thin) solid
+.ion-tabs__track--underline.ion-tabs__track--horizontal {
+  gap: var(--tabs-underline-track-gap);
+  border-bottom: var(--tabs-underline-track-border-width) solid
     var(--tabs-underline-track-border);
-  gap: var(--spacing-24);
 }
 
-/* Pill variant track */
-.ion-tabs__track--pill {
-  background-color: var(--tabs-pill-track-bg);
-  padding: var(--spacing-4);
-  border-radius: var(--radius-8);
-  gap: var(--spacing-4);
+.ion-tabs__track--pill.ion-tabs__track--horizontal {
   display: inline-flex;
+  gap: var(--tabs-pill-track-gap);
+  padding: var(--tabs-pill-track-padding-y) var(--tabs-pill-track-padding-x);
+  background-color: var(--tabs-pill-track-bg);
+
+  /* `radius/full` — Figma's pill track is fully rounded, not an 8px rect. */
+  border-radius: var(--tabs-pill-track-radius);
 }
 
-/* Tab Item Base styles */
+/* Item */
 .ion-tabs__item {
+  --ion-tabs-item-size: var(--tabs-medium-item-size);
+  --ion-tabs-item-padding-x: var(--tabs-medium-item-padding-x);
+  --ion-tabs-item-padding-y: var(--tabs-medium-item-padding-y);
+  --ion-tabs-item-gap: var(--tabs-medium-item-gap);
+  --ion-tabs-icon-size: var(--tabs-medium-icon-size);
+
+  /*
+   * Typography follows the Figma text styles: Body/Small Emphasis at Small,
+   * Body/Default Emphasis at Medium, Body/Large Emphasis at Large. Emphasis is
+   * the medium weight, which is why font-weight is size-invariant here.
+   */
+  --ion-tabs-item-font-size: var(--type-body);
+  --ion-tabs-item-line-height: var(--type-body-line-height);
+
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  min-height: var(--ion-tabs-item-size);
+  padding: var(--ion-tabs-item-padding-y) var(--ion-tabs-item-padding-x);
+  gap: var(--ion-tabs-item-gap);
   font-family: var(--font-family-sans);
   font-weight: var(--font-weight-medium);
-  font-size: var(--font-size-14);
+  font-size: var(--ion-tabs-item-font-size);
+  line-height: var(--ion-tabs-item-line-height);
+  background-color: transparent;
+  border: none;
   text-decoration: none;
   cursor: pointer;
   user-select: none;
   transition:
     color 150ms cubic-bezier(0.4, 0, 0.2, 1),
     background-color 150ms cubic-bezier(0.4, 0, 0.2, 1),
-    border-color 150ms cubic-bezier(0.4, 0, 0.2, 1),
-    box-shadow 150ms cubic-bezier(0.4, 0, 0.2, 1);
+    border-color 150ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Underline variant item */
+.ion-tabs__item--sm {
+  --ion-tabs-item-size: var(--tabs-small-item-size);
+  --ion-tabs-item-padding-x: var(--tabs-small-item-padding-x);
+  --ion-tabs-item-padding-y: var(--tabs-small-item-padding-y);
+  --ion-tabs-item-gap: var(--tabs-small-item-gap);
+  --ion-tabs-icon-size: var(--tabs-small-icon-size);
+  --ion-tabs-item-font-size: var(--type-body-sm);
+  --ion-tabs-item-line-height: var(--type-body-sm-line-height);
+}
+
+.ion-tabs__item--lg {
+  --ion-tabs-item-size: var(--tabs-large-item-size);
+  --ion-tabs-item-padding-x: var(--tabs-large-item-padding-x);
+  --ion-tabs-item-padding-y: var(--tabs-large-item-padding-y);
+  --ion-tabs-item-gap: var(--tabs-large-item-gap);
+  --ion-tabs-icon-size: var(--tabs-large-icon-size);
+  --ion-tabs-item-font-size: var(--type-body-lg);
+  --ion-tabs-item-line-height: var(--type-body-lg-line-height);
+}
+
+/* Underline item */
 .ion-tabs__item--underline {
   color: var(--tabs-underline-item-fg);
-  background-color: transparent;
-  border: none;
-  border-bottom: var(--border-width-thick) solid transparent;
-  padding: var(--spacing-12) var(--spacing-4);
-  /* stylelint-disable-next-line scale-unlimited/declaration-strict-value */
-  margin-bottom: -1px; /* Align border with track border */
+  border-bottom: var(--tabs-underline-item-border-width-selected) solid
+    transparent;
+
+  /* Overlap the track's own border so the indicator replaces it rather than
+     stacking below it. */
+  margin-bottom: calc(-1 * var(--tabs-underline-track-border-width));
 }
 
-.ion-tabs__item--underline:hover,
+/*
+ * Hover is declared twice, as on Button: `:hover` is pointer-guarded because
+ * native hover latches on touch, and `[data-hovered]` comes from React Aria's
+ * useHover, which is already pointer-aware.
+ */
+@media (hover: hover) {
+  .ion-tabs__item--underline:hover {
+    color: var(--tabs-underline-item-fg-hover);
+  }
+}
+
 .ion-tabs__item--underline[data-hovered='true'] {
   color: var(--tabs-underline-item-fg-hover);
 }
 
-.ion-tabs__item--underline.is-selected,
 .ion-tabs__item--underline[data-selected='true'] {
   color: var(--tabs-underline-item-fg-selected);
   border-bottom-color: var(--tabs-underline-item-border-selected);
 }
 
-.ion-tabs__item--underline:focus-visible,
-.ion-tabs__item--underline[data-focused='true'] {
-  outline: none;
-  box-shadow: 0 0 0 2px var(--border-brand-default-focus);
-  border-radius: var(--radius-4);
-}
-
-/* Pill variant item */
+/* Pill item */
 .ion-tabs__item--pill {
   color: var(--tabs-pill-item-fg);
-  background-color: transparent;
-  border: none;
-  padding: var(--spacing-8) var(--spacing-16);
-  border-radius: var(--radius-6);
+  border-radius: var(--tabs-pill-item-radius);
 }
 
-.ion-tabs__item--pill:hover,
+@media (hover: hover) {
+  .ion-tabs__item--pill:hover {
+    color: var(--tabs-pill-item-fg-hover);
+    background-color: var(--tabs-pill-item-bg-hover);
+  }
+}
+
 .ion-tabs__item--pill[data-hovered='true'] {
   color: var(--tabs-pill-item-fg-hover);
   background-color: var(--tabs-pill-item-bg-hover);
 }
 
-.ion-tabs__item--pill.is-selected,
 .ion-tabs__item--pill[data-selected='true'] {
   color: var(--tabs-pill-item-fg-selected);
   background-color: var(--tabs-pill-item-bg-selected);
 }
 
-/* Pill variant item: hovered while selected */
-.ion-tabs__item--pill.is-selected:hover,
-.ion-tabs__item--pill[data-selected='true']:hover,
+/*
+ * Selected *and* hovered — a composed state, which is why the token is named
+ * `hover-selected` in vocabulary order rather than `selected-hover`.
+ */
+@media (hover: hover) {
+  .ion-tabs__item--pill[data-selected='true']:hover {
+    background-color: var(--tabs-pill-item-bg-hover-selected);
+  }
+}
+
 .ion-tabs__item--pill[data-selected='true'][data-hovered='true'] {
   background-color: var(--tabs-pill-item-bg-hover-selected);
 }
 
-.ion-tabs__item--pill:focus-visible,
-.ion-tabs__item--pill[data-focused='true'] {
-  outline: none;
-  box-shadow:
-    0 0 0 2px var(--button-offset-ring),
-    0 0 0 4px var(--button-ring);
+/*
+ * Focus ring.
+ *
+ * Figma draws a 2px `border/brand/default/focus` stroke offset 2px outside the
+ * item, with a transparent gap. `outline` + `outline-offset` reproduces that
+ * exactly; a box-shadow cannot, because the gap would have to be painted in the
+ * backdrop colour and these items sit on a coloured pill track.
+ *
+ * Tabs previously borrowed Button's ring tokens. It has its own now.
+ */
+.ion-tabs__item:focus-visible,
+.ion-tabs__item[data-focused='true'] {
+  outline: var(--tabs-item-border-width-focus) solid var(--tabs-item-ring);
+  outline-offset: var(--tabs-item-border-width-focus);
 }
 
-/* Disabled state for all tab items */
-.ion-tabs__item:disabled,
+/* Underline items are square, but Figma rounds their focus ring to 8px. */
+.ion-tabs__item--underline:focus-visible,
+.ion-tabs__item--underline[data-focused='true'] {
+  border-radius: var(--tabs-underline-item-radius-focus);
+}
+
+/* Disabled */
 .ion-tabs__item[data-disabled='true'] {
   color: var(--fg-neutral-disabled);
   cursor: not-allowed;
-  pointer-events: none;
-  box-shadow: none;
+  background-color: transparent;
 }
 
-.ion-tabs__item--underline:disabled,
 .ion-tabs__item--underline[data-disabled='true'] {
   border-bottom-color: transparent;
 }
 
-.ion-tabs__item--pill:disabled,
-.ion-tabs__item--pill[data-disabled='true'] {
-  background-color: transparent;
+/* Icons — one rule for every size; the slot is reassigned by the modifier. */
+.ion-tabs__item svg {
+  width: var(--ion-tabs-icon-size);
+  height: var(--ion-tabs-icon-size);
+  flex-shrink: 0;
+}
+
+/* Panel */
+.ion-tabs__panel:focus-visible {
+  outline: var(--tabs-item-border-width-focus) solid var(--tabs-item-ring);
+  outline-offset: var(--tabs-item-border-width-focus);
 }

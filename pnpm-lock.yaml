@@ -119,12 +119,21 @@ importers:
       '@ionbase/styles':
         specifier: workspace:*
         version: link:../styles
+      '@react-stately/collections':
+        specifier: ^3.13.1
+        version: 3.13.1(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
+      '@react-types/shared':
+        specifier: ^3.36.0
+        version: 3.36.0(react@19.2.8)
       react:
         specifier: ^18.0.0 || ^19.0.0
         version: 19.2.8
       react-aria:
         specifier: ^3.34.0
         version: 3.50.0(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
+      react-stately:
+        specifier: ^3.48.0
+        version: 3.48.0(react@19.2.8)
 
   packages/styles:
     dependencies:
@@ -944,6 +953,12 @@ packages:
 
   '@polka/url@1.0.0-next.29':
     resolution: {integrity: sha512-wwQAWhWSuHaag8c4q/KN/vCoeOJYshAIvMQwD4GpSb3OiZklFfvAgmj0VCBBImRpuF/aFgIRzllXlVX93Jevww==}
+
+  '@react-stately/collections@3.13.1':
+    resolution: {integrity: sha512-o1QSrtHyR7ODTdPyna87pZlgzvxBFOR8nI8XB+tQLIW2AMhE76pLYu4TN9CrZVy6nSAtE06IntyBV4toJIhorA==}
+    peerDependencies:
+      react: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0 || ^19.0.0-rc.1
+      react-dom: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0 || ^19.0.0-rc.1
 
   '@react-types/shared@3.36.0':
     resolution: {integrity: sha512-DkP/H0C2YjjS7gZWKNqOmU8a16qHPjQNdzMwmTq9SzplM6Iw0kVMTZ0OIoe6FOgGqa+FwMsE2QbPjh/n3g/jXQ==}
@@ -3906,6 +3921,13 @@ snapshots:
     optional: true
 
   '@polka/url@1.0.0-next.29': {}
+
+  '@react-stately/collections@3.13.1(react-dom@19.2.8(react@19.2.8))(react@19.2.8)':
+    dependencies:
+      '@swc/helpers': 0.5.23
+      react: 19.2.8
+      react-dom: 19.2.8(react@19.2.8)
+      react-stately: 3.48.0(react@19.2.8)
 
   '@react-types/shared@3.36.0(react@19.2.8)':
     dependencies:
