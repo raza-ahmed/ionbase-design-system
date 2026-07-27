@@ -2,6 +2,28 @@
 
 IonBase is a modern, high-performance design system monorepo built to deliver cohesive, accessible, and fast user interfaces. The workspace is powered by `pnpm workspaces` and `Turborepo` for efficient task execution and caching, utilizing strict TypeScript (ESM) and modern linting/formatting standards (ESLint flat config, Prettier) to ensure code consistency across all packages and applications.
 
+## Getting started
+
+```bash
+pnpm install
+pnpm build      # also lint / typecheck / format
+```
+
+## Where things are documented
+
+| If you want to…                                 | Read                                                                                                                                    |
+| ----------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
+| Change a design token                           | [`packages/tokens/README.md`](packages/tokens/README.md) — **start here**, the workflow has a Figma half that is not runnable from Node |
+| Name a token                                    | [`docs/variable-naming-spec.html`](docs/variable-naming-spec.html) — the grammar, and the validator that enforces it                    |
+| Understand why token names look the way they do | [`docs/token-migration-plan.md`](docs/token-migration-plan.md)                                                                          |
+| Work on this repo with an AI agent              | [`CLAUDE.md`](CLAUDE.md) — the traps worth knowing before editing tokens                                                                |
+
+> **Tokens come from Figma, not from this repo.** File `gaLbGd0QNb1fUl6BjSpfBA`.
+> Token names and values are changed in Figma and re-exported; editing the JSON
+> by hand is reverted by the next export. The export, rename and verification
+> scripts live in [`packages/tokens/`](packages/tokens) — `scripts/` runs in
+> Node, [`figma/`](packages/tokens/figma) runs inside Figma.
+
 ## Folder Layout
 
 ```text
@@ -10,6 +32,9 @@ ionbase-design-system/
 │   └── storybook/          # Storybook application workspace
 ├── packages/
 │   ├── tokens/             # Design tokens package (@ionbase/tokens)
+│   │   ├── src/figma/      #   committed Figma export — the source of truth
+│   │   ├── scripts/        #   Node: build, audit, verify
+│   │   └── figma/          #   Plugin API scripts, run inside Figma
 │   ├── styles/             # Global/component style styles package (@ionbase/styles)
 │   ├── react/              # React component library package (@ionbase/react)
 │   └── icons/              # Icon set and asset package (@ionbase/icons)

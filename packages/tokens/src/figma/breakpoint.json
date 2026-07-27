@@ -39,7 +39,6 @@
         "WIDTH_HEIGHT"
       ],
       "codeSyntax": "var(--grid-columns)",
-      "unitless": true,
       "values": {
         "Desktop": 12,
         "Tablet": 8,

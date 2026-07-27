@@ -1,0 +1,17 @@
+{
+  "$comment": [
+    "Repo-owned build hints. NOT exported from Figma, and deliberately kept out",
+    "of src/figma/*.json so a re-export cannot wipe them.",
+    "",
+    "Figma has no concept of 'this number is a count, not a length'. Every FLOAT",
+    "looks the same to the export, so anything the build must treat differently",
+    "is recorded here by token path.",
+    "",
+    "Add to this file, never to src/figma/."
+  ],
+
+  "unitless": {
+    "$comment": "FLOAT tokens that must NOT get a px suffix in CSS.",
+    "tokens": ["grid/columns"]
+  }
+}

@@ -26,7 +26,10 @@
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
     "format": "prettier --check .",
-    "tokens:audit": "node scripts/audit-names.mjs"
+    "tokens:audit": "node scripts/audit-names.mjs",
+    "tokens:help": "node scripts/help.mjs",
+    "tokens:renames": "node scripts/verify-renames.mjs",
+    "tokens:sync": "node scripts/verify-export.mjs"
   },
   "devDependencies": {
     "style-dictionary": "^4"

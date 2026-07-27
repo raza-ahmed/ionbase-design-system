@@ -31,6 +31,17 @@ const DIMENSION_SCOPES = new Set([
   'LINE_HEIGHT',
 ]);
 
+/**
+ * Repo-owned build hints, kept outside src/figma/ so a re-export cannot wipe
+ * them. Figma has no way to say "this number is a count, not a length" —
+ * `grid/columns` is scoped WIDTH_HEIGHT like every other FLOAT, so without this
+ * it would ship as `12px`.
+ */
+const overrides = JSON.parse(
+  readFileSync(join(here, '..', 'token-overrides.json'), 'utf8'),
+);
+const UNITLESS = new Set(overrides.unitless.tokens);
+
 export function loadCollections() {
   return readdirSync(FIGMA_DIR)
     .filter((f) => f.endsWith('.json'))
@@ -62,14 +73,14 @@ export function toPath(name, collisions) {
   return collisions.has(name) ? [...segs, DEFAULT_KEY] : segs;
 }
 
-function dtcgType(token) {
+function dtcgType(name, token) {
   if (token.type === 'COLOR') return 'color';
   if (token.type === 'STRING') {
     if (token.scopes.includes('FONT_FAMILY')) return 'fontFamily';
     if (token.scopes.includes('FONT_STYLE')) return 'fontWeight';
     return 'string';
   }
-  if (token.unitless) return 'number';
+  if (UNITLESS.has(name)) return 'number';
   return token.scopes.some((s) => DIMENSION_SCOPES.has(s))
     ? 'dimension'
     : 'number';
@@ -100,7 +111,7 @@ export function toDtcg(collection, mode, collisions) {
   const tree = {};
   for (const [name, token] of Object.entries(collection.variables)) {
     const leaf = {
-      $type: dtcgType(token),
+      $type: dtcgType(name, token),
       $value: rewriteAlias(token.values[mode], collisions),
     };
     if (token.description) leaf.$description = token.description;
