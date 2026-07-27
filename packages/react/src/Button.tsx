@@ -1,5 +1,11 @@
 import React, { forwardRef, useRef, useImperativeHandle } from 'react';
-import { useButton, AriaButtonProps } from 'react-aria';
+import {
+  useButton,
+  useHover,
+  useFocusRing,
+  mergeProps,
+  type AriaButtonProps,
+} from 'react-aria';
 
 export interface ButtonProps extends AriaButtonProps<'button'> {
   /** The visual style variant of the button. */
@@ -30,19 +36,30 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       endIcon,
       className: customClassName,
       children,
+      isDisabled,
       ...restProps
     } = props;
 
-    // Prevent spreading custom react-aria prop to native DOM button element
-    delete (restProps as Record<string, unknown>).isDisabled;
-
     const domRef = useRef<HTMLButtonElement>(null);
-    // Safely forward the DOM node to consumers
     useImperativeHandle(forwardedRef, () => domRef.current!);
 
     const { buttonProps, isPressed } = useButton(props, domRef);
 
-    // Combine BEM styles
+    /*
+     * Interaction state comes from React Aria rather than CSS pseudo-classes.
+     *
+     * `useHover` is pointer-aware: native `:hover` latches on touch devices, so
+     * a tapped button stays visually hovered until you tap elsewhere.
+     * `useFocusRing` distinguishes keyboard focus from a mouse click, so the
+     * ring appears when navigating but not when clicking.
+     *
+     * The CSS keeps its `:hover` / `:focus-visible` rules so the stylesheet
+     * still works without React — these attributes refine that, they do not
+     * replace it.
+     */
+    const { hoverProps, isHovered } = useHover({ isDisabled });
+    const { focusProps, isFocusVisible } = useFocusRing();
+
     const classNames = [
       'ion-button',
       `ion-button--${variant}`,
@@ -52,16 +69,21 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       .filter(Boolean)
       .join(' ');
 
-    // Set framework-agnostic interactive data-attributes
-    const dataAttributes = {
+    // `undefined` rather than `false` so the attribute is omitted entirely
+    // instead of rendering data-hovered="false", which would still match
+    // an `[data-hovered]` selector.
+    const stateAttributes = {
+      'data-hovered': isHovered || undefined,
       'data-pressed': isPressed || undefined,
+      'data-focused': isFocusVisible || undefined,
+      'data-disabled': isDisabled || undefined,
     };
 
     return (
       <button
         {...restProps}
-        {...buttonProps}
-        {...dataAttributes}
+        {...mergeProps(buttonProps, hoverProps, focusProps)}
+        {...stateAttributes}
         ref={domRef}
         className={classNames}
       >

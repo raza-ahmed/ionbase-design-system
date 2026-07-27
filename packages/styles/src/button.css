@@ -94,6 +94,16 @@
   outline: none;
 }
 
+/*
+ * Hover is declared twice per variant, on purpose.
+ *
+ * `:hover` is wrapped in `@media (hover: hover)` because native hover latches
+ * on touch — tap a button and it stays visually hovered until you tap
+ * elsewhere. `[data-hovered]` comes from React Aria's useHover, which is
+ * already pointer-aware. The media query keeps the stylesheet working without
+ * React; the attribute makes it correct with it.
+ */
+
 /* Primary Brand Variant */
 .ion-button--primary-brand {
   --ion-button-elevation: var(--ion-shadow-button-raised);
@@ -103,7 +113,14 @@
   border-color: var(--button-primary-brand-border);
 }
 
-.ion-button--primary-brand:hover,
+@media (hover: hover) {
+  .ion-button--primary-brand:hover {
+    --ion-button-elevation: var(--ion-shadow-button-raised-hover);
+
+    background-color: var(--button-primary-brand-bg-hover);
+  }
+}
+
 .ion-button--primary-brand[data-hovered='true'] {
   --ion-button-elevation: var(--ion-shadow-button-raised-hover);
 
@@ -126,7 +143,14 @@
   border-color: var(--button-primary-neutral-border);
 }
 
-.ion-button--primary-neutral:hover,
+@media (hover: hover) {
+  .ion-button--primary-neutral:hover {
+    --ion-button-elevation: var(--ion-shadow-button-raised-hover);
+
+    background-color: var(--button-primary-neutral-bg-hover);
+  }
+}
+
 .ion-button--primary-neutral[data-hovered='true'] {
   --ion-button-elevation: var(--ion-shadow-button-raised-hover);
 
@@ -149,7 +173,15 @@
   border-color: var(--button-secondary-border);
 }
 
-.ion-button--secondary:hover,
+@media (hover: hover) {
+  .ion-button--secondary:hover {
+    --ion-button-elevation: var(--ion-shadow-button-surface-hover);
+
+    background-color: var(--button-secondary-bg-hover);
+    border-color: var(--button-secondary-border-hover);
+  }
+}
+
 .ion-button--secondary[data-hovered='true'] {
   --ion-button-elevation: var(--ion-shadow-button-surface-hover);
 
@@ -171,7 +203,12 @@
   border-color: transparent;
 }
 
-.ion-button--tertiary:hover,
+@media (hover: hover) {
+  .ion-button--tertiary:hover {
+    background-color: var(--button-tertiary-bg-hover);
+  }
+}
+
 .ion-button--tertiary[data-hovered='true'] {
   background-color: var(--button-tertiary-bg-hover);
 }
@@ -190,7 +227,14 @@
   border-color: var(--button-destructive-border);
 }
 
-.ion-button--destructive:hover,
+@media (hover: hover) {
+  .ion-button--destructive:hover {
+    --ion-button-elevation: var(--ion-shadow-button-raised-hover);
+
+    background-color: var(--button-destructive-bg-hover);
+  }
+}
+
 .ion-button--destructive[data-hovered='true'] {
   --ion-button-elevation: var(--ion-shadow-button-raised-hover);
 

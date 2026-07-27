@@ -1,5 +1,6 @@
 import React from 'react';
 import type { Meta, StoryObj } from '@storybook/react-vite';
+import { expect, waitFor } from 'storybook/test';
 import { Button } from '@ionbase/react';
 
 const meta: Meta<typeof Button> = {
@@ -174,4 +175,69 @@ export const Disabled: Story = {
       </Button>
     </div>
   ),
+};
+
+/*
+ * Interaction states.
+ *
+ * These assert the data-attribute contract the CSS depends on. Before React
+ * Aria's useHover/useFocusRing were wired in, the component only ever emitted
+ * data-pressed — so `[data-hovered]` and `[data-focused]` in button.css were
+ * dead selectors and nothing noticed. These stories are what makes that
+ * regression visible.
+ */
+
+export const Hovered: Story = {
+  args: { children: 'Hover me' },
+  play: async ({ canvas, userEvent }) => {
+    const button = canvas.getByRole('button');
+    await userEvent.hover(button);
+    await expect(button).toHaveAttribute('data-hovered', 'true');
+  },
+};
+
+export const Focused: Story = {
+  args: { children: 'Focus me' },
+  play: async ({ canvas, userEvent }) => {
+    const button = canvas.getByRole('button');
+    // Tab rather than .focus() — useFocusRing deliberately distinguishes
+    // keyboard focus from a mouse click, and only the former shows a ring.
+    await userEvent.tab();
+    await expect(button).toHaveFocus();
+    await expect(button).toHaveAttribute('data-focused', 'true');
+  },
+};
+
+/*
+ * `data-pressed` is deliberately NOT asserted here.
+ *
+ * Verifying it needs the pointer held down across an assertion, and this
+ * harness's `[MouseLeft>]` hold syntax does not actually hold — every attempt
+ * read back as released. Rather than assert something that only appears to
+ * pass, this covers the press contract that can be verified: a real
+ * pointerdown reaches the element and onPress fires. If `data-pressed` ever
+ * needs a regression test, it wants a Playwright test using mouse.down()
+ * directly.
+ */
+export const PressFires: Story = {
+  args: { children: 'Press me' },
+  play: async ({ canvas, userEvent }) => {
+    const button = canvas.getByRole('button');
+    const events: string[] = [];
+    button.addEventListener('pointerdown', () => events.push('pointerdown'));
+
+    await userEvent.click(button);
+    await waitFor(() => expect(events).toContain('pointerdown'));
+  },
+};
+
+export const DisabledIsNotHoverable: Story = {
+  args: { children: 'Disabled', isDisabled: true },
+  play: async ({ canvas, userEvent }) => {
+    const button = canvas.getByRole('button');
+    await expect(button).toHaveAttribute('data-disabled', 'true');
+    await userEvent.hover(button);
+    // useHover is passed isDisabled, so a disabled control never reports hover.
+    await expect(button).not.toHaveAttribute('data-hovered');
+  },
 };
