@@ -574,14 +574,6 @@
         "Value": "{border-width.thin}"
       }
     },
-    "button/font-weight": {
-      "type": "STRING",
-      "scopes": [],
-      "codeSyntax": "var(--button-font-weight)",
-      "values": {
-        "Value": "{font.weight.regular}"
-      }
-    },
     "button/small/size": {
       "type": "FLOAT",
       "scopes": [],
@@ -604,14 +596,6 @@
       "codeSyntax": "var(--button-small-gap)",
       "values": {
         "Value": "{spacing.6}"
-      }
-    },
-    "button/small/font-size": {
-      "type": "FLOAT",
-      "scopes": [],
-      "codeSyntax": "var(--button-small-font-size)",
-      "values": {
-        "Value": "{font.size.14}"
       }
     },
     "button/small/icon/size": {
@@ -646,14 +630,6 @@
         "Value": "{spacing.8}"
       }
     },
-    "button/medium/font-size": {
-      "type": "FLOAT",
-      "scopes": [],
-      "codeSyntax": "var(--button-medium-font-size)",
-      "values": {
-        "Value": "{font.size.16}"
-      }
-    },
     "button/medium/icon/size": {
       "type": "FLOAT",
       "scopes": [],
@@ -684,14 +660,6 @@
       "codeSyntax": "var(--button-large-gap)",
       "values": {
         "Value": "{spacing.8}"
-      }
-    },
-    "button/large/font-size": {
-      "type": "FLOAT",
-      "scopes": [],
-      "codeSyntax": "var(--button-large-font-size)",
-      "values": {
-        "Value": "{font.size.16}"
       }
     },
     "button/large/icon/size": {
