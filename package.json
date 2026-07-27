@@ -1,0 +1,24 @@
+{
+  "name": "ionbase-monorepo",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@9.6.0",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "lint": "turbo run lint",
+    "format": "turbo run format",
+    "typecheck": "turbo run typecheck"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.6.0",
+    "eslint": "^9.6.0",
+    "prettier": "^3.3.2",
+    "turbo": "^2.0.6",
+    "typescript": "^5.5.2",
+    "typescript-eslint": "^8.0.0"
+  }
+}
