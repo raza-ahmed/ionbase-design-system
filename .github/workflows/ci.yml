@@ -1,0 +1,98 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+# A superseded run tells you nothing useful, and CI minutes are finite.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  # Turbo's own cache is empty on a fresh runner, so every task genuinely runs.
+  # That is the point: locally, a stale cache once reported "lint successful"
+  # without executing lint at all.
+  TURBO_TELEMETRY_DISABLED: 1
+  DO_NOT_TRACK: 1
+
+jobs:
+  verify:
+    name: build · lint · typecheck · format
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9.6.0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      # --frozen-lockfile fails if the lockfile and package.json disagree,
+      # which is the only way a dependency drift gets noticed before deploy.
+      - name: Install
+        run: pnpm install --frozen-lockfile
+
+      # Runs first because it regenerates the token layer. `build` includes
+      # tokens:audit (every name parses against the naming spec) and
+      # tokens:verify (codeSyntax matches the token path), so a token
+      # regression fails here rather than in review.
+      - name: Build
+        run: pnpm build
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Typecheck
+        run: pnpm typecheck
+
+      - name: Format
+        run: pnpm format
+
+      # Generated output must never differ from what the committed source
+      # produces. If this fails, someone hand-edited a generated file or
+      # committed an export that does not rebuild to itself.
+      - name: Generated output is reproducible
+        run: |
+          if [ -n "$(git status --porcelain)" ]; then
+            echo "::error::Build modified tracked files — generated output is out of sync."
+            git status --short
+            git diff
+            exit 1
+          fi
+
+  storybook:
+    name: storybook builds
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9.6.0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - name: Install
+        run: pnpm install --frozen-lockfile
+
+      - name: Build packages
+        run: pnpm build
+
+      # Typecheck does not catch a story that throws on render, or an import
+      # that only resolves through Storybook's Vite config.
+      - name: Build Storybook
+        run: pnpm --filter @ionbase/storybook build-storybook

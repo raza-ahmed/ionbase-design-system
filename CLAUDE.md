@@ -19,6 +19,12 @@ pnpm format      # check only; use `prettier --write` to fix
 All four must pass before committing. `pnpm format` **checks**, it does not
 write — if it fails, run `pnpm exec prettier --write <paths>` in that package.
 
+CI (`.github/workflows/ci.yml`) runs all four on every push and PR, plus a
+Storybook production build and a check that `pnpm build` leaves no tracked file
+modified. Turbo's cache is empty on a fresh runner, so CI genuinely executes
+every task — which matters, because a stale local cache once reported "lint
+successful" without running lint at all.
+
 ---
 
 ## Tokens — read this section in full before editing anything under `packages/tokens`
