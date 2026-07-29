@@ -136,7 +136,7 @@ Tabs and left everything else — a break, not a re-scale.
 The distinction that matters: **Semantics holds ladders, not recipes.** A ladder
 is indexed by value — `radius/xs…6xl`, `icon-size/xs…xl`, `border-width/*`, the
 colour ramps — and a component picks a rung. A recipe is indexed by usage
-(*"a medium control shall have this padding"*) and needs a new entry for every
+(_"a medium control shall have this padding"_) and needs a new entry for every
 usage pattern, which is precisely what stops it scaling to 1,000 components.
 
 So component geometry is a component fact. Button is 40 tall with 16 padding;

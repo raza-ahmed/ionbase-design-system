@@ -94,12 +94,16 @@ for (const [component, bindings] of Object.entries(snapshot.components)) {
     if (NOT_GEOMETRY.some((re) => re.test(token))) continue;
     checked++;
     if (GEOMETRY_LADDERS.some((re) => re.test(token))) continue;
-    offScale.push(`${component} :: ${token} (${owner.get(token) ?? 'unknown'})`);
+    offScale.push(
+      `${component} :: ${token} (${owner.get(token) ?? 'unknown'})`,
+    );
   }
 }
 
 if (offScale.length) {
-  console.error(`\nGEOMETRY OFF THE SCALE — ${offScale.length}\n${'='.repeat(60)}`);
+  console.error(
+    `\nGEOMETRY OFF THE SCALE — ${offScale.length}\n${'='.repeat(60)}`,
+  );
   for (const row of offScale) console.error(`  ${row}`);
   console.error(
     '\nComponents pick geometry from spacing/* or a Semantics ladder\n' +

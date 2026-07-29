@@ -8,6 +8,47 @@ Newest first.
 
 ---
 
+## 2026-07-30 (later) — stroke weights are whole numbers, and bound
+
+Every stroke in the file now resolves to `border-width/default` (1),
+`border-width/thick` (2) or `border-width/thicker` (4). 414 stroke nodes; zero
+decimals, zero unbound.
+
+### The decimals
+
+Checkbox, Radio and Table Row drew their `Indicator` at **1.5px**, which is on
+no ladder — `border-width` runs 1 / 2 / 4.
+
+It rounds **down to 1, not up to 2**, and that direction is forced rather than
+chosen: the `Focus Ring` beside it is already 2. Rounding up would have made the
+resting border exactly as heavy as the focus ring and erased the distinction
+between a control at rest and a control with keyboard focus.
+
+### Why 1.5 was there at all
+
+Nothing was bound. Not one stroke weight in the file referenced a token — the
+numbers were typed in, so nothing held any two components together and nothing
+could report a value off the ladder. That is the same root cause as Input and
+Select disagreeing about the Invalid border, 1px against 2px, a week earlier.
+
+So the fix is not "change 1.5 to 1". It is binding all 414, which is what stops
+the next 1.5 being typed in. Rounding alone would have left the mechanism
+intact.
+
+### Reach
+
+Checkbox 108 · Radio 36 · Avatar 63 · Tabs 30 · Toggle 27 · Table 29 ·
+Scroll Progress 22 · Badge 6 · Menu 2.
+
+Table's `Indicator` had already corrected itself by the time it was reached —
+it is an instance of Checkbox, so it inherited the fix.
+
+No code changed: Checkbox, Radio, Toggle and Avatar have no React
+implementation yet, so this is entirely a Figma correction landing ahead of
+them.
+
+---
+
 ## 2026-07-30 — the control group is deleted
 
 380 variables; names `3840062063`. Semantics drops 118 -> 106.
