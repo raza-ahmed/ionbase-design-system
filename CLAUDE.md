@@ -75,38 +75,87 @@ their own export, and they behave differently:
 `loadCollections()` filters on shape, because `src/figma/` now holds both
 variable collections and the text-style export.
 
-### Component tokens are the exception, not the default
+## Token architecture v2 — LIVE in Figma since 29 Jul 2026
 
-**A component token exists only when that component needs to DIFFER.** If the
-value is one another component also uses, it belongs in the shared control
-scale (`control/<step>/<property>`, Semantic tier) — bind that and create
-nothing. This is spec Q3/Q4 and Rule 07.
+Full inventory: [docs/token-architecture-v2.md](docs/token-architecture-v2.md).
+Reasoning: [docs/naming-decisions.md](docs/naming-decisions.md).
 
-Ignoring it does not just add clutter: a fully tokenised component runs to ~40
-tokens, which is ~4,000 at 100 components, and it lets components silently
-diverge (Button and Tabs each owned `padding-x` and quietly stopped agreeing on
-icon size).
+### Four collections, one chain
 
-`scripts/verify-shared-values.mjs` fails the build when two components alias
-the same primitive for the same property. Genuine divergences go in
-`shared-value-exceptions.json` with a written reason.
+```
+Primitives   143  Value                raw values
+   ↓
+Semantics    114  IonBase              brand identity — ramps, radius, control scale
+   ↓
+Interface    103  Light / Dark         text · icon · surface · border · ring
+   ↓
+components + CSS
 
-### Three layers, and `--ion-*` is not one of them
+Breakpoint    30  Desktop/Tablet/Mobile   (parallel — type and grid only)
+```
 
-    primitive        spacing/16                 raw value
-    control scale    control/md/padding-x       shared meaning — most things stop here
-    component token  tabs/medium/icon/size      ONLY when the component diverges
-    CSS slot         --ion-tabs-item-padding-x  holds a token, never a value
+**Components bind Interface and Breakpoint. Nothing else.** Interface may only
+alias Semantics; Semantics may only alias Primitives. `spacing/*` is the one
+sanctioned exception — components bind it straight from Primitives, because 16px
+means 16px in every brand.
 
-The `--ion-*` slots are a CSS implementation device: a size modifier reassigns
-one variable instead of restating five declarations. They are not tokens and
-never appear in Figma.
+**390 variables, and that number does not grow with the component count.** A new
+brand adds a _mode_, not tokens. So does a new theme.
 
-**A Figma component must bind to the component token, not the primitive.**
-Creating `tabs/medium/item/padding-x` and leaving the component on `spacing/16`
-means Figma and code agree only by coincidence — the token is orphaned and
-changing it moves nothing. This was shipped once for Tabs and had to be fixed
-after the fact; check bindings resolve to `<component>/...`, not `spacing/...`.
+The old `Semantic` and `Component` collections are **deleted**. There is no
+component tier; see the promotion rule in the architecture doc §5.
+
+### The repo is still on v1 — do not trust `src/figma/`
+
+`src/figma/semantic.json` and `component.json` describe collections that no
+longer exist. `primitives.json` predates four radius steps. Only
+`breakpoint.json` is still accurate.
+
+**Re-export before doing anything with tokens.** And the gates need rewriting
+first: `verify-tier.mjs`, `verify-bindings.mjs` and `audit-names.mjs` all look up
+collections by the literal strings `'Semantic'` and `'Component'` and will throw
+on the new export.
+
+### Figma traps that cost real time — read before scripting
+
+**`findAll()` does not descend into hidden instance subtrees.** Nor does
+`.children` reliably populate on a hidden instance. Button's icon slots are
+`visible: false`, and this made every verification return a false all-clear —
+407 live bindings were reported as zero, and the Component collection was deleted
+on the strength of that.
+
+**Instance-override reads _and_ writes need the page to be current.** With only
+`page.loadAsync()`, a rebind silently no-ops: no error, `rebound: 0`.
+
+So any sweep over component internals must do all three:
+
+1. `await figma.setCurrentPageAsync(page)`
+2. walk `.children` recursively, never `findAll()`
+3. set hidden `INSTANCE` nodes visible first — repeatedly, since revealing one
+   exposes more nested inside — then restore
+
+**Deleting a variable leaves aliases pointing at it**, exactly as it leaves node
+bindings pointing at it. Removing `gray/850` left `surface/sunken` [Dark]
+dangling. Unbind-then-delete applies to the variable graph, not just the canvas.
+
+### Deleting a variable does not unbind it
+
+Every node keeps resolving a deleted variable, so the component renders fine and
+an export that reads only live variables reconciles perfectly.
+
+**Deletion is two operations: unbind every node, then delete.**
+
+[`figma/export-bindings.js`](packages/tokens/figma/export-bindings.js) →
+`src/figma/bindings.json` → `scripts/verify-bindings.mjs` is the only check that
+sees this — and it is only trustworthy if it follows the three rules above.
+
+### The strict pass
+
+Before calling any component done — new, changed, or deleted:
+
+```bash
+pnpm --filter @ionbase/tokens tokens:gate
+```
 
 ### Generated vs committed
 
@@ -167,13 +216,18 @@ Do this after any Figma variable edit, and before trusting a build.
 
 ## The naming spec governs grammar only
 
-[`docs/variable-naming-spec.html`](docs/variable-naming-spec.html) defines:
+[`docs/variable-naming-spec.html`](docs/variable-naming-spec.html) defines the
+v2 grammar:
 
 ```
-<component>/<variant>/<part>/<property>/<state>
+Interface    <element>/<role>[/<state>]     surface/primary/hover
+Semantics    <group>/<step>                 primary/500, radius/xl
+Primitives   <family>/<step>                color/blue/500
+Breakpoint   <group>/<role>/<property>      type/h1/line-height
 ```
 
-`scripts/audit-names.mjs` enforces it on every build.
+`scripts/audit-names.mjs` enforces it on every build — **once updated for v2**.
+It still carries the v1 vocabulary and will reject every new name until then.
 
 **The spec does not decide colour mapping.** Which grey is body text, how many
 steps a ramp has, which intents need hover states — those are design decisions,
@@ -188,15 +242,19 @@ PR**. The vocabularies exist in two places that must stay in step: the spec's
 
 ---
 
-## Known open item
+## Known open items
 
-Intent ramps are demand-driven, not systematic: `danger` has `default`/`hover`/
-`pressed` because a destructive button was built; `warning` has only `subtle`
-because it only appears in badges. 14 of 58 semantic tokens are consumed by
-nothing. Documented in the build log §3.3.
+**Demand-driven ramps are gone.** v2 gives every accent role identical slots, so
+the old "danger has five steps, warning has two" asymmetry cannot recur. Full
+ramps live in Semantics; Interface picks the step.
 
-**Do not "fix" this by making every ramp symmetric** — that adds ~40 more unused
-tokens. It needs a policy decided in Figma.
+**`surface/warning` in dark has no passing text pairing** — `text/on-color` is
+2.64 and `text/default` is 2.48. Measured and recorded in
+[docs/token-architecture-v2.md](docs/token-architecture-v2.md) §6a, deliberately
+not "fixed": the values are a design decision. Resolve before a solid warning
+surface carries body text.
+
+**The repo has not been re-exported.** `src/figma/` is still v1 — see above.
 
 ---
 

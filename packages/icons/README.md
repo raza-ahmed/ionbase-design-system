@@ -25,12 +25,31 @@ The icon is passed as a prop rather than imported from here, because a barrel
 re-exporting 1,753 icons defeats tree-shaking in several bundlers. Importing
 straight from `lucide-react` means only the icons you use are bundled.
 
-**Colour is never set** — `currentColor` makes an icon take the text colour it
-sits in, so it themes with no icon-specific tokens.
+**Colour is never set in code** — `currentColor` makes an icon take the colour of
+whatever it sits in. That is still right for the React side and does not change.
 
-`size` accepts `sm` (16) or `md` (24) — the only two sizes the Figma components
-actually use — or any CSS length. A third named size is a design decision that
-belongs in Figma as a token, not a number invented in code.
+> **The Figma side used to be broken; it is fixed as of 29 Jul 2026.** All 1,753
+> icon components carried a hardcoded `#000000` fill bound to no variable, so a
+> Figma icon did not follow its parent the way `currentColor` does in code — on a
+> Primary Brand button, blue fill and white label, the icon rendered black.
+>
+> Every icon component is now bound to `icon/default` (1,757 fills). Components
+> that need a different colour override the binding: `icon/on-color` inside a
+> solid button, `icon/disabled` in a disabled state, and so on.
+>
+> This is why v2 splits `fg` into `text` and `icon` rather than keeping one
+> foreground token: one token cannot express "muted icon beside full-contrast
+> label", which is a real and common pairing. The two ladders are deliberately
+> offset one step — `text/default` is `#131923`, `icon/default` is `#1d2735` —
+> so an icon reads a touch softer than the text beside it.
+
+`size` accepts `sm` (16) or `md` (24) — or any CSS length. A third named size is a
+design decision that belongs in Figma as a token, not a number invented in code.
+
+> **v2 note — sizing still disagrees.** The control scale defines icon sizing as
+> 16 / 20 / 24 for `sm` / `md` / `lg`. This package's `md` is 24, which is v2's
+> `lg`. Reconcile when the migration reaches code; do not change it here first or
+> Figma and code disagree in the opposite direction.
 
 ## Keeping Figma and Lucide in sync
 

@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Variable Naming Specification — IonBase Design System</title>
+<title>Variable Naming Specification - IonBase Design System</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Merriweather:wght@700;900&family=Host+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap');
 
@@ -21,12 +21,12 @@
   --orange50:#FFF4E5; --orange600:#D44F02;
   --pink50:#FDF2F8; --pink700:#C3135C;
 
-  /* slot hues — documentation only, not system meanings */
+  /* slot hues - documentation only, not system meanings */
   --s-comp:#1C62E3;
   --s-var:#4F3CC8;
   --s-part:#D44F02;
   --s-prop:#0D7D38;
-  --s-state:#C3135C;
+  --s-state:#C3135C; 
 
   --sans:'Host Grotesk',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
   --serif:'Merriweather',Georgia,serif;
@@ -281,9 +281,10 @@ footer{border-top:1px solid var(--g200);padding-top:22px;margin-top:64px;font-si
 
 <div class="shell">
 
+
 <aside class="rail">
   <p class="rail-brand">Variable Naming<br>Specification</p>
-  <p class="rail-sub">SAAS Design System</p>
+  <p class="rail-sub">IonBase - v2</p>
   <nav aria-label="Sections">
     <ol>
       <li><a href="#s1"><span class="num">01</span><span>Read a token name</span></a></li>
@@ -291,19 +292,17 @@ footer{border-top:1px solid var(--g200);padding-top:22px;margin-top:64px;font-si
       <li><a href="#s3"><span class="num">03</span><span>The grammar</span></a></li>
       <li><a href="#s4"><span class="num">04</span><span>Slot reference</span></a></li>
       <li><a href="#s5"><span class="num">05</span><span>Closed vocabularies</span></a></li>
-      <li><a href="#s6"><span class="num">06</span><span>The twelve rules</span></a></li>
+      <li><a href="#s6"><span class="num">06</span><span>The ten rules</span></a></li>
       <li><a href="#s7"><span class="num">07</span><span>Formatting</span></a></li>
       <li><a href="#s8"><span class="num">08</span><span>Where does it go?</span></a></li>
       <li><a href="#s9"><span class="num">09</span><span>Worked examples</span></a></li>
-      <li><a href="#s10"><span class="num">10</span><span>Component patterns</span></a></li>
-      <li><a href="#s11"><span class="num">11</span><span>Anti-patterns</span></a></li>
+      <li><a href="#s10"><span class="num">10</span><span>Anti-patterns</span></a></li>
+      <li><a href="#s11"><span class="num">11</span><span>Modes</span></a></li>
       <li><a href="#s12"><span class="num">12</span><span>Scopes &amp; code syntax</span></a></li>
-      <li><a href="#s13"><span class="num">13</span><span>Modes</span></a></li>
-      <li><a href="#s14"><span class="num">14</span><span>Lifecycle</span></a></li>
-      <li><a href="#s15"><span class="num">15</span><span>Validator</span></a></li>
-      <li><a href="#s16"><span class="num">16</span><span>Migration ledger</span></a></li>
-      <li><a href="#s17"><span class="num">17</span><span>Cheat sheet</span></a></li>
-      <li><a href="#s18"><span class="num">18</span><span>Glossary</span></a></li>
+      <li><a href="#s13"><span class="num">13</span><span>Lifecycle</span></a></li>
+      <li><a href="#s14"><span class="num">14</span><span>Validator</span></a></li>
+      <li><a href="#s15"><span class="num">15</span><span>Cheat sheet</span></a></li>
+      <li><a href="#s16"><span class="num">16</span><span>Glossary</span></a></li>
     </ol>
   </nav>
 </aside>
@@ -312,16 +311,17 @@ footer{border-top:1px solid var(--g200);padding-top:22px;margin-top:64px;font-si
 <div class="wrap">
 
 <header class="mast">
-  <p class="eyebrow">Reference · Read before naming anything</p>
+  <p class="eyebrow">Reference - Read before naming anything</p>
   <h1>Variable Naming Specification</h1>
-  <p class="lede">Every variable in this file follows one grammar. Slots appear in a fixed order, each slot draws from a closed list of words, and unused slots are dropped — never reordered. Learn the grammar once and you can name any token without asking.</p>
+  <p class="lede">Four collections, each answering one question. Slots appear in a fixed order, each slot draws from a closed list, and unused slots are dropped - never reordered. Learn the grammar once and you can name any token without asking.</p>
+  <p class="lede" style="font-size:15px;color:var(--g600)">This page is the rules, built to be looked up. It carries no justification on purpose - <strong>why</strong> each rule exists lives in <a href="naming-decisions.md">naming-decisions.md</a>. The full token inventory lives in <a href="token-architecture-v2.md">token-architecture-v2.md</a>.</p>
   <div class="meta">
-    <span class="chip">IonBase · Figma</span>
+    <span class="chip">IonBase - Figma</span>
     <span class="chip">4 collections</span>
-    <span class="chip">297 variables</span>
-    <span class="chip">Max 5 segments</span>
+    <span class="chip">390 variables, fixed</span>
+    <span class="chip">Max 4 segments</span>
     <span class="chip">lowercase-kebab</span>
-    <span class="chip">Verified 27 Jul 2026</span>
+    <span class="chip">v2 - LIVE 29 Jul 2026</span>
   </div>
 </header>
 
@@ -329,36 +329,30 @@ footer{border-top:1px solid var(--g200);padding-top:22px;margin-top:64px;font-si
 <section id="s1">
   <span class="h2num">01</span>
   <h2>How to read a token name</h2>
-  <p class="h2sub">Token names are paths. Figma turns each slash into a folder, so the name is both an address and a sentence. Position carries meaning — the third segment is always the same kind of word.</p>
+  <p class="h2sub">Token names are paths. Figma turns each slash into a folder, so the name is both an address and a sentence. Position carries meaning - the second segment is always the same kind of word.</p>
 
   <div class="legend">
-    <span class="lg"><span class="dot" style="background:var(--s-comp)"></span>Component</span>
-    <span class="lg"><span class="dot" style="background:var(--s-var)"></span>Variant / Intent</span>
-    <span class="lg"><span class="dot" style="background:var(--s-part)"></span>Part</span>
-    <span class="lg"><span class="dot" style="background:var(--s-prop)"></span>Property</span>
+    <span class="lg"><span class="dot" style="background:var(--s-prop)"></span>Element</span>
+    <span class="lg"><span class="dot" style="background:var(--s-var)"></span>Role</span>
     <span class="lg"><span class="dot" style="background:var(--s-state)"></span>State</span>
   </div>
 
   <div class="anat">
     <div class="ribbon">
-      <span class="rseg"><span class="rlabel">Component</span><span class="rval s-comp" style="background:#EBF7FF">button</span></span>
+      <span class="rseg"><span class="rlabel">Element</span><span class="rval s-prop" style="background:#EFFBF6">surface</span></span>
       <span class="rslash">/</span>
-      <span class="rseg"><span class="rlabel">Variant</span><span class="rval s-var" style="background:#F1E8FD">primary-brand</span></span>
-      <span class="rslash">/</span>
-      <span class="rseg"><span class="rlabel">Part</span><span class="rval s-part" style="background:#FFF4E5">icon</span></span>
-      <span class="rslash">/</span>
-      <span class="rseg"><span class="rlabel">Property</span><span class="rval s-prop" style="background:#EFFBF6">fg</span></span>
+      <span class="rseg"><span class="rlabel">Role</span><span class="rval s-var" style="background:#F1E8FD">primary</span></span>
       <span class="rslash">/</span>
       <span class="rseg"><span class="rlabel">State</span><span class="rval s-state" style="background:#FDF2F8">hover</span></span>
     </div>
-    <p class="rq">“The foreground colour of the icon inside a primary-brand button, while hovered.”</p>
+    <p class="rq">"The background of a primary action, while hovered."</p>
   </div>
 
-  <p>Read it left to right and it narrows: <strong>what thing → which version → which piece → which attribute → in what condition.</strong> Every token in the system answers those five questions in that order, even when it only needs two of them.</p>
+  <p>Read it left to right and it narrows: <strong>what kind of thing -> what does it mean -> in what condition.</strong> That is the whole Interface grammar, and Interface is what components bind.</p>
 
   <div class="note n-key">
     <span class="note-t">The one rule underneath all the others</span>
-    <p>Slots are <strong>positional</strong>, not labelled. Nothing in the name says “this part is the state” — you know it's the state because it's last. That is why order can never change and why words can't be borrowed between slots.</p>
+    <p>Slots are <strong>positional</strong>, not labelled. Nothing in the name says "this part is the state" - you know it's the state because it's last. That is why order can never change and why words can't be borrowed between slots.</p>
   </div>
 </section>
 
@@ -366,46 +360,46 @@ footer{border-top:1px solid var(--g200);padding-top:22px;margin-top:64px;font-si
 <section id="s2">
   <span class="h2num">02</span>
   <h2>The four collections</h2>
-  <p class="h2sub">Each collection answers a different question, and each may only reference the one above it. That chain is what makes light/dark and responsive modes work without touching a single component.</p>
+  <p class="h2sub">Each answers a different question, and each may only reference the one above it. That chain is what lets one design system carry several brands and both themes without touching a component.</p>
 
   <div class="tiers">
     <div class="tier t1">
-      <div class="tier-h"><span class="tier-n">1 · Primitives</span><span class="tier-m">1 mode: Value</span></div>
-      <p class="tier-q">What is it?</p>
-      <p>Raw values with no opinion about use. A blue is just a blue. Never bind these directly to a design — they exist to be referenced.</p>
+      <div class="tier-h"><span class="tier-n">1 - Primitives</span><span class="tier-m">143 - 1 mode: Value</span></div>
+      <p class="tier-q">What is the raw value?</p>
+      <p>Raw values with no opinion about use. A blue is just a blue. <strong>Never bind these to a design</strong> - they exist to be referenced.</p>
       <div class="tier-e">
         <span class="tok"><b class="s-plain">color</b><span class="sl">/</span><b class="s-plain">blue</b><span class="sl">/</span><b class="s-plain">500</b></span>
         <span class="tok"><b class="s-plain">spacing</b><span class="sl">/</span><b class="s-plain">16</b></span>
-        <span class="tok"><b class="s-plain">font</b><span class="sl">/</span><b class="s-plain">size</b><span class="sl">/</span><b class="s-plain">24</b></span>
+        <span class="tok"><b class="s-plain">radius</b><span class="sl">/</span><b class="s-plain">12</b></span>
       </div>
     </div>
     <div class="tier t2">
-      <div class="tier-h"><span class="tier-n">2 · Semantic</span><span class="tier-m">2 modes: Light · Dark</span></div>
-      <p class="tier-q">What does it do?</p>
-      <p>Meaning, decoupled from value. This is the layer components should reach for by default. Light and dark resolve here, so everything downstream themes for free.</p>
+      <div class="tier-h"><span class="tier-n">2 - Semantics</span><span class="tier-m">114 - 1 mode per brand</span></div>
+      <p class="tier-q">What is <em>this brand's</em> red?</p>
+      <p>Brand identity. Full ramps, so Interface can pick different steps for light and dark. Also carries shape and density, because a brand can be sharp or round, dense or airy. <strong>Knows nothing about light/dark.</strong></p>
       <div class="tier-e">
-        <span class="tok"><b class="s-prop">bg</b><span class="sl">/</span><b class="s-var">brand</b><span class="sl">/</span><b class="s-state">hover</b></span>
-        <span class="tok"><b class="s-prop">fg</b><span class="sl">/</span><b class="s-var">on-brand</b></span>
-        <span class="tok"><b class="s-prop">border</b><span class="sl">/</span><b class="s-var">danger</b><span class="sl">/</span><b class="s-plain">subtle</b></span>
+        <span class="tok"><b class="s-var">primary</b><span class="sl">/</span><b class="s-plain">500</b></span>
+        <span class="tok"><b class="s-var">error</b><span class="sl">/</span><b class="s-plain">700</b></span>
+        <span class="tok"><b class="s-plain">radius</b><span class="sl">/</span><b class="s-plain">xl</b></span>
       </div>
     </div>
     <div class="tier t3">
-      <div class="tier-h"><span class="tier-n">3 · Component</span><span class="tier-m">1 mode: Value</span></div>
-      <p class="tier-q">Where is it used?</p>
-      <p>Only created when a component needs to diverge from the semantic default, or has enough states to be worth naming. Built lazily, one component at a time.</p>
+      <div class="tier-h"><span class="tier-n">3 - Interface</span><span class="tier-m">103 - 2 modes: Light / Dark</span></div>
+      <p class="tier-q">What does it look like <em>right now</em>?</p>
+      <p>Application roles. <strong>This is the only colour layer a component may bind.</strong> Theme resolves here. Knows nothing about which hue "error" is.</p>
       <div class="tier-e">
-        <span class="tok"><b class="s-comp">button</b><span class="sl">/</span><b class="s-var">secondary</b><span class="sl">/</span><b class="s-prop">bg</b><span class="sl">/</span><b class="s-state">hover</b></span>
-        <span class="tok"><b class="s-comp">input</b><span class="sl">/</span><b class="s-prop">border</b><span class="sl">/</span><b class="s-state">invalid</b></span>
+        <span class="tok"><b class="s-prop">surface</b><span class="sl">/</span><b class="s-var">primary</b><span class="sl">/</span><b class="s-state">hover</b></span>
+        <span class="tok"><b class="s-prop">text</b><span class="sl">/</span><b class="s-var">on-color</b></span>
+        <span class="tok"><b class="s-prop">border</b><span class="sl">/</span><b class="s-var">error-subtle</b></span>
       </div>
     </div>
     <div class="tier t4">
-      <div class="tier-h"><span class="tier-n">4 · Breakpoint</span><span class="tier-m">3 modes: Desktop · Tablet · Mobile</span></div>
+      <div class="tier-h"><span class="tier-n">4 - Breakpoint</span><span class="tier-m">30 - 3 modes: Desktop / Tablet / Mobile</span></div>
       <p class="tier-q">How big, at this screen size?</p>
-      <p>Geometry and type scale only — never colour. Set the mode on a top-level frame and everything bound below it reflows.</p>
+      <p>Geometry and type scale only - never colour. Set the mode on a top-level frame and everything below it reflows. Runs <strong>parallel</strong> to the chain, not inside it.</p>
       <div class="tier-e">
+        <span class="tok"><b class="s-plain">type</b><span class="sl">/</span><b class="s-plain">h1</b></span>
         <span class="tok"><b class="s-plain">grid</b><span class="sl">/</span><b class="s-plain">margin</b></span>
-        <span class="tok"><b class="s-plain">type</b><span class="sl">/</span><b class="s-plain">h1</b><span class="sl">/</span><b class="s-plain">size</b></span>
-        <span class="tok"><b class="s-plain">section</b><span class="sl">/</span><b class="s-plain">gap-y</b></span>
       </div>
     </div>
   </div>
@@ -415,17 +409,18 @@ footer{border-top:1px solid var(--g200);padding-top:22px;margin-top:64px;font-si
   <table>
     <thead><tr><th>From</th><th>May alias to</th><th>Must never alias to</th></tr></thead>
     <tbody>
-      <tr><td>Primitives</td><td>Nothing — raw values only</td><td>Any other collection</td></tr>
-      <tr><td>Semantic</td><td>Primitives</td><td>Component, Breakpoint, another Semantic token</td></tr>
-      <tr><td>Component</td><td>Semantic</td><td>Primitives directly <em>(colour only — see note)</em></td></tr>
-      <tr><td>Breakpoint</td><td>Primitives</td><td>Semantic, Component</td></tr>
+      <tr><td>Primitives</td><td>Nothing - raw values only</td><td>Any other collection</td></tr>
+      <tr><td>Semantics</td><td>Primitives</td><td>Interface, Breakpoint, another Semantics token</td></tr>
+      <tr><td>Interface</td><td>Semantics</td><td><strong>Primitives</strong>, another Interface token</td></tr>
+      <tr><td>Breakpoint</td><td>Primitives</td><td>Semantics, Interface</td></tr>
+      <tr><td><em>A component</em></td><td>Interface, Breakpoint</td><td>Semantics, Primitives</td></tr>
     </tbody>
   </table>
   </div>
 
   <div class="note n-warn">
-    <span class="note-t">The one sanctioned exception</span>
-    <p>There is no semantic layer for spacing, radius, or border-width — only colour has one. So components bind those <strong>straight to Primitives</strong>: <span class="tok"><b class="s-plain">spacing/16</b></span> for padding, <span class="tok"><b class="s-plain">radius/8</b></span> for corners. This is intentional, not drift. Colour is the only thing that changes between light and dark, so colour is the only thing that needs a meaning layer.</p>
+    <span class="note-t">The rule that makes theming work</span>
+    <p>An Interface token that reaches past Semantics to a primitive <strong>cannot be re-branded</strong>, and a component that binds Semantics directly <strong>cannot be re-themed</strong>. Both look fine on the day they are made. Neither is recoverable without a migration.</p>
   </div>
 </section>
 
@@ -433,48 +428,41 @@ footer{border-top:1px solid var(--g200);padding-top:22px;margin-top:64px;font-si
 <section id="s3">
   <span class="h2num">03</span>
   <h2>The grammar</h2>
-  <p class="h2sub">Each tier has its own slot sequence. Within a tier the order never varies. A slot is dropped when the token has only one possible value for it — the remaining slots keep their positions.</p>
+  <p class="h2sub">Each collection has its own slot sequence. Within a collection the order never varies. A slot is dropped when the token has only one possible value for it - the remaining slots keep their positions.</p>
 
   <div class="tbl-wrap">
   <table>
-    <thead><tr><th>Tier</th><th>Slot sequence</th></tr></thead>
+    <thead><tr><th>Collection</th><th>Slot sequence</th><th>Example</th></tr></thead>
     <tbody>
-      <tr><td><strong>Primitive</strong></td><td><code>property / family / step</code></td></tr>
-      <tr><td><strong>Semantic</strong></td><td><code>property / intent / role</code></td></tr>
-      <tr><td><strong>Component</strong></td><td><code>component / variant / part / property / state</code></td></tr>
-      <tr><td><strong>Breakpoint</strong></td><td><code>group / role / property</code></td></tr>
+      <tr><td><strong>Primitives</strong></td><td><code>family / step</code></td><td><code>color/blue/500</code>, <code>spacing/16</code></td></tr>
+      <tr><td><strong>Semantics</strong></td><td><code>group / step</code></td><td><code>primary/500</code>, <code>radius/xl</code></td></tr>
+      <tr><td><strong>Interface</strong></td><td><code>element / role / state</code></td><td><code>surface/primary/hover</code></td></tr>
+      <tr><td><strong>Breakpoint</strong></td><td><code>group / role / property</code></td><td><code>type/h1/line-height</code></td></tr>
     </tbody>
   </table>
   </div>
 
   <h3>Omission in practice</h3>
-  <p>The component tier has five slots but most tokens use three. Watch what drops and what stays put:</p>
-
-  <div class="anat">
-    <div class="ribbon" style="font-size:16px">
-      <span class="rseg"><span class="rlabel">Component</span><span class="rval s-comp" style="background:#EBF7FF">checkbox</span></span>
-      <span class="rslash">/</span>
-      <span class="rseg"><span class="rlabel">Part</span><span class="rval s-part" style="background:#FFF4E5">indicator</span></span>
-      <span class="rslash">/</span>
-      <span class="rseg"><span class="rlabel">Property</span><span class="rval s-prop" style="background:#EFFBF6">bg</span></span>
-      <span class="rslash">/</span>
-      <span class="rseg"><span class="rlabel">State</span><span class="rval s-state" style="background:#FDF2F8">checked</span></span>
-    </div>
-    <p class="rq">No <em>variant</em> slot — a checkbox has only one visual variant. The part slot still sits second, exactly where it would if a variant existed.</p>
-  </div>
+  <p>State is dropped when the token describes the resting case. The element and role stay exactly where they were.</p>
 
   <div class="dd">
     <div class="dd-card dd-yes">
-      <div class="dd-lab">✓ Correct</div>
-      <span class="tok"><b class="s-comp">card</b><span class="sl">/</span><b class="s-prop">bg</b></span>
-      <span class="tok"><b class="s-comp">card</b><span class="sl">/</span><b class="s-part">header</b><span class="sl">/</span><b class="s-prop">border</b></span>
-      <p class="dd-note">Two slots or three — the property is always the last non-state slot.</p>
+      <div class="dd-lab">+ Correct</div>
+      <span class="tok"><b class="s-prop">surface</b><span class="sl">/</span><b class="s-var">primary</b></span>
+      <span class="tok"><b class="s-prop">surface</b><span class="sl">/</span><b class="s-var">primary</b><span class="sl">/</span><b class="s-state">hover</b></span>
+      <p class="dd-note">Two slots or three - the role is always second.</p>
     </div>
     <div class="dd-card dd-no">
-      <div class="dd-lab">✕ Wrong</div>
-      <span class="tok"><b class="s-comp">card</b><span class="sl">/</span><b class="s-prop">bg</b><span class="sl">/</span><b class="s-part">header</b></span>
-      <p class="dd-note">Part after property. Now segment 2 means “property” in one token and “part” in another — position no longer tells you anything.</p>
+      <div class="dd-lab">x Wrong</div>
+      <span class="tok"><b class="s-prop">surface</b><span class="sl">/</span><b class="s-var">primary</b><span class="sl">/</span><b class="s-plain">default</b></span>
+      <span class="tok"><b class="s-prop">surface</b><span class="sl">/</span><b class="s-state">hover</b><span class="sl">/</span><b class="s-var">primary</b></span>
+      <p class="dd-note">Never write <code>default</code> as a state. Never put state before role.</p>
     </div>
+  </div>
+
+  <div class="note n-warn">
+    <span class="note-t">Compound roles use a hyphen, not a slash</span>
+    <p><code>surface/primary-subtle</code>, not <code>surface/primary/subtle</code>. The role is <em>one</em> slot - "the subtle variant of primary" is a single meaning, and splitting it would make the third position mean "role" in some tokens and "state" in others.</p>
   </div>
 </section>
 
@@ -482,243 +470,154 @@ footer{border-top:1px solid var(--g200);padding-top:22px;margin-top:64px;font-si
 <section id="s4">
   <span class="h2num">04</span>
   <h2>Slot reference</h2>
-  <p class="h2sub">What belongs in each slot, and the edge cases that come up most.</p>
+  <p class="h2sub">What belongs in each slot.</p>
 
-  <h3>Component</h3>
-  <p>The thing a designer would name in a spec. Singular, always. If the name is two words, hyphenate — never split across slashes.</p>
+  <h3>Element <span style="font-weight:400;color:var(--g500);font-size:14px">- Interface only</span></h3>
+  <p>What kind of thing is being coloured. <strong>Closed list - never invent a synonym.</strong> This is the slot where systems rot fastest.</p>
   <div class="vocab">
-    <span class="vp">button</span><span class="vp">input</span><span class="vp">checkbox</span><span class="vp">radio</span><span class="vp">switch</span><span class="vp">select</span><span class="vp">textarea</span><span class="vp">card</span><span class="vp">modal</span><span class="vp">tooltip</span><span class="vp">toast</span><span class="vp">badge</span><span class="vp">avatar</span><span class="vp">tabs</span><span class="vp">table</span><span class="vp">menu</span><span class="vp">slider</span><span class="vp">progress</span><span class="vp">breadcrumb</span><span class="vp">pagination</span>
-  </div>
-  <p><strong>Open list.</strong> New components are added freely — this is the only slot that grows without an amendment.</p>
-
-  <h3>Variant</h3>
-  <p>Which version of the component. Present only when the component has more than one and they need different tokens.</p>
-  <div class="vocab">
-    <span class="vp vp-var">primary-brand</span><span class="vp vp-var">primary-neutral</span><span class="vp vp-var">secondary</span><span class="vp vp-var">tertiary</span><span class="vp vp-var">destructive</span><span class="vp vp-var">ghost</span><span class="vp vp-var">outline</span><span class="vp vp-var">pill</span><span class="vp vp-var">underline</span><span class="vp vp-var">small</span><span class="vp vp-var">medium</span><span class="vp vp-var">large</span>
-  </div>
-  <p><code>pill</code> and <code>underline</code> are navigation shape variants — they describe how a nav item renders its selection affordance, not its intent. Currently used by <code>tabs/*</code>.</p>
-  <p><strong>Sizes never produce colour tokens.</strong> <code>small</code> / <code>medium</code> / <code>large</code> change geometry, not hue — there is no such thing as <code>button/small/bg</code>.</p>
-  <p>They <em>may</em> occupy the Variant slot for <strong>geometry</strong> tokens, where the value genuinely differs per size: <span class="tok"><b class="s-comp">button</b><span class="sl">/</span><b class="s-var">small</b><span class="sl">/</span><b class="s-prop">padding-x</b></span>. Earlier guidance said sizes were never variants and should come from Primitives directly in code — that produced a Button whose every size was wrong against Figma, with no token to check it against. A size-varying value that a component must honour is a token like any other.</p>
-  <p>Where a value is the <em>same</em> at every size, omit the slot: <code>button/radius</code>, not three copies of it.</p>
-
-  <h3>Part</h3>
-  <p>A named piece inside the component. Only create one when the piece needs a token the root doesn't.</p>
-  <div class="vocab">
-    <span class="vp vp-part">icon</span><span class="vp vp-part">label</span><span class="vp vp-part">indicator</span><span class="vp vp-part">track</span><span class="vp vp-part">thumb</span><span class="vp vp-part">header</span><span class="vp vp-part">body</span><span class="vp vp-part">footer</span><span class="vp vp-part">divider</span><span class="vp vp-part">placeholder</span><span class="vp vp-part">caret</span><span class="vp vp-part">menu-item</span><span class="vp vp-part">row</span><span class="vp vp-part">cell</span>
-  </div>
-
-  <h3>Property</h3>
-  <p>The attribute being set. <strong>Closed list — never invent a synonym.</strong> This is the slot where systems rot fastest: <code>bg</code>, <code>background</code>, <code>surface</code>, and <code>fill</code> all meaning the same thing is how a 200-token system becomes unusable.</p>
-  <div class="vocab">
-    <span class="vp vp-prop">bg</span><span class="vp vp-prop">fg</span><span class="vp vp-prop">border</span><span class="vp vp-prop">ring</span><span class="vp vp-prop">shadow</span><span class="vp vp-prop">radius</span><span class="vp vp-prop">gap</span><span class="vp vp-prop">padding-x</span><span class="vp vp-prop">padding-y</span><span class="vp vp-prop">size</span><span class="vp vp-prop">border-width</span><span class="vp vp-prop">font-size</span><span class="vp vp-prop">font-weight</span><span class="vp vp-prop">line-height</span><span class="vp vp-prop">letter-spacing</span>
+    <span class="vp vp-prop">text</span><span class="vp vp-prop">icon</span><span class="vp vp-prop">surface</span><span class="vp vp-prop">border</span><span class="vp vp-prop">ring</span>
   </div>
   <div class="tbl-wrap">
   <table>
     <thead><tr><th>Use</th><th>Not</th><th>Covers</th></tr></thead>
     <tbody>
-      <tr><td><code>bg</code></td><td>background, surface, fill</td><td>Any frame or shape fill</td></tr>
-      <tr><td><code>fg</code></td><td>text, color, content, ink</td><td>Text <em>and</em> icon colour — one token serves both</td></tr>
+      <tr><td><code>surface</code></td><td>bg, background, fill</td><td>Any frame or shape fill</td></tr>
+      <tr><td><code>text</code></td><td>fg, color, content, ink</td><td>Text only</td></tr>
+      <tr><td><code>icon</code></td><td>fg, glyph, symbol</td><td>Icon fills. Separate from text because an icon beside muted text is often not the same colour</td></tr>
       <tr><td><code>border</code></td><td>stroke, outline, line</td><td>Stroke colour</td></tr>
-      <tr><td><code>ring</code></td><td>focus, halo, glow</td><td>Focus indicator drawn outside the border</td></tr>
-      <tr><td><code>size</code></td><td>width, height, dimension</td><td>Square dimensions (icons, avatars, controls)</td></tr>
+      <tr><td><code>ring</code></td><td>focus, halo, glow</td><td>Focus indicator drawn <em>outside</em> the border</td></tr>
     </tbody>
   </table>
   </div>
+  <p><strong>Changed in v2:</strong> <code>bg</code> became <code>surface</code>, <code>fg</code> split into <code>text</code> and <code>icon</code>. The split exists because 1,753 icons had no colour contract at all - one <code>fg</code> could not express "muted icon, full-contrast label".</p>
 
-  <h3>State</h3>
-  <p>The interaction or condition. Always last. <strong>Closed list.</strong> <code>default</code> is implicit and is never written.</p>
+  <h3>Role <span style="font-weight:400;color:var(--g500);font-size:14px">- Interface only</span></h3>
+  <p>What it means, or how prominent. Two families.</p>
+
+  <p><strong>Neutral ladder</strong> - prominence within the greys:</p>
   <div class="vocab">
-    <span class="vp vp-state">hover</span><span class="vp vp-state">pressed</span><span class="vp vp-state">focus</span><span class="vp vp-state">selected</span><span class="vp vp-state">checked</span><span class="vp vp-state">indeterminate</span><span class="vp vp-state">expanded</span><span class="vp vp-state">invalid</span><span class="vp vp-state">loading</span><span class="vp vp-state">read-only</span><span class="vp vp-state">disabled</span>
-  </div>
-  <p><strong>States may compose.</strong> Two states join as <code>&lt;state&gt;-&lt;state&gt;</code> when both are in the list above, written <em>in the order they appear in that list</em> — so <code>hover-selected</code>, never <code>selected-hover</code>. Compose only when the combination carries a value neither state carries alone; a selected table row that darkens further on hover is the case this exists for. Fixing the order by the vocabulary means there is exactly one legal spelling per combination.</p>
-
-  <h3>Intent <span style="font-weight:400;color:var(--g500);font-size:14px">— semantic tier only</span></h3>
-  <p>What the colour means. Maps one-to-one onto a primitive hue; that mapping is fixed system-wide.</p>
-  <div class="tbl-wrap">
-  <table>
-    <thead><tr><th>Intent</th><th>Hue</th><th>Used for</th></tr></thead>
-    <tbody>
-      <tr><td><code>neutral</code></td><td>gray</td><td>Surfaces, text, borders — the default</td></tr>
-      <tr><td><code>brand</code></td><td>blue</td><td>Primary actions, focus</td></tr>
-      <tr><td><code>link</code></td><td>blue</td><td>Hyperlinks. Shares brand's hue today but holds its own token, so re-branding does not silently restyle every link.</td></tr>
-      <tr><td><code>success</code></td><td>green</td><td>Confirmation, positive status</td></tr>
-      <tr><td><code>warning</code></td><td>yellow</td><td>Caution, needs attention</td></tr>
-      <tr><td><code>danger</code></td><td>red</td><td>Destructive actions, errors</td></tr>
-      <tr><td><code>info</code></td><td>purple</td><td>Neutral information, AI features</td></tr>
-      <tr><td><code>scrim</code></td><td>alpha black / white</td><td>Translucent layers — modal overlays, hover washes. The one intent whose value is an alpha, not a hue.</td></tr>
-      <tr><td><code>on-&lt;intent&gt;</code></td><td>—</td><td>Foreground sitting <em>on</em> that intent's fill</td></tr>
-    </tbody>
-  </table>
-  </div>
-  <p>Orange and pink are unassigned. They are available for data visualisation or a future intent — but the moment one is used for meaning, it gets an intent name here and stops being free.</p>
-
-  <h3>Role <span style="font-weight:400;color:var(--g500);font-size:14px">— semantic tier only</span></h3>
-  <p>How prominent, within an intent. An ordered scale, so new steps insert cleanly:</p>
-  <div class="tbl-wrap">
-  <table>
-    <thead><tr><th>Role</th><th>Weight</th><th>Typical use</th></tr></thead>
-    <tbody>
-      <tr><td><code>muted</code></td><td>Faintest</td><td>Barely-there dividers, de-emphasised text</td></tr>
-      <tr><td><code>subtle</code></td><td>Light</td><td>Tinted backgrounds, status banners</td></tr>
-      <tr><td><code>tint</code></td><td>Light, one step up</td><td>The second faint step, where an intent has two</td></tr>
-      <tr><td><code>secondary</code></td><td>Below base</td><td>Supporting copy, form labels</td></tr>
-      <tr><td><code>body</code></td><td>Just below base</td><td>Long-form reading. Deliberately a step lighter than <code>default</code> so body copy sits below headings in the hierarchy rather than competing with them.</td></tr>
-      <tr><td><code>default</code></td><td>Base</td><td>The normal case — written out at this tier</td></tr>
-      <tr><td><code>emphasized</code></td><td>Above base</td><td>First step past the resting border weight</td></tr>
-      <tr><td><code>strong</code></td><td>Heavier</td><td>Emphasised borders, hover surfaces</td></tr>
-      <tr><td><code>bold</code></td><td>Heaviest before solid</td><td>The strongest non-solid border</td></tr>
-      <tr><td><code>emphasis</code></td><td>Solid, high contrast</td><td>Filled badges, solid buttons</td></tr>
-      <tr><td><code>inverse</code></td><td>Flipped</td><td>Content on an opposite-mode surface</td></tr>
-      <tr><td><code>disabled</code></td><td><em>off-scale</em></td><td>The unavailable case. Deliberately not a point on the ordering — it is a condition, and it is the one role that never composes with a state.</td></tr>
-    </tbody>
-  </table>
-  </div>
-  <p><strong>Not every intent uses every step.</strong> The scale is an ordering, not a checklist — <code>bg</code> uses the faint end, <code>border</code> uses the middle. What the ordering guarantees is that a new value always has an obvious place to slot into, and that two people never invent two words for one step.</p>
-  <div class="note n-warn">
-    <span class="note-t">Three steps, three words — earn them</span>
-    <p><code>emphasized</code>, <code>strong</code> and <code>bold</code> are adjacent steps on the border ramp and read as synonyms in isolation. They are in the list because the file genuinely holds three distinct border weights above <code>default</code>. If a ramp ever drops to two steps, drop the middle word with it — three names for two values is exactly the rot §5 exists to prevent.</p>
+    <span class="vp vp-var">default</span><span class="vp vp-var">secondary</span><span class="vp vp-var">tertiary</span><span class="vp vp-var">subtle</span><span class="vp vp-var">muted</span><span class="vp vp-var">strong</span><span class="vp vp-var">stronger</span><span class="vp vp-var">placeholder</span><span class="vp vp-var">disabled</span><span class="vp vp-var">inverse</span><span class="vp vp-var">on-color</span><span class="vp vp-var">interactive</span>
   </div>
 
-  <div class="note n-warn">
-    <span class="note-t">One inconsistency to know about</span>
-    <p>At the <strong>semantic</strong> tier <code>default</code> is written (<span class="tok"><b class="s-prop">bg</b><span class="sl">/</span><b class="s-var">neutral</b><span class="sl">/</span><b class="s-plain">default</b></span>) because the role slot must always be filled. At the <strong>component</strong> tier the default state is omitted (<span class="tok"><b class="s-comp">button</b><span class="sl">/</span><b class="s-var">secondary</b><span class="sl">/</span><b class="s-prop">bg</b></span>). Different slots, different rules — role is required, state is optional.</p>
+  <p><strong>Accent</strong> - one of five meanings, optionally with a weight suffix:</p>
+  <div class="vocab">
+    <span class="vp vp-var">primary</span><span class="vp vp-var">error</span><span class="vp vp-var">success</span><span class="vp vp-var">warning</span><span class="vp vp-var">information</span>
   </div>
+  <p>Suffixes: <code>-strong</code>, <code>-subtle</code>, <code>-tint</code>. Written with a hyphen: <code>border/error-strong</code>.</p>
+
+  <div class="note n-key">
+    <span class="note-t">Every accent role gets the same slots</span>
+    <p>No role is allowed a bespoke shape. <code>-subtle</code> is always the 200 step, plain is always 500, <code>-strong</code> is always 700 - for <em>every</em> role. This is what stopped <code>border/brand/default</code> being a saturated blue while <code>border/success/default</code> was a pale tint.</p>
+  </div>
+
+  <h3>State <span style="font-weight:400;color:var(--g500);font-size:14px">- Interface only</span></h3>
+  <p>The interaction or condition. Always last. <strong>Closed list.</strong> The resting state is implicit and is never written.</p>
+  <div class="vocab">
+    <span class="vp vp-state">hover</span><span class="vp vp-state">pressed</span><span class="vp vp-state">focus</span><span class="vp vp-state">selected</span><span class="vp vp-state">checked</span><span class="vp vp-state">indeterminate</span><span class="vp vp-state">expanded</span><span class="vp vp-state">invalid</span><span class="vp vp-state">loading</span><span class="vp vp-state">read-only</span><span class="vp vp-state">visited</span>
+  </div>
+  <p><strong>States may compose.</strong> Join as <code>&lt;state&gt;-&lt;state&gt;</code>, in the order they appear above - so <code>selected-hover</code> is written <code>hover-selected</code>. One legal spelling per combination.</p>
+  <p><code>disabled</code> is a <em>role</em>, not a state - it is terminal and never combines with anything.</p>
+
+  <h3>Group <span style="font-weight:400;color:var(--g500);font-size:14px">- Semantics only</span></h3>
+  <div class="vocab">
+    <span class="vp vp-var">primary</span><span class="vp vp-var">neutral</span><span class="vp vp-var">success</span><span class="vp vp-var">warning</span><span class="vp vp-var">error</span><span class="vp vp-var">information</span><span class="vp vp-part">chart</span><span class="vp vp-part">base</span><span class="vp vp-part">alpha</span><span class="vp vp-part">radius</span><span class="vp vp-part">border-width</span><span class="vp vp-part">font</span><span class="vp vp-part">control</span>
+  </div>
+  <p>Colour groups carry a numeric step (<code>50</code>-<code>950</code>). Shape and density groups carry a named step.</p>
 </section>
 
 <!-- ============ 05 ============ -->
 <section id="s5">
   <span class="h2num">05</span>
   <h2>Closed vocabularies</h2>
-  <p class="h2sub">These lists are the actual scaling mechanism. Depth is not what kills a design system at 300 tokens — synonym drift is. Adding a word requires an amendment (§14).</p>
+  <p class="h2sub">These lists are the scaling mechanism. Depth is not what kills a design system at 400 tokens - synonym drift is. Adding a word requires an amendment (section 13).</p>
 
   <div class="tbl-wrap">
   <table>
-    <thead><tr><th>Slot</th><th>Status</th><th>Size</th><th>To add a word</th></tr></thead>
+    <thead><tr><th>Slot</th><th>Status</th><th>Grows?</th><th>To add a word</th></tr></thead>
     <tbody>
-      <tr><td>Component</td><td><strong>Open</strong></td><td>Grows freely</td><td>Just use it</td></tr>
-      <tr><td>Part</td><td><strong>Open</strong></td><td>Grows freely</td><td>Just use it — but check §11 first</td></tr>
-      <tr><td>Variant</td><td>Semi-closed</td><td>12 words</td><td>Add when a real new variant ships</td></tr>
-      <tr><td>Property</td><td><strong>Closed</strong></td><td>15 words</td><td>Amendment required</td></tr>
-      <tr><td>State</td><td><strong>Closed</strong></td><td>11 words, composable</td><td>Amendment required</td></tr>
-      <tr><td>Intent</td><td><strong>Closed</strong></td><td>7 + <code>on-</code></td><td>Amendment + hue assignment</td></tr>
-      <tr><td>Role</td><td><strong>Closed</strong></td><td>10 words</td><td>Amendment — must slot into the order</td></tr>
+      <tr><td>Element</td><td><strong>Closed</strong></td><td>Effectively never</td><td>Amendment. Five elements cover every paintable property in Figma.</td></tr>
+      <tr><td>Role - neutral</td><td><strong>Closed</strong></td><td>Rarely</td><td>Amendment. Must slot into the existing prominence order.</td></tr>
+      <tr><td>Role - accent</td><td><strong>Closed</strong></td><td>Only with a new meaning</td><td>Amendment, and it becomes a full ramp in Semantics too.</td></tr>
+      <tr><td>State</td><td><strong>Closed</strong></td><td>Rarely</td><td>Amendment. Must be a real interaction state, not a variant.</td></tr>
+      <tr><td>Semantics group</td><td><strong>Closed</strong></td><td>Rarely</td><td>Amendment.</td></tr>
+      <tr><td>Step</td><td><strong>Closed</strong></td><td>A ramp may gain a step</td><td>Add to Primitives first, then Semantics.</td></tr>
     </tbody>
   </table>
   </div>
 
-  <h3>Primitive scales</h3>
-  <div class="tbl-wrap">
-  <table>
-    <thead><tr><th>Family</th><th>Steps</th><th>Step type</th></tr></thead>
-    <tbody>
-      <tr><td><code>color/&lt;hue&gt;</code></td><td>50, 100, 200, 300, 400, 500, 600, 700, 800, 900</td><td>Numeric ramp</td></tr>
-      <tr><td><code>color/alpha</code></td><td>black-05 … black-60, white-05 … white-20</td><td>Channel + opacity</td></tr>
-      <tr><td><code>color/base</code></td><td>white, black</td><td>Named</td></tr>
-      <tr><td><code>spacing</code></td><td>0, 2, 4, 6, 8, 12, 16, 20, 24, 32, 40, 48, 64, 80, 96, 128</td><td>Raw px</td></tr>
-      <tr><td><code>radius</code></td><td>0, 2, 4, 6, 8, 12, 16, 24, full</td><td>Raw px + one keyword</td></tr>
-      <tr><td><code>border-width</code></td><td>thin, default, thick</td><td>Named <em>(too few steps for numbers)</em></td></tr>
-      <tr><td><code>font/size</code></td><td>12 … 72</td><td>Raw px</td></tr>
-      <tr><td><code>font/weight</code></td><td>regular, medium, semibold, bold</td><td>Named</td></tr>
-      <tr><td><code>font/family</code></td><td>sans, serif, mono</td><td>Named by role, never by typeface</td></tr>
-    </tbody>
-  </table>
-  </div>
-
-  <div class="note n-key">
-    <span class="note-t">Numbers or words?</span>
-    <p>Use <strong>numbers</strong> when the scale might gain steps between existing ones — colour ramps, spacing, font sizes. A <code>350</code> can always be inserted. Use <strong>words</strong> when the set is small and complete — <code>thin/default/thick</code>, <code>regular/medium/semibold/bold</code>. Never use <code>light</code> / <code>dark</code> as step names; they break the instant a step is added on either end.</p>
+  <div class="note n-warn">
+    <span class="note-t">Words that are gone in v2 - do not reintroduce</span>
+    <p><code>bg</code>, <code>fg</code>, <code>brand</code>, <code>danger</code>, <code>info</code>, <code>intent</code>, <code>emphasis</code>, <code>emphasized</code>, <code>bold</code>, <code>body</code>, <code>variant</code>, <code>part</code>. Each was either a synonym of a surviving word or a slot that no longer exists. <code>brand</code> is now <code>primary</code>; <code>danger</code> is <code>error</code>; <code>info</code> is <code>information</code>.</p>
   </div>
 </section>
 
 <!-- ============ 06 ============ -->
 <section id="s6">
   <span class="h2num">06</span>
-  <h2>The twelve rules</h2>
-  <p class="h2sub">Everything above is descriptive. These are prescriptive — they settle the hard cases.</p>
+  <h2>The ten rules</h2>
+  <p class="h2sub">Everything above is descriptive. These are prescriptive - they settle the hard cases.</p>
 
   <div class="rule">
-    <div class="rule-head"><span class="rule-n">01</span><span class="rule-t">One state per token</span></div>
-    <p>Compound states hyphenate <em>inside</em> the state slot, base condition first. Never split across slashes.</p>
+    <div class="rule-head"><span class="rule-n">01</span><span class="rule-t">Components bind Interface. Nothing else.</span></div>
+    <p>A component may bind <strong>Interface</strong> for colour and <strong>Breakpoint</strong> for responsive geometry. Binding Semantics or Primitives directly is a defect, because it cannot be re-themed.</p>
     <div class="dd">
-      <div class="dd-card dd-yes"><div class="dd-lab">✓ Do</div><span class="tok"><b class="s-comp">menu</b><span class="sl">/</span><b class="s-part">item</b><span class="sl">/</span><b class="s-prop">bg</b><span class="sl">/</span><b class="s-state">selected-hover</b></span></div>
-      <div class="dd-card dd-no"><div class="dd-lab">✕ Don't</div><span class="tok"><b class="s-comp">menu</b><span class="sl">/</span><b class="s-part">item</b><span class="sl">/</span><b class="s-prop">bg</b><span class="sl">/</span><b class="s-state">selected</b><span class="sl">/</span><b class="s-state">hover</b></span></div>
+      <div class="dd-card dd-yes"><div class="dd-lab">+ Do</div><span class="tok"><b class="s-prop">surface</b><span class="sl">/</span><b class="s-var">success-subtle</b></span></div>
+      <div class="dd-card dd-no"><div class="dd-lab">x Don't</div><span class="tok"><b class="s-var">success</b><span class="sl">/</span><b class="s-plain">50</b></span><span class="tok"><b class="s-plain">color</b><span class="sl">/</span><b class="s-plain">green</b><span class="sl">/</span><b class="s-plain">50</b></span></div>
     </div>
-    <p class="rule-why">Keeps the slot count fixed at five. Splitting states makes depth unbounded.</p>
   </div>
 
   <div class="rule">
-    <div class="rule-head"><span class="rule-n">02</span><span class="rule-t">Disabled always wins and never combines</span></div>
-    <p>There is no <code>hover-disabled</code>. Disabled is terminal — nothing can be hovered, focused, or pressed while disabled.</p>
-    <p class="rule-why">Prevents a combinatorial explosion of impossible states.</p>
+    <div class="rule-head"><span class="rule-n">02</span><span class="rule-t">There is no Component collection</span></div>
+    <p>A component MAY own colour tokens only if it has <strong>3 or more colour-bearing variants</strong> AND <strong>3 or more states that change colour</strong>. Cap: 12 tokens. Geometry never qualifies.</p>
+    <p>Promotion is <strong>opt-in and one-way</strong>. Crossing the threshold never forces a migration, and a component that has tokens never loses them. The check asks only <em>"do you have colour tokens you haven't earned?"</em></p>
   </div>
 
   <div class="rule">
-    <div class="rule-head"><span class="rule-n">03</span><span class="rule-t">One segment per slot</span></div>
-    <p>Compound names hyphenate: <code>menu-item</code>, <code>padding-x</code>, <code>primary-brand</code>. Never <code>menu/item</code>.</p>
-    <p class="rule-why">Nesting parts inside parts makes depth unbounded and breaks positional reading.</p>
+    <div class="rule-head"><span class="rule-n">03</span><span class="rule-t">Alias exactly one tier up</span></div>
+    <p>Interface -> Semantics -> Primitives. Never skip, never sideways, never two tokens in the same collection aliasing each other.</p>
   </div>
 
   <div class="rule">
     <div class="rule-head"><span class="rule-n">04</span><span class="rule-t">Never encode the value</span></div>
     <p>Outside Primitives, a name describes meaning, not appearance.</p>
     <div class="dd">
-      <div class="dd-card dd-yes"><div class="dd-lab">✓ Do</div><span class="tok"><b class="s-prop">bg</b><span class="sl">/</span><b class="s-var">brand</b><span class="sl">/</span><b class="s-plain">default</b></span></div>
-      <div class="dd-card dd-no"><div class="dd-lab">✕ Don't</div><span class="tok"><b class="s-prop">bg</b><span class="sl">/</span><b class="s-plain">blue-500</b></span><span class="tok"><b class="s-comp">button</b><span class="sl">/</span><b class="s-prop">bg</b><span class="sl">/</span><b class="s-plain">dark-navy</b></span></div>
+      <div class="dd-card dd-yes"><div class="dd-lab">+ Do</div><span class="tok"><b class="s-prop">surface</b><span class="sl">/</span><b class="s-var">primary</b></span></div>
+      <div class="dd-card dd-no"><div class="dd-lab">x Don't</div><span class="tok"><b class="s-prop">surface</b><span class="sl">/</span><b class="s-plain">blue-500</b></span><span class="tok"><b class="s-prop">text</b><span class="sl">/</span><b class="s-plain">dark-navy</b></span></div>
     </div>
-    <p class="rule-why">The entire point of the tier. A value-named token can't be rebranded or themed.</p>
   </div>
 
   <div class="rule">
-    <div class="rule-head"><span class="rule-n">05</span><span class="rule-t">Depth budget: five segments</span></div>
-    <p>Hitting six means the “part” is really its own component. Decompose instead of nesting.</p>
+    <div class="rule-head"><span class="rule-n">05</span><span class="rule-t">Depth budget: four segments</span></div>
+    <p>Interface tokens are two or three. Primitives are two or three. Nothing legitimately needs five. Hitting the budget means a role is being used as a slot.</p>
+  </div>
+
+  <div class="rule">
+    <div class="rule-head"><span class="rule-n">06</span><span class="rule-t">One state per token, composed in vocabulary order</span></div>
+    <p>Compound states hyphenate <em>inside</em> the state slot, in the order the vocabulary lists them. Never split across slashes.</p>
     <div class="dd">
-      <div class="dd-card dd-no"><div class="dd-lab">✕ Six segments</div><span class="tok"><b class="s-comp">table</b><span class="sl">/</span><b class="s-part">row</b><span class="sl">/</span><b class="s-part">cell</b><span class="sl">/</span><b class="s-part">icon</b><span class="sl">/</span><b class="s-prop">fg</b><span class="sl">/</span><b class="s-state">hover</b></span></div>
-      <div class="dd-card dd-yes"><div class="dd-lab">✓ Decomposed</div><span class="tok"><b class="s-comp">table-cell</b><span class="sl">/</span><b class="s-part">icon</b><span class="sl">/</span><b class="s-prop">fg</b><span class="sl">/</span><b class="s-state">hover</b></span></div>
+      <div class="dd-card dd-yes"><div class="dd-lab">+ Do</div><span class="tok"><b class="s-prop">surface</b><span class="sl">/</span><b class="s-var">selected</b><span class="sl">/</span><b class="s-state">hover</b></span></div>
+      <div class="dd-card dd-no"><div class="dd-lab">x Don't</div><span class="tok"><b class="s-prop">surface</b><span class="sl">/</span><b class="s-state">selected</b><span class="sl">/</span><b class="s-state">hover</b><span class="sl">/</span><b class="s-plain">x</b></span></div>
     </div>
-    <p class="rule-why">This is the rule that keeps the system honest as it grows. Depth pressure is a signal to split a component, not to add a level.</p>
   </div>
 
   <div class="rule">
-    <div class="rule-head"><span class="rule-n">06</span><span class="rule-t">Shared value → move it up a tier</span></div>
-    <p>If two components would define the same value, it belongs in Semantic. Component tokens exist for <em>divergence</em>, not repetition.</p>
-    <p>Disabled styling is the clearest case: every component's disabled state is identical, so it lives at <span class="tok"><b class="s-prop">bg</b><span class="sl">/</span><b class="s-var">neutral</b><span class="sl">/</span><b class="s-plain">muted</b></span>, not as fifteen separate component tokens.</p>
-    <p class="rule-why">One rule, one place to change it, and disabled looks the same everywhere — which is what users expect.</p>
+    <div class="rule-head"><span class="rule-n">07</span><span class="rule-t">Disabled is terminal</span></div>
+    <p>There is no <code>hover-disabled</code>. Nothing can be hovered, focused or pressed while disabled.</p>
   </div>
 
   <div class="rule">
-    <div class="rule-head"><span class="rule-n">07</span><span class="rule-t">Don't create a token you use once</span></div>
-    <p>If a component binds a semantic token directly and never diverges, no component token is needed. Add one only when the value must differ from the semantic default, or when a state ramp makes the intent unclear at the call site.</p>
-    <p class="rule-why">Pre-building the component tier is the single biggest cause of token bloat.</p>
+    <div class="rule-head"><span class="rule-n">08</span><span class="rule-t">Every accent role has the same slots</span></div>
+    <p>If <code>primary</code> gets a <code>-strong</code>, every accent role gets one. A role with a bespoke slot set is how a scale becomes uncalibrated.</p>
   </div>
 
   <div class="rule">
-    <div class="rule-head"><span class="rule-n">08</span><span class="rule-t">Singular, always</span></div>
-    <p><code>button</code> not <code>buttons</code>, <code>icon</code> not <code>icons</code>. A token names one thing.</p>
-    <p class="rule-why">Mixed plurality means guessing, and guessing means duplicate tokens.</p>
+    <div class="rule-head"><span class="rule-n">09</span><span class="rule-t">Singular, always</span></div>
+    <p><code>icon</code> not <code>icons</code>, <code>border</code> not <code>borders</code>. A token names one thing.</p>
   </div>
 
   <div class="rule">
-    <div class="rule-head"><span class="rule-n">09</span><span class="rule-t">Foreground covers text and icons</span></div>
-    <p>One <code>fg</code> token serves both. Only split when they genuinely differ — a muted icon beside full-contrast text — and then use the part slot: <span class="tok"><b class="s-comp">button</b><span class="sl">/</span><b class="s-part">icon</b><span class="sl">/</span><b class="s-prop">fg</b></span>.</p>
-    <p class="rule-why">Splitting by default doubles the colour surface for no benefit.</p>
-  </div>
-
-  <div class="rule">
-    <div class="rule-head"><span class="rule-n">10</span><span class="rule-t">Sizes never get colour tokens</span></div>
-    <p>Small, medium, and large change spacing, radius, and type size — all bound straight to Primitives. A size never produces its own colour token.</p>
-    <p class="rule-why">Otherwise every colour token triples for no reason.</p>
-  </div>
-
-  <div class="rule">
-    <div class="rule-head"><span class="rule-n">11</span><span class="rule-t">Effects are styles, not variables</span></div>
-    <p>Figma variables cannot hold shadows or gradients. Elevation goes in <strong>effect styles</strong> named <code>Category/Name</code> in Title Case — <code>Button/Raised</code>, <code>Shadow/md</code>, <code>Focus/Ring</code>. Bind their <em>colours</em> to variables where possible.</p>
-    <p class="rule-why">Different Figma primitive, so different naming convention — Title Case signals “this is a style, not a variable.”</p>
-  </div>
-
-  <div class="rule">
-    <div class="rule-head"><span class="rule-n">12</span><span class="rule-t">If you have to ask, it goes in Semantic</span></div>
-    <p>When it's unclear whether something is a semantic or component token, put it in Semantic. Promoting later is a rename; demoting later means updating every binding.</p>
-    <p class="rule-why">Asymmetric cost. Guess in the direction that's cheap to undo.</p>
+    <div class="rule-head"><span class="rule-n">10</span><span class="rule-t">Effects are styles, not variables</span></div>
+    <p>Figma variables cannot hold shadows or gradients. Elevation goes in <strong>effect styles</strong> named <code>Category/Name</code> in Title Case. Bind their <em>colours</em> to variables where possible.</p>
   </div>
 </section>
 
@@ -726,68 +625,38 @@ footer{border-top:1px solid var(--g200);padding-top:22px;margin-top:64px;font-si
 <section id="s7">
   <span class="h2num">07</span>
   <h2>Formatting conventions</h2>
-  <p class="h2sub">Mechanical rules. No judgement required — just match them exactly.</p>
 
   <div class="tbl-wrap">
   <table>
-    <thead><tr><th>Concern</th><th>Rule</th><th>Example</th></tr></thead>
+    <thead><tr><th>Rule</th><th>Detail</th><th>Wrong</th></tr></thead>
     <tbody>
-      <tr><td>Case</td><td>lowercase everywhere, no exceptions</td><td><code>button/primary-brand/bg</code></td></tr>
-      <tr><td>Word separator</td><td>Hyphen inside a slot</td><td><code>padding-x</code>, <code>on-brand</code></td></tr>
-      <tr><td>Slot separator</td><td>Forward slash, no spaces around it</td><td><code>bg/brand/hover</code></td></tr>
-      <tr><td>Spaces</td><td>Never — anywhere</td><td><code>bg / brand</code> ✕</td></tr>
-      <tr><td>Underscores</td><td>Never</td><td><code>bg_brand</code> ✕</td></tr>
-      <tr><td>Abbreviations</td><td>Only the four sanctioned ones</td><td><code>bg</code>, <code>fg</code>, <code>x</code>, <code>y</code></td></tr>
-      <tr><td>Numbers</td><td>Bare, no units</td><td><code>spacing/16</code> not <code>spacing/16px</code></td></tr>
-      <tr><td>Decimals</td><td>Avoid — use a named step</td><td><code>border-width/thin</code> not <code>1-5</code></td></tr>
-      <tr><td>Plurality</td><td>Singular</td><td><code>icon</code> not <code>icons</code></td></tr>
-      <tr><td>Collection names</td><td>Title Case, plural where natural</td><td>Primitives, Semantic, Component, Breakpoint</td></tr>
-      <tr><td>Mode names</td><td>Title Case</td><td>Light, Dark, Desktop, Tablet, Mobile, Value</td></tr>
-      <tr><td>Style names</td><td>Title Case, <code>Category/Name</code></td><td><code>Heading/H1</code>, <code>Button/Raised</code></td></tr>
+      <tr><td>Case</td><td>lowercase only</td><td><code>Surface/Primary</code> x</td></tr>
+      <tr><td>Separator</td><td><code>/</code> between slots</td><td><code>surface.primary</code> x</td></tr>
+      <tr><td>Compound words</td><td>hyphen inside a slot</td><td><code>surface/primary/subtle</code> x</td></tr>
+      <tr><td>Spaces</td><td>Never - anywhere</td><td><code>surface / primary</code> x</td></tr>
+      <tr><td>Underscores</td><td>Never</td><td><code>surface_primary</code> x</td></tr>
+      <tr><td>Numbers</td><td>Bare, no units</td><td><code>spacing/16px</code> x</td></tr>
+      <tr><td>Plurals</td><td>Never</td><td><code>icons/default</code> x</td></tr>
+      <tr><td>Abbreviations</td><td>Only <code>sm</code>/<code>md</code>/<code>lg</code> in the control scale</td><td><code>text/sec</code> x</td></tr>
     </tbody>
   </table>
   </div>
 
-  <h3>Sorting behaviour</h3>
-  <p>Figma sorts alphabetically within each folder, which has two consequences worth designing around:</p>
-  <ul>
-    <li><strong>Numeric ramps sort wrong</strong> — <code>100</code> lands before <code>50</code>. Accepted; the ramp is short enough to scan. Do not zero-pad.</li>
-    <li><strong>States cluster under their property</strong> because they're a suffix on the same folder. This is exactly why states are the last slot rather than a top-level folder.</li>
-  </ul>
+  <div class="note n-warn">
+    <span class="note-t">Numbers or words?</span>
+    <p>Use <strong>numbers</strong> when the scale might gain steps between existing ones - colour ramps, spacing, font sizes. A 350 can always be inserted. Use <strong>words</strong> when the set is small and complete - <code>thin</code>/<code>default</code>/<code>thick</code>. Never use <code>light</code>/<code>dark</code> as step names; they break the instant a step is added at either end.</p>
+  </div>
 </section>
 
 <!-- ============ 08 ============ -->
 <section id="s8">
   <span class="h2num">08</span>
   <h2>Where does my token go?</h2>
-  <p class="h2sub">Work down. The first “yes” is your answer.</p>
+  <p class="h2sub">Work down. The first "yes" is your answer.</p>
 
   <div class="note n-warn">
     <span class="note-t">The one rule that keeps this system small</span>
-    <p><strong>A component token exists only when that component needs to <em>differ</em>.</strong> If the value is the same one another component uses, it is not a Button value or a Tabs value — it is a system value, and it belongs in the <strong>control scale</strong>. Bind the shared token and create nothing.</p>
-    <p>This is not a style preference, it is the difference between a design system and a spreadsheet. A fully tokenised component runs to roughly 40 tokens. At that rate 100 components is <strong>4,000 variables</strong> — unmanageable to reason about and slow enough to make Figma's variables UI painful. Reading from the control scale takes the same 100 components to a few hundred.</p>
-    <p>It also prevents silent divergence. When Button and Tabs each owned their own <code>padding-x</code>, nothing forced them to agree — and they quietly stopped agreeing on icon size. One scale means <code>md</code> means one thing everywhere.</p>
-  </div>
-
-  <h3>The control scale</h3>
-  <p>The shared size ramp every control reads from. Defined once, in Semantic:</p>
-  <div class="tbl-wrap">
-  <table>
-    <thead><tr><th>Token</th><th>sm</th><th>md</th><th>lg</th></tr></thead>
-    <tbody>
-      <tr><td><code>control/&lt;step&gt;/size</code></td><td>32</td><td>40</td><td>48</td></tr>
-      <tr><td><code>control/&lt;step&gt;/padding-x</code></td><td>12</td><td>16</td><td>20</td></tr>
-      <tr><td><code>control/&lt;step&gt;/gap</code></td><td>6</td><td>8</td><td>8</td></tr>
-      <tr><td><code>control/&lt;step&gt;/icon/size</code></td><td>16</td><td>24</td><td>24</td></tr>
-      <tr><td><code>control/border-width</code></td><td colspan="3">1 — size-invariant, so no step slot</td></tr>
-    </tbody>
-  </table>
-  </div>
-  <p>A component that genuinely diverges keeps its own token <em>and</em> an entry in <code>packages/tokens/shared-value-exceptions.json</code> giving the reason. <code>tabs/medium/icon/size</code> is the current example: Tabs uses a 20px icon where the scale says 24, because its horizontal rhythm is denser. An exception you cannot write a reason for is not an exception.</p>
-
-  <div class="note">
-    <span class="note-t">Enforced, not trusted</span>
-    <p>The flowchart below is correct but depends on judgement at the moment of writing, and judgement failed — Button and Tabs were each given a <code>padding-x</code> token for the identical <code>spacing/16</code>. <code>scripts/verify-shared-values.mjs</code> now fails the build when two components alias the same primitive for the same property, and flags exceptions that no longer diverge. Rules that are only written get broken; this one is checked.</p>
+    <p><strong>Variables scale with the design language, not the component count.</strong> A component consumes variables; it does not add them. That is what holds the system at ~392 variables whether you have 24 components or 1,000.</p>
   </div>
 
   <div class="flow">
@@ -795,40 +664,40 @@ footer{border-top:1px solid var(--g200);padding-top:22px;margin-top:64px;font-si
       <span class="fq">Q1</span>
       <div class="fbody">
         <p class="fask">Is it a raw value with no meaning attached?</p>
-        <p class="fans"><b>Yes →</b> Primitives. <code>property / family / step</code></p>
-        <p class="fans"><b>No →</b> continue</p>
+        <p class="fans"><b>Yes -></b> Primitives. <code>family / step</code></p>
+        <p class="fans"><b>No -></b> continue</p>
       </div>
     </div>
     <div class="fstep">
       <span class="fq">Q2</span>
       <div class="fbody">
-        <p class="fask">Does it change between Desktop, Tablet, and Mobile?</p>
-        <p class="fans"><b>Yes →</b> Breakpoint. Geometry and type only — if it's a colour, the answer is no.</p>
-        <p class="fans"><b>No →</b> continue</p>
+        <p class="fask">Does it change between Desktop, Tablet and Mobile?</p>
+        <p class="fans"><b>Yes -></b> Breakpoint. Geometry and type only - if it's a colour, the answer is no.</p>
+        <p class="fans"><b>No -></b> continue</p>
       </div>
     </div>
     <div class="fstep">
       <span class="fq">Q3</span>
       <div class="fbody">
-        <p class="fask">Would more than one component use this exact value?</p>
-        <p class="fans"><b>Yes →</b> Semantic. <code>property / intent / role</code></p>
-        <p class="fans"><b>No →</b> continue</p>
+        <p class="fask">Would a different brand change this, while light and dark would not?</p>
+        <p class="fans"><b>Yes -></b> Semantics. <code>group / step</code> - a ramp step, a radius, a density.</p>
+        <p class="fans"><b>No -></b> continue</p>
       </div>
     </div>
     <div class="fstep">
       <span class="fq">Q4</span>
       <div class="fbody">
-        <p class="fask">Does this component actually need to differ from the semantic default?</p>
-        <p class="fans"><b>No →</b> Bind the semantic token directly. Create nothing. <em>(Rule 07)</em></p>
-        <p class="fans"><b>Yes →</b> Component. <code>component / variant / part / property / state</code></p>
+        <p class="fask">Does it differ between light and dark?</p>
+        <p class="fans"><b>Yes -></b> Interface. <code>element / role / state</code></p>
+        <p class="fans"><b>No -></b> It is almost certainly already in Interface. Search before creating.</p>
       </div>
     </div>
     <div class="fstep">
       <span class="fq">Q5</span>
       <div class="fbody">
-        <p class="fask">Is your name six segments long?</p>
-        <p class="fans"><b>Yes →</b> Stop. Split the inner part into its own component. <em>(Rule 05)</em></p>
-        <p class="fans"><b>No →</b> Ship it.</p>
+        <p class="fask">Still convinced the component needs its own token?</p>
+        <p class="fans"><b>3+ variants AND 3+ colour states -></b> You may promote. Cap 12. <em>(Rule 02)</em></p>
+        <p class="fans"><b>Otherwise -></b> Bind Interface. Create nothing.</p>
       </div>
     </div>
   </div>
@@ -838,27 +707,24 @@ footer{border-top:1px solid var(--g200);padding-top:22px;margin-top:64px;font-si
 <section id="s9">
   <span class="h2num">09</span>
   <h2>Worked examples</h2>
-  <p class="h2sub">Increasing complexity. The rightmost column names which slots are in play.</p>
 
   <div class="tbl-wrap">
   <table>
-    <thead><tr><th class="tnum">#</th><th>Situation</th><th>Token</th><th>Slots</th></tr></thead>
+    <thead><tr><th>You want</th><th>Token</th><th>Why</th></tr></thead>
     <tbody>
-      <tr><td class="tnum">01</td><td>The blue in the ramp</td><td><span class="tok"><b class="s-plain">color/blue/500</b></span></td><td>property·family·step</td></tr>
-      <tr><td class="tnum">02</td><td>Page background</td><td><span class="tok"><b class="s-prop">bg</b><span class="sl">/</span><b class="s-var">neutral</b><span class="sl">/</span><b class="s-plain">default</b></span></td><td>property·intent·role</td></tr>
-      <tr><td class="tnum">03</td><td>Text on a brand fill</td><td><span class="tok"><b class="s-prop">fg</b><span class="sl">/</span><b class="s-var">on-brand</b></span></td><td>property·intent</td></tr>
-      <tr><td class="tnum">04</td><td>Brand surface, hovered</td><td><span class="tok"><b class="s-prop">bg</b><span class="sl">/</span><b class="s-var">brand</b><span class="sl">/</span><b class="s-state">hover</b></span></td><td>property·intent·state</td></tr>
-      <tr><td class="tnum">05</td><td>Card fill, no variants</td><td><span class="tok"><b class="s-comp">card</b><span class="sl">/</span><b class="s-prop">bg</b></span></td><td>component·property</td></tr>
-      <tr><td class="tnum">06</td><td>Secondary button, hovered</td><td><span class="tok"><b class="s-comp">button</b><span class="sl">/</span><b class="s-var">secondary</b><span class="sl">/</span><b class="s-prop">bg</b><span class="sl">/</span><b class="s-state">hover</b></span></td><td>comp·variant·property·state</td></tr>
-      <tr><td class="tnum">07</td><td>Icon inside a primary button</td><td><span class="tok"><b class="s-comp">button</b><span class="sl">/</span><b class="s-var">primary-brand</b><span class="sl">/</span><b class="s-part">icon</b><span class="sl">/</span><b class="s-prop">fg</b></span></td><td>comp·variant·part·property</td></tr>
-      <tr><td class="tnum">08</td><td>Checkbox box when ticked</td><td><span class="tok"><b class="s-comp">checkbox</b><span class="sl">/</span><b class="s-part">indicator</b><span class="sl">/</span><b class="s-prop">bg</b><span class="sl">/</span><b class="s-state">checked</b></span></td><td>comp·part·property·state</td></tr>
-      <tr><td class="tnum">09</td><td>Ticked <em>and</em> disabled</td><td><span class="tok"><b class="s-comp">checkbox</b><span class="sl">/</span><b class="s-part">indicator</b><span class="sl">/</span><b class="s-prop">bg</b><span class="sl">/</span><b class="s-state">checked-disabled</b></span></td><td>compound state, Rule 01</td></tr>
-      <tr><td class="tnum">10</td><td>Dropdown row, selected</td><td><span class="tok"><b class="s-comp">select</b><span class="sl">/</span><b class="s-part">menu-item</b><span class="sl">/</span><b class="s-prop">bg</b><span class="sl">/</span><b class="s-state">selected</b></span></td><td>compound part, Rule 03</td></tr>
-      <tr><td class="tnum">11</td><td>Full five slots</td><td><span class="tok"><b class="s-comp">button</b><span class="sl">/</span><b class="s-var">destructive</b><span class="sl">/</span><b class="s-part">icon</b><span class="sl">/</span><b class="s-prop">fg</b><span class="sl">/</span><b class="s-state">hover</b></span></td><td>all five</td></tr>
-      <tr><td class="tnum">12</td><td>Input horizontal padding</td><td><span class="tok"><b class="s-comp">input</b><span class="sl">/</span><b class="s-prop">padding-x</b></span></td><td>comp·property</td></tr>
-      <tr><td class="tnum">13</td><td>H1 size at this breakpoint</td><td><span class="tok"><b class="s-plain">type/h1/size</b></span></td><td>group·role·property</td></tr>
-      <tr><td class="tnum">14</td><td>Its line height</td><td><span class="tok"><b class="s-plain">type/h1/line-height</b></span></td><td>group·role·property</td></tr>
-      <tr><td class="tnum">15</td><td>Disabled — <em>any</em> component</td><td><span class="tok"><b class="s-prop">bg</b><span class="sl">/</span><b class="s-var">neutral</b><span class="sl">/</span><b class="s-plain">muted</b></span></td><td>Rule 06 — shared, so semantic</td></tr>
+      <tr><td>A primary button's fill</td><td><code>surface/primary</code></td><td>Interface. Not a Button token - Button binds this.</td></tr>
+      <tr><td>Its label</td><td><code>text/on-color</code></td><td>Sits on a solid accent. One token serves every accent.</td></tr>
+      <tr><td>Its icon</td><td><code>icon/on-color</code></td><td>Icon is its own element, so it can differ from the label later.</td></tr>
+      <tr><td>A destructive button's fill</td><td><code>surface/error</code></td><td>Same shape as primary. Nothing bespoke.</td></tr>
+      <tr><td>A success badge background</td><td><code>surface/success-subtle</code></td><td><code>-subtle</code> is always the 200 step, every role.</td></tr>
+      <tr><td>Its border</td><td><code>border/success-subtle</code></td><td>Matching weight by construction.</td></tr>
+      <tr><td>A checked checkbox border</td><td><code>border/primary-strong</code></td><td><code>-strong</code> outlines a solid fill so the edge stays visible.</td></tr>
+      <tr><td>A focus ring</td><td><code>ring/focus</code></td><td>Drawn outside the border, so <code>ring</code>, not <code>border</code>.</td></tr>
+      <tr><td>Placeholder text in an input</td><td><code>text/placeholder</code></td><td>A named role, not <code>text/tertiary</code> reused.</td></tr>
+      <tr><td>A card on a page</td><td><code>surface/default</code> on <code>surface/page</code></td><td>The structural ladder keeps them distinct in both themes.</td></tr>
+      <tr><td>A hovered menu item</td><td><code>surface/hover</code></td><td>An alpha wash - works over any surface underneath.</td></tr>
+      <tr><td>A card's corner radius</td><td><code>radius/xl</code></td><td>Semantics. Brand-owned, because roundness is identity.</td></tr>
+      <tr><td>A card's padding</td><td><code>spacing/16</code></td><td>Primitives. 16px means 16px in every brand.</td></tr>
     </tbody>
   </table>
   </div>
@@ -867,93 +733,20 @@ footer{border-top:1px solid var(--g200);padding-top:22px;margin-top:64px;font-si
 <!-- ============ 10 ============ -->
 <section id="s10">
   <span class="h2num">10</span>
-  <h2>Component patterns</h2>
-  <p class="h2sub">Canonical token sets. Build these lazily — only create the rows a component genuinely needs. Where a cell says “semantic,” bind the semantic token directly and create nothing.</p>
+  <h2>Anti-patterns</h2>
 
-  <h3>Button</h3>
   <div class="tbl-wrap">
   <table>
-    <thead><tr><th>Token</th><th>Notes</th></tr></thead>
+    <thead><tr><th>Anti-pattern</th><th>Looks like</th><th>Instead</th></tr></thead>
     <tbody>
-      <tr><td><code>button/&lt;variant&gt;/bg</code></td><td>+ <code>/hover</code>, <code>/pressed</code></td></tr>
-      <tr><td><code>button/&lt;variant&gt;/fg</code></td><td>Covers label and icon (Rule 09)</td></tr>
-      <tr><td><code>button/&lt;variant&gt;/border</code></td><td>Only for variants with a visible edge</td></tr>
-      <tr><td><code>button/ring</code></td><td>Focus indicator, shared across variants</td></tr>
-      <tr><td><code>button/padding-x</code>, <code>/gap</code>, <code>/size</code></td><td>Per size — or bind Primitives directly</td></tr>
-      <tr><td>Disabled</td><td><em>semantic</em> — <code>bg/neutral/muted</code> + <code>fg/neutral/muted</code></td></tr>
-    </tbody>
-  </table>
-  </div>
-
-  <h3>Input · Textarea · Select</h3>
-  <div class="tbl-wrap">
-  <table>
-    <thead><tr><th>Token</th><th>Notes</th></tr></thead>
-    <tbody>
-      <tr><td><code>input/bg</code></td><td>+ <code>/disabled</code>, <code>/read-only</code></td></tr>
-      <tr><td><code>input/border</code></td><td>+ <code>/hover</code>, <code>/focus</code>, <code>/invalid</code></td></tr>
-      <tr><td><code>input/fg</code></td><td>The typed value</td></tr>
-      <tr><td><code>input/placeholder/fg</code></td><td>Part slot — genuinely different colour</td></tr>
-      <tr><td><code>input/icon/fg</code></td><td>Leading/trailing adornments</td></tr>
-      <tr><td><code>input/ring</code></td><td>Keep brand-coloured even if buttons don't</td></tr>
-    </tbody>
-  </table>
-  </div>
-
-  <h3>Checkbox · Radio · Switch</h3>
-  <div class="tbl-wrap">
-  <table>
-    <thead><tr><th>Token</th><th>Notes</th></tr></thead>
-    <tbody>
-      <tr><td><code>checkbox/indicator/bg</code></td><td>+ <code>/checked</code>, <code>/indeterminate</code>, <code>/checked-disabled</code></td></tr>
-      <tr><td><code>checkbox/indicator/border</code></td><td>+ <code>/hover</code>, <code>/checked</code></td></tr>
-      <tr><td><code>checkbox/indicator/fg</code></td><td>The tick mark itself</td></tr>
-      <tr><td><code>switch/track/bg</code></td><td>+ <code>/checked</code></td></tr>
-      <tr><td><code>switch/thumb/bg</code></td><td>Usually one value, no states</td></tr>
-    </tbody>
-  </table>
-  </div>
-
-  <h3>Surfaces — Card · Modal · Toast · Tooltip</h3>
-  <div class="tbl-wrap">
-  <table>
-    <thead><tr><th>Token</th><th>Notes</th></tr></thead>
-    <tbody>
-      <tr><td><code>card/bg</code>, <code>card/border</code></td><td>Often just semantic — check Rule 07</td></tr>
-      <tr><td><code>card/header/border</code></td><td>Part slot for the divider under a header</td></tr>
-      <tr><td><code>modal/overlay/bg</code></td><td>The scrim — uses an alpha primitive via semantic</td></tr>
-      <tr><td><code>toast/&lt;intent&gt;/bg</code></td><td>Variant slot carries the intent here</td></tr>
-      <tr><td><code>tooltip/bg</code>, <code>tooltip/fg</code></td><td>Usually inverse of the page</td></tr>
-    </tbody>
-  </table>
-  </div>
-
-  <h3>Navigation — Tabs · Menu · Breadcrumb · Pagination</h3>
-  <div class="tbl-wrap">
-  <table>
-    <thead><tr><th>Token</th><th>Notes</th></tr></thead>
-    <tbody>
-      <tr><td><code>tabs/item/fg</code></td><td>+ <code>/hover</code>, <code>/selected</code></td></tr>
-      <tr><td><code>tabs/item/border/selected</code></td><td>The active underline</td></tr>
-      <tr><td><code>menu/item/bg</code></td><td>+ <code>/hover</code>, <code>/selected</code>, <code>/selected-hover</code></td></tr>
-      <tr><td><code>menu/divider/border</code></td><td>Part slot</td></tr>
-      <tr><td><code>breadcrumb/separator/fg</code></td><td>Typically <code>fg/neutral/muted</code> — check Rule 07 first</td></tr>
-    </tbody>
-  </table>
-  </div>
-
-  <h3>Data — Table · Badge · Avatar · Progress · Slider</h3>
-  <div class="tbl-wrap">
-  <table>
-    <thead><tr><th>Token</th><th>Notes</th></tr></thead>
-    <tbody>
-      <tr><td><code>table/header/bg</code>, <code>/fg</code></td><td>Part slot</td></tr>
-      <tr><td><code>table/row/bg</code></td><td>+ <code>/hover</code>, <code>/selected</code>, <code>/striped</code></td></tr>
-      <tr><td><code>table-cell/…</code></td><td>Split off as its own component if depth hits six (Rule 05)</td></tr>
-      <tr><td><code>badge/&lt;intent&gt;/bg</code>, <code>/fg</code></td><td>Intent in the variant slot</td></tr>
-      <tr><td><code>avatar/bg</code>, <code>avatar/fg</code></td><td>Initials fallback</td></tr>
-      <tr><td><code>progress/track/bg</code>, <code>progress/fill/bg</code></td><td>Two parts</td></tr>
-      <tr><td><code>slider/track/bg</code>, <code>/fill/bg</code>, <code>/thumb/bg</code></td><td>Three parts</td></tr>
+      <tr><td>Binding past Interface</td><td>A component bound to <code>primary/500</code></td><td><code>surface/primary</code> - otherwise it cannot be themed</td></tr>
+      <tr><td>Forwarding token</td><td><code>badge/success/bg</code> = <code>surface/success-subtle</code></td><td>Bind the Interface token. A second name for one value is a thing that can disagree.</td></tr>
+      <tr><td>Bespoke role slots</td><td><code>border/primary</code> saturated, <code>border/success</code> a tint</td><td>Same slot, same step, every role</td></tr>
+      <tr><td>Hardcoded fill</td><td>A vector at <code>#000000</code></td><td>Bind <code>icon/default</code>. 1,753 icons were in this state.</td></tr>
+      <tr><td>Deleting without unbinding</td><td>Variable gone, 100 nodes still resolving it</td><td>Unbind every node <em>first</em>, then delete</td></tr>
+      <tr><td>Writing the resting state</td><td><code>surface/primary/default</code></td><td><code>surface/primary</code></td></tr>
+      <tr><td>Theme words in a name</td><td><code>surface/dark-card</code></td><td><code>surface/default</code> - the mode carries the theme</td></tr>
+      <tr><td>Brand words in a name</td><td><code>surface/ionbase-blue</code></td><td><code>surface/primary</code> - the mode carries the brand</td></tr>
     </tbody>
   </table>
   </div>
@@ -962,34 +755,24 @@ footer{border-top:1px solid var(--g200);padding-top:22px;margin-top:64px;font-si
 <!-- ============ 11 ============ -->
 <section id="s11">
   <span class="h2num">11</span>
-  <h2>Anti-patterns</h2>
-  <p class="h2sub">Every one of these has appeared in a real system. Each is cheap to fix on day one and expensive on day four hundred.</p>
+  <h2>Modes</h2>
+  <p class="h2sub">Two independent mode axes, in two different collections. This is what lets a brand and a theme vary without multiplying tokens.</p>
 
   <div class="tbl-wrap">
   <table>
-    <thead><tr><th>Anti-pattern</th><th>Example</th><th>Fix</th></tr></thead>
+    <thead><tr><th>Collection</th><th>Modes</th><th>Set on</th><th>Adding one costs</th></tr></thead>
     <tbody>
-      <tr><td><strong>Synonym drift</strong></td><td><code>bg</code> · <code>background</code> · <code>surface</code> · <code>fill</code></td><td>Closed vocabulary. Always <code>bg</code>.</td></tr>
-      <tr><td><strong>Value in the name</strong></td><td><code>button/bg-blue</code></td><td><code>button/primary-brand/bg</code></td></tr>
-      <tr><td><strong>State as a folder</strong></td><td><code>button/hover/bg</code></td><td><code>button/bg/hover</code> — state is last</td></tr>
-      <tr><td><strong>Nested parts</strong></td><td><code>menu/item/label/fg</code></td><td><code>menu/item-label/fg</code>, or split the component</td></tr>
-      <tr><td><strong>Duplicate namespace</strong></td><td><code>status/danger/fg</code> alongside <code>fg/danger</code></td><td>One home. Fold into the intent slot.</td></tr>
-      <tr><td><strong>Size in a colour token</strong></td><td><code>button/large/bg</code></td><td>Sizes don't get colours (Rule 10)</td></tr>
-      <tr><td><strong>Writing <code>default</code> as a state</strong></td><td><code>button/bg/default</code></td><td><code>button/bg</code> — implicit</td></tr>
-      <tr><td><strong>Component token that just repeats</strong></td><td><code>card/bg</code> → <code>bg/neutral/default</code>, never diverges</td><td>Delete it; bind semantic directly</td></tr>
-      <tr><td><strong>Abbreviating mid-system</strong></td><td><code>type/h1-lh</code></td><td><code>type/h1/line-height</code></td></tr>
-      <tr><td><strong>Decimals as steps</strong></td><td><code>border-width/1-5</code></td><td><code>border-width/thin</code></td></tr>
-      <tr><td><strong>Plural inconsistency</strong></td><td><code>icons/fg</code> next to <code>icon/bg</code></td><td>Singular, always</td></tr>
-      <tr><td><strong>Impossible compound</strong></td><td><code>bg/hover-disabled</code></td><td>Disabled is terminal (Rule 02)</td></tr>
-      <tr><td><strong>Colour in Breakpoint</strong></td><td><code>type/h1/color</code></td><td>Colour never varies by screen size</td></tr>
-      <tr><td><strong>Typeface as a name</strong></td><td><code>font/family/merriweather</code></td><td><code>font/family/serif</code> — name the role</td></tr>
+      <tr><td>Semantics</td><td>One per brand</td><td>The file, or a top-level frame</td><td>114 values. <strong>Zero new tokens.</strong></td></tr>
+      <tr><td>Interface</td><td>Light, Dark</td><td>A top-level frame</td><td>104 values. <strong>Zero new tokens.</strong></td></tr>
+      <tr><td>Breakpoint</td><td>Desktop, Tablet, Mobile</td><td>A top-level frame</td><td>30 values.</td></tr>
+      <tr><td>Primitives</td><td>Value - one only</td><td>-</td><td>-</td></tr>
     </tbody>
   </table>
   </div>
 
-  <div class="note n-stop">
-    <span class="note-t">The most expensive mistake</span>
-    <p>Creating component tokens for a component you haven't built yet. You will guess the states wrong, and the wrong names will be bound into files before anyone notices. Build the component first, add tokens when a real need appears.</p>
+  <div class="note n-key">
+    <span class="note-t">Modes multiply, they don't add</span>
+    <p>Brand x theme x breakpoint in <em>one</em> collection would mean 18 columns to maintain. Kept in separate collections, Figma resolves the combination for you and each collection stays readable.</p>
   </div>
 </section>
 
@@ -997,312 +780,176 @@ footer{border-top:1px solid var(--g200);padding-top:22px;margin-top:64px;font-si
 <section id="s12">
   <span class="h2num">12</span>
   <h2>Scopes and code syntax</h2>
-  <p class="h2sub">Two settings that make a token usable. Both are mechanical — derive them, don't decide them.</p>
+  <p class="h2sub">Set both at creation, not later.</p>
 
-  <h3>Scopes</h3>
-  <p>Scopes control which Figma pickers a variable appears in. Tight scopes are what stop a designer accidentally binding a spacing token to a corner radius.</p>
   <div class="tbl-wrap">
   <table>
-    <thead><tr><th>Property</th><th>Scopes</th></tr></thead>
+    <thead><tr><th>Element</th><th>Figma scopes</th></tr></thead>
     <tbody>
-      <tr><td><code>bg</code></td><td><code>FRAME_FILL</code>, <code>SHAPE_FILL</code></td></tr>
-      <tr><td><code>fg</code></td><td><code>TEXT_FILL</code>, <code>SHAPE_FILL</code> <em>(shape covers icons)</em></td></tr>
-      <tr><td><code>border</code>, <code>ring</code></td><td><code>STROKE_COLOR</code></td></tr>
-      <tr><td><code>gap</code>, <code>padding-*</code></td><td><code>GAP</code>, <code>WIDTH_HEIGHT</code></td></tr>
-      <tr><td><code>radius</code></td><td><code>CORNER_RADIUS</code></td></tr>
-      <tr><td><code>border-width</code></td><td><code>STROKE_FLOAT</code></td></tr>
-      <tr><td>Font size / weight / family</td><td><code>FONT_SIZE</code> / <code>FONT_STYLE</code> / <code>FONT_FAMILY</code></td></tr>
-      <tr><td>Line height</td><td><code>LINE_HEIGHT</code></td></tr>
+      <tr><td><code>surface/*</code></td><td><code>FRAME_FILL</code>, <code>SHAPE_FILL</code></td></tr>
+      <tr><td><code>text/*</code></td><td><code>TEXT_FILL</code></td></tr>
+      <tr><td><code>icon/*</code></td><td><code>SHAPE_FILL</code></td></tr>
+      <tr><td><code>border/*</code></td><td><code>STROKE_COLOR</code>, <code>SHAPE_FILL</code> <em>(dividers are drawn as filled rectangles)</em></td></tr>
+      <tr><td><code>ring/*</code></td><td><code>STROKE_COLOR</code></td></tr>
+      <tr><td><code>radius/*</code></td><td><code>CORNER_RADIUS</code></td></tr>
+      <tr><td><code>spacing/*</code></td><td><code>GAP</code>, <code>WIDTH_HEIGHT</code></td></tr>
+      <tr><td>Primitives, Semantics</td><td><code>[]</code> - hidden from every picker</td></tr>
     </tbody>
   </table>
   </div>
 
-  <div class="note n-key">
-    <span class="note-t">Optional hardening</span>
-    <p>Once the semantic layer is complete, primitives can be scoped to <code>[]</code> — they vanish from every picker, making semantic tokens the only bindable option. Strongly recommended, because a designer binding a fill straight to <code>color/blue/500</code> is exactly the drift that breaks dark mode later.</p>
+  <div class="note n-warn">
+    <span class="note-t">codeSyntax is not authoritative</span>
+    <p>It is what Dev Mode displays, and it can be wrong - an early export had 11 variables advertising a CSS variable owned by a different token. <strong>CSS is generated from the token path, never from codeSyntax.</strong> The two agreeing is a checked invariant, not something the pipeline relies on.</p>
   </div>
-
-  <h3>Code syntax</h3>
-  <p>Every variable carries a WEB code syntax value. Derive it mechanically: <strong>replace slashes with hyphens, prefix with <code>--</code>, wrap in <code>var()</code>.</strong></p>
-  <div class="tbl-wrap">
-  <table>
-    <thead><tr><th>Variable</th><th>Code syntax</th></tr></thead>
-    <tbody>
-      <tr><td><code>color/blue/500</code></td><td><code>var(--color-blue-500)</code></td></tr>
-      <tr><td><code>bg/brand/hover</code></td><td><code>var(--bg-brand-hover)</code></td></tr>
-      <tr><td><code>button/secondary/bg/hover</code></td><td><code>var(--button-secondary-bg-hover)</code></td></tr>
-    </tbody>
-  </table>
-  </div>
-  <p>No exceptions, no hand-tuning. The moment one token's code syntax stops matching its path, nobody can trust any of them.</p>
 </section>
 
 <!-- ============ 13 ============ -->
 <section id="s13">
   <span class="h2num">13</span>
-  <h2>Modes</h2>
-  <p class="h2sub">Modes are how one token holds several values. Which collection gets modes is a structural decision, not a preference.</p>
+  <h2>Lifecycle</h2>
 
+  <h3>Adding, changing or deleting a component - the strict pass</h3>
+  <p>Run <code>pnpm --filter @ionbase/tokens tokens:gate</code>. It must be clean <strong>before</strong> the component is called done.</p>
   <div class="tbl-wrap">
   <table>
-    <thead><tr><th>Collection</th><th>Modes</th><th>Why</th></tr></thead>
+    <thead><tr><th>#</th><th>Gate</th><th>What it stops</th></tr></thead>
     <tbody>
-      <tr><td>Primitives</td><td><code>Value</code></td><td>Raw values don't theme. One mode, named neutrally.</td></tr>
-      <tr><td>Semantic</td><td><code>Light</code> · <code>Dark</code></td><td>The only place theming happens.</td></tr>
-      <tr><td>Component</td><td><code>Value</code></td><td>Inherits theming through its aliases. Adding modes here duplicates work.</td></tr>
-      <tr><td>Breakpoint</td><td><code>Desktop</code> · <code>Tablet</code> · <code>Mobile</code></td><td>Geometry varies by screen, independently of theme.</td></tr>
+      <tr><td>1</td><td>Every name parses</td><td>Invented vocabulary, wrong slot order, depth over four</td></tr>
+      <tr><td>2</td><td>Aliases go exactly one tier up</td><td>Interface reaching past Semantics; components binding primitives</td></tr>
+      <tr><td>3</td><td>No unearned component tokens</td><td>The forwarding layer coming back</td></tr>
+      <tr><td>4</td><td>Every accent role has identical slots</td><td>A ramp going uncalibrated</td></tr>
+      <tr><td>5</td><td><code>codeSyntax</code> matches the path</td><td>Dev Mode advertising the wrong CSS variable</td></tr>
+      <tr><td>6</td><td>Figma binds every token, and binds no ghosts</td><td>A token nothing binds; a deleted variable still driving the design</td></tr>
     </tbody>
   </table>
   </div>
 
-  <h3>Rules</h3>
-  <ul>
-    <li><strong>Never add modes to Component.</strong> If a component needs different values in dark mode, the semantic token it points at should change — not the component token.</li>
-    <li><strong>Modes multiply, they don't add.</strong> Theme × breakpoint in one collection means six columns to maintain. Keep them in separate collections and Figma resolves the combination for you.</li>
-    <li><strong>Mode limits are plan-dependent.</strong> Professional caps at four modes per collection. Two and three both fit; a brand-theming tier with many brands would need Organization.</li>
-    <li><strong>Effect styles have no modes.</strong> A shadow tuned for light surfaces reads weakly on dark. Either accept it or maintain a parallel <code>Dark</code> style set applied by hand.</li>
-  </ul>
+  <h4>Deleting is two operations, in this order</h4>
+  <ol>
+    <li><strong>Unbind every node.</strong></li>
+    <li><strong>Then delete the variable.</strong></li>
+  </ol>
+  <p>Deleting alone does not unbind: every node keeps resolving the deleted variable and nothing looks broken. <code>tokens:bindings</code> is the only check that sees it, and a ghost is never grandfathered.</p>
+
+  <h4>Adding a component should add no tokens</h4>
+  <p>Bind Interface for colour, Semantics' control scale for size, Breakpoint for type. If a new component wants twenty tokens, ask which <em>Interface</em> roles are missing - that is where the real gap is.</p>
+
+  <h3>Renaming</h3>
+  <p>Non-destructive - Figma preserves every binding. The cost is muscle memory and shipped code. Rename freely while the system is young; batch renames once components are in production.</p>
+
+  <h3>Deprecating</h3>
+  <ol>
+    <li>Create the replacement.</li>
+    <li>Repoint the old token's value to alias the new one - every existing binding keeps working.</li>
+    <li>Prefix the old name with <code>_deprecated/</code> so it sinks to the bottom of the picker.</li>
+    <li>Unbind, then delete, only once nothing references it.</li>
+  </ol>
+
+  <h3>Amending a closed vocabulary</h3>
+  <p>Adding a word to Element, Role, or State is a system-level change. Answer all three:</p>
+  <ol>
+    <li><strong>Is it genuinely absent?</strong> Most proposals are synonyms. <code>fill</code> is <code>surface</code>. <code>active</code> is <code>pressed</code> or <code>selected</code> - pick one.</li>
+    <li><strong>Will it be used more than twice?</strong> A word for one token is an override, not a vocabulary entry.</li>
+    <li><strong>Does every role get it?</strong> If you are adding an accent slot, all five accent roles get it or none do (Rule 08).</li>
+  </ol>
+  <p>If all three pass, add the word here and in the file, in the same change.</p>
 </section>
 
 <!-- ============ 14 ============ -->
 <section id="s14">
   <span class="h2num">14</span>
-  <h2>Lifecycle</h2>
-  <p class="h2sub">Adding, changing, and retiring tokens — plus how to amend a closed vocabulary.</p>
+  <h2>Validator</h2>
+  <p class="h2sub">Type a name. Checks structure, vocabulary, casing and depth - grammar only.</p>
 
-  <h3>Adding a token</h3>
-  <ol>
-    <li>Run §8. Confirm the tier.</li>
-    <li>Check the closed vocabularies. If your word isn't there, either use the existing word or start an amendment — do not invent one quietly.</li>
-    <li>Search existing tokens for the concept before creating. Most “new” tokens already exist under a name you didn't guess.</li>
-    <li>Set scopes (§12) and code syntax (§12) at creation, not later.</li>
-    <li>Alias to the tier directly above (§2). Never skip a tier for colour.</li>
-  </ol>
+  <div class="val">
+    <input class="val-in" id="vin" type="text" spellcheck="false" autocomplete="off"
+           placeholder="surface/primary/hover" value="surface/primary/hover"
+           aria-label="Token name to validate">
+    <div class="val-ex">
+      <button type="button" data-t="surface/primary/hover">interface</button>
+      <button type="button" data-t="border/error-strong">accent suffix</button>
+      <button type="button" data-t="text/on-color">on-color</button>
+      <button type="button" data-t="primary/500">semantics</button>
+      <button type="button" data-t="color/blue/500">primitive</button>
+      <button type="button" data-t="Surface/Primary">bad case</button>
+      <button type="button" data-t="bg/brand/default">v1 name</button>
+      <button type="button" data-t="surface/primary/default">written default</button>
+      <button type="button" data-t="surface/hover/primary">state first</button>
+    </div>
+    <div class="val-out" id="vout" role="status" aria-live="polite"></div>
+  </div>
 
-  <h3>Renaming</h3>
-  <p>Figma preserves all bindings through a rename — it is <strong>non-destructive</strong>. The real cost is muscle memory and any code that has already shipped against the old name. Rename freely while the system is young; batch renames once components are in production.</p>
-
-  <h3>Deprecating</h3>
-  <p>Never delete a token that is still bound anywhere. Instead:</p>
-  <ol>
-    <li>Create the replacement.</li>
-    <li>Repoint the old token's value to alias the new one — every existing binding keeps working.</li>
-    <li>Prefix the old name with <code>_deprecated/</code> so it sinks to the bottom of the picker.</li>
-    <li>Delete only once nothing references it.</li>
-  </ol>
-
-  <h3>Amending a closed vocabulary</h3>
-  <p>Adding a word to Property, State, Intent, or Role is a system-level change. Before adding, answer all three:</p>
-  <ol>
-    <li><strong>Is it genuinely absent?</strong> Most proposed words are synonyms of an existing one. <code>surface</code> is <code>bg</code>. <code>active</code> is <code>pressed</code> or <code>selected</code> — decide which and use that.</li>
-    <li><strong>Will it be used more than twice?</strong> A word for one token is an override, not a vocabulary entry.</li>
-    <li><strong>Where does it sit in the order?</strong> Role words must slot into the muted → inverse scale. If it doesn't fit the scale, it isn't a role.</li>
-  </ol>
-  <p>If all three pass, add the word here <em>and</em> in the file, in the same change. A vocabulary that lives only in someone's head is not closed.</p>
+  <div class="note n-warn">
+    <span class="note-t">Still unchecked - the honest list</span>
+    <p>Nothing verifies that an Interface token picks a <em>sensible</em> step for its role, or that light and dark have adequate contrast. Both need a human or a contrast checker, not a grammar parser.</p>
+  </div>
 </section>
 
 <!-- ============ 15 ============ -->
 <section id="s15">
   <span class="h2num">15</span>
-  <h2>Validator</h2>
-  <p class="h2sub">Paste a token name. It parses against the grammar, colours each slot, and flags anything that breaks a rule.</p>
+  <h2>Cheat sheet</h2>
 
-  <div class="val">
-    <div class="val-lab">Token name</div>
-    <input class="val-in" id="vin" type="text" spellcheck="false" autocomplete="off"
-           placeholder="button/secondary/bg/hover" value="button/secondary/bg/hover"
-           aria-label="Token name to validate">
-    <div class="val-ex">
-      <button type="button" data-t="bg/brand/hover">bg/brand/hover</button>
-      <button type="button" data-t="button/primary-brand/icon/fg/hover">full five slots</button>
-      <button type="button" data-t="color/blue/500">primitive</button>
-      <button type="button" data-t="Button/Hover/BG">bad case</button>
-      <button type="button" data-t="button/hover/bg">state as folder</button>
-      <button type="button" data-t="table/row/cell/icon/fg/hover">too deep</button>
-      <button type="button" data-t="button/background/blue-500">two errors</button>
-    </div>
-    <div class="val-out" id="vout" role="status" aria-live="polite"></div>
+  <div class="tbl-wrap">
+  <table>
+    <thead><tr><th>I want</th><th>Pattern</th></tr></thead>
+    <tbody>
+      <tr><td>A background</td><td><code>surface/&lt;role&gt;[/&lt;state&gt;]</code></td></tr>
+      <tr><td>Text colour</td><td><code>text/&lt;role&gt;[/&lt;state&gt;]</code></td></tr>
+      <tr><td>Icon colour</td><td><code>icon/&lt;role&gt;[/&lt;state&gt;]</code></td></tr>
+      <tr><td>A stroke</td><td><code>border/&lt;role&gt;</code></td></tr>
+      <tr><td>A focus ring</td><td><code>ring/focus</code></td></tr>
+      <tr><td>A brand ramp step</td><td><code>&lt;group&gt;/&lt;50-950&gt;</code></td></tr>
+      <tr><td>A corner radius</td><td><code>radius/&lt;none-6xl,full&gt;</code></td></tr>
+      <tr><td>Control sizing</td><td><code>control/&lt;sm,md,lg&gt;/&lt;property&gt;</code></td></tr>
+      <tr><td>Padding, gap</td><td><code>spacing/&lt;n&gt;</code></td></tr>
+      <tr><td>Responsive type</td><td><code>type/&lt;role&gt;[/line-height]</code></td></tr>
+    </tbody>
+  </table>
   </div>
-  <p style="font-size:13.5px;color:var(--g500)">The validator checks structure, vocabulary, casing, depth, and value-encoding. It cannot check whether a token <em>should</em> exist — that's §8 and Rule 07, and it still needs your judgement.</p>
+
+  <div class="tbl-wrap">
+  <table>
+    <thead><tr><th>Accent slot</th><th>Step, every role</th></tr></thead>
+    <tbody>
+      <tr><td><code>&lt;role&gt;-subtle</code></td><td>50 / 200 - pale ground, hairline</td></tr>
+      <tr><td><code>&lt;role&gt;-tint</code></td><td>100 - second faint step</td></tr>
+      <tr><td><code>&lt;role&gt;</code></td><td>500 / 600 - solid fill, outline</td></tr>
+      <tr><td><code>&lt;role&gt;-strong</code></td><td>700 - outline on a solid fill</td></tr>
+    </tbody>
+  </table>
+  </div>
 </section>
 
 <!-- ============ 16 ============ -->
 <section id="s16">
   <span class="h2num">16</span>
-  <h2>Migration ledger</h2>
-  <p class="h2sub">Names in the file that diverge from this spec. Renaming is non-destructive — bindings survive.</p>
-
-  <div class="note">
-    <span class="note-t">Verified against the live file — 27 Jul 2026</span>
-    <p>Every row below was checked against the actual Figma variables (<strong>297</strong>, not the 207 this ledger was first written against). Status is measured, not assumed. Re-verify by re-running the export in <code>packages/tokens</code>.</p>
-  </div>
-
-  <h3>Resolved</h3>
-  <p>These were on the original ledger and are now correct in the file. Kept for the record — a ledger that only lists open items loses the history of what the naming rules actually changed.</p>
-  <div class="tbl-wrap">
-  <table>
-    <thead><tr><th>Was</th><th>Now</th><th>Rule</th></tr></thead>
-    <tbody>
-      <tr><td><code>bg/brand-hover</code></td><td><code>bg/brand/hover</code></td><td>State gets its own slot</td></tr>
-      <tr><td><code>bg/brand-subtle</code></td><td><code>bg/brand/subtle</code></td><td>Role gets its own slot</td></tr>
-      <tr><td><code>status/success/bg</code></td><td><code>bg/success/subtle</code></td><td>Duplicate namespace folded into intent</td></tr>
-      <tr><td><code>button/primary-neutral/bg-hover</code></td><td><code>button/primary-neutral/bg/hover</code></td><td>State slot</td></tr>
-      <tr><td><code>button/focus-ring</code></td><td><code>button/ring</code></td><td><code>ring</code> is the property</td></tr>
-      <tr><td><code>button/focus-ring-inner</code></td><td><code>button/ring/inner</code></td><td>Same</td></tr>
-      <tr><td><code>type/h1-lh</code></td><td><code>type/h1/line-height</code></td><td>No abbreviations</td></tr>
-      <tr><td><code>border-width/1-5</code></td><td><code>border-width/thin</code></td><td>Named steps, no decimals</td></tr>
-      <tr><td><code>var(--color-white)</code></td><td><code>var(--color-base-white)</code></td><td>Code syntax mirrors the path</td></tr>
-      <tr><td><code>fg/on-brand</code></td><td>— <em>was already correct</em></td><td>✓</td></tr>
-    </tbody>
-  </table>
-  </div>
-
-  <h3>Outstanding — the omitted <code>neutral</code> intent</h3>
-  <p>The largest divergence, and it is systemic rather than a handful of typos: <strong>no variable in the file uses a <code>neutral</code> intent segment.</strong> The spec requires the intent slot to be filled; the file treats neutral as implicit throughout.</p>
-  <div class="tbl-wrap">
-  <table>
-    <thead><tr><th>In the file</th><th>Spec wants</th><th>Note</th></tr></thead>
-    <tbody>
-      <tr><td><code>bg/default</code>, <code>bg/subtle</code>, <code>bg/muted</code>, <code>bg/emphasis</code></td><td><code>bg/neutral/*</code></td><td>Intent slot unfilled</td></tr>
-      <tr><td><code>fg/default</code>, <code>fg/subtle</code>, <code>fg/muted</code></td><td><code>fg/neutral/*</code></td><td>Same</td></tr>
-      <tr><td><code>border/default</code>, <code>border/muted</code>, <code>border/strong</code></td><td><code>border/neutral/*</code></td><td>Same</td></tr>
-      <tr><td><code>fg/danger</code></td><td><code>fg/danger/default</code></td><td>Role slot unfilled</td></tr>
-      <tr><td><code>button/disabled/bg</code></td><td><code>bg/neutral/muted</code></td><td>Shared value → semantic (Rule 06)</td></tr>
-    </tbody>
-  </table>
-  </div>
-  <p><strong>This is a decision, not a defect.</strong> Either the file adopts the explicit <code>neutral</code> segment (~30 renames, and every CSS variable name changes), or the spec adopts "neutral is implicit and omitted" as a stated rule. Leaving it undecided is the only wrong answer — it is what lets both conventions keep appearing. Whichever way it goes, §4 and the §17 cheat sheet change with it.</p>
-
-  <h3>Outstanding — vocabulary drift</h3>
-  <p>Words in use in the file that are not in the closed vocabularies (§5). Each needs either an amendment (§14) or a rename.</p>
-  <div class="tbl-wrap">
-  <table>
-    <thead><tr><th>Word</th><th>Slot</th><th>Seen in</th><th>Likely resolution</th></tr></thead>
-    <tbody>
-      <tr><td><code>emphasized</code></td><td>Role</td><td><code>border/emphasized</code></td><td>Synonym of <code>strong</code> — rename. The file has <code>emphasized</code>, <code>strong</code> and <code>bold</code> as three adjacent steps on one ramp, which is exactly the synonym drift §5 exists to stop.</td></tr>
-      <tr><td><code>bold</code></td><td>Role</td><td><code>border/bold</code></td><td>Same ramp as above — pick two of the three.</td></tr>
-      <tr><td><code>tint</code></td><td>Role</td><td><code>bg/tint</code>, <code>border/tint</code></td><td>Overlaps <code>subtle</code>. Rename or amend.</td></tr>
-      <tr><td><code>body</code></td><td>Role</td><td><code>fg/body</code></td><td>Genuinely distinct from <code>default</code> (documented contrast target) — amend.</td></tr>
-      <tr><td><code>secondary</code></td><td>Role</td><td><code>fg/secondary</code></td><td>Currently a Variant word doing a Role job. Amend or rename.</td></tr>
-      <tr><td><code>selected-hover</code></td><td>State</td><td><code>tabs/pill/item/bg/selected-hover</code>, <code>table/row/bg/selected-hover</code></td><td>A compound of two existing states. Amend, or adopt a rule for composing them.</td></tr>
-      <tr><td><code>striped</code></td><td>State</td><td><code>table/row/bg/striped</code></td><td>Not an interaction state — arguably a Variant. Decide the slot.</td></tr>
-    </tbody>
-  </table>
-  </div>
-
-  <h3>Outstanding — code syntax defects</h3>
-  <p>Eleven variables advertise a <code>codeSyntax.WEB</code> string that is not their own path, so Dev Mode shows engineers the wrong CSS variable — and in every case the advertised name already belongs to a different token. Tracked in <code>packages/tokens/known-defects.json</code>; the token build fails the moment one is fixed in Figma but not removed from that file.</p>
-  <div class="tbl-wrap">
-  <table>
-    <thead><tr><th>Variable</th><th>Advertises</th><th>Which belongs to</th></tr></thead>
-    <tbody>
-      <tr><td><code>bg/tint</code></td><td><code>var(--bg-brand)</code></td><td><code>bg/brand</code></td></tr>
-      <tr><td><code>border/tint</code></td><td><code>var(--border-brand)</code></td><td><code>border/brand</code></td></tr>
-      <tr><td><code>border/emphasized</code></td><td><code>var(--border-strong)</code></td><td><code>border/strong</code></td></tr>
-      <tr><td><code>border/bold</code></td><td><code>var(--border-strong)</code></td><td><code>border/strong</code></td></tr>
-      <tr><td><code>badge/&lt;intent&gt;/border</code> ×6</td><td><code>var(--badge-&lt;intent&gt;-fg)</code></td><td>the <code>fg</code> sibling</td></tr>
-      <tr><td><code>font/family/serif 2</code></td><td><code>var(--font-family-serif)</code></td><td><code>font/family/serif</code></td></tr>
-    </tbody>
-  </table>
-  </div>
-  <p><code>font/family/serif 2</code> is a duplicate holding <em>STIX Two Text</em> while <code>font/family/serif</code> holds <em>Merriweather</em>. Its name breaks the formatting rules outright (space, numeric suffix). Pick the canonical serif and delete the other.</p>
-
-  <p><strong>Of 297 variables, 11 have a broken code syntax and roughly 40 need renaming.</strong> Do the <code>neutral</code> decision first — it is the largest, it blocks the vocabulary cleanup underneath it, and every token added before it is settled is another one to migrate.</p>
-</section>
-
-<!-- ============ 17 ============ -->
-<section id="s17">
-  <span class="h2num">17</span>
-  <h2>Cheat sheet</h2>
-  <p class="h2sub">Print this. Everything else is elaboration.</p>
-
-  <div class="cheat">
-    <h3>Name a variable in four steps</h3>
-    <ol style="margin-bottom:0">
-      <li><strong>Pick the tier</strong> — raw value → Primitives · shared meaning → Semantic · one component only → Component · varies by screen → Breakpoint</li>
-      <li><strong>Fill the slots in order</strong> — <code>component / variant / part / property / state</code></li>
-      <li><strong>Drop what you don't need</strong> — never reorder what's left</li>
-      <li><strong>Check it's ≤ 5 segments</strong> — if it's 6, split the component</li>
-    </ol>
-
-    <div class="cheat-grid">
-      <div class="cheat-col">
-        <h4>Property — closed</h4>
-        <ul style="list-style:none;padding:0;font-family:var(--mono);font-size:12.5px">
-          <li>bg · fg · border · ring · shadow</li>
-          <li>radius · gap · padding-x · padding-y</li>
-          <li>size · border-width</li>
-          <li>line-height · letter-spacing</li>
-        </ul>
-        <h4 style="margin-top:18px">Intent — closed</h4>
-        <ul style="list-style:none;padding:0;font-family:var(--mono);font-size:12.5px">
-          <li>neutral · brand · success</li>
-          <li>warning · danger · info</li>
-          <li>on-&lt;intent&gt;</li>
-        </ul>
-      </div>
-      <div class="cheat-col">
-        <h4>State — closed, always last</h4>
-        <ul style="list-style:none;padding:0;font-family:var(--mono);font-size:12.5px">
-          <li>hover · pressed · focus</li>
-          <li>selected · checked · indeterminate</li>
-          <li>expanded · invalid · loading</li>
-          <li>read-only · disabled</li>
-          <li style="color:var(--g500)">(default is never written)</li>
-        </ul>
-        <h4 style="margin-top:18px">Role — ordered scale</h4>
-        <ul style="list-style:none;padding:0;font-family:var(--mono);font-size:12.5px">
-          <li>muted → subtle → default</li>
-          <li>→ strong → emphasis → inverse</li>
-        </ul>
-      </div>
-    </div>
-
-    <hr style="margin:22px 0 18px">
-    <h4 style="margin-top:0">Never</h4>
-    <ul style="font-size:13.5px;margin-bottom:0">
-      <li>Put a value in a name — <code>bg/blue-500</code></li>
-      <li>Put state anywhere but last — <code>button/hover/bg</code></li>
-      <li>Invent a property synonym — <code>surface</code>, <code>fill</code>, <code>text</code></li>
-      <li>Combine anything with <code>disabled</code></li>
-      <li>Give a size its own colour token</li>
-      <li>Create a component token that just repeats a semantic one</li>
-    </ul>
-  </div>
-</section>
-
-<!-- ============ 18 ============ -->
-<section id="s18">
-  <span class="h2num">18</span>
   <h2>Glossary</h2>
-  <p class="h2sub">For anyone new to token systems.</p>
 
   <div class="tbl-wrap">
   <table>
     <thead><tr><th>Term</th><th>Means</th></tr></thead>
     <tbody>
-      <tr><td><strong>Token</strong></td><td>A named design decision. In Figma, a variable.</td></tr>
-      <tr><td><strong>Primitive</strong></td><td>A raw value with no meaning attached — a specific blue, a specific 16px.</td></tr>
-      <tr><td><strong>Semantic token</strong></td><td>A token named for what it means, pointing at a primitive. Where theming happens.</td></tr>
-      <tr><td><strong>Alias</strong></td><td>A token whose value is another token rather than a literal. The chain that makes theming work.</td></tr>
-      <tr><td><strong>Slot</strong></td><td>One position in a token name, between slashes. Meaning comes from position.</td></tr>
-      <tr><td><strong>Closed vocabulary</strong></td><td>A fixed list of allowed words for a slot. Changing it requires an amendment.</td></tr>
-      <tr><td><strong>Mode</strong></td><td>A column of values inside a collection — Light and Dark, or Desktop/Tablet/Mobile.</td></tr>
-      <tr><td><strong>Collection</strong></td><td>A group of variables sharing a set of modes. This system has four.</td></tr>
-      <tr><td><strong>Scope</strong></td><td>Which Figma pickers a variable shows up in. Tight scopes prevent mis-binding.</td></tr>
-      <tr><td><strong>Code syntax</strong></td><td>The name a developer sees in Dev Mode. Derived mechanically from the path.</td></tr>
-      <tr><td><strong>Intent</strong></td><td>What a colour means — brand, success, danger. Fixed to one hue each.</td></tr>
-      <tr><td><strong>Role</strong></td><td>How prominent, within an intent. An ordered scale from muted to inverse.</td></tr>
-      <tr><td><strong>Part</strong></td><td>A named piece inside a component that needs its own tokens.</td></tr>
-      <tr><td><strong>Synonym drift</strong></td><td>The same concept named several ways. The main cause of design-system decay.</td></tr>
+      <tr><td>Alias</td><td>A variable whose value is another variable. The whole system is aliases.</td></tr>
+      <tr><td>Binding</td><td>A Figma node property pointing at a variable. Bindings survive renames; they do <em>not</em> survive being ignored when you delete.</td></tr>
+      <tr><td>Ghost</td><td>A binding to a deleted variable. Still resolves, invisible to every export.</td></tr>
+      <tr><td>Mode</td><td>A column in a collection. Brand in Semantics, theme in Interface, screen size in Breakpoint.</td></tr>
+      <tr><td>Element</td><td>First slot of an Interface token: text, icon, surface, border, ring.</td></tr>
+      <tr><td>Role</td><td>Second slot: what it means or how prominent.</td></tr>
+      <tr><td>State</td><td>Third slot: interaction or condition. Resting state is never written.</td></tr>
+      <tr><td>Step</td><td>A numbered position on a ramp, 50 to 950.</td></tr>
+      <tr><td>Promotion</td><td>Granting a component its own colour tokens. Opt-in, one-way, capped at 12.</td></tr>
+      <tr><td>Control scale</td><td>The shared size ramp every interactive control reads: sm, md, lg.</td></tr>
+      <tr><td>Structural ladder</td><td>The surface layering order: page, sunken, default, subtle, muted, raised, overlay.</td></tr>
     </tbody>
   </table>
   </div>
 </section>
 
 <footer>
-  <p>Variable Naming Specification · SAAS Design System · Figma file <code>gaLbGd0QNb1fUl6BjSpfBA</code></p>
-  <p>Amendments to closed vocabularies must be made in this document and in the file, in the same change.</p>
+  <p>Variable Naming Specification v2 - IonBase - Figma file <code>gaLbGd0QNb1fUl6BjSpfBA</code></p>
+  <p>Amendments to closed vocabularies must be made in this document and in the file, in the same change. Reasoning lives in <a href="naming-decisions.md">naming-decisions.md</a>; the token inventory in <a href="token-architecture-v2.md">token-architecture-v2.md</a>.</p>
 </footer>
 
 </div>
@@ -1313,19 +960,27 @@ footer{border-top:1px solid var(--g200);padding-top:22px;margin-top:64px;font-si
 (function(){
   "use strict";
 
-  var PROPS = ["bg","fg","border","ring","shadow","radius","gap","padding-x","padding-y","size","border-width","line-height","letter-spacing"];
-  var STATES = ["hover","pressed","focus","selected","checked","indeterminate","expanded","invalid","loading","read-only","disabled"];
-  var INTENTS = ["neutral","brand","success","warning","danger","info"];
-  var ROLES = ["muted","subtle","default","strong","emphasis","inverse"];
+  var ELEMENTS = ["text","icon","surface","border","ring"];
+  var NEUTRAL_ROLES = ["default","secondary","tertiary","subtle","muted","strong","stronger",
+                       "placeholder","disabled","inverse","inverse-subtle","on-color",
+                       "interactive","page","sunken","raised","overlay","scrim","link",
+                       "hover","pressed","selected","selected-hover","transparent","focus","focus-error"];
+  var ACCENTS = ["primary","error","success","warning","information"];
+  var SUFFIXES = ["strong","subtle","tint"];
+  var STATES = ["hover","pressed","focus","selected","checked","indeterminate",
+                "expanded","invalid","loading","read-only","visited"];
+  var SEM_GROUPS = ["primary","neutral","success","warning","error","information",
+                    "chart","base","alpha","radius","border-width","font","control"];
   var PRIM_ROOTS = ["color","spacing","radius","font","border-width"];
   var BP_ROOTS = ["grid","container","section","type"];
-  var SYNONYMS = {
-    background:"bg", surface:"bg", fill:"bg",
-    text:"fg", color:"fg", content:"fg", ink:"fg", foreground:"fg",
-    stroke:"border", outline:"border", line:"border",
-    active:"pressed or selected — pick one",
-    width:"size", height:"size",
-    halo:"ring", glow:"ring"
+
+  var RETIRED = {
+    bg:"surface", fg:"text or icon", brand:"primary", danger:"error", info:"information",
+    background:"surface", fill:"surface", stroke:"border", outline:"border",
+    content:"text", ink:"text", foreground:"text or icon",
+    emphasis:"strong or inverse", emphasized:"strong", bold:"stronger",
+    body:"secondary", active:"pressed or selected - pick one",
+    halo:"ring", glow:"ring", muted:"muted (still valid on the neutral ladder)"
   };
 
   var input = document.getElementById("vin");
@@ -1336,190 +991,170 @@ footer{border-top:1px solid var(--g200);padding-top:22px;margin-top:64px;font-si
     return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c];
   }); }
 
-  function isState(s){ 
-    if(STATES.indexOf(s) > -1) return true;
+  function inList(list, s){ return list.indexOf(s) > -1; }
+
+  function isState(s){
+    if(inList(STATES, s)) return true;
+    if(s === "read-only") return true;
     if(s.indexOf("-") > -1){
       var parts = s.split("-");
-      // read-only is a single state with a hyphen
-      if(s === "read-only") return true;
-      var ok = true;
-      for(var i=0;i<parts.length;i++){ if(STATES.indexOf(parts[i]) === -1) ok = false; }
-      return ok;
+      for(var i=0;i<parts.length;i++){ if(!inList(STATES, parts[i])) return false; }
+      return true;
+    }
+    return false;
+  }
+
+  function stateOrdered(s){
+    var parts = s.split("-");
+    if(parts.length < 2) return true;
+    var idx = [];
+    for(var i=0;i<parts.length;i++){ idx.push(STATES.indexOf(parts[i])); }
+    for(var j=1;j<idx.length;j++){ if(idx[j] < idx[j-1]) return false; }
+    return true;
+  }
+
+  function isRole(s){
+    if(inList(NEUTRAL_ROLES, s)) return true;
+    if(inList(ACCENTS, s)) return true;
+    if(s.indexOf("-") > -1){
+      var i = s.lastIndexOf("-");
+      var base = s.slice(0, i), suf = s.slice(i+1);
+      if(inList(ACCENTS, base) && inList(SUFFIXES, suf)) return true;
     }
     return false;
   }
 
   function classify(segs){
     var root = segs[0];
-    if(PRIM_ROOTS.indexOf(root) > -1 && PROPS.indexOf(root) === -1) return "primitive";
-    if(root === "radius" || root === "border-width") return "primitive";
-    if(BP_ROOTS.indexOf(root) > -1) return "breakpoint";
-    if(PROPS.indexOf(root) > -1) return "semantic";
-    return "component";
+    if(inList(ELEMENTS, root)) return "interface";
+    if(inList(BP_ROOTS, root) && root !== "radius") return "breakpoint";
+    if(inList(PRIM_ROOTS, root) && !inList(SEM_GROUPS, root)) return "primitive";
+    if(root === "color" || root === "spacing") return "primitive";
+    if(inList(SEM_GROUPS, root)) return "semantics";
+    return "unknown";
   }
 
   function analyse(raw){
-    var msgs = [];
-    var name = raw.trim();
+    var msgs = [], labels = [];
+    var name = String(raw).trim();
     if(!name) return { segs: [], labels: [], msgs: [] };
 
     var segs = name.split("/");
     var tier = classify(segs);
-    var labels = [];
 
-    // --- universal checks ---
+    // --- universal ---
     if(/\s/.test(name)) msgs.push(["err","No spaces allowed anywhere in a token name."]);
     if(/_/.test(name)) msgs.push(["err","Underscores aren't used. Hyphenate inside a slot."]);
     if(/[A-Z]/.test(name)) msgs.push(["err","Token names are lowercase. Try <span class='vfix'>" + esc(name.toLowerCase()) + "</span>"]);
-    if(segs.length > 5) msgs.push(["err","" + segs.length + " segments — the budget is 5. Split the inner part into its own component (Rule 05)."]);
+    if(segs.length > 4) msgs.push(["err","" + segs.length + " segments - the budget is 4 (Rule 05)."]);
     for(var i=0;i<segs.length;i++){
-      if(segs[i] === "") msgs.push(["err","Empty segment — check for a doubled or trailing slash."]);
+      if(segs[i] === "") msgs.push(["err","Empty segment - check for a doubled or trailing slash."]);
     }
-    if(/\d+(px|rem|em)\b/.test(name)) msgs.push(["err","Numbers are bare — drop the unit."]);
+    if(/\d+(px|rem|em)\b/.test(name)) msgs.push(["err","Numbers are bare - drop the unit."]);
     if(/#[0-9a-fA-F]{3,8}/.test(name)) msgs.push(["err","Never put a hex value in a name (Rule 04)."]);
 
-    // --- slot assignment by tier ---
+    // retired vocabulary, anywhere in the name
+    for(var r=0;r<segs.length;r++){
+      var seg = segs[r];
+      if(RETIRED.hasOwnProperty(seg) && !(seg === "muted" && tier === "interface")){
+        msgs.push(["err","<code>" + esc(seg) + "</code> was retired in v2 - use <strong>" + RETIRED[seg] + "</strong>."]);
+      }
+    }
+
     if(tier === "primitive"){
-      labels = ["property","family","step"].slice(0, segs.length);
-      msgs.push(["ok","Primitives — <code>property / family / step</code>"]);
-      if(segs.length > 3) msgs.push(["warn","Primitives are usually 2–3 segments."]);
+      labels = ["family","step","step"].slice(0, segs.length);
+      msgs.push(["ok","Primitives - <code>family / step</code>. Nothing may bind these directly."]);
+    }
+    else if(tier === "semantics"){
+      labels = ["group","step","step"].slice(0, segs.length);
+      msgs.push(["ok","Semantics - <code>group / step</code>. Brand-owned; components must not bind these."]);
+      if(inList(ACCENTS, segs[0]) || segs[0] === "neutral"){
+        if(segs.length < 2) msgs.push(["err","A colour group needs a step, e.g. <span class='vfix'>" + esc(segs[0]) + "/500</span>"]);
+        else if(!/^(50|[1-9]50|[1-9]00)$/.test(segs[1])) msgs.push(["warn","<code>" + esc(segs[1]) + "</code> isn't a ramp step. Steps run 50, 100 ... 900, 950."]);
+      }
     }
     else if(tier === "breakpoint"){
       labels = ["group","role","property"].slice(0, segs.length);
-      msgs.push(["ok","Breakpoint — geometry and type only, never colour."]);
-      if(/\b(color|colour|bg|fg)\b/.test(name)) msgs.push(["err","Colour doesn't belong in Breakpoint — it doesn't vary by screen size."]);
+      msgs.push(["ok","Breakpoint - geometry and type only, never colour."]);
+      if(/\b(color|colour|surface|text|icon)\b/.test(name)) msgs.push(["err","Colour doesn't belong in Breakpoint - it doesn't vary by screen size."]);
     }
-    else if(tier === "semantic"){
-      labels = ["property"];
-      if(segs.length >= 2) labels.push("intent");
-      if(segs.length >= 3) labels.push(isState(segs[2]) ? "state" : "role");
-      if(segs.length >= 4) labels.push("state");
-      msgs.push(["ok","Semantic — <code>property / intent / role</code>"]);
+    else if(tier === "interface"){
+      labels = ["element"];
+      msgs.push(["ok","Interface - <code>element / role / state</code>. This is what components bind."]);
 
-      if(segs.length >= 2){
-        var it = segs[1];
-        var bare = it.indexOf("on-") === 0 ? it.slice(3) : it;
-        if(INTENTS.indexOf(bare) === -1){
-          msgs.push(["err","<code>" + esc(it) + "</code> isn't an intent. Allowed: " + INTENTS.join(", ") + ", or <code>on-&lt;intent&gt;</code>."]);
+      if(segs.length < 2){
+        msgs.push(["err","An Interface token needs a role, e.g. <span class='vfix'>" + esc(segs[0]) + "/default</span>"]);
+      } else {
+        labels.push("role");
+        if(!isRole(segs[1])){
+          if(isState(segs[1])){
+            msgs.push(["err","<code>" + esc(segs[1]) + "</code> is a state, and state is never second. Role comes first."]);
+          } else if(segs[1] === "default" ){
+            // handled by NEUTRAL_ROLES
+          } else {
+            msgs.push(["err","<code>" + esc(segs[1]) + "</code> isn't a role. Accents: " + ACCENTS.join(", ") + " (with optional -strong / -subtle / -tint)."]);
+          }
         }
       }
-      if(segs.length >= 3 && !isState(segs[2]) && ROLES.indexOf(segs[2]) === -1){
-        msgs.push(["err","<code>" + esc(segs[2]) + "</code> isn't a role or a state. Roles: " + ROLES.join(" → ") + "."]);
+
+      if(segs.length >= 3){
+        labels.push("state");
+        var st = segs[2];
+        if(st === "default"){
+          var fixed = segs.slice(0,2).join("/");
+          msgs.push(["err","The resting state is never written. Try <span class='vfix'>" + esc(fixed) + "</span>"]);
+        } else if(!isState(st)){
+          msgs.push(["err","<code>" + esc(st) + "</code> isn't a state. Allowed: " + STATES.join(", ") + "."]);
+        } else if(!stateOrdered(st)){
+          var ord = st.split("-").sort(function(a,b){ return STATES.indexOf(a) - STATES.indexOf(b); }).join("-");
+          msgs.push(["err","Composed states go in vocabulary order. Try <span class='vfix'>" + esc(segs[0]+"/"+segs[1]+"/"+ord) + "</span>"]);
+        }
+        if(st.indexOf("disabled") > -1) msgs.push(["err","<code>disabled</code> is a role, not a state - it never combines (Rule 07)."]);
       }
     }
     else {
-      // component tier — walk from the right
-      var work = segs.slice();
-      var lab = new Array(work.length);
-      var idx = work.length - 1;
-
-      if(idx >= 1 && isState(work[idx])){ lab[idx] = "state"; idx--; }
-      if(idx >= 1 && PROPS.indexOf(work[idx]) > -1){ lab[idx] = "property"; idx--; }
-      lab[0] = "component";
-      if(idx === 2){ lab[1] = "variant"; lab[2] = "part"; }
-      else if(idx === 1){ lab[1] = "variant/part"; }
-      for(var j=0;j<lab.length;j++){ if(!lab[j]) lab[j] = "?"; }
-      labels = lab;
-
-      msgs.push(["ok","Component — <code>component / variant / part / property / state</code>"]);
-
-      var hasProp = false;
-      for(var k=0;k<lab.length;k++){ if(lab[k] === "property") hasProp = true; }
-      if(!hasProp && segs.length > 1){
-        msgs.push(["err","No recognised property. Every component token needs one of: " + PROPS.join(", ") + "."]);
-      }
-
-      // state in the wrong position
-      for(var m=0;m<segs.length-1;m++){
-        if(isState(segs[m]) && lab[m] !== "state"){
-          var fixed = segs.slice(); fixed.splice(m,1); fixed.push(segs[m]);
-          msgs.push(["err","<code>" + esc(segs[m]) + "</code> is a state — it must be last. Try <span class='vfix'>" + esc(fixed.join("/")) + "</span>"]);
-        }
-      }
-      if(segs[segs.length-1] === "default"){
-        msgs.push(["err","<code>default</code> is implicit at the component tier — drop it. Try <span class='vfix'>" + esc(segs.slice(0,-1).join("/")) + "</span>"]);
-      }
+      labels = [];
+      for(var q=0;q<segs.length;q++) labels.push("?");
+      msgs.push(["err","<code>" + esc(segs[0]) + "</code> doesn't start any collection. Interface starts with " + ELEMENTS.join(", ") + "."]);
     }
 
-    // --- vocabulary drift, any tier ---
-    for(var s=0;s<segs.length;s++){
-      var seg = segs[s];
-      var lower = seg.toLowerCase();
-      if(SYNONYMS.hasOwnProperty(lower)){
-        msgs.push(["err","<code>" + esc(seg) + "</code> isn't in the vocabulary — use <span class='vfix'>" + esc(SYNONYMS[lower]) + "</span>"]);
-      }
-      if(/^(blue|red|green|gray|grey|yellow|purple|orange|pink)-?\d{2,3}$/.test(lower) && tier !== "primitive"){
-        msgs.push(["err","<code>" + esc(seg) + "</code> encodes a value. Name the meaning instead (Rule 04)."]);
-      }
-      if(/^\d+-\d+$/.test(seg)){
-        msgs.push(["warn","<code>" + esc(seg) + "</code> looks like a decimal. Prefer a named step — <code>thin</code>, <code>default</code>, <code>thick</code>."]);
-      }
-      if(/(hover|pressed|focus|disabled)-(hover|pressed|focus)/.test(lower) && lower.indexOf("disabled") > -1){
-        msgs.push(["err","<code>disabled</code> never combines with another state (Rule 02)."]);
-      }
-    }
-
-    var errs = 0;
-    for(var e=0;e<msgs.length;e++){ if(msgs[e][0] === "err") errs++; }
-    if(errs === 0) msgs.push(["ok","No rule violations found."]);
-
-    return { segs: segs, labels: labels, msgs: msgs, tier: tier };
+    return { segs: segs, labels: labels, msgs: msgs };
   }
 
-  var COLORS = {
-    component:"var(--s-comp)", variant:"var(--s-var)", "variant/part":"var(--s-var)",
-    part:"var(--s-part)", property:"var(--s-prop)", state:"var(--s-state)",
-    intent:"var(--s-var)", role:"var(--s-part)", family:"var(--s-var)",
-    step:"var(--s-part)", group:"var(--s-comp)", "?":"var(--g400)"
-  };
-
-  function render(raw){
-    var r = analyse(raw);
-    if(!r.segs.length){ out.innerHTML = ""; return; }
-
-    var html = '<div class="val-parse">';
-    for(var i=0;i<r.segs.length;i++){
-      if(i) html += '<span class="vslash">/</span>';
-      var lab = r.labels[i] || "?";
-      html += '<span class="vseg"><span class="vlab">' + esc(lab) + '</span>' +
-              '<span class="vval" style="color:' + (COLORS[lab] || "var(--g400)") + '">' + esc(r.segs[i]) + '</span></span>';
+  function render(){
+    var res = analyse(input.value);
+    var html = "";
+    if(res.segs.length){
+      html += "<div class='vseg'>";
+      for(var i=0;i<res.segs.length;i++){
+        html += "<span class='vs'><span class='vsl'>" + esc(res.labels[i] || "?") + "</span>" +
+                "<span class='vsv'>" + esc(res.segs[i]) + "</span></span>";
+        if(i < res.segs.length - 1) html += "<span class='vsx'>/</span>";
+      }
+      html += "</div>";
     }
-    html += '</div>';
-
-    for(var m=0;m<r.msgs.length;m++){
-      var type = r.msgs[m][0];
-      var cls = type === "err" ? "v-err" : (type === "warn" ? "v-warn" : "v-ok");
-      var ic = type === "err" ? "✕" : (type === "warn" ? "!" : "✓");
-      html += '<div class="vmsg ' + cls + '"><span class="vicon">' + ic + '</span><span>' + r.msgs[m][1] + '</span></div>';
+    var errs = 0;
+    for(var j=0;j<res.msgs.length;j++){
+      var type = res.msgs[j][0], text = res.msgs[j][1];
+      if(type === "err") errs++;
+      var ic = type === "err" ? "x" : (type === "warn" ? "!" : "+");
+      html += "<p class='vmsg v-" + type + "'><b>" + ic + "</b> " + text + "</p>";
     }
+    if(!errs && res.segs.length) html += "<p class='vmsg v-ok'><b>+</b> Valid.</p>";
     out.innerHTML = html;
   }
 
-  input.addEventListener("input", function(){ render(input.value); });
+  input.addEventListener("input", render);
   var btns = document.querySelectorAll(".val-ex button");
   for(var b=0;b<btns.length;b++){
-    btns[b].addEventListener("click", function(){
-      input.value = this.getAttribute("data-t");
-      render(input.value);
-      input.focus();
-    });
-  }
-  render(input.value);
-
-  // ---- scrollspy ----
-  var links = document.querySelectorAll(".rail nav a");
-  var secs = document.querySelectorAll("main section");
-  if("IntersectionObserver" in window && secs.length){
-    var obs = new IntersectionObserver(function(entries){
-      entries.forEach(function(en){
-        if(!en.isIntersecting) return;
-        for(var i=0;i<links.length;i++){
-          links[i].classList.toggle("on", links[i].getAttribute("href") === "#" + en.target.id);
-        }
+    (function(btn){
+      btn.addEventListener("click", function(){
+        input.value = btn.getAttribute("data-t");
+        render();
       });
-    }, { rootMargin: "-10% 0px -75% 0px", threshold: 0 });
-    for(var s=0;s<secs.length;s++) obs.observe(secs[s]);
+    })(btns[b]);
   }
+  render();
 })();
 </script>
 </body>

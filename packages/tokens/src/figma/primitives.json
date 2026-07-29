@@ -6,1233 +6,146 @@
   ],
   "defaultMode": "Value",
   "variables": {
-    "color/base/white": {
-      "type": "COLOR",
-      "scopes": [],
-      "codeSyntax": "var(--color-base-white)",
-      "values": {
-        "Value": "#ffffff"
-      }
-    },
-    "color/base/black": {
-      "type": "COLOR",
-      "scopes": [],
-      "codeSyntax": "var(--color-base-black)",
-      "values": {
-        "Value": "#000000"
-      }
-    },
-    "color/gray/50": {
-      "type": "COLOR",
-      "scopes": [],
-      "codeSyntax": "var(--color-gray-50)",
-      "values": {
-        "Value": "#f6f8f9"
-      }
-    },
-    "color/gray/100": {
-      "type": "COLOR",
-      "scopes": [],
-      "codeSyntax": "var(--color-gray-100)",
-      "values": {
-        "Value": "#f0f2f4"
-      }
-    },
-    "color/gray/200": {
-      "type": "COLOR",
-      "scopes": [],
-      "codeSyntax": "var(--color-gray-200)",
-      "values": {
-        "Value": "#e5e7eb"
-      }
-    },
-    "color/gray/300": {
-      "type": "COLOR",
-      "scopes": [],
-      "codeSyntax": "var(--color-gray-300)",
-      "values": {
-        "Value": "#dde0e4"
-      }
-    },
-    "color/gray/400": {
-      "type": "COLOR",
-      "scopes": [],
-      "codeSyntax": "var(--color-gray-400)",
-      "values": {
-        "Value": "#9ca3b0"
-      }
-    },
-    "color/gray/500": {
-      "type": "COLOR",
-      "scopes": [],
-      "codeSyntax": "var(--color-gray-500)",
-      "values": {
-        "Value": "#6b7280"
-      }
-    },
-    "color/gray/600": {
-      "type": "COLOR",
-      "scopes": [],
-      "codeSyntax": "var(--color-gray-600)",
-      "values": {
-        "Value": "#4b5563"
-      }
-    },
-    "color/gray/700": {
-      "type": "COLOR",
-      "scopes": [],
-      "codeSyntax": "var(--color-gray-700)",
-      "values": {
-        "Value": "#384252"
-      }
-    },
-    "color/gray/800": {
-      "type": "COLOR",
-      "scopes": [],
-      "codeSyntax": "var(--color-gray-800)",
-      "values": {
-        "Value": "#1d2735"
-      }
-    },
-    "color/gray/900": {
-      "type": "COLOR",
-      "scopes": [],
-      "codeSyntax": "var(--color-gray-900)",
-      "values": {
-        "Value": "#070a0d"
-      }
-    },
-    "color/purple/50": {
-      "type": "COLOR",
-      "scopes": [],
-      "codeSyntax": "var(--color-purple-50)",
-      "values": {
-        "Value": "#f6f1f8"
-      }
-    },
-    "color/purple/100": {
-      "type": "COLOR",
-      "scopes": [],
-      "codeSyntax": "var(--color-purple-100)",
-      "values": {
-        "Value": "#f1e8fd"
-      }
-    },
-    "color/purple/200": {
-      "type": "COLOR",
-      "scopes": [],
-      "codeSyntax": "var(--color-purple-200)",
-      "values": {
-        "Value": "#dfd4fc"
-      }
-    },
-    "color/purple/300": {
-      "type": "COLOR",
-      "scopes": [],
-      "codeSyntax": "var(--color-purple-300)",
-      "values": {
-        "Value": "#adadf5"
-      }
-    },
-    "color/purple/400": {
-      "type": "COLOR",
-      "scopes": [],
-      "codeSyntax": "var(--color-purple-400)",
-      "values": {
-        "Value": "#7e6ff1"
-      }
-    },
-    "color/purple/500": {
-      "type": "COLOR",
-      "scopes": [],
-      "codeSyntax": "var(--color-purple-500)",
-      "values": {
-        "Value": "#5a4cd6"
-      }
-    },
-    "color/purple/600": {
-      "type": "COLOR",
-      "scopes": [],
-      "codeSyntax": "var(--color-purple-600)",
-      "values": {
-        "Value": "#4f3cc8"
-      }
-    },
-    "color/purple/700": {
-      "type": "COLOR",
-      "scopes": [],
-      "codeSyntax": "var(--color-purple-700)",
-      "values": {
-        "Value": "#4715b2"
-      }
-    },
-    "color/purple/800": {
-      "type": "COLOR",
-      "scopes": [],
-      "codeSyntax": "var(--color-purple-800)",
-      "values": {
-        "Value": "#350e8b"
-      }
-    },
-    "color/purple/900": {
-      "type": "COLOR",
-      "scopes": [],
-      "codeSyntax": "var(--color-purple-900)",
-      "values": {
-        "Value": "#260769"
-      }
-    },
-    "color/red/50": {
-      "type": "COLOR",
-      "scopes": [],
-      "codeSyntax": "var(--color-red-50)",
-      "values": {
-        "Value": "#fef1f1"
-      }
-    },
-    "color/red/100": {
-      "type": "COLOR",
-      "scopes": [],
-      "codeSyntax": "var(--color-red-100)",
-      "values": {
-        "Value": "#fee7e7"
-      }
-    },
-    "color/red/200": {
-      "type": "COLOR",
-      "scopes": [],
-      "codeSyntax": "var(--color-red-200)",
-      "values": {
-        "Value": "#fed2d2"
-      }
-    },
-    "color/red/300": {
-      "type": "COLOR",
-      "scopes": [],
-      "codeSyntax": "var(--color-red-300)",
-      "values": {
-        "Value": "#ffadad"
-      }
-    },
-    "color/red/400": {
-      "type": "COLOR",
-      "scopes": [],
-      "codeSyntax": "var(--color-red-400)",
-      "values": {
-        "Value": "#f56b6b"
-      }
-    },
-    "color/red/500": {
-      "type": "COLOR",
-      "scopes": [],
-      "codeSyntax": "var(--color-red-500)",
-      "values": {
-        "Value": "#ef4343"
-      }
-    },
-    "color/red/600": {
-      "type": "COLOR",
-      "scopes": [],
-      "codeSyntax": "var(--color-red-600)",
-      "values": {
-        "Value": "#dc2828"
-      }
-    },
-    "color/red/700": {
-      "type": "COLOR",
-      "scopes": [],
-      "codeSyntax": "var(--color-red-700)",
-      "values": {
-        "Value": "#ba1c1c"
-      }
-    },
-    "color/red/800": {
-      "type": "COLOR",
-      "scopes": [],
-      "codeSyntax": "var(--color-red-800)",
-      "values": {
-        "Value": "#981b1b"
-      }
-    },
-    "color/red/900": {
-      "type": "COLOR",
-      "scopes": [],
-      "codeSyntax": "var(--color-red-900)",
-      "values": {
-        "Value": "#811d1d"
-      }
-    },
-    "color/orange/50": {
-      "type": "COLOR",
-      "scopes": [],
-      "codeSyntax": "var(--color-orange-50)",
-      "values": {
-        "Value": "#fff4e5"
-      }
-    },
-    "color/orange/100": {
-      "type": "COLOR",
-      "scopes": [],
-      "codeSyntax": "var(--color-orange-100)",
-      "values": {
-        "Value": "#ffeed6"
-      }
-    },
-    "color/orange/200": {
-      "type": "COLOR",
-      "scopes": [],
-      "codeSyntax": "var(--color-orange-200)",
-      "values": {
-        "Value": "#fedbb4"
-      }
-    },
-    "color/orange/300": {
-      "type": "COLOR",
-      "scopes": [],
-      "codeSyntax": "var(--color-orange-300)",
-      "values": {
-        "Value": "#fdc17c"
-      }
-    },
-    "color/orange/400": {
-      "type": "COLOR",
-      "scopes": [],
-      "codeSyntax": "var(--color-orange-400)",
-      "values": {
-        "Value": "#ef8539"
-      }
-    },
-    "color/orange/500": {
-      "type": "COLOR",
-      "scopes": [],
-      "codeSyntax": "var(--color-orange-500)",
-      "values": {
-        "Value": "#e7680d"
-      }
-    },
-    "color/orange/600": {
-      "type": "COLOR",
-      "scopes": [],
-      "codeSyntax": "var(--color-orange-600)",
-      "values": {
-        "Value": "#d44f02"
-      }
-    },
-    "color/orange/700": {
-      "type": "COLOR",
-      "scopes": [],
-      "codeSyntax": "var(--color-orange-700)",
-      "values": {
-        "Value": "#af3e0e"
-      }
-    },
-    "color/orange/800": {
-      "type": "COLOR",
-      "scopes": [],
-      "codeSyntax": "var(--color-orange-800)",
-      "values": {
-        "Value": "#9b3412"
-      }
-    },
-    "color/orange/900": {
-      "type": "COLOR",
-      "scopes": [],
-      "codeSyntax": "var(--color-orange-900)",
-      "values": {
-        "Value": "#7d3212"
-      }
-    },
-    "color/green/50": {
-      "type": "COLOR",
-      "scopes": [],
-      "codeSyntax": "var(--color-green-50)",
-      "values": {
-        "Value": "#effbf6"
-      }
-    },
-    "color/green/100": {
-      "type": "COLOR",
-      "scopes": [],
-      "codeSyntax": "var(--color-green-100)",
-      "values": {
-        "Value": "#e4f7f3"
-      }
-    },
-    "color/green/200": {
-      "type": "COLOR",
-      "scopes": [],
-      "codeSyntax": "var(--color-green-200)",
-      "values": {
-        "Value": "#c6ebdc"
-      }
-    },
-    "color/green/300": {
-      "type": "COLOR",
-      "scopes": [],
-      "codeSyntax": "var(--color-green-300)",
-      "values": {
-        "Value": "#8fdbbb"
-      }
-    },
-    "color/green/400": {
-      "type": "COLOR",
-      "scopes": [],
-      "codeSyntax": "var(--color-green-400)",
-      "values": {
-        "Value": "#50c38c"
-      }
-    },
-    "color/green/500": {
-      "type": "COLOR",
-      "scopes": [],
-      "codeSyntax": "var(--color-green-500)",
-      "values": {
-        "Value": "#12a154"
-      }
-    },
-    "color/green/600": {
-      "type": "COLOR",
-      "scopes": [],
-      "codeSyntax": "var(--color-green-600)",
-      "values": {
-        "Value": "#14994e"
-      }
-    },
-    "color/green/700": {
-      "type": "COLOR",
-      "scopes": [],
-      "codeSyntax": "var(--color-green-700)",
-      "values": {
-        "Value": "#0d7d38"
-      }
-    },
-    "color/green/800": {
-      "type": "COLOR",
-      "scopes": [],
-      "codeSyntax": "var(--color-green-800)",
-      "values": {
-        "Value": "#076426"
-      }
-    },
-    "color/green/900": {
-      "type": "COLOR",
-      "scopes": [],
-      "codeSyntax": "var(--color-green-900)",
-      "values": {
-        "Value": "#054d1a"
-      }
-    },
-    "color/blue/50": {
-      "type": "COLOR",
-      "scopes": [],
-      "codeSyntax": "var(--color-blue-50)",
-      "values": {
-        "Value": "#ebf7ff"
-      }
-    },
-    "color/blue/100": {
-      "type": "COLOR",
-      "scopes": [],
-      "codeSyntax": "var(--color-blue-100)",
-      "values": {
-        "Value": "#e2f1fd"
-      }
-    },
-    "color/blue/200": {
-      "type": "COLOR",
-      "scopes": [],
-      "codeSyntax": "var(--color-blue-200)",
-      "values": {
-        "Value": "#c7e4fa"
-      }
-    },
-    "color/blue/300": {
-      "type": "COLOR",
-      "scopes": [],
-      "codeSyntax": "var(--color-blue-300)",
-      "values": {
-        "Value": "#9fd5f9"
-      }
-    },
-    "color/blue/400": {
-      "type": "COLOR",
-      "scopes": [],
-      "codeSyntax": "var(--color-blue-400)",
-      "values": {
-        "Value": "#609cf0"
-      }
-    },
-    "color/blue/500": {
-      "type": "COLOR",
-      "scopes": [],
-      "codeSyntax": "var(--color-blue-500)",
-      "values": {
-        "Value": "#286ef0"
-      }
-    },
-    "color/blue/600": {
-      "type": "COLOR",
-      "scopes": [],
-      "codeSyntax": "var(--color-blue-600)",
-      "values": {
-        "Value": "#1c62e3"
-      }
-    },
-    "color/blue/700": {
-      "type": "COLOR",
-      "scopes": [],
-      "codeSyntax": "var(--color-blue-700)",
-      "values": {
-        "Value": "#1541b2"
-      }
-    },
-    "color/blue/800": {
-      "type": "COLOR",
-      "scopes": [],
-      "codeSyntax": "var(--color-blue-800)",
-      "values": {
-        "Value": "#0e2d8b"
-      }
-    },
-    "color/blue/900": {
-      "type": "COLOR",
-      "scopes": [],
-      "codeSyntax": "var(--color-blue-900)",
-      "values": {
-        "Value": "#071e69"
-      }
-    },
-    "color/yellow/50": {
-      "type": "COLOR",
-      "scopes": [],
-      "codeSyntax": "var(--color-yellow-50)",
-      "values": {
-        "Value": "#fefce7"
-      }
-    },
-    "color/yellow/100": {
-      "type": "COLOR",
-      "scopes": [],
-      "codeSyntax": "var(--color-yellow-100)",
-      "values": {
-        "Value": "#fdf9d8"
-      }
-    },
-    "color/yellow/200": {
-      "type": "COLOR",
-      "scopes": [],
-      "codeSyntax": "var(--color-yellow-200)",
-      "values": {
-        "Value": "#faef9e"
-      }
-    },
-    "color/yellow/300": {
-      "type": "COLOR",
-      "scopes": [],
-      "codeSyntax": "var(--color-yellow-300)",
-      "values": {
-        "Value": "#f0dc7a"
-      }
-    },
-    "color/yellow/400": {
-      "type": "COLOR",
-      "scopes": [],
-      "codeSyntax": "var(--color-yellow-400)",
-      "values": {
-        "Value": "#eac534"
-      }
-    },
-    "color/yellow/500": {
-      "type": "COLOR",
-      "scopes": [],
-      "codeSyntax": "var(--color-yellow-500)",
-      "values": {
-        "Value": "#c89809"
-      }
-    },
-    "color/yellow/600": {
-      "type": "COLOR",
-      "scopes": [],
-      "codeSyntax": "var(--color-yellow-600)",
-      "values": {
-        "Value": "#a97a14"
-      }
-    },
-    "color/yellow/700": {
-      "type": "COLOR",
-      "scopes": [],
-      "codeSyntax": "var(--color-yellow-700)",
-      "values": {
-        "Value": "#91700d"
-      }
-    },
-    "color/yellow/800": {
-      "type": "COLOR",
-      "scopes": [],
-      "codeSyntax": "var(--color-yellow-800)",
-      "values": {
-        "Value": "#795a0c"
-      }
-    },
-    "color/yellow/900": {
-      "type": "COLOR",
-      "scopes": [],
-      "codeSyntax": "var(--color-yellow-900)",
-      "values": {
-        "Value": "#6f4815"
-      }
-    },
-    "color/pink/50": {
-      "type": "COLOR",
-      "scopes": [],
-      "codeSyntax": "var(--color-pink-50)",
-      "values": {
-        "Value": "#fdf2f8"
-      }
-    },
-    "color/pink/100": {
-      "type": "COLOR",
-      "scopes": [],
-      "codeSyntax": "var(--color-pink-100)",
-      "values": {
-        "Value": "#fce8f4"
-      }
-    },
-    "color/pink/200": {
-      "type": "COLOR",
-      "scopes": [],
-      "codeSyntax": "var(--color-pink-200)",
-      "values": {
-        "Value": "#fbd0e8"
-      }
-    },
-    "color/pink/300": {
-      "type": "COLOR",
-      "scopes": [],
-      "codeSyntax": "var(--color-pink-300)",
-      "values": {
-        "Value": "#f9a9d5"
-      }
-    },
-    "color/pink/400": {
-      "type": "COLOR",
-      "scopes": [],
-      "codeSyntax": "var(--color-pink-400)",
-      "values": {
-        "Value": "#f773b7"
-      }
-    },
-    "color/pink/500": {
-      "type": "COLOR",
-      "scopes": [],
-      "codeSyntax": "var(--color-pink-500)",
-      "values": {
-        "Value": "#f04299"
-      }
-    },
-    "color/pink/600": {
-      "type": "COLOR",
-      "scopes": [],
-      "codeSyntax": "var(--color-pink-600)",
-      "values": {
-        "Value": "#df2679"
-      }
-    },
-    "color/pink/700": {
-      "type": "COLOR",
-      "scopes": [],
-      "codeSyntax": "var(--color-pink-700)",
-      "values": {
-        "Value": "#c3135c"
-      }
-    },
-    "color/pink/800": {
-      "type": "COLOR",
-      "scopes": [],
-      "codeSyntax": "var(--color-pink-800)",
-      "values": {
-        "Value": "#a0134b"
-      }
-    },
-    "color/pink/900": {
-      "type": "COLOR",
-      "scopes": [],
-      "codeSyntax": "var(--color-pink-900)",
-      "values": {
-        "Value": "#881141"
-      }
-    },
-    "color/alpha/black-05": {
-      "type": "COLOR",
-      "scopes": [],
-      "codeSyntax": "var(--color-alpha-black-05)",
-      "values": {
-        "Value": "#0000000d"
-      }
-    },
-    "color/alpha/black-10": {
-      "type": "COLOR",
-      "scopes": [],
-      "codeSyntax": "var(--color-alpha-black-10)",
-      "values": {
-        "Value": "#0000001a"
-      }
-    },
-    "color/alpha/black-40": {
-      "type": "COLOR",
-      "scopes": [],
-      "codeSyntax": "var(--color-alpha-black-40)",
-      "values": {
-        "Value": "#00000066"
-      }
-    },
-    "color/alpha/black-60": {
-      "type": "COLOR",
-      "scopes": [],
-      "codeSyntax": "var(--color-alpha-black-60)",
-      "values": {
-        "Value": "#00000099"
-      }
-    },
-    "color/alpha/white-05": {
-      "type": "COLOR",
-      "scopes": [],
-      "codeSyntax": "var(--color-alpha-white-05)",
-      "values": {
-        "Value": "#ffffff0d"
-      }
-    },
-    "color/alpha/white-10": {
-      "type": "COLOR",
-      "scopes": [],
-      "codeSyntax": "var(--color-alpha-white-10)",
-      "values": {
-        "Value": "#ffffff1a"
-      }
-    },
-    "color/alpha/white-20": {
-      "type": "COLOR",
-      "scopes": [],
-      "codeSyntax": "var(--color-alpha-white-20)",
-      "values": {
-        "Value": "#ffffff33"
-      }
-    },
-    "spacing/0": {
-      "type": "FLOAT",
-      "scopes": [
-        "WIDTH_HEIGHT",
-        "GAP"
-      ],
-      "codeSyntax": "var(--spacing-0)",
-      "values": {
-        "Value": 0
-      }
-    },
-    "spacing/2": {
-      "type": "FLOAT",
-      "scopes": [
-        "WIDTH_HEIGHT",
-        "GAP"
-      ],
-      "codeSyntax": "var(--spacing-2)",
-      "values": {
-        "Value": 2
-      }
-    },
-    "spacing/4": {
-      "type": "FLOAT",
-      "scopes": [
-        "WIDTH_HEIGHT",
-        "GAP"
-      ],
-      "codeSyntax": "var(--spacing-4)",
-      "values": {
-        "Value": 4
-      }
-    },
-    "spacing/6": {
-      "type": "FLOAT",
-      "scopes": [
-        "WIDTH_HEIGHT",
-        "GAP"
-      ],
-      "codeSyntax": "var(--spacing-6)",
-      "values": {
-        "Value": 6
-      }
-    },
-    "spacing/8": {
-      "type": "FLOAT",
-      "scopes": [
-        "WIDTH_HEIGHT",
-        "GAP"
-      ],
-      "codeSyntax": "var(--spacing-8)",
-      "values": {
-        "Value": 8
-      }
-    },
-    "spacing/12": {
-      "type": "FLOAT",
-      "scopes": [
-        "WIDTH_HEIGHT",
-        "GAP"
-      ],
-      "codeSyntax": "var(--spacing-12)",
-      "values": {
-        "Value": 12
-      }
-    },
-    "spacing/16": {
-      "type": "FLOAT",
-      "scopes": [
-        "WIDTH_HEIGHT",
-        "GAP"
-      ],
-      "codeSyntax": "var(--spacing-16)",
-      "values": {
-        "Value": 16
-      }
-    },
-    "spacing/20": {
-      "type": "FLOAT",
-      "scopes": [
-        "WIDTH_HEIGHT",
-        "GAP"
-      ],
-      "codeSyntax": "var(--spacing-20)",
-      "values": {
-        "Value": 20
-      }
-    },
-    "spacing/24": {
-      "type": "FLOAT",
-      "scopes": [
-        "WIDTH_HEIGHT",
-        "GAP"
-      ],
-      "codeSyntax": "var(--spacing-24)",
-      "values": {
-        "Value": 24
-      }
-    },
-    "spacing/32": {
-      "type": "FLOAT",
-      "scopes": [
-        "WIDTH_HEIGHT",
-        "GAP"
-      ],
-      "codeSyntax": "var(--spacing-32)",
-      "values": {
-        "Value": 32
-      }
-    },
-    "spacing/40": {
-      "type": "FLOAT",
-      "scopes": [
-        "WIDTH_HEIGHT",
-        "GAP"
-      ],
-      "codeSyntax": "var(--spacing-40)",
-      "values": {
-        "Value": 40
-      }
-    },
-    "spacing/48": {
-      "type": "FLOAT",
-      "scopes": [
-        "WIDTH_HEIGHT",
-        "GAP"
-      ],
-      "codeSyntax": "var(--spacing-48)",
-      "values": {
-        "Value": 48
-      }
-    },
-    "spacing/64": {
-      "type": "FLOAT",
-      "scopes": [
-        "WIDTH_HEIGHT",
-        "GAP"
-      ],
-      "codeSyntax": "var(--spacing-64)",
-      "values": {
-        "Value": 64
-      }
-    },
-    "spacing/80": {
-      "type": "FLOAT",
-      "scopes": [
-        "WIDTH_HEIGHT",
-        "GAP"
-      ],
-      "codeSyntax": "var(--spacing-80)",
-      "values": {
-        "Value": 80
-      }
-    },
-    "spacing/96": {
-      "type": "FLOAT",
-      "scopes": [
-        "WIDTH_HEIGHT",
-        "GAP"
-      ],
-      "codeSyntax": "var(--spacing-96)",
-      "values": {
-        "Value": 96
-      }
-    },
-    "spacing/128": {
-      "type": "FLOAT",
-      "scopes": [
-        "WIDTH_HEIGHT",
-        "GAP"
-      ],
-      "codeSyntax": "var(--spacing-128)",
-      "values": {
-        "Value": 128
-      }
-    },
-    "radius/0": {
-      "type": "FLOAT",
-      "scopes": [
-        "CORNER_RADIUS"
-      ],
-      "codeSyntax": "var(--radius-0)",
-      "values": {
-        "Value": 0
-      }
-    },
-    "radius/2": {
-      "type": "FLOAT",
-      "scopes": [
-        "CORNER_RADIUS"
-      ],
-      "codeSyntax": "var(--radius-2)",
-      "values": {
-        "Value": 2
-      }
-    },
-    "radius/4": {
-      "type": "FLOAT",
-      "scopes": [
-        "CORNER_RADIUS"
-      ],
-      "codeSyntax": "var(--radius-4)",
-      "values": {
-        "Value": 4
-      }
-    },
-    "radius/6": {
-      "type": "FLOAT",
-      "scopes": [
-        "CORNER_RADIUS"
-      ],
-      "codeSyntax": "var(--radius-6)",
-      "values": {
-        "Value": 6
-      }
-    },
-    "radius/8": {
-      "type": "FLOAT",
-      "scopes": [
-        "CORNER_RADIUS"
-      ],
-      "codeSyntax": "var(--radius-8)",
-      "values": {
-        "Value": 8
-      }
-    },
-    "radius/12": {
-      "type": "FLOAT",
-      "scopes": [
-        "CORNER_RADIUS"
-      ],
-      "codeSyntax": "var(--radius-12)",
-      "values": {
-        "Value": 12
-      }
-    },
-    "radius/16": {
-      "type": "FLOAT",
-      "scopes": [
-        "CORNER_RADIUS"
-      ],
-      "codeSyntax": "var(--radius-16)",
-      "values": {
-        "Value": 16
-      }
-    },
-    "radius/24": {
-      "type": "FLOAT",
-      "scopes": [
-        "CORNER_RADIUS"
-      ],
-      "codeSyntax": "var(--radius-24)",
-      "values": {
-        "Value": 24
-      }
-    },
-    "radius/full": {
-      "type": "FLOAT",
-      "scopes": [
-        "CORNER_RADIUS"
-      ],
-      "codeSyntax": "var(--radius-full)",
-      "values": {
-        "Value": 9999
-      }
-    },
-    "border-width/thin": {
-      "type": "FLOAT",
-      "scopes": [
-        "STROKE_FLOAT"
-      ],
-      "codeSyntax": "var(--border-width-thin)",
-      "values": {
-        "Value": 1
-      }
-    },
-    "border-width/default": {
-      "type": "FLOAT",
-      "scopes": [
-        "STROKE_FLOAT"
-      ],
-      "codeSyntax": "var(--border-width-default)",
-      "values": {
-        "Value": 1.5
-      }
-    },
-    "border-width/thick": {
-      "type": "FLOAT",
-      "scopes": [
-        "STROKE_FLOAT"
-      ],
-      "codeSyntax": "var(--border-width-thick)",
-      "values": {
-        "Value": 2
-      }
-    },
-    "font/family/sans": {
-      "type": "STRING",
-      "scopes": [
-        "FONT_FAMILY"
-      ],
-      "codeSyntax": "var(--font-family-sans)",
-      "values": {
-        "Value": "Host Grotesk"
-      }
-    },
-    "font/family/serif": {
-      "type": "STRING",
-      "scopes": [
-        "FONT_FAMILY"
-      ],
-      "codeSyntax": "var(--font-family-serif)",
-      "values": {
-        "Value": "Merriweather"
-      }
-    },
-    "font/family/mono": {
-      "type": "STRING",
-      "scopes": [
-        "FONT_FAMILY"
-      ],
-      "codeSyntax": "var(--font-family-mono)",
-      "values": {
-        "Value": "Space Mono"
-      }
-    },
-    "font/family/serif-display": {
-      "type": "STRING",
-      "scopes": [
-        "FONT_FAMILY"
-      ],
-      "codeSyntax": "var(--font-family-serif-display)",
-      "values": {
-        "Value": "STIX Two Text"
-      }
-    },
-    "font/size/12": {
-      "type": "FLOAT",
-      "scopes": [
-        "FONT_SIZE"
-      ],
-      "codeSyntax": "var(--font-size-12)",
-      "values": {
-        "Value": 12
-      }
-    },
-    "font/size/14": {
-      "type": "FLOAT",
-      "scopes": [
-        "FONT_SIZE"
-      ],
-      "codeSyntax": "var(--font-size-14)",
-      "values": {
-        "Value": 14
-      }
-    },
-    "font/size/16": {
-      "type": "FLOAT",
-      "scopes": [
-        "FONT_SIZE"
-      ],
-      "codeSyntax": "var(--font-size-16)",
-      "values": {
-        "Value": 16
-      }
-    },
-    "font/size/18": {
-      "type": "FLOAT",
-      "scopes": [
-        "FONT_SIZE"
-      ],
-      "codeSyntax": "var(--font-size-18)",
-      "values": {
-        "Value": 18
-      }
-    },
-    "font/size/20": {
-      "type": "FLOAT",
-      "scopes": [
-        "FONT_SIZE"
-      ],
-      "codeSyntax": "var(--font-size-20)",
-      "values": {
-        "Value": 20
-      }
-    },
-    "font/size/24": {
-      "type": "FLOAT",
-      "scopes": [
-        "FONT_SIZE"
-      ],
-      "codeSyntax": "var(--font-size-24)",
-      "values": {
-        "Value": 24
-      }
-    },
-    "font/size/28": {
-      "type": "FLOAT",
-      "scopes": [
-        "FONT_SIZE"
-      ],
-      "codeSyntax": "var(--font-size-28)",
-      "values": {
-        "Value": 28
-      }
-    },
-    "font/size/32": {
-      "type": "FLOAT",
-      "scopes": [
-        "FONT_SIZE"
-      ],
-      "codeSyntax": "var(--font-size-32)",
-      "values": {
-        "Value": 32
-      }
-    },
-    "font/size/36": {
-      "type": "FLOAT",
-      "scopes": [
-        "FONT_SIZE"
-      ],
-      "codeSyntax": "var(--font-size-36)",
-      "values": {
-        "Value": 36
-      }
-    },
-    "font/size/40": {
-      "type": "FLOAT",
-      "scopes": [
-        "FONT_SIZE"
-      ],
-      "codeSyntax": "var(--font-size-40)",
-      "values": {
-        "Value": 40
-      }
-    },
-    "font/size/48": {
-      "type": "FLOAT",
-      "scopes": [
-        "FONT_SIZE"
-      ],
-      "codeSyntax": "var(--font-size-48)",
-      "values": {
-        "Value": 48
-      }
-    },
-    "font/size/56": {
-      "type": "FLOAT",
-      "scopes": [
-        "FONT_SIZE"
-      ],
-      "codeSyntax": "var(--font-size-56)",
-      "values": {
-        "Value": 56
-      }
-    },
-    "font/size/64": {
-      "type": "FLOAT",
-      "scopes": [
-        "FONT_SIZE"
-      ],
-      "codeSyntax": "var(--font-size-64)",
-      "values": {
-        "Value": 64
-      }
-    },
-    "font/size/72": {
-      "type": "FLOAT",
-      "scopes": [
-        "FONT_SIZE"
-      ],
-      "codeSyntax": "var(--font-size-72)",
-      "values": {
-        "Value": 72
-      }
-    },
-    "font/weight/regular": {
-      "type": "STRING",
-      "scopes": [
-        "FONT_STYLE"
-      ],
-      "codeSyntax": "var(--font-weight-regular)",
-      "values": {
-        "Value": "Regular"
-      }
-    },
-    "font/weight/medium": {
-      "type": "STRING",
-      "scopes": [
-        "FONT_STYLE"
-      ],
-      "codeSyntax": "var(--font-weight-medium)",
-      "values": {
-        "Value": "Medium"
-      }
-    },
-    "font/weight/semibold": {
-      "type": "STRING",
-      "scopes": [
-        "FONT_STYLE"
-      ],
-      "codeSyntax": "var(--font-weight-semibold)",
-      "values": {
-        "Value": "SemiBold"
-      }
-    },
-    "font/weight/bold": {
-      "type": "STRING",
-      "scopes": [
-        "FONT_STYLE"
-      ],
-      "codeSyntax": "var(--font-weight-bold)",
-      "values": {
-        "Value": "Bold"
-      }
-    }
+    "color/base/white": {"type": "COLOR", "scopes": [], "codeSyntax": "var(--color-base-white)", "values": {"Value": "#ffffff"}},
+    "color/base/black": {"type": "COLOR", "scopes": [], "codeSyntax": "var(--color-base-black)", "values": {"Value": "#000000"}},
+    "color/gray/50": {"type": "COLOR", "scopes": [], "codeSyntax": "var(--color-gray-50)", "values": {"Value": "#f6f8f9"}},
+    "color/gray/100": {"type": "COLOR", "scopes": [], "codeSyntax": "var(--color-gray-100)", "values": {"Value": "#f0f2f4"}},
+    "color/gray/200": {"type": "COLOR", "scopes": [], "codeSyntax": "var(--color-gray-200)", "values": {"Value": "#e5e7eb"}},
+    "color/gray/300": {"type": "COLOR", "scopes": [], "codeSyntax": "var(--color-gray-300)", "values": {"Value": "#dde0e4"}},
+    "color/gray/400": {"type": "COLOR", "scopes": [], "codeSyntax": "var(--color-gray-400)", "values": {"Value": "#9ca3b0"}},
+    "color/gray/500": {"type": "COLOR", "scopes": [], "codeSyntax": "var(--color-gray-500)", "values": {"Value": "#6b7280"}},
+    "color/gray/600": {"type": "COLOR", "scopes": [], "codeSyntax": "var(--color-gray-600)", "values": {"Value": "#4b5563"}},
+    "color/gray/700": {"type": "COLOR", "scopes": [], "codeSyntax": "var(--color-gray-700)", "values": {"Value": "#384252"}},
+    "color/gray/800": {"type": "COLOR", "scopes": [], "codeSyntax": "var(--color-gray-800)", "values": {"Value": "#1d2735"}},
+    "color/gray/900": {"type": "COLOR", "scopes": [], "codeSyntax": "var(--color-gray-900)", "values": {"Value": "#131923"}},
+    "color/purple/50": {"type": "COLOR", "scopes": [], "codeSyntax": "var(--color-purple-50)", "values": {"Value": "#f6f1f8"}},
+    "color/purple/100": {"type": "COLOR", "scopes": [], "codeSyntax": "var(--color-purple-100)", "values": {"Value": "#f1e8fd"}},
+    "color/purple/200": {"type": "COLOR", "scopes": [], "codeSyntax": "var(--color-purple-200)", "values": {"Value": "#dfd4fc"}},
+    "color/purple/300": {"type": "COLOR", "scopes": [], "codeSyntax": "var(--color-purple-300)", "values": {"Value": "#adadf5"}},
+    "color/purple/400": {"type": "COLOR", "scopes": [], "codeSyntax": "var(--color-purple-400)", "values": {"Value": "#7e6ff1"}},
+    "color/purple/500": {"type": "COLOR", "scopes": [], "codeSyntax": "var(--color-purple-500)", "values": {"Value": "#5a4cd6"}},
+    "color/purple/600": {"type": "COLOR", "scopes": [], "codeSyntax": "var(--color-purple-600)", "values": {"Value": "#4f3cc8"}},
+    "color/purple/700": {"type": "COLOR", "scopes": [], "codeSyntax": "var(--color-purple-700)", "values": {"Value": "#4715b2"}},
+    "color/purple/800": {"type": "COLOR", "scopes": [], "codeSyntax": "var(--color-purple-800)", "values": {"Value": "#350e8b"}},
+    "color/purple/900": {"type": "COLOR", "scopes": [], "codeSyntax": "var(--color-purple-900)", "values": {"Value": "#260769"}},
+    "color/red/50": {"type": "COLOR", "scopes": [], "codeSyntax": "var(--color-red-50)", "values": {"Value": "#fef1f1"}},
+    "color/red/100": {"type": "COLOR", "scopes": [], "codeSyntax": "var(--color-red-100)", "values": {"Value": "#fee7e7"}},
+    "color/red/200": {"type": "COLOR", "scopes": [], "codeSyntax": "var(--color-red-200)", "values": {"Value": "#fed2d2"}},
+    "color/red/300": {"type": "COLOR", "scopes": [], "codeSyntax": "var(--color-red-300)", "values": {"Value": "#ffadad"}},
+    "color/red/400": {"type": "COLOR", "scopes": [], "codeSyntax": "var(--color-red-400)", "values": {"Value": "#f56b6b"}},
+    "color/red/500": {"type": "COLOR", "scopes": [], "codeSyntax": "var(--color-red-500)", "values": {"Value": "#ef4343"}},
+    "color/red/600": {"type": "COLOR", "scopes": [], "codeSyntax": "var(--color-red-600)", "values": {"Value": "#dc2828"}},
+    "color/red/700": {"type": "COLOR", "scopes": [], "codeSyntax": "var(--color-red-700)", "values": {"Value": "#ba1c1c"}},
+    "color/red/800": {"type": "COLOR", "scopes": [], "codeSyntax": "var(--color-red-800)", "values": {"Value": "#981b1b"}},
+    "color/red/900": {"type": "COLOR", "scopes": [], "codeSyntax": "var(--color-red-900)", "values": {"Value": "#811d1d"}},
+    "color/orange/50": {"type": "COLOR", "scopes": [], "codeSyntax": "var(--color-orange-50)", "values": {"Value": "#fff4e5"}},
+    "color/orange/100": {"type": "COLOR", "scopes": [], "codeSyntax": "var(--color-orange-100)", "values": {"Value": "#ffeed6"}},
+    "color/orange/200": {"type": "COLOR", "scopes": [], "codeSyntax": "var(--color-orange-200)", "values": {"Value": "#fedbb4"}},
+    "color/orange/300": {"type": "COLOR", "scopes": [], "codeSyntax": "var(--color-orange-300)", "values": {"Value": "#fdc17c"}},
+    "color/orange/400": {"type": "COLOR", "scopes": [], "codeSyntax": "var(--color-orange-400)", "values": {"Value": "#ef8539"}},
+    "color/orange/500": {"type": "COLOR", "scopes": [], "codeSyntax": "var(--color-orange-500)", "values": {"Value": "#e7680d"}},
+    "color/orange/600": {"type": "COLOR", "scopes": [], "codeSyntax": "var(--color-orange-600)", "values": {"Value": "#d44f02"}},
+    "color/orange/700": {"type": "COLOR", "scopes": [], "codeSyntax": "var(--color-orange-700)", "values": {"Value": "#af3e0e"}},
+    "color/orange/800": {"type": "COLOR", "scopes": [], "codeSyntax": "var(--color-orange-800)", "values": {"Value": "#9b3412"}},
+    "color/orange/900": {"type": "COLOR", "scopes": [], "codeSyntax": "var(--color-orange-900)", "values": {"Value": "#7d3212"}},
+    "color/green/50": {"type": "COLOR", "scopes": [], "codeSyntax": "var(--color-green-50)", "values": {"Value": "#effbf6"}},
+    "color/green/100": {"type": "COLOR", "scopes": [], "codeSyntax": "var(--color-green-100)", "values": {"Value": "#e4f7f3"}},
+    "color/green/200": {"type": "COLOR", "scopes": [], "codeSyntax": "var(--color-green-200)", "values": {"Value": "#c6ebdc"}},
+    "color/green/300": {"type": "COLOR", "scopes": [], "codeSyntax": "var(--color-green-300)", "values": {"Value": "#8fdbbb"}},
+    "color/green/400": {"type": "COLOR", "scopes": [], "codeSyntax": "var(--color-green-400)", "values": {"Value": "#50c38c"}},
+    "color/green/500": {"type": "COLOR", "scopes": [], "codeSyntax": "var(--color-green-500)", "values": {"Value": "#12a154"}},
+    "color/green/600": {"type": "COLOR", "scopes": [], "codeSyntax": "var(--color-green-600)", "values": {"Value": "#14994e"}},
+    "color/green/700": {"type": "COLOR", "scopes": [], "codeSyntax": "var(--color-green-700)", "values": {"Value": "#0d7d38"}},
+    "color/green/800": {"type": "COLOR", "scopes": [], "codeSyntax": "var(--color-green-800)", "values": {"Value": "#076426"}},
+    "color/green/900": {"type": "COLOR", "scopes": [], "codeSyntax": "var(--color-green-900)", "values": {"Value": "#054d1a"}},
+    "color/blue/50": {"type": "COLOR", "scopes": [], "codeSyntax": "var(--color-blue-50)", "values": {"Value": "#ebf7ff"}},
+    "color/blue/100": {"type": "COLOR", "scopes": [], "codeSyntax": "var(--color-blue-100)", "values": {"Value": "#e2f1fd"}},
+    "color/blue/200": {"type": "COLOR", "scopes": [], "codeSyntax": "var(--color-blue-200)", "values": {"Value": "#c7e4fa"}},
+    "color/blue/300": {"type": "COLOR", "scopes": [], "codeSyntax": "var(--color-blue-300)", "values": {"Value": "#9fd5f9"}},
+    "color/blue/400": {"type": "COLOR", "scopes": [], "codeSyntax": "var(--color-blue-400)", "values": {"Value": "#609cf0"}},
+    "color/blue/500": {"type": "COLOR", "scopes": [], "codeSyntax": "var(--color-blue-500)", "values": {"Value": "#286ef0"}},
+    "color/blue/600": {"type": "COLOR", "scopes": [], "codeSyntax": "var(--color-blue-600)", "values": {"Value": "#1c62e3"}},
+    "color/blue/700": {"type": "COLOR", "scopes": [], "codeSyntax": "var(--color-blue-700)", "values": {"Value": "#1541b2"}},
+    "color/blue/800": {"type": "COLOR", "scopes": [], "codeSyntax": "var(--color-blue-800)", "values": {"Value": "#0e2d8b"}},
+    "color/blue/900": {"type": "COLOR", "scopes": [], "codeSyntax": "var(--color-blue-900)", "values": {"Value": "#071e69"}},
+    "color/yellow/50": {"type": "COLOR", "scopes": [], "codeSyntax": "var(--color-yellow-50)", "values": {"Value": "#fefce7"}},
+    "color/yellow/100": {"type": "COLOR", "scopes": [], "codeSyntax": "var(--color-yellow-100)", "values": {"Value": "#fdf9d8"}},
+    "color/yellow/200": {"type": "COLOR", "scopes": [], "codeSyntax": "var(--color-yellow-200)", "values": {"Value": "#faef9e"}},
+    "color/yellow/300": {"type": "COLOR", "scopes": [], "codeSyntax": "var(--color-yellow-300)", "values": {"Value": "#f0dc7a"}},
+    "color/yellow/400": {"type": "COLOR", "scopes": [], "codeSyntax": "var(--color-yellow-400)", "values": {"Value": "#eac534"}},
+    "color/yellow/500": {"type": "COLOR", "scopes": [], "codeSyntax": "var(--color-yellow-500)", "values": {"Value": "#c89809"}},
+    "color/yellow/600": {"type": "COLOR", "scopes": [], "codeSyntax": "var(--color-yellow-600)", "values": {"Value": "#a97a14"}},
+    "color/yellow/700": {"type": "COLOR", "scopes": [], "codeSyntax": "var(--color-yellow-700)", "values": {"Value": "#91700d"}},
+    "color/yellow/800": {"type": "COLOR", "scopes": [], "codeSyntax": "var(--color-yellow-800)", "values": {"Value": "#795a0c"}},
+    "color/yellow/900": {"type": "COLOR", "scopes": [], "codeSyntax": "var(--color-yellow-900)", "values": {"Value": "#6f4815"}},
+    "color/pink/50": {"type": "COLOR", "scopes": [], "codeSyntax": "var(--color-pink-50)", "values": {"Value": "#fdf2f8"}},
+    "color/pink/100": {"type": "COLOR", "scopes": [], "codeSyntax": "var(--color-pink-100)", "values": {"Value": "#fce8f4"}},
+    "color/pink/200": {"type": "COLOR", "scopes": [], "codeSyntax": "var(--color-pink-200)", "values": {"Value": "#fbd0e8"}},
+    "color/pink/300": {"type": "COLOR", "scopes": [], "codeSyntax": "var(--color-pink-300)", "values": {"Value": "#f9a9d5"}},
+    "color/pink/400": {"type": "COLOR", "scopes": [], "codeSyntax": "var(--color-pink-400)", "values": {"Value": "#f773b7"}},
+    "color/pink/500": {"type": "COLOR", "scopes": [], "codeSyntax": "var(--color-pink-500)", "values": {"Value": "#f04299"}},
+    "color/pink/600": {"type": "COLOR", "scopes": [], "codeSyntax": "var(--color-pink-600)", "values": {"Value": "#df2679"}},
+    "color/pink/700": {"type": "COLOR", "scopes": [], "codeSyntax": "var(--color-pink-700)", "values": {"Value": "#c3135c"}},
+    "color/pink/800": {"type": "COLOR", "scopes": [], "codeSyntax": "var(--color-pink-800)", "values": {"Value": "#a0134b"}},
+    "color/pink/900": {"type": "COLOR", "scopes": [], "codeSyntax": "var(--color-pink-900)", "values": {"Value": "#881141"}},
+    "spacing/0": {"type": "FLOAT", "scopes": ["WIDTH_HEIGHT", "GAP"], "codeSyntax": "var(--spacing-0)", "values": {"Value": 0}},
+    "spacing/2": {"type": "FLOAT", "scopes": ["WIDTH_HEIGHT", "GAP"], "codeSyntax": "var(--spacing-2)", "values": {"Value": 2}},
+    "spacing/4": {"type": "FLOAT", "scopes": ["WIDTH_HEIGHT", "GAP"], "codeSyntax": "var(--spacing-4)", "values": {"Value": 4}},
+    "spacing/6": {"type": "FLOAT", "scopes": ["WIDTH_HEIGHT", "GAP"], "codeSyntax": "var(--spacing-6)", "values": {"Value": 6}},
+    "spacing/8": {"type": "FLOAT", "scopes": ["WIDTH_HEIGHT", "GAP"], "codeSyntax": "var(--spacing-8)", "values": {"Value": 8}},
+    "spacing/12": {"type": "FLOAT", "scopes": ["WIDTH_HEIGHT", "GAP"], "codeSyntax": "var(--spacing-12)", "values": {"Value": 12}},
+    "spacing/16": {"type": "FLOAT", "scopes": ["WIDTH_HEIGHT", "GAP"], "codeSyntax": "var(--spacing-16)", "values": {"Value": 16}},
+    "spacing/20": {"type": "FLOAT", "scopes": ["WIDTH_HEIGHT", "GAP"], "codeSyntax": "var(--spacing-20)", "values": {"Value": 20}},
+    "spacing/24": {"type": "FLOAT", "scopes": ["WIDTH_HEIGHT", "GAP"], "codeSyntax": "var(--spacing-24)", "values": {"Value": 24}},
+    "spacing/32": {"type": "FLOAT", "scopes": ["WIDTH_HEIGHT", "GAP"], "codeSyntax": "var(--spacing-32)", "values": {"Value": 32}},
+    "spacing/40": {"type": "FLOAT", "scopes": ["WIDTH_HEIGHT", "GAP"], "codeSyntax": "var(--spacing-40)", "values": {"Value": 40}},
+    "spacing/48": {"type": "FLOAT", "scopes": ["WIDTH_HEIGHT", "GAP"], "codeSyntax": "var(--spacing-48)", "values": {"Value": 48}},
+    "spacing/64": {"type": "FLOAT", "scopes": ["WIDTH_HEIGHT", "GAP"], "codeSyntax": "var(--spacing-64)", "values": {"Value": 64}},
+    "spacing/80": {"type": "FLOAT", "scopes": ["WIDTH_HEIGHT", "GAP"], "codeSyntax": "var(--spacing-80)", "values": {"Value": 80}},
+    "spacing/96": {"type": "FLOAT", "scopes": ["WIDTH_HEIGHT", "GAP"], "codeSyntax": "var(--spacing-96)", "values": {"Value": 96}},
+    "spacing/128": {"type": "FLOAT", "scopes": ["WIDTH_HEIGHT", "GAP"], "codeSyntax": "var(--spacing-128)", "values": {"Value": 128}},
+    "font/size/12": {"type": "FLOAT", "scopes": ["FONT_SIZE"], "codeSyntax": "var(--font-size-12)", "values": {"Value": 12}},
+    "font/size/14": {"type": "FLOAT", "scopes": ["FONT_SIZE"], "codeSyntax": "var(--font-size-14)", "values": {"Value": 14}},
+    "font/size/16": {"type": "FLOAT", "scopes": ["FONT_SIZE"], "codeSyntax": "var(--font-size-16)", "values": {"Value": 16}},
+    "font/size/18": {"type": "FLOAT", "scopes": ["FONT_SIZE"], "codeSyntax": "var(--font-size-18)", "values": {"Value": 18}},
+    "font/size/20": {"type": "FLOAT", "scopes": ["FONT_SIZE"], "codeSyntax": "var(--font-size-20)", "values": {"Value": 20}},
+    "font/size/24": {"type": "FLOAT", "scopes": ["FONT_SIZE"], "codeSyntax": "var(--font-size-24)", "values": {"Value": 24}},
+    "font/size/28": {"type": "FLOAT", "scopes": ["FONT_SIZE"], "codeSyntax": "var(--font-size-28)", "values": {"Value": 28}},
+    "font/size/32": {"type": "FLOAT", "scopes": ["FONT_SIZE"], "codeSyntax": "var(--font-size-32)", "values": {"Value": 32}},
+    "font/size/40": {"type": "FLOAT", "scopes": ["FONT_SIZE"], "codeSyntax": "var(--font-size-40)", "values": {"Value": 40}},
+    "font/size/48": {"type": "FLOAT", "scopes": ["FONT_SIZE"], "codeSyntax": "var(--font-size-48)", "values": {"Value": 48}},
+    "font/size/56": {"type": "FLOAT", "scopes": ["FONT_SIZE"], "codeSyntax": "var(--font-size-56)", "values": {"Value": 56}},
+    "font/size/64": {"type": "FLOAT", "scopes": ["FONT_SIZE"], "codeSyntax": "var(--font-size-64)", "values": {"Value": 64}},
+    "font/size/72": {"type": "FLOAT", "scopes": ["FONT_SIZE"], "codeSyntax": "var(--font-size-72)", "values": {"Value": 72}},
+    "color/alpha/black-05": {"type": "COLOR", "scopes": [], "codeSyntax": "var(--color-alpha-black-05)", "values": {"Value": "#0000000d"}},
+    "color/alpha/black-10": {"type": "COLOR", "scopes": [], "codeSyntax": "var(--color-alpha-black-10)", "values": {"Value": "#0000001a"}},
+    "color/alpha/black-40": {"type": "COLOR", "scopes": [], "codeSyntax": "var(--color-alpha-black-40)", "values": {"Value": "#00000066"}},
+    "color/alpha/black-60": {"type": "COLOR", "scopes": [], "codeSyntax": "var(--color-alpha-black-60)", "values": {"Value": "#00000099"}},
+    "color/alpha/white-05": {"type": "COLOR", "scopes": [], "codeSyntax": "var(--color-alpha-white-05)", "values": {"Value": "#ffffff0d"}},
+    "color/alpha/white-10": {"type": "COLOR", "scopes": [], "codeSyntax": "var(--color-alpha-white-10)", "values": {"Value": "#ffffff1a"}},
+    "color/alpha/white-20": {"type": "COLOR", "scopes": [], "codeSyntax": "var(--color-alpha-white-20)", "values": {"Value": "#ffffff33"}},
+    "font/size/36": {"type": "FLOAT", "scopes": ["FONT_SIZE"], "codeSyntax": "var(--font-size-36)", "values": {"Value": 36}},
+    "scale/0": {"type": "FLOAT", "scopes": ["CORNER_RADIUS", "STROKE_FLOAT"], "codeSyntax": "var(--scale-0)", "values": {"Value": 0}},
+    "scale/1": {"type": "FLOAT", "scopes": ["CORNER_RADIUS", "STROKE_FLOAT"], "codeSyntax": "var(--scale-1)", "values": {"Value": 1}},
+    "scale/2": {"type": "FLOAT", "scopes": ["CORNER_RADIUS", "STROKE_FLOAT"], "codeSyntax": "var(--scale-2)", "values": {"Value": 2}},
+    "scale/4": {"type": "FLOAT", "scopes": ["CORNER_RADIUS", "STROKE_FLOAT"], "codeSyntax": "var(--scale-4)", "values": {"Value": 4}},
+    "scale/6": {"type": "FLOAT", "scopes": ["CORNER_RADIUS", "STROKE_FLOAT"], "codeSyntax": "var(--scale-6)", "values": {"Value": 6}},
+    "scale/8": {"type": "FLOAT", "scopes": ["CORNER_RADIUS", "STROKE_FLOAT"], "codeSyntax": "var(--scale-8)", "values": {"Value": 8}},
+    "scale/10": {"type": "FLOAT", "scopes": ["CORNER_RADIUS", "STROKE_FLOAT"], "codeSyntax": "var(--scale-10)", "values": {"Value": 10}},
+    "scale/12": {"type": "FLOAT", "scopes": ["CORNER_RADIUS", "STROKE_FLOAT"], "codeSyntax": "var(--scale-12)", "values": {"Value": 12}},
+    "scale/14": {"type": "FLOAT", "scopes": ["CORNER_RADIUS", "STROKE_FLOAT"], "codeSyntax": "var(--scale-14)", "values": {"Value": 14}},
+    "scale/16": {"type": "FLOAT", "scopes": ["CORNER_RADIUS", "STROKE_FLOAT"], "codeSyntax": "var(--scale-16)", "values": {"Value": 16}},
+    "scale/20": {"type": "FLOAT", "scopes": ["CORNER_RADIUS", "STROKE_FLOAT"], "codeSyntax": "var(--scale-20)", "values": {"Value": 20}},
+    "scale/24": {"type": "FLOAT", "scopes": ["CORNER_RADIUS", "STROKE_FLOAT"], "codeSyntax": "var(--scale-24)", "values": {"Value": 24}},
+    "scale/32": {"type": "FLOAT", "scopes": ["CORNER_RADIUS", "STROKE_FLOAT"], "codeSyntax": "var(--scale-32)", "values": {"Value": 32}},
+    "scale/full": {"type": "FLOAT", "scopes": ["CORNER_RADIUS"], "codeSyntax": "var(--scale-full)", "values": {"Value": 9999}},
+    "font/family/host-grotesk": {"type": "STRING", "scopes": ["FONT_FAMILY"], "codeSyntax": "var(--font-family-host-grotesk)", "values": {"Value": "Host Grotesk"}},
+    "font/family/merriweather": {"type": "STRING", "scopes": ["FONT_FAMILY"], "codeSyntax": "var(--font-family-merriweather)", "values": {"Value": "Merriweather"}},
+    "font/family/space-mono": {"type": "STRING", "scopes": ["FONT_FAMILY"], "codeSyntax": "var(--font-family-space-mono)", "values": {"Value": "Space Mono"}},
+    "font/family/stix-two-text": {"type": "STRING", "scopes": ["FONT_FAMILY"], "codeSyntax": "var(--font-family-stix-two-text)", "values": {"Value": "STIX Two Text"}},
+    "font/weight/400": {"type": "STRING", "scopes": ["FONT_STYLE"], "codeSyntax": "var(--font-weight-400)", "values": {"Value": "Regular"}},
+    "font/weight/500": {"type": "STRING", "scopes": ["FONT_STYLE"], "codeSyntax": "var(--font-weight-500)", "values": {"Value": "Medium"}},
+    "font/weight/600": {"type": "STRING", "scopes": ["FONT_STYLE"], "codeSyntax": "var(--font-weight-600)", "values": {"Value": "SemiBold"}},
+    "font/weight/700": {"type": "STRING", "scopes": ["FONT_STYLE"], "codeSyntax": "var(--font-weight-700)", "values": {"Value": "Bold"}}
   }
 }

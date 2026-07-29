@@ -1,5 +1,15 @@
 # @ionbase/tokens
 
+> **Architecture v2 is agreed but not yet migrated.** Collections are moving to
+> Primitives → Semantics → Interface (brand modes in Semantics, light/dark in
+> Interface), and the Component collection is being deleted. Plan:
+> [`docs/token-architecture-v2.md`](../../docs/token-architecture-v2.md).
+>
+> **Everything below describes the pipeline as it works today and stays accurate
+> through the migration** — the export, rename, verification and build steps do
+> not change. Only the collection names and the token inventory do. The examples
+> using `bg/brand/default` become `surface/primary` once Figma is migrated.
+
 Design tokens, exported from Figma and built to CSS custom properties + TypeScript.
 
 **Figma is the source of truth for token names and values. This package never

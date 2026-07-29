@@ -11,12 +11,19 @@ pnpm build      # also lint / typecheck / format
 
 ## Where things are documented
 
-| If you want to…                                 | Read                                                                                                                                    |
-| ----------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
-| Change a design token                           | [`packages/tokens/README.md`](packages/tokens/README.md) — **start here**, the workflow has a Figma half that is not runnable from Node |
-| Name a token                                    | [`docs/variable-naming-spec.html`](docs/variable-naming-spec.html) — the grammar, and the validator that enforces it                    |
-| Understand why token names look the way they do | [`docs/token-migration-plan.md`](docs/token-migration-plan.md)                                                                          |
-| Work on this repo with an AI agent              | [`CLAUDE.md`](CLAUDE.md) — the traps worth knowing before editing tokens                                                                |
+| If you want to…                            | Read                                                                                                                                    |
+| ------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------- |
+| Change a design token                      | [`packages/tokens/README.md`](packages/tokens/README.md) — **start here**, the workflow has a Figma half that is not runnable from Node |
+| Name a token                               | [`docs/variable-naming-spec.html`](docs/variable-naming-spec.html) — the grammar, and the validator that enforces it                    |
+| Know which tokens exist and what they hold | [`docs/token-architecture-v2.md`](docs/token-architecture-v2.md) — the full inventory, four collections, ~392 variables                 |
+| Understand why a rule is what it is        | [`docs/naming-decisions.md`](docs/naming-decisions.md) — dated decisions, newest first                                                  |
+| Work on this repo with an AI agent         | [`CLAUDE.md`](CLAUDE.md) — the traps worth knowing before editing tokens                                                                |
+
+> **Architecture v2 is agreed but not yet migrated.** The collections are moving
+> to Primitives → Semantics → Interface, with brand modes in Semantics and
+> light/dark in Interface. The plan is in
+> [`docs/token-architecture-v2.md`](docs/token-architecture-v2.md); what is in the
+> file today is still v1. Docs first, then Figma, then code.
 
 > **Tokens come from Figma, not from this repo.** File `gaLbGd0QNb1fUl6BjSpfBA`.
 > Token names and values are changed in Figma and re-exported; editing the JSON

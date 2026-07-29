@@ -1,5 +1,20 @@
 # Token naming migration — completed 2026-07-27
 
+> **Historical record. Superseded by architecture v2 (29 Jul 2026).**
+>
+> This describes the v1 migration that made every name parse against the _v1_
+> grammar (`property/intent/role`, `component/variant/part/property/state`). That
+> grammar is being replaced: see
+> [`token-architecture-v2.md`](token-architecture-v2.md) for the new collections
+> and [`naming-decisions.md`](naming-decisions.md) for why.
+>
+> **v2 went live in Figma on 29 Jul 2026.** The collections this document
+> describes — `Semantic` and `Component` — no longer exist.
+>
+> Kept because the correction recorded below — an agent renaming tokens to make
+> the spec tidier, destroying information — is a mistake worth not repeating, and
+> it applies to v2 exactly as much as it did to v1.
+
 Status: **applied and verified.** Figma and the repo are in sync, checksum-matched.
 
 Decision: **the Figma file conforms to the spec**, not the other way round. Every
