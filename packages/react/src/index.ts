@@ -9,7 +9,11 @@ export type { InputProps, InputSize } from './Input.js';
 export { Select } from './Select.js';
 export type { SelectProps, SelectSize, SelectOption } from './Select.js';
 export { Checkbox } from './Checkbox.js';
-export type { CheckboxProps, CheckboxSize, CheckboxIntent } from './Checkbox.js';
+export type {
+  CheckboxProps,
+  CheckboxSize,
+  CheckboxIntent,
+} from './Checkbox.js';
 export { Radio, RadioGroup } from './Radio.js';
 export type {
   RadioProps,

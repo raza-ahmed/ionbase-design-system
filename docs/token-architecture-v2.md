@@ -499,11 +499,33 @@ Every current semantic token, and the v2 token that replaces it.
 | 9   | Repoint the CSS layer                     | 133/133 resolve                               |
 | 10  | Align the Badge API                       | brand/danger/info → primary/error/information |
 
+## React coverage
+
+| Shipped                                                                                            | Not yet                                             |
+| -------------------------------------------------------------------------------------------------- | --------------------------------------------------- |
+| Button · Tabs · Badge · Input · Select · Checkbox · Radio · Toggle · Menu · Avatar · Header · Icon | Table · Nav Item · Divider · Scroll Progress · Logo |
+
 ## Open items
 
 - **`packages/icons`** exports `size="md"` as 24px, which is v2's `lg`. The
   standalone scale is 12/16/20/24/32; reconcile the prop against it.
 - **Contrast**, per §6a — three AA-large pairings and `text/placeholder`.
+- **Four values sit off every ladder** and are used as raw ramp steps or
+  arithmetic in CSS rather than tokens. None is a defect on its own; together
+  they are the argument for either extending a ladder or accepting the
+  arithmetic permanently:
+  - Checkbox mark **14** (`--scale-14`) — 12 and 16 are on both the spacing and
+    icon-size ladders, 14 is on neither
+  - Radio dot **10** (`--scale-10`) — spacing jumps 8 → 12
+  - Header desktop height **56** — spacing jumps 48 → 64; written as `64 − 8`
+  - Avatar Group overlap **−6/−8/−10/−12** — negative space cannot be a spacing
+    token at all; derived as a quarter of the avatar size
+- **Avatar Group's square corner disagrees with Avatar's.** At Medium the group
+  renders `radius/sm` where a standalone square Avatar is `radius/md`. One of
+  the two is wrong in Figma; the React `AvatarGroup` follows the standalone
+  Avatar.
+- **Logo** carries an unbound `itemSpacing` of **5.333** — the only fractional
+  geometry left in the file.
 - **Button's variant names** keep `Primary Brand` and `Destructive`. Left
   deliberately: they name a hierarchy and an action, not token roles, and Figma
   agrees. `destructive` says what the button does to your data.

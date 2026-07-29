@@ -8,6 +8,67 @@ Newest first.
 
 ---
 
+## 2026-07-30 (latest) — the off-ladder radii were pills all along
+
+Six components implemented in React (Checkbox, Radio, Toggle, Menu, Avatar,
+Header) and the geometry they exposed fixed in Figma first.
+
+### 18 / 22 / 26 was never arbitrary
+
+The audit reported Tabs at radius 18/22/26, Radio at 10/12/14 and Toggle at
+12/14/16 — all on no ladder, all looking like someone had typed a number. Each
+is exactly **half the height** of its box:
+
+    Radio focus ring   10 on 20x20   12 on 24x24   14 on 28x28   -> circle
+    Toggle focus ring  12 on h=24    14 on h=28    16 on h=32    -> pill
+    Tabs focus ring    18 on h=36    22 on h=44    26 on h=52    -> pill
+
+They are pills and circles written the long way. `radius/full` says the same
+thing and renders identically, so binding them costs nothing and removes nine
+off-ladder values. Rounding them to the nearest rung — the obvious reading of
+"fix the random numbers" — would have squared off three focus rings.
+
+The lesson generalises: **an off-ladder value is a question, not a defect.**
+Ask what it is half of, or twice, before rounding it.
+
+### Only one real change
+
+`gap: 10` on the Large size of Checkbox, Radio and Toggle is genuinely off the
+scale with no derivation behind it. Small and Medium are 8; Large clearly wanted
+more, so it went to 12 rather than collapsing onto 8. That is a 2px design
+change, and the only one in the batch.
+
+### Two things derived rather than measured
+
+Toggle's track is 36x20 / 44x24 / 52x28 — four numbers on no ladder. But the
+track is exactly the thumb plus its inset:
+
+    height = thumb + 2 x inset      width = 2 x thumb + 2 x inset
+
+So the CSS states only the thumb (16/20/24, all on the scale) and the inset
+(spacing/2). Avatar Group's overlap is the same shape of answer: -6/-8/-10/-12
+is a quarter of the avatar size, and negative space cannot be a spacing token
+because the scale has no negative rungs. Deriving beats inventing four literals
+or four tokens.
+
+### A specificity bug the linter caught
+
+`.ion-checkbox--disabled .ion-checkbox__indicator` is (0,2,0);
+`.ion-checkbox__input:checked + .ion-checkbox__indicator` is (0,3,0). A disabled
+checked box would have kept its full colour **regardless of rule order**.
+Stylelint's `no-descending-specificity` flagged it as an ordering complaint; the
+real fix was to drive disabled off the input's own `:disabled`, which makes
+`:checked:disabled` (0,4,0) and lets it win. Pinned by a test.
+
+### Stacking order is Figma's, and it is the less common one
+
+Avatar Group paints each avatar OVER the previous, so the `+N` overflow ends up
+on top. The first implementation reversed the row to put the first avatar on
+top — the commoner convention in other systems, and wrong here. No assertion
+caught it; comparing a screenshot against the Figma render did.
+
+---
+
 ## 2026-07-30 (later) — stroke weights are whole numbers, and bound
 
 Every stroke in the file now resolves to `border-width/default` (1),
