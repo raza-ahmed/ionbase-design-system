@@ -39,14 +39,14 @@ const Row = ({
       gap: '1.5rem',
       alignItems: 'baseline',
       padding: '0.75rem 0',
-      borderBottom: '1px solid var(--border-neutral-muted)',
+      borderBottom: '1px solid var(--border-default)',
     }}
   >
     <code
       style={{
         fontFamily: 'var(--font-family-mono)',
         fontSize: 'var(--font-size-12)',
-        color: 'var(--fg-neutral-muted)',
+        color: 'var(--text-tertiary)',
       }}
     >
       .{className}
@@ -65,7 +65,7 @@ const Group = ({
   <section style={{ marginBottom: '2.5rem' }}>
     <h2
       className="ion-text-h6"
-      style={{ color: 'var(--fg-neutral-secondary)', marginBottom: '0.5rem' }}
+      style={{ color: 'var(--text-secondary)', marginBottom: '0.5rem' }}
     >
       {title}
     </h2>
@@ -125,7 +125,7 @@ export const Emphasis: Story = {
             gridTemplateColumns: '1fr 1fr',
             gap: '1.5rem',
             padding: '0.75rem 0',
-            borderBottom: '1px solid var(--border-neutral-muted)',
+            borderBottom: '1px solid var(--border-default)',
           }}
         >
           <div className={cls}>Regular — {cls}</div>

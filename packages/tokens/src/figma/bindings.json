@@ -63,7 +63,8 @@
       {"collection": "Semantics", "token": "font/weight/medium"},
       {"collection": "Semantics", "token": "radius/full"},
       {"collection": "Semantics", "token": "radius/md"},
-      {"collection": "Semantics", "token": "radius/sm"}
+      {"collection": "Semantics", "token": "radius/sm"},
+      {"collection": "Semantics", "token": "radius/xs"}
     ],
     "Buttons/Button": [
       {"collection": "Semantics", "token": "border-width/default"},
@@ -123,6 +124,7 @@
       {"collection": "Primitives", "token": "font/family/host-grotesk"},
       {"collection": "Primitives", "token": "font/weight/500"},
       {"collection": "Primitives", "token": "spacing/4"},
+      {"collection": "Primitives", "token": "spacing/8"},
       {"collection": "Semantics", "token": "font/family/sans"},
       {"collection": "Semantics", "token": "font/weight/medium"}
     ],

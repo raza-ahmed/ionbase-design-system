@@ -8,6 +8,71 @@ Newest first.
 
 ---
 
+## 2026-07-30 (later still) — nothing reads the raw ramp, and `icon-size` means one thing
+
+### Two off-ladder sizes turned out to be derivable
+
+`--scale-14` and `--scale-10` were the only places a component reached past a
+ladder into the raw `scale/*` ramp. Both follow from the box they sit in:
+
+    Checkbox mark = box / 2 + 4      16->12   20->14   24->16
+    Radio dot     = box / 2 - 2      16->6    20->8    24->10
+
+So the ramp is now referenced by nothing, and the components state one number
+per size instead of two. Both are pinned by tests against Figma's pixels, and
+both tests were negative-tested — breaking the formula to `+ 2` fails with
+`expected 10 to be 12`, which is the only way to know an assertion is real.
+
+That is the fourth time this pattern has paid: the toggle track, the avatar
+overlap, the pill radii, and now these. **An off-ladder value is a question
+about what it is derived from.** Reach for arithmetic on real rungs before
+either rounding it or minting a token.
+
+### `icon-size/md` and `size="md"` finally agree
+
+`@ionbase/icons` exposed `sm`=16 and `md`=**24**. That made `md` name
+`icon-size/lg`, so the word meant different things in code and in Figma — the
+exact ambiguity a ladder exists to remove. The prop now mirrors the ladder
+one-to-one: `xs` 12, `sm` 16, `md` 20, `lg` 24, `xl` 32.
+
+Breaking, and unavoidable — a rename is the only fix for a name that is wrong.
+Callers wanting the old `md` ask for `lg`. Nothing internal broke, because
+Button and Tabs size icons in CSS from `--icon-size-*` and never through the
+prop. The Icon stories were passing `size` inside Buttons where the CSS
+overrides it, so those props are gone too: a prop that looks like it matters and
+does nothing is worse than no prop.
+
+Note there was never really a choice of ladder. `control/<step>/icon-size` was
+the other candidate and it had already been deleted, since its three values
+duplicated `icon-size/sm|md|lg` exactly.
+
+### Three stories were painting with deleted tokens
+
+`--fg-neutral-muted`, `--fg-danger-default`, `--border-neutral-muted` and five
+others are v1 names that no longer exist. The stories using them had been
+rendering with inherited colour since the migration and looked plausible enough
+that nobody noticed. Twelve references repointed at `text/*`, `icon/*` and
+`border/*`.
+
+Worth noting what did **not** catch this: `tokens:gate` validates the token
+graph and the Figma bindings, not CSS custom properties referenced from JSX. A
+dead `var()` fails silently by design — that is what fallbacks are for.
+
+### Avatar Group's corners matched the Avatar at only two of four sizes
+
+The reported disagreement was Medium. Checking all four found Mini wrong too:
+
+    Mini    group radius/sm   standalone radius/xs
+    Small   group radius/sm   standalone radius/sm   ok
+    Medium  group radius/sm   standalone radius/md
+    Large   group radius/md   standalone radius/md   ok
+
+All twenty child instances now bind the standalone ladder. The lesson is small
+and keeps recurring: when one instance of a discrepancy is reported, enumerate
+the axis rather than fixing the reported case.
+
+---
+
 ## 2026-07-30 (latest) — the off-ladder radii were pills all along
 
 Six components implemented in React (Checkbox, Radio, Toggle, Menu, Avatar,

@@ -43,18 +43,31 @@ whatever it sits in. That is still right for the React side and does not change.
 > offset one step — `text/default` is `#131923`, `icon/default` is `#1d2735` —
 > so an icon reads a touch softer than the text beside it.
 
-`size` accepts `sm` (16) or `md` (24) — or any CSS length. A third named size is a
-design decision that belongs in Figma as a token, not a number invented in code.
+`size` names a rung on the `icon-size` ladder, or takes any CSS length for a
+one-off:
 
-> **v2 note — sizing still disagrees, and this is the open item.** There are two
-> icon scales now: `control/<step>/icon-size` (16/20/24, the icon _inside_ a
-> control) and the standalone `icon-size/xs…xl` (12/16/20/24/32) that the Figma
-> Icon component binds. This package's `md` is 24px, which is `icon-size/lg`.
+| `size` | px  | Token          |
+| ------ | --- | -------------- |
+| `xs`   | 12  | `icon-size/xs` |
+| `sm`   | 16  | `icon-size/sm` |
+| `md`   | 20  | `icon-size/md` |
+| `lg`   | 24  | `icon-size/lg` |
+| `xl`   | 32  | `icon-size/xl` |
+
+Omit `size` and the icon inherits `1em`, scaling with the text around it. That is
+what lets an icon sit correctly inside a Button without Button knowing anything
+about this component.
+
+> **Breaking change — `md` moved from 24 to 20.** The package used to expose two
+> sizes, `sm`=16 and `md`=**24**. That made `md` name `icon-size/lg`, so the one
+> word meant different things in code and in Figma — the exact ambiguity a ladder
+> exists to remove. **Callers who want the old `md` should ask for `lg`.**
 >
-> Reconciling means picking which scale the `size` prop names. `icon-size/*` is
-> the better fit — an `<Icon>` used on its own is not inside a control — which
-> would make `sm`=16, `md`=20, `lg`=24 and add `xs`=12, `xl`=32. That renames the
-> meaning of `md` for anyone already using it, so it has not been done silently.
+> Nothing inside the design system depended on it: Button and Tabs size their
+> icons in CSS from `--icon-size-*`, never through this prop. There was also only
+> ever one icon ladder to choose — `control/<step>/icon-size` was deleted with the
+> rest of the `control` group, since its three values duplicated
+> `icon-size/sm|md|lg` exactly.
 
 ## Keeping Figma and Lucide in sync
 

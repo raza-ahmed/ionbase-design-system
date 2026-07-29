@@ -112,6 +112,33 @@ export const RenderedGeometryMatchesFigma: Story = {
   },
 };
 
+/**
+ * The dot is `box / 2 - 2` rather than three stated numbers, because 10 is on no
+ * ladder. Checked against Figma's 6 / 8 / 10.
+ */
+export const DerivedDotMatchesFigma: Story = {
+  render: (args) => (
+    <RadioGroup {...args} defaultValue="a">
+      <Radio value="a" size="sm" aria-label="sm" />
+      <Radio value="b" aria-label="md" defaultChecked />
+      <Radio value="c" size="lg" aria-label="lg" />
+    </RadioGroup>
+  ),
+  play: async ({ canvas }) => {
+    for (const [label, px] of [
+      ['sm', 6],
+      ['md', 8],
+      ['lg', 10],
+    ] as const) {
+      const dot = canvas
+        .getByLabelText(label)
+        .closest('.ion-radio')!
+        .querySelector('.ion-radio__dot') as HTMLElement;
+      await expect(Math.round(dot.getBoundingClientRect().width)).toBe(px);
+    }
+  },
+};
+
 /** One name per group, and exactly one selected — the whole reason the group
  *  exists rather than each Radio standing alone. */
 export const GroupSharesNameAndSelection: Story = {

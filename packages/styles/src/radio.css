@@ -12,18 +12,26 @@
  *     anyway, because a form can always disable a field and the component must
  *     not fall back to looking enabled
  *
- * The dot is 6 / 8 / 10. 10 is on no ladder (spacing skips it), so it reads
- * `--scale-10` — flagged rather than rounded, since changing it changes how
- * filled the selected state looks.
+ * THE DOT IS DERIVED
+ *
+ * The dot is 6 / 8 / 10 against indicators of 16 / 20 / 24. 10 is on no ladder —
+ * spacing jumps 8 to 12 — but it follows from the box:
+ *
+ *     dot = box / 2 - 2       16->6   20->8   24->10
+ *
+ * So nothing here reaches for the raw `scale/*` ramp, and the dot stays in
+ * proportion if a size is ever retuned.
  */
 .ion-radio {
   --ion-radio-size: var(--spacing-20);
   --ion-radio-gap: var(--spacing-8);
-  --ion-radio-dot: var(--spacing-8);
   --ion-radio-font-size: var(--type-body);
   --ion-radio-line-height: var(--type-body-line-height);
   --ion-radio-fill: var(--surface-primary);
   --ion-radio-border: var(--border-primary-strong);
+
+  /* Derived — see the header. */
+  --ion-radio-dot: calc(var(--ion-radio-size) / 2 - var(--spacing-2));
 
   display: inline-flex;
   align-items: flex-start;
@@ -36,7 +44,6 @@
 
 .ion-radio--sm {
   --ion-radio-size: var(--spacing-16);
-  --ion-radio-dot: var(--spacing-6);
   --ion-radio-font-size: var(--type-body-sm);
   --ion-radio-line-height: var(--type-body-sm-line-height);
 }
@@ -44,7 +51,6 @@
 .ion-radio--lg {
   --ion-radio-size: var(--spacing-24);
   --ion-radio-gap: var(--spacing-12);
-  --ion-radio-dot: var(--scale-10);
 }
 
 .ion-radio__input {

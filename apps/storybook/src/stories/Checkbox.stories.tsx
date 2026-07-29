@@ -116,6 +116,34 @@ export const RenderedGeometryMatchesFigma: Story = {
 };
 
 /**
+ * The mark is `box / 2 + 4` rather than three stated numbers, because 14 is on
+ * no ladder. A derivation that produces the wrong pixels is worse than the
+ * literal it replaced, so this checks all three against Figma: 12 / 14 / 16.
+ */
+export const DerivedMarkMatchesFigma: Story = {
+  render: (args) => (
+    <div>
+      <Checkbox {...args} size="sm" defaultChecked aria-label="sm" />
+      <Checkbox {...args} defaultChecked aria-label="md" />
+      <Checkbox {...args} size="lg" defaultChecked aria-label="lg" />
+    </div>
+  ),
+  play: async ({ canvas }) => {
+    for (const [label, px] of [
+      ['sm', 12],
+      ['md', 14],
+      ['lg', 16],
+    ] as const) {
+      const mark = canvas
+        .getByLabelText(label)
+        .closest('.ion-checkbox')!
+        .querySelector('.ion-checkbox__mark') as HTMLElement;
+      await expect(Math.round(mark.getBoundingClientRect().width)).toBe(px);
+    }
+  },
+};
+
+/**
  * Disabled has to beat checked.
  *
  * `.ion-checkbox--disabled .ion-checkbox__indicator` is (0,2,0) while

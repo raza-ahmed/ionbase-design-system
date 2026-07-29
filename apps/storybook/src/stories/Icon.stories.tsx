@@ -45,7 +45,7 @@ const Cell = ({
       flexDirection: 'column',
       gap: '0.5rem',
       padding: '1rem',
-      border: '1px solid var(--border-neutral-muted)',
+      border: '1px solid var(--border-default)',
       borderRadius: 'var(--radius-8)',
       minWidth: '12rem',
     }}
@@ -57,7 +57,7 @@ const Cell = ({
       style={{
         fontFamily: 'var(--font-family-mono)',
         fontSize: 'var(--font-size-12)',
-        color: 'var(--fg-neutral-muted)',
+        color: 'var(--text-tertiary)',
       }}
     >
       {title}
@@ -66,7 +66,7 @@ const Cell = ({
       <span
         style={{
           fontSize: 'var(--font-size-12)',
-          color: 'var(--fg-neutral-secondary)',
+          color: 'var(--text-secondary)',
         }}
       >
         {note}
@@ -75,19 +75,32 @@ const Cell = ({
   </div>
 );
 
+/**
+ * The five rungs are the `icon-size` ladder verbatim, so `md` here and
+ * `icon-size/md` in Figma are the same 20px.
+ *
+ * This is a breaking change: `md` used to be 24, which meant the word named
+ * `icon-size/lg` in code and `icon-size/md` in Figma. Callers who want the old
+ * `md` should ask for `lg`.
+ */
 export const Sizes: Story = {
   render: () => (
     <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
-      <Cell title='size="sm"' note="16px — the size Button uses at Small">
-        <Icon as={Plus} size="sm" />
-        <Icon as={Search} size="sm" />
-        <Icon as={Check} size="sm" />
-      </Cell>
-      <Cell title='size="md"' note="24px — Button at Medium and Large">
-        <Icon as={Plus} size="md" />
-        <Icon as={Search} size="md" />
-        <Icon as={Check} size="md" />
-      </Cell>
+      {(
+        [
+          ['xs', 12],
+          ['sm', 16],
+          ['md', 20],
+          ['lg', 24],
+          ['xl', 32],
+        ] as const
+      ).map(([size, px]) => (
+        <Cell key={size} title={`size="${size}"`} note={`${px}px`}>
+          <Icon as={Plus} size={size} />
+          <Icon as={Search} size={size} />
+          <Icon as={Check} size={size} />
+        </Cell>
+      ))}
       <Cell title="no size" note="1em — scales with surrounding text">
         <span
           style={{ fontSize: '2rem', display: 'inline-flex', gap: '0.5rem' }}
@@ -108,22 +121,22 @@ export const InheritsColour: Story = {
   render: () => (
     <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
       <Cell title="fg/neutral/default">
-        <span style={{ color: 'var(--fg-neutral-default)' }}>
+        <span style={{ color: 'var(--icon-default)' }}>
           <Icon as={Settings} size="md" />
         </span>
       </Cell>
       <Cell title="fg/danger/default">
-        <span style={{ color: 'var(--fg-danger-default)' }}>
+        <span style={{ color: 'var(--icon-error)' }}>
           <Icon as={Trash2} size="md" />
         </span>
       </Cell>
       <Cell title="fg/warning/default">
-        <span style={{ color: 'var(--fg-warning-default)' }}>
+        <span style={{ color: 'var(--icon-warning)' }}>
           <Icon as={TriangleAlert} size="md" />
         </span>
       </Cell>
       <Cell title="fg/link/default">
-        <span style={{ color: 'var(--fg-link-default)' }}>
+        <span style={{ color: 'var(--text-link)' }}>
           <Icon as={Download} size="md" />
         </span>
       </Cell>
@@ -140,17 +153,25 @@ export const Accessibility: Story = {
   render: () => (
     <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
       <Cell title="decorative" note="aria-hidden — paired with a visible label">
-        <Button startIcon={<Icon as={Plus} size="sm" />}>Add item</Button>
+        <Button startIcon={<Icon as={Plus} />}>Add item</Button>
       </Cell>
       <Cell title='label="Add item"' note="role=img + aria-label — icon alone">
         <Button aria-label="Add item">
-          <Icon as={Plus} size="sm" label="Add item" />
+          <Icon as={Plus} label="Add item" />
         </Button>
       </Cell>
     </div>
   ),
 };
 
+/**
+ * Note the icons pass no `size`.
+ *
+ * Button sizes its own icons in CSS from `--icon-size-*`, and that rule wins
+ * over the width/height attributes this component sets. Passing `size` here
+ * would look like it mattered and change nothing — which is exactly the kind of
+ * dead prop that gets copied into real code.
+ */
 export const InButtons: Story = {
   render: () => (
     <div
@@ -161,16 +182,16 @@ export const InButtons: Story = {
         flexWrap: 'wrap',
       }}
     >
-      <Button size="sm" startIcon={<Icon as={Plus} size="sm" />}>
+      <Button size="sm" startIcon={<Icon as={Plus} />}>
         Small
       </Button>
-      <Button size="md" startIcon={<Icon as={Plus} size="md" />}>
+      <Button size="md" startIcon={<Icon as={Plus} />}>
         Medium
       </Button>
-      <Button size="lg" endIcon={<Icon as={ArrowRight} size="md" />}>
+      <Button size="lg" endIcon={<Icon as={ArrowRight} />}>
         Large
       </Button>
-      <Button variant="destructive" startIcon={<Icon as={Trash2} size="md" />}>
+      <Button variant="destructive" startIcon={<Icon as={Trash2} />}>
         Delete
       </Button>
     </div>

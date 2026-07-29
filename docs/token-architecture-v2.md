@@ -507,25 +507,26 @@ Every current semantic token, and the v2 token that replaces it.
 
 ## Open items
 
-- **`packages/icons`** exports `size="md"` as 24px, which is v2's `lg`. The
-  standalone scale is 12/16/20/24/32; reconcile the prop against it.
 - **Contrast**, per §6a — three AA-large pairings and `text/placeholder`.
-- **Four values sit off every ladder** and are used as raw ramp steps or
-  arithmetic in CSS rather than tokens. None is a defect on its own; together
-  they are the argument for either extending a ladder or accepting the
-  arithmetic permanently:
-  - Checkbox mark **14** (`--scale-14`) — 12 and 16 are on both the spacing and
-    icon-size ladders, 14 is on neither
-  - Radio dot **10** (`--scale-10`) — spacing jumps 8 → 12
-  - Header desktop height **56** — spacing jumps 48 → 64; written as `64 − 8`
-  - Avatar Group overlap **−6/−8/−10/−12** — negative space cannot be a spacing
-    token at all; derived as a quarter of the avatar size
-- **Avatar Group's square corner disagrees with Avatar's.** At Medium the group
-  renders `radius/sm` where a standalone square Avatar is `radius/md`. One of
-  the two is wrong in Figma; the React `AvatarGroup` follows the standalone
-  Avatar.
-- **Logo** carries an unbound `itemSpacing` of **5.333** — the only fractional
-  geometry left in the file.
+- **Off-ladder geometry is derived, never a raw ramp step.** No component reads
+  `scale/*`. Four values sit off every ladder and are stated as arithmetic on
+  rungs that do exist:
+
+  | Value                              | Off-ladder because               | Derived as       |
+  | ---------------------------------- | -------------------------------- | ---------------- |
+  | Checkbox mark 12/14/16             | both ladders skip 14             | `box / 2 + 4`    |
+  | Radio dot 6/8/10                   | spacing jumps 8 → 12             | `box / 2 − 2`    |
+  | Toggle track 36/44/52 × 20/24/28   | spacing skips all four           | `thumb`, `inset` |
+  | Header desktop height 56           | spacing jumps 48 → 64            | `64 − 8`         |
+  | Avatar Group overlap −6/−8/−10/−12 | negative space cannot be a token | `size / 4`       |
+
+  Each is pinned by a test against Figma's measured pixels, and those tests are
+  negative-tested — a wrong formula fails them.
+
+- **`Logo` carries an unbound `itemSpacing` of 5.333** at Large — the only
+  fractional geometry left in the file. Deliberately not rounded: the Large logo
+  is a scaled lockup (4 × 4⁄3), so a round number would change the wordmark's
+  proportions. It needs a design decision, not a sweep.
 - **Button's variant names** keep `Primary Brand` and `Destructive`. Left
   deliberately: they name a hierarchy and an action, not token roles, and Figma
   agrees. `destructive` says what the button does to your data.

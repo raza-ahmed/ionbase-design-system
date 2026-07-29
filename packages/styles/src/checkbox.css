@@ -8,12 +8,16 @@
  * replaced: it keeps the control focusable, announceable and form-associated,
  * and the styled square follows it via :checked / :focus-visible.
  *
- * ONE OFF-LADDER VALUE
+ * THE MARK IS DERIVED
  *
- * The mark is 12 / 14 / 16. 12 and 16 are on both the spacing and icon-size
- * ladders; 14 is on neither, so it reads `--scale-14` — the raw ramp. Recorded
- * as an open item rather than silently rounded, because moving it changes the
- * tick's weight inside the box.
+ * The mark is 12 / 14 / 16 against boxes of 16 / 20 / 24. 14 is on no ladder —
+ * both spacing and icon-size skip it — but the mark is not arbitrary:
+ *
+ *     mark = box / 2 + 4      16->12   20->14   24->16
+ *
+ * So the only number stated per size is the box, and nothing here reaches for
+ * the raw `scale/*` ramp. Same move as the toggle track and the avatar overlap:
+ * an off-ladder value is usually a question about what it is derived from.
  *
  * FOCUS RING
  *
@@ -26,13 +30,15 @@
   --ion-checkbox-size: var(--spacing-20);
   --ion-checkbox-gap: var(--spacing-8);
   --ion-checkbox-radius: var(--radius-xs);
-  --ion-checkbox-mark: var(--scale-14);
   --ion-checkbox-font-size: var(--type-body);
   --ion-checkbox-line-height: var(--type-body-line-height);
 
   /* Filled by the intent modifier; unchecked is intent-independent. */
   --ion-checkbox-fill: var(--surface-primary);
   --ion-checkbox-border: var(--border-primary-strong);
+
+  /* Derived — see the header. */
+  --ion-checkbox-mark: calc(var(--ion-checkbox-size) / 2 + var(--spacing-4));
 
   display: inline-flex;
   align-items: flex-start;
@@ -45,7 +51,6 @@
 
 .ion-checkbox--sm {
   --ion-checkbox-size: var(--spacing-16);
-  --ion-checkbox-mark: var(--spacing-12);
   --ion-checkbox-font-size: var(--type-body-sm);
   --ion-checkbox-line-height: var(--type-body-sm-line-height);
 }
@@ -56,7 +61,6 @@
   --ion-checkbox-size: var(--spacing-24);
   --ion-checkbox-gap: var(--spacing-12);
   --ion-checkbox-radius: var(--radius-sm);
-  --ion-checkbox-mark: var(--spacing-16);
 }
 
 /*

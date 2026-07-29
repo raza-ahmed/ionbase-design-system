@@ -61,7 +61,7 @@ export const Sizes: Story = {
             style={{
               fontFamily: 'var(--font-family-mono)',
               fontSize: 'var(--font-size-12)',
-              color: 'var(--fg-neutral-muted)',
+              color: 'var(--text-tertiary)',
               minWidth: '2rem',
             }}
           >
