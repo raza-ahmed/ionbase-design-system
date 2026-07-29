@@ -14,10 +14,10 @@
   justify-content: center;
 
   /*
-   * Figma's 1px stroke is drawn INSIDE the 20px box, so it does not add height.
-   * A CSS border does, so the vertical padding absorbs it — otherwise the badge
-   * renders 22px against the design's 20px. Same correction as the Tabs
-   * underline indicator.
+   * Figma's 1px stroke is drawn INSIDE the box, so it does not add height. A CSS
+   * border does, so the vertical padding absorbs it — otherwise the badge
+   * renders 2px taller than the design. Same correction as the Tabs underline
+   * indicator. Badge is 22px: padding 2 + caption line-height 18 + padding 2.
    */
   padding: calc(var(--spacing-2) - var(--border-width-default)) var(--spacing-8);
   gap: var(--spacing-4);

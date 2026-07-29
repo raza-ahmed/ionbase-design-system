@@ -80,7 +80,11 @@ export const WithIcon: Story = {
 
 /*
  * Rendered geometry, not token values — the check that caught Tabs shipping
- * 16px too tall. Figma Badge 152:73 measures 20px high with 2/8 padding.
+ * 16px too tall. Figma Badge 152:73 measures 22px high with 2/8 padding.
+ *
+ * It was 20px until `type/caption/line-height` moved 16 -> 18 in Figma. This
+ * assertion caught the change on the next sync, which is the point of measuring
+ * rendered pixels rather than reading tokens back to themselves.
  */
 export const RenderedGeometryMatchesFigma: Story = {
   render: (args) => <Badge {...args}>Badge</Badge>,
@@ -88,7 +92,7 @@ export const RenderedGeometryMatchesFigma: Story = {
     const badge = canvas.getByText('Badge');
     const cs = getComputedStyle(badge);
 
-    await expect(Math.round(badge.getBoundingClientRect().height)).toBe(20);
+    await expect(Math.round(badge.getBoundingClientRect().height)).toBe(22);
 
     /*
      * Figma's padding is 2px with a 1px stroke drawn INSIDE the box. A CSS
