@@ -2,8 +2,8 @@
 .ion-table-container {
   width: 100%;
   overflow-x: auto;
-  border: var(--border-width-thin) solid var(--table-border);
-  border-radius: var(--radius-8);
+  border: var(--border-width-default) solid var(--border-default);
+  border-radius: var(--radius-md);
 }
 
 /* Table Base */
@@ -12,49 +12,49 @@
   border-collapse: collapse;
   border-spacing: 0;
   font-family: var(--font-family-sans);
-  font-size: var(--font-size-14);
+  font-size: var(--type-body-sm);
   line-height: var(--type-body-sm-line-height);
   text-align: left;
 }
 
 /* Table Header Row */
 .ion-table__header {
-  background-color: var(--table-header-bg);
-  color: var(--table-header-fg);
+  background-color: var(--surface-page);
+  color: var(--text-secondary);
   font-weight: var(--font-weight-semibold);
-  border-bottom: var(--border-width-thin) solid var(--table-border);
+  border-bottom: var(--border-width-default) solid var(--border-default);
 }
 
 /* Table Row base and states */
 .ion-table__row {
-  background-color: var(--table-row-bg);
-  border-bottom: var(--border-width-thin) solid var(--table-border);
+  background-color: var(--surface-default);
+  border-bottom: var(--border-width-default) solid var(--border-default);
   transition: background-color 150ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* Row Hover State */
 .ion-table__row:hover,
 .ion-table__row[data-hovered='true'] {
-  background-color: var(--table-row-bg-hover);
+  background-color: var(--surface-hover);
 }
 
 /* Row Selected State */
 .ion-table__row.is-selected,
 .ion-table__row[data-selected='true'] {
-  background-color: var(--table-row-bg-selected);
+  background-color: var(--surface-primary-subtle);
 }
 
 /* Row Selected Hover State */
 .ion-table__row.is-selected:hover,
 .ion-table__row[data-selected='true']:hover,
 .ion-table__row[data-selected='true'][data-hovered='true'] {
-  background-color: var(--table-row-bg-hover-selected);
+  background-color: var(--surface-primary-subtle);
 }
 
 /* Striped Rows (via modifier on row or via table class) */
 .ion-table__row--striped,
 .ion-table--striped .ion-table__row:nth-child(even) {
-  background-color: var(--table-striped-row-bg);
+  background-color: var(--surface-page);
 }
 
 /* Striped Row Hover / Selection Overrides */
@@ -62,14 +62,14 @@
 .ion-table--striped .ion-table__row:nth-child(even):hover,
 .ion-table__row--striped[data-hovered='true'],
 .ion-table--striped .ion-table__row:nth-child(even)[data-hovered='true'] {
-  background-color: var(--table-row-bg-hover);
+  background-color: var(--surface-hover);
 }
 
 .ion-table__row--striped.is-selected,
 .ion-table--striped .ion-table__row:nth-child(even).is-selected,
 .ion-table__row--striped[data-selected='true'],
 .ion-table--striped .ion-table__row:nth-child(even)[data-selected='true'] {
-  background-color: var(--table-row-bg-selected);
+  background-color: var(--surface-primary-subtle);
 }
 
 /* Cells Base (th, td) */
@@ -80,7 +80,7 @@
 }
 
 .ion-table__cell {
-  color: var(--table-cell-fg);
+  color: var(--text-default);
 }
 
 /* Alignment Modifiers */

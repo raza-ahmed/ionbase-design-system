@@ -25,28 +25,27 @@
 
 .ion-tabs__track--underline.ion-tabs__track--horizontal {
   display: inline-flex;
-  gap: var(--tabs-underline-track-gap);
-  border-bottom: var(--control-border-width) solid
-    var(--tabs-underline-track-border);
+  gap: var(--spacing-4);
+  border-bottom: var(--border-width-default) solid var(--border-default);
 }
 
 .ion-tabs__track--pill.ion-tabs__track--horizontal {
   display: inline-flex;
-  gap: var(--tabs-pill-track-gap);
-  padding: var(--tabs-pill-track-padding-y) var(--tabs-pill-track-padding-x);
-  background-color: var(--tabs-pill-track-bg);
+  gap: var(--spacing-2);
+  padding: var(--spacing-4) var(--spacing-4);
+  background-color: var(--surface-muted);
 
   /* `radius/full` — Figma's pill track is fully rounded, not an 8px rect. */
-  border-radius: var(--tabs-pill-track-radius);
+  border-radius: var(--radius-full);
 }
 
 /* Item */
 .ion-tabs__item {
   --ion-tabs-item-size: var(--control-md-size);
   --ion-tabs-item-padding-x: var(--control-md-padding-x);
-  --ion-tabs-item-padding-y: var(--tabs-medium-item-padding-y);
+  --ion-tabs-item-padding-y: var(--spacing-8);
   --ion-tabs-item-gap: var(--control-md-gap);
-  --ion-tabs-icon-size: var(--tabs-medium-icon-size);
+  --ion-tabs-icon-size: var(--spacing-20);
 
   /*
    * Typography follows the Figma text styles: Body/Small Emphasis at Small,
@@ -80,7 +79,7 @@
 .ion-tabs__item--sm {
   --ion-tabs-item-size: var(--control-sm-size);
   --ion-tabs-item-padding-x: var(--control-sm-padding-x);
-  --ion-tabs-item-padding-y: var(--tabs-small-item-padding-y);
+  --ion-tabs-item-padding-y: var(--spacing-6);
   --ion-tabs-item-gap: var(--control-sm-gap);
   --ion-tabs-icon-size: var(--control-sm-icon-size);
   --ion-tabs-item-font-size: var(--type-body-sm);
@@ -90,18 +89,17 @@
 .ion-tabs__item--lg {
   --ion-tabs-item-size: var(--control-lg-size);
   --ion-tabs-item-padding-x: var(--control-lg-padding-x);
-  --ion-tabs-item-padding-y: var(--tabs-large-item-padding-y);
+  --ion-tabs-item-padding-y: var(--spacing-8);
   --ion-tabs-item-gap: var(--control-lg-gap);
-  --ion-tabs-icon-size: var(--tabs-large-icon-size);
+  --ion-tabs-icon-size: var(--spacing-20);
   --ion-tabs-item-font-size: var(--type-body-lg);
   --ion-tabs-item-line-height: var(--type-body-lg-line-height);
 }
 
 /* Underline item */
 .ion-tabs__item--underline {
-  color: var(--tabs-underline-item-fg);
-  border-bottom: var(--tabs-underline-item-border-width-selected) solid
-    transparent;
+  color: var(--text-tertiary);
+  border-bottom: var(--border-width-thick) solid transparent;
 
   /*
    * Figma draws the indicator as an INSIDE stroke, so it does not add height.
@@ -109,13 +107,12 @@
    * height instead of 2px taller than every other variant.
    */
   padding-bottom: calc(
-    var(--ion-tabs-item-padding-y) -
-      var(--tabs-underline-item-border-width-selected)
+    var(--ion-tabs-item-padding-y) - var(--border-width-thick)
   );
 
   /* Overlap the track's own border so the indicator replaces it rather than
      stacking below it. */
-  margin-bottom: calc(-1 * var(--control-border-width));
+  margin-bottom: calc(-1 * var(--border-width-default));
 }
 
 /*
@@ -125,40 +122,40 @@
  */
 @media (hover: hover) {
   .ion-tabs__item--underline:hover {
-    color: var(--tabs-underline-item-fg-hover);
+    color: var(--text-default);
   }
 }
 
 .ion-tabs__item--underline[data-hovered='true'] {
-  color: var(--tabs-underline-item-fg-hover);
+  color: var(--text-default);
 }
 
 .ion-tabs__item--underline[data-selected='true'] {
-  color: var(--tabs-underline-item-fg-selected);
-  border-bottom-color: var(--tabs-underline-item-border-selected);
+  color: var(--text-default);
+  border-bottom-color: var(--border-primary);
 }
 
 /* Pill item */
 .ion-tabs__item--pill {
-  color: var(--tabs-pill-item-fg);
-  border-radius: var(--tabs-pill-item-radius);
+  color: var(--text-tertiary);
+  border-radius: var(--radius-full);
 }
 
 @media (hover: hover) {
   .ion-tabs__item--pill:hover {
-    color: var(--tabs-pill-item-fg-hover);
-    background-color: var(--tabs-pill-item-bg-hover);
+    color: var(--text-default);
+    background-color: var(--surface-hover);
   }
 }
 
 .ion-tabs__item--pill[data-hovered='true'] {
-  color: var(--tabs-pill-item-fg-hover);
-  background-color: var(--tabs-pill-item-bg-hover);
+  color: var(--text-default);
+  background-color: var(--surface-hover);
 }
 
 .ion-tabs__item--pill[data-selected='true'] {
-  color: var(--tabs-pill-item-fg-selected);
-  background-color: var(--tabs-pill-item-bg-selected);
+  color: var(--text-default);
+  background-color: var(--surface-default);
 }
 
 /*
@@ -167,12 +164,12 @@
  */
 @media (hover: hover) {
   .ion-tabs__item--pill[data-selected='true']:hover {
-    background-color: var(--tabs-pill-item-bg-hover-selected);
+    background-color: var(--surface-page);
   }
 }
 
 .ion-tabs__item--pill[data-selected='true'][data-hovered='true'] {
-  background-color: var(--tabs-pill-item-bg-hover-selected);
+  background-color: var(--surface-page);
 }
 
 /*
@@ -187,19 +184,19 @@
  */
 .ion-tabs__item:focus-visible,
 .ion-tabs__item[data-focused='true'] {
-  outline: var(--tabs-item-border-width-focus) solid var(--tabs-item-ring);
-  outline-offset: var(--tabs-item-border-width-focus);
+  outline: var(--border-width-thick) solid var(--ring-focus);
+  outline-offset: var(--border-width-thick);
 }
 
 /* Underline items are square, but Figma rounds their focus ring to 8px. */
 .ion-tabs__item--underline:focus-visible,
 .ion-tabs__item--underline[data-focused='true'] {
-  border-radius: var(--tabs-underline-item-radius-focus);
+  border-radius: var(--radius-md);
 }
 
 /* Disabled */
 .ion-tabs__item[data-disabled='true'] {
-  color: var(--fg-neutral-disabled);
+  color: var(--text-disabled);
   cursor: not-allowed;
   background-color: transparent;
 }
@@ -217,6 +214,6 @@
 
 /* Panel */
 .ion-tabs__panel:focus-visible {
-  outline: var(--tabs-item-border-width-focus) solid var(--tabs-item-ring);
-  outline-offset: var(--tabs-item-border-width-focus);
+  outline: var(--border-width-thick) solid var(--ring-focus);
+  outline-offset: var(--border-width-thick);
 }

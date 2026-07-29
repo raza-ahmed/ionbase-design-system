@@ -57,8 +57,8 @@
   cursor: pointer;
   user-select: none;
   border-style: solid;
-  border-width: var(--control-border-width);
-  border-radius: var(--button-radius);
+  border-width: var(--border-width-default);
+  border-radius: var(--radius-md);
   transition:
     background-color 150ms cubic-bezier(0.4, 0, 0.2, 1),
     border-color 150ms cubic-bezier(0.4, 0, 0.2, 1),
@@ -118,144 +118,144 @@
 .ion-button--primary-brand {
   --ion-button-elevation: var(--ion-shadow-button-raised);
 
-  background-color: var(--button-primary-brand-bg);
-  color: var(--button-primary-brand-fg);
-  border-color: var(--button-primary-brand-border);
+  background-color: var(--surface-primary);
+  color: var(--text-on-color);
+  border-color: var(--border-primary-strong);
 }
 
 @media (hover: hover) {
   .ion-button--primary-brand:hover {
     --ion-button-elevation: var(--ion-shadow-button-raised-hover);
 
-    background-color: var(--button-primary-brand-bg-hover);
+    background-color: var(--surface-primary-hover);
   }
 }
 
 .ion-button--primary-brand[data-hovered='true'] {
   --ion-button-elevation: var(--ion-shadow-button-raised-hover);
 
-  background-color: var(--button-primary-brand-bg-hover);
+  background-color: var(--surface-primary-hover);
 }
 
 .ion-button--primary-brand:active,
 .ion-button--primary-brand[data-pressed='true'] {
   --ion-button-elevation: var(--ion-shadow-button-pressed);
 
-  background-color: var(--button-primary-brand-bg-pressed);
+  background-color: var(--surface-primary-pressed);
 }
 
 /* Primary Neutral Variant */
 .ion-button--primary-neutral {
   --ion-button-elevation: var(--ion-shadow-button-raised);
 
-  background-color: var(--button-primary-neutral-bg);
-  color: var(--button-primary-neutral-fg);
-  border-color: var(--button-primary-neutral-border);
+  background-color: var(--surface-inverse);
+  color: var(--text-on-color);
+  border-color: var(--border-inverse);
 }
 
 @media (hover: hover) {
   .ion-button--primary-neutral:hover {
     --ion-button-elevation: var(--ion-shadow-button-raised-hover);
 
-    background-color: var(--button-primary-neutral-bg-hover);
+    background-color: var(--surface-inverse);
   }
 }
 
 .ion-button--primary-neutral[data-hovered='true'] {
   --ion-button-elevation: var(--ion-shadow-button-raised-hover);
 
-  background-color: var(--button-primary-neutral-bg-hover);
+  background-color: var(--surface-inverse);
 }
 
 .ion-button--primary-neutral:active,
 .ion-button--primary-neutral[data-pressed='true'] {
   --ion-button-elevation: var(--ion-shadow-button-pressed);
 
-  background-color: var(--button-primary-neutral-bg-pressed);
+  background-color: var(--surface-inverse);
 }
 
 /* Secondary Variant */
 .ion-button--secondary {
   --ion-button-elevation: var(--ion-shadow-button-surface);
 
-  background-color: var(--button-secondary-bg);
-  color: var(--button-secondary-fg);
-  border-color: var(--button-secondary-border);
+  background-color: var(--surface-default);
+  color: var(--text-secondary);
+  border-color: var(--border-strong);
 }
 
 @media (hover: hover) {
   .ion-button--secondary:hover {
     --ion-button-elevation: var(--ion-shadow-button-surface-hover);
 
-    background-color: var(--button-secondary-bg-hover);
-    border-color: var(--button-secondary-border-hover);
+    background-color: var(--surface-page);
+    border-color: var(--border-stronger);
   }
 }
 
 .ion-button--secondary[data-hovered='true'] {
   --ion-button-elevation: var(--ion-shadow-button-surface-hover);
 
-  background-color: var(--button-secondary-bg-hover);
-  border-color: var(--button-secondary-border-hover);
+  background-color: var(--surface-page);
+  border-color: var(--border-stronger);
 }
 
 .ion-button--secondary:active,
 .ion-button--secondary[data-pressed='true'] {
   --ion-button-elevation: var(--ion-shadow-button-surface-pressed);
 
-  background-color: var(--button-secondary-bg-pressed);
+  background-color: var(--surface-muted);
 }
 
 /* Tertiary Variant — intentionally flat; a ghost button has no surface to raise. */
 .ion-button--tertiary {
   background-color: transparent;
-  color: var(--button-tertiary-fg);
+  color: var(--text-secondary);
   border-color: transparent;
 }
 
 @media (hover: hover) {
   .ion-button--tertiary:hover {
-    background-color: var(--button-tertiary-bg-hover);
+    background-color: var(--surface-page);
   }
 }
 
 .ion-button--tertiary[data-hovered='true'] {
-  background-color: var(--button-tertiary-bg-hover);
+  background-color: var(--surface-page);
 }
 
 .ion-button--tertiary:active,
 .ion-button--tertiary[data-pressed='true'] {
-  background-color: var(--button-tertiary-bg-pressed);
+  background-color: var(--surface-muted);
 }
 
 /* Destructive Variant */
 .ion-button--destructive {
   --ion-button-elevation: var(--ion-shadow-button-raised);
 
-  background-color: var(--button-destructive-bg);
-  color: var(--button-destructive-fg);
-  border-color: var(--button-destructive-border);
+  background-color: var(--surface-error);
+  color: var(--text-on-color);
+  border-color: var(--border-error-strong);
 }
 
 @media (hover: hover) {
   .ion-button--destructive:hover {
     --ion-button-elevation: var(--ion-shadow-button-raised-hover);
 
-    background-color: var(--button-destructive-bg-hover);
+    background-color: var(--surface-error-hover);
   }
 }
 
 .ion-button--destructive[data-hovered='true'] {
   --ion-button-elevation: var(--ion-shadow-button-raised-hover);
 
-  background-color: var(--button-destructive-bg-hover);
+  background-color: var(--surface-error-hover);
 }
 
 .ion-button--destructive:active,
 .ion-button--destructive[data-pressed='true'] {
   --ion-button-elevation: var(--ion-shadow-button-pressed);
 
-  background-color: var(--button-destructive-bg-pressed);
+  background-color: var(--surface-error-pressed);
 }
 
 /* Disabled State */
@@ -265,9 +265,9 @@
   --ion-button-elevation: var(--ion-shadow-none);
   --ion-button-focus-ring: var(--ion-shadow-button-raised-focus);
 
-  background-color: var(--button-bg-disabled);
-  color: var(--button-fg-disabled);
-  border-color: var(--button-border-disabled);
+  background-color: var(--surface-disabled);
+  color: var(--text-disabled);
+  border-color: var(--border-disabled);
   cursor: not-allowed;
 }
 
