@@ -1,7 +1,7 @@
 import React, { forwardRef } from 'react';
 
 export type BadgeIntent =
-  'neutral' | 'brand' | 'success' | 'warning' | 'danger' | 'info';
+  'neutral' | 'primary' | 'success' | 'warning' | 'error' | 'information';
 
 export interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement> {
   /** Matches the Figma `Intent` variant. */

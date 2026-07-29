@@ -74,13 +74,13 @@
   color: var(--icon-secondary);
 }
 
-.ion-badge--brand {
+.ion-badge--primary {
   background-color: var(--surface-primary-subtle);
   color: var(--text-link);
   border-color: var(--border-primary-subtle);
 }
 
-.ion-badge--brand svg {
+.ion-badge--primary svg {
   color: var(--icon-primary);
 }
 
@@ -104,22 +104,22 @@
   color: var(--icon-warning);
 }
 
-.ion-badge--danger {
+.ion-badge--error {
   background-color: var(--surface-error-subtle);
   color: var(--text-error);
   border-color: var(--border-error-subtle);
 }
 
-.ion-badge--danger svg {
+.ion-badge--error svg {
   color: var(--icon-error);
 }
 
-.ion-badge--info {
+.ion-badge--information {
   background-color: var(--surface-information-subtle);
   color: var(--text-information);
   border-color: var(--border-information-subtle);
 }
 
-.ion-badge--info svg {
+.ion-badge--information svg {
   color: var(--icon-information);
 }

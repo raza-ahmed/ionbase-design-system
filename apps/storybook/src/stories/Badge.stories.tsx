@@ -12,7 +12,14 @@ const meta: Meta<typeof Badge> = {
   argTypes: {
     intent: {
       control: 'select',
-      options: ['neutral', 'brand', 'success', 'warning', 'danger', 'info'],
+      options: [
+        'neutral',
+        'primary',
+        'success',
+        'warning',
+        'error',
+        'information',
+      ],
     },
     dot: { control: 'boolean' },
   },
@@ -32,11 +39,11 @@ type Story = StoryObj<typeof Badge>;
 
 const INTENTS = [
   'neutral',
-  'brand',
+  'primary',
   'success',
   'warning',
-  'danger',
-  'info',
+  'error',
+  'information',
 ] as const;
 
 export const Default: Story = {};
@@ -112,7 +119,7 @@ export const RenderedGeometryMatchesFigma: Story = {
 /** The dot inherits the intent colour rather than carrying its own token. */
 export const DotInheritsIntentColour: Story = {
   render: (args) => (
-    <Badge {...args} intent="danger" dot>
+    <Badge {...args} intent="error" dot>
       Failed
     </Badge>
   ),
