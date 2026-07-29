@@ -5,7 +5,8 @@
  *
  * Geometry is identical to Input — same heights, padding, radius, type ramp and
  * the same inside-stroke correction (see input.css for why the border width is
- * subtracted from the padding). The two differ in three ways only:
+ * subtracted from the padding, and why these read the spacing scale directly
+ * rather than a shared control token). The two differ in two ways only:
  *
  *   - a chevron replaces the trailing icon slot, and is always icon/tertiary
  *     rather than icon/interactive
@@ -20,7 +21,7 @@
  * one size changes on its own the sharing has to be unpicked under pressure.
  */
 .ion-select {
-  --ion-select-height: var(--control-md-size);
+  --ion-select-height: var(--spacing-40);
   --ion-select-padding-x: var(--spacing-12);
   --ion-select-gap: var(--spacing-8);
   --ion-select-icon-size: var(--icon-size-md);
@@ -52,7 +53,7 @@
 
 /* Small shares Medium's padding — see input.css. */
 .ion-select--sm {
-  --ion-select-height: var(--control-sm-size);
+  --ion-select-height: var(--spacing-32);
   --ion-select-padding-x: var(--spacing-12);
   --ion-select-gap: var(--spacing-6);
   --ion-select-icon-size: var(--icon-size-sm);
@@ -62,7 +63,7 @@
 }
 
 .ion-select--lg {
-  --ion-select-height: var(--control-lg-size);
+  --ion-select-height: var(--spacing-48);
   --ion-select-padding-x: var(--spacing-16);
 }
 

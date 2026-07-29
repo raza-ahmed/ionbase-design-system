@@ -1,10 +1,10 @@
 # Token architecture v2 — Primitive / Semantics / Interface
 
 **Status: SHIPPED.** Live in Figma and in code as of 29 Jul 2026.
-392 variables, four collections, checksum-matched with the repo at
+380 variables, four collections, checksum-matched with the repo at
 `555 / 1505770699` on every value in every mode.
 
-Target: **392 variables, fixed**, serving 1,000+ components.
+Target: **380 variables, fixed**, serving 1,000+ components.
 
 ## The chain
 
@@ -37,7 +37,7 @@ Primitives for colour.
   the mode, the theme changes. It does not know which hue error is.
 
 Collapsing them means a new brand has to re-specify light _and_ dark for every
-role. Keeping them separate means a new brand supplies 118 values and gets both
+role. Keeping them separate means a new brand supplies 106 values and gets both
 themes free.
 
 ---
@@ -68,7 +68,7 @@ merging the two would have meant rebinding 845 nodes for no gain.
 **Nothing outside Semantics and Breakpoint may bind a primitive**, with the two
 exceptions noted under §5.
 
-# 2. Semantics — 118 tokens, mode: IonBase (one per brand)
+# 2. Semantics — 106 tokens, mode: IonBase (one per brand)
 
 Where a brand becomes itself. Every token aliases a primitive.
 
@@ -81,7 +81,6 @@ Where a brand becomes itself. Every token aliases a primitive.
 | `border-width/*`    | 3     | `default` 1 · `thick` 2 · `thicker` 4                                  |
 | `font/family/*`     | 4     | sans, serif, mono, serif-display → the raw font identities             |
 | `font/weight/*`     | 4     | regular, medium, semibold, bold → 400/500/600/700                      |
-| `control/<step>/*`  | 12    | size · padding-x · gap · icon-size, at sm/md/lg                        |
 | `icon-size/*`       | 5     | `xs 12 · sm 16 · md 20 · lg 24 · xl 32`                                |
 
 ## Colour ramps
@@ -106,14 +105,51 @@ a fractional default is a strange thing to have. Now `default` 1, `thick` 2,
 
 `control/border-width` used to sit alongside these at the same value; it was
 merged into `border-width/default` (302 nodes rebound) so one weight has one
-name. The control scale is now purely dimensional.
+name.
 
-## Two icon scales, deliberately
+## One icon scale
 
-`control/<step>/icon-size` is the icon **inside a control** — 16/20/24, moving
-with the control's size. `icon-size/*` is the standalone scale — 12/16/20/24/32 —
-for icons in text, tables, empty states, anywhere there is no control to size
-against. The Icon component set in Figma binds the second.
+`icon-size/xs…xl` — 12/16/20/24/32 — for every icon, inside a control or not.
+
+There were briefly two. `control/<step>/icon-size` held 16/20/24, aliasing the
+same spacing primitives as `icon-size/sm|md|lg` — the same three values under a
+second set of names. It went with the rest of the control group.
+
+## Why there is no control group
+
+`control/<size>/{size, padding-x, gap, icon-size}` existed and was deleted. The
+reasoning is worth keeping, because it is the shape of mistake most likely to
+recur as the component count grows.
+
+**Twelve names, zero new values.** Every one was an alias of a spacing
+primitive. Three duplicated the `icon-size` ladder outright.
+
+**Bound by 3 of 26 components.** The numbers were reverse-engineered from
+Button, so Button fitted perfectly and almost nothing else did. `control/md/
+padding-x` is 16; Input and Select are 12; Menu Item is 12; Nav Item is 8. Each
+bypassed the group and bound `spacing/*` directly, as 23 components already had.
+
+**The lever it promised did not exist.** It was justified as one place to
+re-scale controls per brand. Changing `control/md/padding-x` moved Button and
+Tabs and left everything else — a break, not a re-scale.
+
+The distinction that matters: **Semantics holds ladders, not recipes.** A ladder
+is indexed by value — `radius/xs…6xl`, `icon-size/xs…xl`, `border-width/*`, the
+colour ramps — and a component picks a rung. A recipe is indexed by usage
+(*"a medium control shall have this padding"*) and needs a new entry for every
+usage pattern, which is precisely what stops it scaling to 1,000 components.
+
+So component geometry is a component fact. Button is 40 tall with 16 padding;
+Input is 40 tall with 12. Both are recorded in the component, and both pick from
+`spacing/*`. The scale is the shared contract; the rung is not.
+
+What guards it instead — because the group never did — is
+[`scripts/verify-geometry.mjs`](../packages/tokens/scripts/verify-geometry.mjs),
+which asserts every geometry binding sits on `spacing/*` or a Semantics ladder,
+and [`figma/audit-geometry.js`](../packages/tokens/figma/audit-geometry.js),
+which reports raw numbers in Figma that no export can see. Between them they
+catch what the group was supposed to prevent, at any component count, with no
+tokens at all.
 
 # 3. Interface — 103 tokens, modes: Light, Dark · **live**
 
@@ -323,13 +359,13 @@ Interface — and 17 of the 24 already do.
 | Collection | Tokens  | Modes                     | Grows when                                |
 | ---------- | ------- | ------------------------- | ----------------------------------------- |
 | Primitives | 141     | Value                     | A ramp gains a step                       |
-| Semantics  | 118     | IonBase                   | Never — a brand adds a _mode_, not tokens |
+| Semantics  | 106     | IonBase                   | Never — a brand adds a _mode_, not tokens |
 | Interface  | 103     | Light, Dark               | A genuinely new UI role appears           |
 | Breakpoint | 30      | Desktop / Tablet / Mobile | Never                                     |
 | Component  | 0       | —                         | Deleted; promotion only (§5)              |
-| **Total**  | **392** |                           |                                           |
+| **Total**  | **380** |                           |                                           |
 
-**392 variables at 24 components. 392 at 1,000.** A new brand adds a mode. A new
+**380 variables at 26 components. 380 at 1,000.** A new brand adds a mode. A new
 theme adds a mode. Neither adds tokens.
 
 The old `Semantic` (71) and `Component` (89) collections were deleted after every
@@ -453,7 +489,7 @@ Every current semantic token, and the v2 token that replaces it.
 | #   | Step                                      | Result                                        |
 | --- | ----------------------------------------- | --------------------------------------------- |
 | 1   | Primitives — add the scale steps          | done                                          |
-| 2   | Semantics collection                      | 118                                           |
+| 2   | Semantics collection                      | 106                                           |
 | 3   | Interface collection, Light + Dark        | 103                                           |
 | 4   | Bind 1,753 Lucide icons to `icon/default` | 1,757 fills                                   |
 | 5   | Rebind every component to Interface       | all 19 pages                                  |

@@ -41,10 +41,10 @@
 
 /* Item */
 .ion-tabs__item {
-  --ion-tabs-item-size: var(--control-md-size);
-  --ion-tabs-item-padding-x: var(--control-md-padding-x);
+  --ion-tabs-item-size: var(--spacing-40);
+  --ion-tabs-item-padding-x: var(--spacing-16);
   --ion-tabs-item-padding-y: var(--spacing-8);
-  --ion-tabs-item-gap: var(--control-md-gap);
+  --ion-tabs-item-gap: var(--spacing-8);
   --ion-tabs-icon-size: var(--spacing-20);
 
   /*
@@ -77,20 +77,20 @@
 }
 
 .ion-tabs__item--sm {
-  --ion-tabs-item-size: var(--control-sm-size);
-  --ion-tabs-item-padding-x: var(--control-sm-padding-x);
+  --ion-tabs-item-size: var(--spacing-32);
+  --ion-tabs-item-padding-x: var(--spacing-12);
   --ion-tabs-item-padding-y: var(--spacing-6);
-  --ion-tabs-item-gap: var(--control-sm-gap);
-  --ion-tabs-icon-size: var(--control-sm-icon-size);
+  --ion-tabs-item-gap: var(--spacing-6);
+  --ion-tabs-icon-size: var(--icon-size-sm);
   --ion-tabs-item-font-size: var(--type-body-sm);
   --ion-tabs-item-line-height: var(--type-body-sm-line-height);
 }
 
 .ion-tabs__item--lg {
-  --ion-tabs-item-size: var(--control-lg-size);
-  --ion-tabs-item-padding-x: var(--control-lg-padding-x);
+  --ion-tabs-item-size: var(--spacing-48);
+  --ion-tabs-item-padding-x: var(--spacing-20);
   --ion-tabs-item-padding-y: var(--spacing-8);
-  --ion-tabs-item-gap: var(--control-lg-gap);
+  --ion-tabs-item-gap: var(--spacing-8);
   --ion-tabs-icon-size: var(--spacing-20);
   --ion-tabs-item-font-size: var(--type-body-lg);
   --ion-tabs-item-line-height: var(--type-body-lg-line-height);

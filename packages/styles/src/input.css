@@ -4,14 +4,17 @@
  * Measured from Figma `Input` (80:275) and `Form Field` (80:330).
  * Three sizes x seven states, plus the label/helper wrapper.
  *
- * TWO THINGS THE MEASUREMENT CHANGED
+ * GEOMETRY COMES FROM THE SPACING SCALE, NOT FROM A CONTROL RECIPE
  *
- * 1. Input does NOT read the control scale for padding. Figma pins padding-x to
- *    12 / 12 / 16 where `control/<size>/padding-x` is 12 / 16 / 20, and the Large
- *    icon to 20 where `control/lg/icon-size` is 24. Button reads the control
- *    scale and is correct to; Input would be 4px wider at every size if it did.
- *    So the padding and icon slots below come from spacing and icon-size
- *    directly. This is a real divergence in the design, not an oversight here.
+ * 1. Every measurement below is a rung on `spacing/*` (or the `icon-size`
+ *    ladder), picked by this component. There is no shared "control" token
+ *    prescribing what a medium field's padding should be — that group existed,
+ *    was reverse-engineered from Button's numbers, and was bound by 3 of 26
+ *    components because nothing whose measurements differed could use it.
+ *
+ *    So Input picking 12 where Button picks 16 is not a divergence to explain
+ *    away. It is a component fact, recorded here, which is the only place that
+ *    knows it. The scale is the shared contract; the rung is not.
  *
  * 2. Figma draws its 1px stroke INSIDE the frame, so padding is measured from
  *    the outer edge and the stroke overlaps it. A CSS border sits outside the
@@ -29,7 +32,7 @@
    * six variables rather than restating six declarations — same shape as
    * Button, and it keeps the icon rule size-agnostic.
    */
-  --ion-input-height: var(--control-md-size);
+  --ion-input-height: var(--spacing-40);
   --ion-input-padding-x: var(--spacing-12);
   --ion-input-gap: var(--spacing-8);
   --ion-input-icon-size: var(--icon-size-md);
@@ -71,7 +74,7 @@
  * type ramp still separate the two sizes.
  */
 .ion-input--sm {
-  --ion-input-height: var(--control-sm-size);
+  --ion-input-height: var(--spacing-32);
   --ion-input-padding-x: var(--spacing-12);
   --ion-input-gap: var(--spacing-6);
   --ion-input-icon-size: var(--icon-size-sm);
@@ -82,7 +85,7 @@
 
 /* Large keeps Medium's radius, icon size and type ramp — only height and padding grow. */
 .ion-input--lg {
-  --ion-input-height: var(--control-lg-size);
+  --ion-input-height: var(--spacing-48);
   --ion-input-padding-x: var(--spacing-16);
 }
 

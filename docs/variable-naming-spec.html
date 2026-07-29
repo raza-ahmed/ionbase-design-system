@@ -318,7 +318,7 @@ footer{border-top:1px solid var(--g200);padding-top:22px;margin-top:64px;font-si
   <div class="meta">
     <span class="chip">IonBase - Figma</span>
     <span class="chip">4 collections</span>
-    <span class="chip">392 variables, fixed</span>
+    <span class="chip">380 variables, fixed</span>
     <span class="chip">Max 4 segments</span>
     <span class="chip">lowercase-kebab</span>
     <span class="chip">v2 - LIVE 29 Jul 2026</span>
@@ -374,7 +374,7 @@ footer{border-top:1px solid var(--g200);padding-top:22px;margin-top:64px;font-si
       </div>
     </div>
     <div class="tier t2">
-      <div class="tier-h"><span class="tier-n">2 - Semantics</span><span class="tier-m">118 - 1 mode per brand</span></div>
+      <div class="tier-h"><span class="tier-n">2 - Semantics</span><span class="tier-m">106 - 1 mode per brand</span></div>
       <p class="tier-q">What is <em>this brand's</em> red?</p>
       <p>Brand identity. Full ramps, so Interface can pick different steps for light and dark. Also carries shape and density, because a brand can be sharp or round, dense or airy. <strong>Knows nothing about light/dark.</strong></p>
       <div class="tier-e">
@@ -520,7 +520,7 @@ footer{border-top:1px solid var(--g200);padding-top:22px;margin-top:64px;font-si
 
   <h3>Group <span style="font-weight:400;color:var(--g500);font-size:14px">- Semantics only</span></h3>
   <div class="vocab">
-    <span class="vp vp-var">primary</span><span class="vp vp-var">neutral</span><span class="vp vp-var">success</span><span class="vp vp-var">warning</span><span class="vp vp-var">error</span><span class="vp vp-var">information</span><span class="vp vp-part">chart</span><span class="vp vp-part">base</span><span class="vp vp-part">alpha</span><span class="vp vp-part">radius</span><span class="vp vp-part">border-width</span><span class="vp vp-part">font</span><span class="vp vp-part">control</span><span class="vp vp-part">icon-size</span>
+    <span class="vp vp-var">primary</span><span class="vp vp-var">neutral</span><span class="vp vp-var">success</span><span class="vp vp-var">warning</span><span class="vp vp-var">error</span><span class="vp vp-var">information</span><span class="vp vp-part">chart</span><span class="vp vp-part">base</span><span class="vp vp-part">alpha</span><span class="vp vp-part">radius</span><span class="vp vp-part">border-width</span><span class="vp vp-part">font</span><span class="vp vp-part">icon-size</span>
   </div>
   <p>Colour groups carry a numeric step (<code>50</code>-<code>900</code>). Shape and density groups carry a named step.</p>
 
@@ -531,7 +531,7 @@ footer{border-top:1px solid var(--g200);padding-top:22px;margin-top:64px;font-si
 
   <div class="note">
     <span class="note-t">Two icon scales</span>
-    <p><code>control/&lt;step&gt;/icon-size</code> is the icon <em>inside a control</em> and moves with it (16/20/24). <code>icon-size/xs...xl</code> is standalone (12/16/20/24/32), for icons in text, tables and empty states. Conflating them forces every standalone icon to pretend it lives in a control.</p>
+    <p><code>icon-size/xs...xl</code> (12/16/20/24/32) sizes every icon, inside a control or not. There were briefly two scales - <code>control/&lt;step&gt;/icon-size</code> held 16/20/24, aliasing the same primitives under a second set of names. It was deleted with the rest of the control group.</p>
   </div>
 </section>
 
@@ -647,7 +647,7 @@ footer{border-top:1px solid var(--g200);padding-top:22px;margin-top:64px;font-si
       <tr><td>Underscores</td><td>Never</td><td><code>surface_primary</code> x</td></tr>
       <tr><td>Numbers</td><td>Bare, no units</td><td><code>spacing/16px</code> x</td></tr>
       <tr><td>Plurals</td><td>Never</td><td><code>icons/default</code> x</td></tr>
-      <tr><td>Abbreviations</td><td>Only <code>sm</code>/<code>md</code>/<code>lg</code> in the control scale</td><td><code>text/sec</code> x</td></tr>
+      <tr><td>Abbreviations</td><td>Only <code>xs</code>...<code>xl</code> in a ladder step</td><td><code>text/sec</code> x</td></tr>
     </tbody>
   </table>
   </div>
@@ -666,7 +666,7 @@ footer{border-top:1px solid var(--g200);padding-top:22px;margin-top:64px;font-si
 
   <div class="note n-warn">
     <span class="note-t">The one rule that keeps this system small</span>
-    <p><strong>Variables scale with the design language, not the component count.</strong> A component consumes variables; it does not add them. That is what holds the system at ~392 variables whether you have 24 components or 1,000.</p>
+    <p><strong>Variables scale with the design language, not the component count.</strong> A component consumes variables; it does not add them. That is what holds the system at ~380 variables whether you have 26 components or 1,000.</p>
   </div>
 
   <div class="flow">
@@ -843,7 +843,7 @@ footer{border-top:1px solid var(--g200);padding-top:22px;margin-top:64px;font-si
   <p>Deleting alone does not unbind: every node keeps resolving the deleted variable and nothing looks broken. <code>tokens:bindings</code> is the only check that sees it, and a ghost is never grandfathered.</p>
 
   <h4>Adding a component should add no tokens</h4>
-  <p>Bind Interface for colour, Semantics' control scale for size, Breakpoint for type. If a new component wants twenty tokens, ask which <em>Interface</em> roles are missing - that is where the real gap is.</p>
+  <p>Bind Interface for colour, Breakpoint for type, and <code>spacing/*</code> or a Semantics ladder for geometry. If a new component wants twenty tokens, ask which <em>Interface</em> roles are missing - that is where the real gap is.</p>
 
   <h3>Renaming</h3>
   <p>Non-destructive - Figma preserves every binding. The cost is muscle memory and shipped code. Rename freely while the system is young; batch renames once components are in production.</p>
@@ -912,7 +912,7 @@ footer{border-top:1px solid var(--g200);padding-top:22px;margin-top:64px;font-si
       <tr><td>A focus ring</td><td><code>ring/focus</code></td></tr>
       <tr><td>A brand ramp step</td><td><code>&lt;group&gt;/&lt;50-950&gt;</code></td></tr>
       <tr><td>A corner radius</td><td><code>radius/&lt;none-6xl,full&gt;</code></td></tr>
-      <tr><td>Control sizing</td><td><code>control/&lt;sm,md,lg&gt;/&lt;property&gt;</code></td></tr>
+      <tr><td>Component geometry</td><td><code>spacing/&lt;step&gt;</code> bound directly - no shared control token</td></tr>
       <tr><td>Padding, gap</td><td><code>spacing/&lt;n&gt;</code></td></tr>
       <tr><td>Responsive type</td><td><code>type/&lt;role&gt;[/line-height]</code></td></tr>
     </tbody>
@@ -950,7 +950,7 @@ footer{border-top:1px solid var(--g200);padding-top:22px;margin-top:64px;font-si
       <tr><td>State</td><td>Third slot: interaction or condition. Resting state is never written.</td></tr>
       <tr><td>Step</td><td>A numbered position on a ramp, 50 to 950.</td></tr>
       <tr><td>Promotion</td><td>Granting a component its own colour tokens. Opt-in, one-way, capped at 12.</td></tr>
-      <tr><td>Control scale</td><td>The shared size ramp every interactive control reads: sm, md, lg.</td></tr>
+      <tr><td>Ladder</td><td>A scale indexed by value - <code>radius</code>, <code>icon-size</code>, <code>border-width</code>, the colour ramps. A component picks a rung. Semantics holds ladders only; a group indexed by usage instead (&quot;a medium control&apos;s padding&quot;) is a recipe, and recipes need a new entry per usage pattern.</td></tr>
       <tr><td>Structural ladder</td><td>The surface layering order: page, sunken, default, subtle, muted, raised, overlay.</td></tr>
     </tbody>
   </table>
@@ -980,7 +980,7 @@ footer{border-top:1px solid var(--g200);padding-top:22px;margin-top:64px;font-si
   var STATES = ["hover","pressed","focus","selected","checked","indeterminate",
                 "expanded","invalid","loading","read-only","visited"];
   var SEM_GROUPS = ["primary","neutral","success","warning","error","information",
-                    "chart","base","alpha","radius","border-width","font","control"];
+                    "chart","base","alpha","radius","border-width","font","icon-size"];
   var PRIM_ROOTS = ["color","spacing","radius","font","border-width"];
   var BP_ROOTS = ["grid","container","section","type"];
 

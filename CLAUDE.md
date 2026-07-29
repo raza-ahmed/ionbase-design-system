@@ -85,7 +85,7 @@ Reasoning: [docs/naming-decisions.md](docs/naming-decisions.md).
 ```
 Primitives   141  Value                value-keyed scales only
    ↓
-Semantics    118  IonBase              brand identity — ramps, radius, control, icon-size
+Semantics    106  IonBase              brand identity — ramps, radius, border-width, icon-size
    ↓
 Interface    103  Light / Dark         text · icon · surface · border · ring
    ↓
@@ -94,14 +94,31 @@ components + CSS
 Breakpoint    30  Desktop/Tablet/Mobile   (parallel — type and grid only)
 ```
 
-Sync state: names `932422769`, values `555 / 1505770699`.
+Sync state: names `3840062063`, 380 variables.
 
-**Components bind Interface and Breakpoint. Nothing else.** Interface may only
-alias Semantics; Semantics may only alias Primitives. `spacing/*` is the one
+**Components bind Interface and Breakpoint for colour and type.** Interface may
+only alias Semantics; Semantics may only alias Primitives. `spacing/*` is the
 sanctioned exception — components bind it straight from Primitives, because 16px
 means 16px in every brand.
 
-**392 variables, and that number does not grow with the component count.** A new
+**Geometry is a component fact, not a shared token.** Padding, gap, size and
+radius are picked from `spacing/*` or a Semantics ladder (`radius`,
+`border-width`, `icon-size`) by each component. Button is 40 tall with 16
+padding; Input is 40 tall with 12. Neither number belongs to a shared name.
+
+There was a `control/<size>/*` group and it was deleted — twelve names over zero
+new values, every one an alias of a spacing primitive, three of them exact
+duplicates of `icon-size/*`, and bound by 3 of 26 components because it had been
+reverse-engineered from Button. **Semantics holds ladders, not recipes.** A
+ladder is indexed by value and a component picks a rung; a recipe is indexed by
+usage and needs a new entry per usage pattern. Do not add another one.
+
+Two gates replace it: `scripts/verify-geometry.mjs` (every geometry binding is
+on `spacing/*` or a ladder) and `figma/audit-geometry.js` (raw numbers in Figma,
+which no export can see — that is how a literal 10px padding and a whole
+component's unbound stroke weights both shipped).
+
+**380 variables, and that number does not grow with the component count.** A new
 brand adds a _mode_, not tokens. So does a new theme.
 
 **Primitives are value-keyed.** `scale/8`, not `radius/md`; `font/weight/400`,

@@ -8,6 +8,94 @@ Newest first.
 
 ---
 
+## 2026-07-30 — the control group is deleted
+
+380 variables; names `3840062063`. Semantics drops 118 -> 106.
+
+`control/<size>/{size, padding-x, gap, icon-size}` is gone. It was the last
+group in Semantics that described a component rather than a value.
+
+### What it actually was
+
+Twelve names over **zero new values**. Every one aliased a spacing primitive:
+
+    control/sm/size       -> spacing/32       control/sm/gap  -> spacing/6
+    control/md/padding-x  -> spacing/16       control/md/gap  -> spacing/8
+    control/lg/icon-size  -> spacing/24       control/lg/gap  -> spacing/8
+
+Three of them — `control/<size>/icon-size` — were exact duplicates of
+`icon-size/sm|md|lg`, the same three values under a second set of names. Two
+more, `control/md/gap` and `control/lg/gap`, were the same token twice.
+
+### Why nobody used it
+
+**3 of 26 components bound it.** The values had been reverse-engineered from
+Button, so Button fitted perfectly and almost nothing else did:
+
+    Button      padding-x  12 / 16 / 20     <- what the group encodes
+    Input       padding-x  12 / 12 / 16
+    Select      padding-x  12 / 12 / 16
+    Menu Item   padding-x  12
+    Nav Item    padding-x  8
+    Table Cell  padding-x  16
+
+Every component whose numbers differed had to bypass the group and bind
+`spacing/*` directly. Twenty-three did. When most components route around an
+abstraction, the abstraction is wrong — not the components.
+
+### The lever it promised did not exist
+
+It was justified as _one place to re-scale controls per brand_. It never was.
+Changing `control/md/padding-x` would have moved Button and Tabs and left Input,
+Select, Menu Item, Nav Item and Table Cell exactly where they were. That is a
+break, not a re-scale. The lever had been an illusion since the second component
+was built.
+
+### The rule that replaces it
+
+**Semantics holds ladders, not recipes.**
+
+A _ladder_ is indexed by value — `radius/xs…6xl`, `icon-size/xs…xl`,
+`border-width/default|thick|thicker`, the colour ramps. A component picks a
+rung. Ladders are flat in component count, because a new component picks from
+what exists.
+
+A _recipe_ is indexed by usage — "a medium control shall have 16px padding". It
+needs a new entry for every usage pattern that does not fit, which is exactly
+the growth curve v2 was built to avoid. `control/*` was the only recipe left,
+and it was already failing at 26 components.
+
+So component geometry is a **component fact**. Button is 40 tall with 16
+padding; Input is 40 tall with 12. Both are recorded in the component, and both
+pick from `spacing/*`. The scale is the shared contract; the rung is not. This
+is what Carbon, Polaris, Radix and Tailwind all do.
+
+### What guards it now
+
+The group never provided a guarantee, so deleting it removed none. What was
+actually missing was enforcement, and there are now two gates:
+
+- [`scripts/verify-geometry.mjs`](../packages/tokens/scripts/verify-geometry.mjs)
+  — every geometry binding sits on `spacing/*` or a Semantics ladder.
+- [`figma/audit-geometry.js`](../packages/tokens/figma/audit-geometry.js)
+  — raw numbers in Figma, which no export can see, because a hard-coded value is
+  the _absence_ of a binding and leaves no trace in `bindings.json`.
+
+Both are negative-tested. They catch the two defects that shipped while
+`control/*` existed and watched: a literal 10px padding on Input Small, off a
+scale that runs 8/12/16/20, and every stroke weight in Input and Select unbound,
+which let Invalid drift to 1px on one and 2px on the other.
+
+### Migration
+
+730 bindings rebound — 600 on Button, 130 on Tabs — then the twelve variables
+deleted. Instances on the Table and Design pages followed automatically; they
+had inherited rather than overridden. Verified by re-scanning all 20 pages for
+any remaining `control/*` binding before deleting, since deletion does not
+unbind.
+
+---
+
 ## 2026-07-29 (late) — v2 shipped end to end
 
 Figma, the export, the gates, the CSS and the component API are all on v2.

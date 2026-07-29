@@ -109,9 +109,25 @@ export const SEMANTIC_GROUPS = new Set([
   'radius',
   'border-width',
   'font',
-  'control',
   'icon-size',
 ]);
+
+/**
+ * Groups that existed and were deliberately removed. Listing them by name means
+ * re-adding one fails the audit loudly instead of quietly reintroducing the
+ * thing that was deleted.
+ *
+ * `control` held control/<size>/{size,padding-x,gap,icon-size} — twelve names
+ * over zero new values, every one an alias of a spacing primitive, and three an
+ * exact duplicate of the icon-size ladder. It was bound by 3 of 26 components,
+ * because it had been reverse-engineered from Button and did not fit anything
+ * whose measurements differed. Semantics holds ladders; components pick rungs.
+ * A group that prescribes which rung a component must pick is a recipe, and
+ * recipes need a new entry per usage pattern — which is what stops them scaling.
+ */
+export const RETIRED_SEM_GROUPS = {
+  control: 'bind spacing/* directly, or icon-size/* for icons',
+};
 
 /** Families allowed at the head of a Primitives name. All value-keyed —
  *  a primitive named for a role (`radius/full`, `font/weight/regular`) is the
@@ -293,6 +309,20 @@ export function auditNames(collections) {
   function auditSemantics(name, collection) {
     const segs = name.split('/');
     const group = segs[0];
+    // A retired group gets its own message. Falling through to the generic
+    // "not a Semantics group" would read as a typo rather than as a deliberate
+    // deletion someone is undoing.
+    if (RETIRED_SEM_GROUPS[group]) {
+      report(
+        'error',
+        name,
+        collection,
+        'R-retired',
+        `'${group}/' was removed from Semantics and must not come back`,
+        RETIRED_SEM_GROUPS[group],
+      );
+      return;
+    }
     if (!SEMANTIC_GROUPS.has(group)) {
       report(
         'error',
