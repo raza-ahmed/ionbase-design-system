@@ -1,0 +1,253 @@
+/*
+ * Input
+ *
+ * Measured from Figma `Input` (80:275) and `Form Field` (80:330).
+ * Three sizes x seven states, plus the label/helper wrapper.
+ *
+ * TWO THINGS THE MEASUREMENT CHANGED
+ *
+ * 1. Input does NOT read the control scale for padding. Figma pins padding-x to
+ *    10 / 12 / 16 where `control/<size>/padding-x` is 12 / 16 / 20, and the Large
+ *    icon to 20 where `control/lg/icon-size` is 24. Button reads the control
+ *    scale and is correct to; Input would be 4px wider at every size if it did.
+ *    So the padding and icon slots below come from spacing and icon-size
+ *    directly. This is a real divergence in the design, not an oversight here.
+ *
+ * 2. Figma draws its 1px stroke INSIDE the frame, so padding is measured from
+ *    the outer edge and the stroke overlaps it. A CSS border sits outside the
+ *    padding box, so `padding-x: 12px` would put the text at 13px. The border
+ *    width is subtracted back out — the same correction Badge and Tabs needed.
+ *
+ *    This also makes the focus state free: Figma's focus ring is a 2px inside
+ *    stroke, which eats 1px further into the padding and leaves the text
+ *    exactly where it was. Subtracting the live border width reproduces that,
+ *    so nothing shifts when the field takes focus.
+ */
+.ion-input {
+  /*
+   * Size is a set of slots defaulting to Medium, so a size modifier reassigns
+   * six variables rather than restating six declarations — same shape as
+   * Button, and it keeps the icon rule size-agnostic.
+   */
+  --ion-input-height: var(--control-md-size);
+  --ion-input-padding-x: var(--spacing-12);
+  --ion-input-gap: var(--spacing-8);
+  --ion-input-icon-size: var(--icon-size-md);
+  --ion-input-radius: var(--radius-md);
+  --ion-input-font-size: var(--type-body);
+  --ion-input-line-height: var(--type-body-line-height);
+  --ion-input-border-width: var(--border-width-default);
+
+  display: flex;
+  align-items: center;
+  gap: var(--ion-input-gap);
+
+  /*
+   * Figma pins each size to a fixed height (32/40/48) with no vertical padding.
+   * `min-height` reproduces that while still growing if the field is ever given
+   * a taller control inside it.
+   */
+  min-height: var(--ion-input-height);
+  padding-inline: calc(
+    var(--ion-input-padding-x) - var(--ion-input-border-width)
+  );
+  background-color: var(--surface-default);
+  border-style: solid;
+  border-width: var(--ion-input-border-width);
+  border-color: var(--border-default);
+  border-radius: var(--ion-input-radius);
+  font-family: var(--font-family-sans);
+  font-size: var(--ion-input-font-size);
+  line-height: var(--ion-input-line-height);
+  transition:
+    border-color 150ms cubic-bezier(0.4, 0, 0.2, 1),
+    background-color 150ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/*
+ * Small is 10px, which is not on the spacing scale and is unbound in Figma —
+ * the only untokenised measurement in either component. Written as 12 - 2 so it
+ * is built from spacing primitives and stays exact; swap it for `--spacing-10`
+ * if that step is ever added, or for `--spacing-12` if the design moves to it.
+ */
+.ion-input--sm {
+  --ion-input-height: var(--control-sm-size);
+  --ion-input-padding-x: calc(var(--spacing-12) - var(--spacing-2));
+  --ion-input-gap: var(--spacing-6);
+  --ion-input-icon-size: var(--icon-size-sm);
+  --ion-input-radius: var(--radius-sm);
+  --ion-input-font-size: var(--type-body-sm);
+  --ion-input-line-height: var(--type-body-sm-line-height);
+}
+
+/* Large keeps Medium's radius, icon size and type ramp — only height and padding grow. */
+.ion-input--lg {
+  --ion-input-height: var(--control-lg-size);
+  --ion-input-padding-x: var(--spacing-16);
+}
+
+/*
+ * The field itself carries no box of its own — the wrapper owns the border,
+ * background and padding so the icons sit inside it. Everything here is either
+ * inherited or reset.
+ */
+.ion-input__field {
+  flex: 1 1 auto;
+  min-width: 0;
+  padding: 0;
+  background-color: transparent;
+  border: none;
+  outline: none;
+  color: var(--text-secondary);
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+  font-weight: var(--font-weight-regular);
+}
+
+/*
+ * Figma's Filled state differs from Default only in the value colour
+ * (text/tertiary -> text/secondary). That is exactly the placeholder
+ * distinction, so it needs no variant: the field is text/secondary and the
+ * placeholder pseudo-element is text/tertiary.
+ */
+.ion-input__field::placeholder {
+  color: var(--text-tertiary);
+  opacity: 1;
+}
+
+.ion-input__icon-start,
+.ion-input__icon-end {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+/* One rule for every size — the slot is reassigned by the size modifier. */
+.ion-input__icon-start svg,
+.ion-input__icon-end svg {
+  width: var(--ion-input-icon-size);
+  height: var(--ion-input-icon-size);
+}
+
+/*
+ * The two icons carry different tokens. The leading icon is decorative
+ * (icon/tertiary); the trailing one is a control — clear, reveal, calendar —
+ * and sits at icon/interactive. v2 splits text and icon precisely so this can
+ * differ from the value colour beside it.
+ */
+.ion-input__icon-start {
+  color: var(--icon-tertiary);
+}
+
+.ion-input__icon-end {
+  color: var(--icon-interactive);
+}
+
+/*
+ * State order below is deliberate and equal-specificity, so later rules win:
+ * hover -> focus -> invalid -> read-only -> disabled.
+ *
+ * Invalid sits after focus and overrides the colour only, never the width. A
+ * focused invalid field therefore keeps the 2px ring but shows it in the error
+ * colour, which is both states being true at once rather than one masking the
+ * other.
+ */
+
+/*
+ * Hover is declared twice, as it is on Button. Native `:hover` latches on touch
+ * until you tap elsewhere; `[data-hovered]` comes from React Aria's useHover,
+ * which is pointer-aware. The media query keeps this working without React.
+ */
+@media (hover: hover) {
+  .ion-input:hover {
+    border-color: var(--border-strong);
+  }
+}
+
+.ion-input[data-hovered='true'] {
+  border-color: var(--border-strong);
+}
+
+.ion-input:focus-within,
+.ion-input[data-focused='true'] {
+  --ion-input-border-width: var(--border-width-thick);
+
+  border-color: var(--border-focus);
+}
+
+.ion-input--invalid,
+.ion-input[data-invalid='true'] {
+  border-color: var(--border-error-strong);
+}
+
+/* Read-only keeps the value legible but drops the field out of the editable
+ * palette entirely — page surface, subtle border. */
+.ion-input--readonly,
+.ion-input[data-readonly='true'] {
+  background-color: var(--surface-page);
+  border-color: var(--border-subtle);
+}
+
+.ion-input--disabled,
+.ion-input[data-disabled='true'] {
+  background-color: var(--surface-disabled);
+  border-color: var(--border-disabled);
+  cursor: not-allowed;
+}
+
+.ion-input--disabled .ion-input__field,
+.ion-input[data-disabled='true'] .ion-input__field {
+  color: var(--text-disabled);
+  cursor: not-allowed;
+}
+
+.ion-input--disabled .ion-input__field::placeholder,
+.ion-input[data-disabled='true'] .ion-input__field::placeholder {
+  color: var(--text-disabled);
+}
+
+.ion-input--disabled .ion-input__icon-start,
+.ion-input--disabled .ion-input__icon-end,
+.ion-input[data-disabled='true'] .ion-input__icon-start,
+.ion-input[data-disabled='true'] .ion-input__icon-end {
+  color: var(--icon-disabled);
+}
+
+/*
+ * Form Field — Figma `Form Field` (80:330).
+ *
+ * Label + control + helper stacked at 6px. Named `ion-field` rather than
+ * `ion-input__field-wrapper` because Select uses it unchanged: the wrapper
+ * knows nothing about what control sits in the middle.
+ *
+ * Only the Error variant differs from Default. Figma's Disabled variant leaves
+ * both the label and the helper on their default tokens, so it needs no rule —
+ * the control inside carries the whole disabled treatment.
+ */
+.ion-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-6);
+}
+
+.ion-field__label {
+  color: var(--text-secondary);
+  font-family: var(--font-family-sans);
+  font-size: var(--type-body-sm);
+  line-height: var(--type-body-sm-line-height);
+  font-weight: var(--font-weight-medium);
+}
+
+.ion-field__helper {
+  color: var(--text-tertiary);
+  font-family: var(--font-family-sans);
+  font-size: var(--type-body-sm);
+  line-height: var(--type-body-sm-line-height);
+  font-weight: var(--font-weight-regular);
+}
+
+.ion-field--error .ion-field__helper {
+  color: var(--text-error);
+}

@@ -1,0 +1,161 @@
+/*
+ * Select
+ *
+ * Measured from Figma `Select` (82:379). Three sizes x six states.
+ *
+ * Geometry is identical to Input — same heights, padding, radius, type ramp and
+ * the same inside-stroke correction (see input.css for why the border width is
+ * subtracted from the padding). The two differ in three ways only:
+ *
+ *   - a chevron replaces the trailing icon slot, and is always icon/tertiary
+ *     rather than icon/interactive
+ *   - there is no Read-only state, because a native <select> has no readonly
+ *   - Figma's Invalid stroke is 2px here and 1px on Input
+ *
+ * That last one is reproduced rather than smoothed over: it is a value decision
+ * and belongs in Figma. It is flagged in the Select story.
+ *
+ * The rules are not shared with Input despite the overlap. A shared base class
+ * would couple two components that Figma models separately, and the first time
+ * one size changes on its own the sharing has to be unpicked under pressure.
+ */
+.ion-select {
+  --ion-select-height: var(--control-md-size);
+  --ion-select-padding-x: var(--spacing-12);
+  --ion-select-gap: var(--spacing-8);
+  --ion-select-icon-size: var(--icon-size-md);
+  --ion-select-radius: var(--radius-md);
+  --ion-select-font-size: var(--type-body);
+  --ion-select-line-height: var(--type-body-line-height);
+  --ion-select-border-width: var(--border-width-default);
+
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--ion-select-gap);
+  min-height: var(--ion-select-height);
+  padding-inline: calc(
+    var(--ion-select-padding-x) - var(--ion-select-border-width)
+  );
+  background-color: var(--surface-default);
+  border-style: solid;
+  border-width: var(--ion-select-border-width);
+  border-color: var(--border-default);
+  border-radius: var(--ion-select-radius);
+  font-family: var(--font-family-sans);
+  font-size: var(--ion-select-font-size);
+  line-height: var(--ion-select-line-height);
+  transition:
+    border-color 150ms cubic-bezier(0.4, 0, 0.2, 1),
+    background-color 150ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* See input.css — 10px is unbound in Figma and off the spacing scale. */
+.ion-select--sm {
+  --ion-select-height: var(--control-sm-size);
+  --ion-select-padding-x: calc(var(--spacing-12) - var(--spacing-2));
+  --ion-select-gap: var(--spacing-6);
+  --ion-select-icon-size: var(--icon-size-sm);
+  --ion-select-radius: var(--radius-sm);
+  --ion-select-font-size: var(--type-body-sm);
+  --ion-select-line-height: var(--type-body-sm-line-height);
+}
+
+.ion-select--lg {
+  --ion-select-height: var(--control-lg-size);
+  --ion-select-padding-x: var(--spacing-16);
+}
+
+/*
+ * `appearance: none` removes the platform chevron so the Figma one can be drawn
+ * instead. The native control is kept underneath rather than rebuilt: it brings
+ * keyboard handling, type-ahead and the platform picker on mobile, none of
+ * which a div can be talked into. Figma's dropdown list is a separate component
+ * (the Menu page) and is not this file's concern.
+ */
+.ion-select__field {
+  flex: 1 1 auto;
+  min-width: 0;
+  appearance: none;
+  padding: 0;
+  background-color: transparent;
+  border: none;
+  outline: none;
+  color: var(--text-secondary);
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+  font-weight: var(--font-weight-regular);
+  cursor: pointer;
+}
+
+/*
+ * A native <select> has no ::placeholder, so the empty state is a modifier the
+ * component sets from its value rather than something CSS can detect.
+ */
+.ion-select--placeholder .ion-select__field {
+  color: var(--text-tertiary);
+}
+
+/*
+ * The chevron is decorative and sits behind the select in the stacking order,
+ * so a click anywhere in the box still opens the native picker.
+ */
+.ion-select__chevron {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  pointer-events: none;
+  color: var(--icon-tertiary);
+}
+
+.ion-select__chevron svg {
+  width: var(--ion-select-icon-size);
+  height: var(--ion-select-icon-size);
+}
+
+/* State order matches Input: hover -> focus -> invalid -> disabled. */
+
+@media (hover: hover) {
+  .ion-select:hover {
+    border-color: var(--border-strong);
+  }
+}
+
+.ion-select[data-hovered='true'] {
+  border-color: var(--border-strong);
+}
+
+.ion-select:focus-within,
+.ion-select[data-focused='true'] {
+  --ion-select-border-width: var(--border-width-thick);
+
+  border-color: var(--border-focus);
+}
+
+/* 2px, unlike Input's 1px — Figma's value, reproduced deliberately. */
+.ion-select--invalid,
+.ion-select[data-invalid='true'] {
+  --ion-select-border-width: var(--border-width-thick);
+
+  border-color: var(--border-error-strong);
+}
+
+.ion-select--disabled,
+.ion-select[data-disabled='true'] {
+  background-color: var(--surface-disabled);
+  border-color: var(--border-disabled);
+  cursor: not-allowed;
+}
+
+.ion-select--disabled .ion-select__field,
+.ion-select[data-disabled='true'] .ion-select__field {
+  color: var(--text-disabled);
+  cursor: not-allowed;
+}
+
+.ion-select--disabled .ion-select__chevron,
+.ion-select[data-disabled='true'] .ion-select__chevron {
+  color: var(--icon-disabled);
+}
