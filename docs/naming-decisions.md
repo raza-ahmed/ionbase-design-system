@@ -8,6 +8,89 @@ Newest first.
 
 ---
 
+## 2026-07-29 (late) — v2 shipped end to end
+
+Figma, the export, the gates, the CSS and the component API are all on v2.
+392 variables; names `932422769`, values `555 / 1505770699`.
+
+### Primitives hold values; Semantics holds names
+
+`radius/full`, `border-width/thin`, `font/family/sans`, `font/weight/regular` —
+all of these were **roles living in the Primitives collection**. They collided
+with the Semantics tokens of the same name: twelve CSS custom properties where
+two tokens claimed one `--var` and the build silently dropped one.
+
+The fix was to key primitives by value and let Semantics name them:
+
+    radius/0…32, full     ->  scale/0…32, scale/full
+    border-width/thin     ->  scale/1
+    font/family/sans      ->  font/family/host-grotesk
+    font/weight/regular   ->  font/weight/400
+
+Renames are non-destructive, so no binding moved. The collisions went to zero
+without a build-script prefix hack.
+
+`spacing/*` and `scale/*` hold the same numbers and were deliberately **not**
+merged — components bind `spacing/*` directly, so merging meant rebinding 845
+nodes for no functional gain.
+
+### border-width is 1 / 2 / 4
+
+Was `thin` 1 · `default` 1.5 · `thick` 2. A fractional default is strange, and
+the 1.5 step was bound by nothing at all. `control/border-width` sat at the same
+value under a second name; it was merged into `border-width/default` (302 nodes
+rebound), leaving the control scale purely dimensional.
+
+### Two icon scales, on purpose
+
+`control/<step>/icon-size` is the icon inside a control and moves with it
+(16/20/24). `icon-size/xs…xl` is standalone (12/16/20/24/32) for icons in text,
+tables and empty states. Conflating them would force every standalone icon to
+pretend it lives in a control.
+
+### text/on-color flips; that was a correction, not a preference
+
+Rendering both themes found Primary Neutral as white text on a white button in
+dark. `surface/inverse` flips between modes and `text/on-color` did not, so the
+pairing worked in light and failed completely in dark. Contrast 1.0 → 21.0.
+
+It reaches every solid accent, so all six were measured — all pass, three only at
+AA-large. Recorded in [token-architecture-v2.md](token-architecture-v2.md) §6a
+rather than quietly adjusted.
+
+**This is the argument for rendering.** Every automated check passed: the names
+parsed, the tiers held, all 133 CSS references resolved, 30 tests were green. A
+resolved value is not a legible one.
+
+### Badge speaks the token vocabulary; Button does not
+
+`intent="danger"` became `intent="error"`, plus `brand` → `primary` and `info` →
+`information`. Those three were v1 words the tokens had already retired.
+**Renamed in Figma first, then in code** — the React API mirrors the Figma
+variant names, so changing one side alone moves the mismatch rather than
+removing it.
+
+Button keeps `Primary Brand`, `Primary Neutral`, `Destructive`. Those name a
+hierarchy and an action, not token roles. `destructive` tells a reader what the
+button does to their data, which is more useful at a call site than `error`, and
+Figma agrees. Consistency is worth a lot, but not the loss of a better word.
+
+### A gate that cannot fail is worse than no gate
+
+`audit-names.mjs` branched on the collection names `'Semantic'` and
+`'Component'`. After the migration neither existed, so every structural check was
+skipped and it reported a clean **0 errors, 0 warnings** while validating
+essentially nothing. An unknown collection is now a loud error. Every gate was
+negative-tested — 22 cases for the audit, 3 injected failures each for the tier
+and bindings checks — because a green light nobody earned is the most expensive
+kind.
+
+The same lesson applies to `src/dtcg/`: a renamed collection left its old file
+behind, and `build-css.mjs` sources files by name. The generator now clears the
+directory first.
+
+---
+
 ## 2026-07-29 (evening) — v2 is live in Figma
 
 390 variables, four collections, zero ghosts, zero dangling aliases. The old

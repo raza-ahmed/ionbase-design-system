@@ -46,10 +46,15 @@ whatever it sits in. That is still right for the React side and does not change.
 `size` accepts `sm` (16) or `md` (24) — or any CSS length. A third named size is a
 design decision that belongs in Figma as a token, not a number invented in code.
 
-> **v2 note — sizing still disagrees.** The control scale defines icon sizing as
-> 16 / 20 / 24 for `sm` / `md` / `lg`. This package's `md` is 24, which is v2's
-> `lg`. Reconcile when the migration reaches code; do not change it here first or
-> Figma and code disagree in the opposite direction.
+> **v2 note — sizing still disagrees, and this is the open item.** There are two
+> icon scales now: `control/<step>/icon-size` (16/20/24, the icon _inside_ a
+> control) and the standalone `icon-size/xs…xl` (12/16/20/24/32) that the Figma
+> Icon component binds. This package's `md` is 24px, which is `icon-size/lg`.
+>
+> Reconciling means picking which scale the `size` prop names. `icon-size/*` is
+> the better fit — an `<Icon>` used on its own is not inside a control — which
+> would make `sm`=16, `md`=20, `lg`=24 and add `xs`=12, `xl`=32. That renames the
+> meaning of `md` for anyone already using it, so it has not been done silently.
 
 ## Keeping Figma and Lucide in sync
 

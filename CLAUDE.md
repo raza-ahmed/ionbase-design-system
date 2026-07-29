@@ -83,9 +83,9 @@ Reasoning: [docs/naming-decisions.md](docs/naming-decisions.md).
 ### Four collections, one chain
 
 ```
-Primitives   143  Value                raw values
+Primitives   141  Value                value-keyed scales only
    ↓
-Semantics    114  IonBase              brand identity — ramps, radius, control scale
+Semantics    118  IonBase              brand identity — ramps, radius, control, icon-size
    ↓
 Interface    103  Light / Dark         text · icon · surface · border · ring
    ↓
@@ -94,27 +94,35 @@ components + CSS
 Breakpoint    30  Desktop/Tablet/Mobile   (parallel — type and grid only)
 ```
 
+Sync state: names `932422769`, values `555 / 1505770699`.
+
 **Components bind Interface and Breakpoint. Nothing else.** Interface may only
 alias Semantics; Semantics may only alias Primitives. `spacing/*` is the one
 sanctioned exception — components bind it straight from Primitives, because 16px
 means 16px in every brand.
 
-**390 variables, and that number does not grow with the component count.** A new
+**392 variables, and that number does not grow with the component count.** A new
 brand adds a _mode_, not tokens. So does a new theme.
+
+**Primitives are value-keyed.** `scale/8`, not `radius/md`; `font/weight/400`,
+not `font/weight/regular`. A primitive carrying a role name collides with the
+Semantics token of the same name — that was twelve CSS custom properties where
+two tokens claimed one `--var` and the build silently dropped one.
 
 The old `Semantic` and `Component` collections are **deleted**. There is no
 component tier; see the promotion rule in the architecture doc §5.
 
-### The repo is still on v1 — do not trust `src/figma/`
+### The repo is in sync — keep it that way
 
-`src/figma/semantic.json` and `component.json` describe collections that no
-longer exist. `primitives.json` predates four radius steps. Only
-`breakpoint.json` is still accurate.
+`src/figma/` holds `primitives.json`, `semantics.json`, `interface.json` and
+`bindings.json`. Re-export after any Figma edit and check both checksums; the
+value one is what catches an edited colour, and it has already caught a
+`type/caption/line-height` change nobody mentioned.
 
-**Re-export before doing anything with tokens.** And the gates need rewriting
-first: `verify-tier.mjs`, `verify-bindings.mjs` and `audit-names.mjs` all look up
-collections by the literal strings `'Semantic'` and `'Component'` and will throw
-on the new export.
+**A gate that cannot fail is worse than no gate.** `audit-names.mjs` once
+branched on collection names that no longer existed, so it skipped every
+structural check and reported a clean 0/0/0 while validating nothing. If you
+rename a collection, update the gates — and negative-test them.
 
 ### Figma traps that cost real time — read before scripting
 

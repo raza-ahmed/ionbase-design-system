@@ -1,14 +1,10 @@
 # Token architecture v2 — Primitive / Semantics / Interface
 
-**Status: LIVE in Figma as of 29 Jul 2026.** 390 variables, four collections,
-zero ghosts, zero dangling aliases. The repo has not been re-exported yet — that
-is the next phase.
+**Status: SHIPPED.** Live in Figma and in code as of 29 Jul 2026.
+392 variables, four collections, checksum-matched with the repo at
+`555 / 1505770699` on every value in every mode.
 
-Target: **390 variables total, fixed**, serving 1,000+ components.
-
-This is the **inventory** — every token and its value. The **rules** for naming
-them are in [variable-naming-spec.html](variable-naming-spec.html); the
-**reasoning** is in [naming-decisions.md](naming-decisions.md).
+Target: **392 variables, fixed**, serving 1,000+ components.
 
 ## The chain
 
@@ -41,144 +37,83 @@ Primitives for colour.
   the mode, the theme changes. It does not know which hue error is.
 
 Collapsing them means a new brand has to re-specify light _and_ dark for every
-role. Keeping them separate means a new brand supplies 114 values and gets both
+role. Keeping them separate means a new brand supplies 118 values and gets both
 themes free.
 
 ---
 
-# 1. Primitives — 143 tokens, 1 mode
+# 1. Primitives — 141 tokens, 1 mode
 
-**Four steps were added:** `radius/10, 14, 20, 32`, for concentric nesting
-(section 2.4).
+**Value-keyed only.** A primitive named for a role is the layering mistake v2
+corrected: `radius/full` and `font/weight/regular` were roles wearing a
+primitive's clothes, and they collided with the Semantics tokens of the same
+name — twelve custom properties where two tokens claimed one `--var`.
 
-`color/gray/850` was added during the build and **removed again** — see the note
-in section 3.3. Both the gray ramp and every other hue are a clean 50–900.
+| Group                | Count | Tokens                                                        |
+| -------------------- | ----- | ------------------------------------------------------------- |
+| `color/<hue>/<step>` | 80    | blue, gray, green, orange, pink, purple, red, yellow × 50–900 |
+| `color/base/*`       | 2     | white, black                                                  |
+| `color/alpha/*`      | 7     | black-05/10/40/60, white-05/10/20                             |
+| `spacing/*`          | 16    | 0, 2, 4, 6, 8, 12, 16, 20, 24, 32, 40, 48, 64, 80, 96, 128    |
+| `scale/*`            | 14    | 0, 1, 2, 4, 6, 8, 10, 12, 14, 16, 20, 24, 32, full            |
+| `font/family/*`      | 4     | host-grotesk, merriweather, space-mono, stix-two-text         |
+| `font/size/*`        | 14    | 12–72                                                         |
+| `font/weight/*`      | 4     | 400, 500, 600, 700                                            |
 
-| Group                | Count | Tokens                                                          |
-| -------------------- | ----- | --------------------------------------------------------------- |
-| `color/<hue>/<step>` | 80    | blue, gray, green, orange, pink, purple, red, yellow × 50–900   |
-| `color/base/*`       | 2     | white, black                                                    |
-| `color/alpha/*`      | 7     | black-05/10/40/60, white-05/10/20                               |
-| `spacing/*`          | 16    | 0, 2, 4, 6, 8, 12, 16, 20, 24, 32, 40, 48, 64, 80, …            |
-| `radius/*`           | 13    | 0, 2, 4, 6, 8, **10**, 12, **14**, 16, **20**, 24, **32**, full |
-| `border-width/*`     | 3     | thin, default, thick                                            |
-| `font/*`             | 22    | families, sizes 12–72, weights                                  |
+`scale/*` is the dimensionless ramp that radius and border-width draw from. It
+carries the numbers; Semantics gives them names. `spacing/*` stays separate
+because components bind it directly (see the exception in the chain rules) and
+merging the two would have meant rebinding 845 nodes for no gain.
 
-**Rule:** nothing outside Semantics and Breakpoint may bind a primitive. Once v2
-lands, scope primitives to `[]` so they vanish from every Figma picker.
+**Nothing outside Semantics and Breakpoint may bind a primitive**, with the two
+exceptions noted under §5.
 
----
+# 2. Semantics — 118 tokens, mode: IonBase (one per brand)
 
-# 2. Semantics — 114 tokens, mode: IonBase (one per brand)
+Where a brand becomes itself. Every token aliases a primitive.
 
-This is where a brand becomes itself. Every token is an alias to a primitive.
+| Group               | Count | Aliases                                                                |
+| ------------------- | ----- | ---------------------------------------------------------------------- |
+| Colour ramps        | 60    | `primary` `neutral` `success` `warning` `error` `information` × 50–900 |
+| `chart/1…8`         | 8     | Categorical series colours                                             |
+| `base/*`, `alpha/*` | 9     | white, black, and the seven alphas                                     |
+| `radius/*`          | 13    | `none 2xs xs sm md lg xl 2xl 3xl 4xl 5xl 6xl full` → `scale/*`         |
+| `border-width/*`    | 3     | `default` 1 · `thick` 2 · `thicker` 4                                  |
+| `font/family/*`     | 4     | sans, serif, mono, serif-display → the raw font identities             |
+| `font/weight/*`     | 4     | regular, medium, semibold, bold → 400/500/600/700                      |
+| `control/<step>/*`  | 12    | size · padding-x · gap · icon-size, at sm/md/lg                        |
+| `icon-size/*`       | 5     | `xs 12 · sm 16 · md 20 · lg 24 · xl 32`                                |
 
-## 2.1 Colour ramps — 60
+## Colour ramps
 
-Six meanings, ten steps each. The full ramp is exposed so Interface can pick
-different steps for light and dark.
+Six meanings, ten steps each. A second brand adds a mode and re-points these 60;
+nothing downstream changes. **Orange and pink carry no intent** — they earn their
+place in the chart palette, and if one ever needs to mean something in the UI it
+becomes a seventh ramp and leaves the chart set.
 
-| Group                | Steps | IonBase mode aliases  |
-| -------------------- | ----- | --------------------- |
-| `primary/50…900`     | 10    | `color/blue/50…900`   |
-| `neutral/50…900`     | 10    | `color/gray/50…900`   |
-| `success/50…900`     | 10    | `color/green/50…900`  |
-| `warning/50…900`     | 10    | `color/yellow/50…900` |
-| `error/50…900`       | 10    | `color/red/50…900`    |
-| `information/50…900` | 10    | `color/purple/50…900` |
+## Radius — every step, because concentric nesting needs the arithmetic
 
-All six ramps are exactly ten steps. A second brand adds a mode and re-points
-these 60. Nothing downstream changes.
+`inner = outer − padding`, so a 16 outer with 4 padding needs a 12 inner and a 20
+outer with 6 needs 14. Curating the scale breaks that and designers compensate
+with off-scale values. `radius/lg` = 10, `2xl` = 14, `4xl` = 20 and `6xl` = 32
+exist for exactly this.
 
-**Orange and pink carry no _intent_** — they are not a seventh and eighth
-meaning. They earn their place in the chart palette below. If one ever needs to
-mean something in the UI, it becomes a seventh ramp here and leaves the chart
-set.
+## Border width — 1 / 2 / 4
 
-## 2.2 Data visualisation — 8
+Was `thin` 1 · `default` 1.5 · `thick` 2. The 1.5 step was bound by nothing, and
+a fractional default is a strange thing to have. Now `default` 1, `thick` 2,
+`thicker` 4 — progressive and whole.
 
-Categorical series colours. **Brand-owned**, so a second brand re-points them
-with everything else.
+`control/border-width` used to sit alongside these at the same value; it was
+merged into `border-width/default` (302 nodes rebound) so one weight has one
+name. The control scale is now purely dimensional.
 
-`chart/1 … chart/8` → `blue/500, green/500, purple/500, orange/500, pink/500,
-yellow/600, red/500, gray/500`
+## Two icon scales, deliberately
 
-Not in use yet — added now because charts are inevitable at 1,000 components, and
-the alternative is someone picking hex values at that point.
-
-## 2.3 Static colour — 9
-
-| Token                       | Alias               |
-| --------------------------- | ------------------- |
-| `base/white`, `base/black`  | `color/base/*`      |
-| `alpha/black-05 … white-20` | `color/alpha/*` (7) |
-
-## 2.4 Shape — 16
-
-### Radius — 13
-
-Concentric nesting needs **every step available**, not a curated six. The rule is
-`inner = outer − padding`, so a 16 outer with 4 padding needs a 12 inner; a 20
-outer with 6 needs 14. Curating the scale breaks that arithmetic and designers
-compensate with off-scale values.
-
-| Token         | Alias         | Typical use               |
-| ------------- | ------------- | ------------------------- |
-| `radius/none` | `radius/0`    | Squared edges             |
-| `radius/2xs`  | `radius/2`    | Innermost nested elements |
-| `radius/xs`   | `radius/4`    | Checkbox, small chips     |
-| `radius/sm`   | `radius/6`    | Inputs, small buttons     |
-| `radius/md`   | `radius/8`    | Buttons, badges           |
-| `radius/lg`   | `radius/10`   | Inner card content        |
-| `radius/xl`   | `radius/12`   | Cards                     |
-| `radius/2xl`  | `radius/14`   | Nested panel              |
-| `radius/3xl`  | `radius/16`   | Panels, dialogs           |
-| `radius/4xl`  | `radius/20`   | Large surfaces            |
-| `radius/5xl`  | `radius/24`   | Sheets, modals            |
-| `radius/6xl`  | `radius/32`   | Hero containers           |
-| `radius/full` | `radius/full` | Pills, avatars            |
-
-**Primitives must gain `radius/10, 14, 20, 32`** — the current ramp jumps
-8 → 12 → 16 → 24, so concentric math is impossible above 8.
-
-### Border width — 3
-
-`border-width/thin, default, thick` → `border-width/*`
-
-Brand identity includes roundness and weight — a brand mode can make everything
-sharp.
-
-## 2.5 Type — 7
-
-| Group           | Tokens                              |
-| --------------- | ----------------------------------- |
-| `font/family/*` | sans, serif, mono (3)               |
-| `font/weight/*` | regular, medium, semibold, bold (4) |
-
-`font/size/*` lives in Breakpoint, not here — size is responsive, family and
-weight are brand.
-
-## 2.6 Control scale — 13
-
-Sizing for every interactive control. Brand-owned, because density is an identity
-choice.
-
-| Token                      | sm                    | md  | lg  |
-| -------------------------- | --------------------- | --- | --- |
-| `control/<step>/size`      | 32                    | 40  | 48  |
-| `control/<step>/padding-x` | 12                    | 16  | 20  |
-| `control/<step>/gap`       | 6                     | 8   | 8   |
-| `control/<step>/icon-size` | 16                    | 20  | 24  |
-| `control/border-width`     | thin — size-invariant |     |     |
-
-**Total Semantics: 60 ramps + 8 chart + 9 static + 16 shape + 8 type + 13 control
-= 114.** Counted from the live file, 29 Jul 2026.
-
-Type is **8**, not 7: `font/family` carries `sans`, `serif`, `mono` **and**
-`serif-display` — a fourth family the plan missed, found when seven bindings had
-nowhere to go.
-
----
+`control/<step>/icon-size` is the icon **inside a control** — 16/20/24, moving
+with the control's size. `icon-size/*` is the standalone scale — 12/16/20/24/32 —
+for icons in text, tables, empty states, anywhere there is no control to size
+against. The Icon component set in Figma binds the second.
 
 # 3. Interface — 103 tokens, modes: Light, Dark · **live**
 
@@ -241,55 +176,40 @@ than invented.
 
 ### Structural — 12 (of 46)
 
+Live aliases, as in the file today.
+
 | Token                    | Light            | Dark             | Layer                      |
 | ------------------------ | ---------------- | ---------------- | -------------------------- |
 | `surface/page`           | `neutral/50`     | `neutral/900`    | 0 — app background         |
 | `surface/sunken`         | `neutral/100`    | `neutral/900`    | −1 — wells, insets         |
-| `surface/default`        | `base/white`     | `neutral/850`    | 1 — cards, panels          |
-| `surface/subtle`         | `neutral/50`     | `neutral/850`    | 1 — quieter card           |
+| `surface/default`        | `base/white`     | `base/black`     | 1 — cards, panels          |
+| `surface/subtle`         | `neutral/200`    | `neutral/800`    | 1 — quieter card           |
 | `surface/muted`          | `neutral/100`    | `neutral/800`    | 1 — table headers, chips   |
 | `surface/raised`         | `base/white`     | `neutral/800`    | 2 — popovers, menus        |
-| `surface/overlay`        | `base/white`     | `neutral/700`    | 3 — modals, sheets         |
+| `surface/overlay`        | `base/white`     | `base/black`     | 3 — modals, sheets         |
 | `surface/scrim`          | `alpha/black-40` | `alpha/black-60` | over everything            |
-| `surface/inverse`        | `neutral/900`    | `neutral/50`     | tooltips                   |
+| `surface/inverse`        | `neutral/900`    | `base/white`     | tooltips, Primary Neutral  |
 | `surface/inverse-subtle` | `neutral/700`    | `neutral/200`    |                            |
 | `surface/disabled`       | `neutral/100`    | `neutral/800`    |                            |
 | `surface/placeholder`    | `neutral/300`    | `neutral/600`    | Avatar fallback, skeletons |
 
+**Dark is OLED-style, and that is deliberate.** Cards (`#000000`) sit _darker_
+than the page (`#131923`), and `overlay` is pure black too — the reverse of the
+usual "cards float above the page" ladder. In light, `subtle` (`neutral/200`) is
+also darker than `muted` (`neutral/100`). Both were set by hand during the
+accessibility pass; the file wins over any earlier proposal.
+
 **The `gray/850` story, recorded because it reversed twice.** The plan first
-called for `gray/950`. That was wrong — measured from the file, `gray/900` is
-`#070a0d` (luminance 0.038), already near-black, so a step below it is invisible.
-The real gap was in the middle: 800 (`#1d2735`, 0.149) → 900, nothing between. So
-`gray/850` (`#121821`) was added instead, giving four dark layers.
+called for `gray/950`. Wrong — measured from the file, `gray/900` was already
+near-black, so a step below it is invisible. The real gap was in the middle:
+800 → 900, nothing between. So `gray/850` was added instead, giving four dark
+layers. It was then **removed** during the accessibility pass and the ladder
+re-tuned by hand. Both ramps are a clean 50–900 today.
 
-It was then **removed** during the accessibility pass and the dark ladder re-tuned
-by hand. Both ramps are a clean 50–900 today. The one casualty was
-`surface/sunken` [Dark], left pointing at the deleted `neutral/850` — repointed to
-`neutral/900` on 29 Jul 2026.
-
-### The live ladder — measured 29 Jul 2026
-
-The values below are what is **actually in the file** after the accessibility
-pass, which is not what the table above proposes. Where they differ, the file wins
-and the table records original intent.
-
-| Token             | Light     | Dark      |
-| ----------------- | --------- | --------- |
-| `surface/page`    | `#f6f8f9` | `#131923` |
-| `surface/sunken`  | `#f0f2f4` | `#131923` |
-| `surface/default` | `#ffffff` | `#000000` |
-| `surface/subtle`  | `#e5e7eb` | `#1d2735` |
-| `surface/muted`   | `#f0f2f4` | `#1d2735` |
-| `surface/raised`  | `#ffffff` | `#1d2735` |
-| `surface/overlay` | `#ffffff` | `#000000` |
-
-Two deliberate inversions of the documented ladder, left as-is:
-
-- **Dark is OLED-style.** Cards (`#000000`) are _darker_ than the page
-  (`#131923`), and `overlay` is pure black too. The documented ladder assumes
-  cards sit above the page; this file goes the other way.
-- **In light, `subtle` (`#e5e7eb`) is darker than `muted` (`#f0f2f4`)** — the
-  reverse of the ordering in the table above.
+The one casualty: `surface/sunken` [Dark] was left pointing at the deleted
+`neutral/850` and dangled until it was repointed to `neutral/900`. **Deleting a
+variable orphans aliases exactly as it orphans node bindings** — `verify-tier.mjs`
+now catches that class.
 
 ### Interaction washes — 4
 
@@ -398,44 +318,60 @@ Interface — and 17 of the 24 already do.
 
 ---
 
-# 6. Totals — live, 29 Jul 2026
+# 6. Totals — shipped
 
-| Collection | Tokens  | Modes       | Grows when                                |
-| ---------- | ------- | ----------- | ----------------------------------------- |
-| Primitives | 143     | Value       | A ramp gains a step                       |
-| Semantics  | 114     | IonBase     | Never — a brand adds a _mode_, not tokens |
-| Interface  | 103     | Light, Dark | A genuinely new UI role appears           |
-| Breakpoint | 30      | D / T / M   | Never                                     |
-| Component  | 0       | —           | Deleted. Promotion only (section 5)       |
-| **Total**  | **390** |             |                                           |
+| Collection | Tokens  | Modes                     | Grows when                                |
+| ---------- | ------- | ------------------------- | ----------------------------------------- |
+| Primitives | 141     | Value                     | A ramp gains a step                       |
+| Semantics  | 118     | IonBase                   | Never — a brand adds a _mode_, not tokens |
+| Interface  | 103     | Light, Dark               | A genuinely new UI role appears           |
+| Breakpoint | 30      | Desktop / Tablet / Mobile | Never                                     |
+| Component  | 0       | —                         | Deleted; promotion only (§5)              |
+| **Total**  | **392** |                           |                                           |
 
-**390 variables at 24 components. 390 at 1,000.** Adding a brand adds a mode, not
-tokens. Adding a theme adds a mode, not tokens.
+**392 variables at 24 components. 392 at 1,000.** A new brand adds a mode. A new
+theme adds a mode. Neither adds tokens.
 
-The old `Semantic` (71) and `Component` (89) collections were deleted on
-29 Jul 2026 after every binding was moved. 8,514 bindings across 2,672 component
-nodes now resolve Interface → Semantics → Primitives, with zero ghosts.
+The old `Semantic` (71) and `Component` (89) collections were deleted after every
+binding was moved. 8,514 bindings across 2,672 component nodes resolve
+Interface → Semantics → Primitives, with zero ghosts.
+
+**Sync state:** names `932422769`, values `555 / 1505770699`. Both verified on
+each side independently.
 
 ---
 
-# 6a. Accessibility — measured, not fixed
+# 6a. Accessibility — measured, recorded, not silently changed
 
-Contrast measured against the live file on 29 Jul 2026. **These are on the record
-as known items, not defects to fix silently** — the values are a design decision.
+Re-measured 29 Jul 2026 after the `text/on-color` fix.
 
-**Passing comfortably (AA or better, both modes):** `text/default`,
-`text/secondary` (10.15 / 15.86), `text/tertiary` (7.56 / 8.28), every accent
-`text/*` on `surface/default`, and all three `icon/*` neutral steps.
+`text/on-color` is **white in light, black in dark**. That was a correction, not
+a preference: `surface/inverse` flips between modes while `text/on-color` did
+not, so Primary Neutral rendered white-on-white in dark — invisible. Contrast
+there went 1.0 → 21.0.
 
-| Pairing                                 | Light         | Dark          | Note                                                                                              |
-| --------------------------------------- | ------------- | ------------- | ------------------------------------------------------------------------------------------------- |
-| `text/on-color` on `surface/warning`    | **2.64 FAIL** | **2.64 FAIL** | Light has an out: `text/default` gives 6.68 AA. **Dark has none** — `text/default` there is 2.48. |
-| `text/placeholder` on `surface/default` | **2.54 FAIL** | 4.34 AA-large |                                                                                                   |
-| `text/on-color` on `surface/success`    | 3.69 AA-large | 3.36 AA-large | Large text only                                                                                   |
-| `text/on-color` on `surface/error`      | 4.8 AA        | 3.78 AA-large | Dark is large-text only                                                                           |
+It changes every solid accent, so all six were measured:
 
-The warning pairing is the one with no passing combination in dark. If a solid
-warning surface ever carries body text, that has to be resolved first.
+| Solid surface         | Light         | Dark          |
+| --------------------- | ------------- | ------------- |
+| `surface/primary`     | 5.38 AA       | 4.58 AA       |
+| `surface/error`       | 4.80 AA       | 5.55 AA       |
+| `surface/success`     | 3.69 AA-large | 6.25 AA       |
+| `surface/warning`     | 3.83 AA-large | 7.95 AA       |
+| `surface/information` | 7.47 AA       | 3.44 AA-large |
+| `surface/inverse`     | 17.63 AA      | 21.00 AA      |
+
+Passing comfortably in both modes: `text/default`, `text/secondary`
+(10.15 / 15.86), `text/tertiary`, every accent `text/*` on `surface/default`, and
+all three neutral `icon/*` steps.
+
+**Still open:** light `surface/warning` at 3.83 and light `surface/success` at
+3.69 are AA-large, not AA. Dark `surface/information` is 3.44. If any of the
+three ever carries body text rather than a short label, that has to be resolved
+first. `text/placeholder` on `surface/default` is 2.54 in light.
+
+**The dark warning pairing that had no passing option is fixed** — it was 2.64
+with white and 2.48 with `text/default`; it is now 7.95.
 
 ---
 
@@ -512,29 +448,26 @@ Every current semantic token, and the v2 token that replaces it.
 
 ---
 
-# 8. Build order — complete
+# 8. What shipped
 
-| #   | Step                                        | Status                    |
-| --- | ------------------------------------------- | ------------------------- |
-| 1   | Primitives — add `radius/10, 14, 20, 32`    | done                      |
-| 2   | Semantics collection, aliasing Primitives   | done — 114                |
-| 3   | Interface collection, Light + Dark          | done — 103                |
-| 4   | Bind 1,753 Lucide icons to `icon/default`   | done — 1,757 fills        |
-| 5   | Rebind every component to Interface         | done — all 19 pages       |
-| 6   | Unbind, then delete Component collection    | done — 89 removed         |
-| 7   | Delete old Semantic collection              | done — 71 removed         |
-| 8   | Re-export, regenerate CSS, update the gates | **next — the code phase** |
+| #   | Step                                      | Result                                        |
+| --- | ----------------------------------------- | --------------------------------------------- |
+| 1   | Primitives — add the scale steps          | done                                          |
+| 2   | Semantics collection                      | 118                                           |
+| 3   | Interface collection, Light + Dark        | 103                                           |
+| 4   | Bind 1,753 Lucide icons to `icon/default` | 1,757 fills                                   |
+| 5   | Rebind every component to Interface       | all 19 pages                                  |
+| 6   | Unbind, then delete Component             | 89 removed                                    |
+| 7   | Delete old Semantic                       | 71 removed                                    |
+| 8   | Re-export, rebuild, rewrite the gates     | done                                          |
+| 9   | Repoint the CSS layer                     | 133/133 resolve                               |
+| 10  | Align the Badge API                       | brand/danger/info → primary/error/information |
 
-## What step 8 involves
+## Open items
 
-The repo still holds the **v1** export. `src/figma/semantic.json` and
-`src/figma/component.json` describe collections that no longer exist, and
-`primitives.json` predates the four radius steps. Nothing in the repo has been
-regenerated.
-
-Do not hand-edit those files — re-export them. `src/figma/breakpoint.json` is the
-one export still accurate, because the Breakpoint collection was never touched.
-
-The gates need rewriting too: `verify-tier.mjs`, `verify-bindings.mjs` and
-`audit-names.mjs` all look up collections by the literal names `'Semantic'` and
-`'Component'`, and will throw once the new export lands.
+- **`packages/icons`** exports `size="md"` as 24px, which is v2's `lg`. The
+  standalone scale is 12/16/20/24/32; reconcile the prop against it.
+- **Contrast**, per §6a — three AA-large pairings and `text/placeholder`.
+- **Button's variant names** keep `Primary Brand` and `Destructive`. Left
+  deliberately: they name a hierarchy and an action, not token roles, and Figma
+  agrees. `destructive` says what the button does to your data.

@@ -318,7 +318,7 @@ footer{border-top:1px solid var(--g200);padding-top:22px;margin-top:64px;font-si
   <div class="meta">
     <span class="chip">IonBase - Figma</span>
     <span class="chip">4 collections</span>
-    <span class="chip">390 variables, fixed</span>
+    <span class="chip">392 variables, fixed</span>
     <span class="chip">Max 4 segments</span>
     <span class="chip">lowercase-kebab</span>
     <span class="chip">v2 - LIVE 29 Jul 2026</span>
@@ -364,17 +364,17 @@ footer{border-top:1px solid var(--g200);padding-top:22px;margin-top:64px;font-si
 
   <div class="tiers">
     <div class="tier t1">
-      <div class="tier-h"><span class="tier-n">1 - Primitives</span><span class="tier-m">143 - 1 mode: Value</span></div>
+      <div class="tier-h"><span class="tier-n">1 - Primitives</span><span class="tier-m">141 - 1 mode: Value</span></div>
       <p class="tier-q">What is the raw value?</p>
       <p>Raw values with no opinion about use. A blue is just a blue. <strong>Never bind these to a design</strong> - they exist to be referenced.</p>
       <div class="tier-e">
         <span class="tok"><b class="s-plain">color</b><span class="sl">/</span><b class="s-plain">blue</b><span class="sl">/</span><b class="s-plain">500</b></span>
         <span class="tok"><b class="s-plain">spacing</b><span class="sl">/</span><b class="s-plain">16</b></span>
-        <span class="tok"><b class="s-plain">radius</b><span class="sl">/</span><b class="s-plain">12</b></span>
+        <span class="tok"><b class="s-plain">scale</b><span class="sl">/</span><b class="s-plain">12</b></span>
       </div>
     </div>
     <div class="tier t2">
-      <div class="tier-h"><span class="tier-n">2 - Semantics</span><span class="tier-m">114 - 1 mode per brand</span></div>
+      <div class="tier-h"><span class="tier-n">2 - Semantics</span><span class="tier-m">118 - 1 mode per brand</span></div>
       <p class="tier-q">What is <em>this brand's</em> red?</p>
       <p>Brand identity. Full ramps, so Interface can pick different steps for light and dark. Also carries shape and density, because a brand can be sharp or round, dense or airy. <strong>Knows nothing about light/dark.</strong></p>
       <div class="tier-e">
@@ -520,9 +520,19 @@ footer{border-top:1px solid var(--g200);padding-top:22px;margin-top:64px;font-si
 
   <h3>Group <span style="font-weight:400;color:var(--g500);font-size:14px">- Semantics only</span></h3>
   <div class="vocab">
-    <span class="vp vp-var">primary</span><span class="vp vp-var">neutral</span><span class="vp vp-var">success</span><span class="vp vp-var">warning</span><span class="vp vp-var">error</span><span class="vp vp-var">information</span><span class="vp vp-part">chart</span><span class="vp vp-part">base</span><span class="vp vp-part">alpha</span><span class="vp vp-part">radius</span><span class="vp vp-part">border-width</span><span class="vp vp-part">font</span><span class="vp vp-part">control</span>
+    <span class="vp vp-var">primary</span><span class="vp vp-var">neutral</span><span class="vp vp-var">success</span><span class="vp vp-var">warning</span><span class="vp vp-var">error</span><span class="vp vp-var">information</span><span class="vp vp-part">chart</span><span class="vp vp-part">base</span><span class="vp vp-part">alpha</span><span class="vp vp-part">radius</span><span class="vp vp-part">border-width</span><span class="vp vp-part">font</span><span class="vp vp-part">control</span><span class="vp vp-part">icon-size</span>
   </div>
-  <p>Colour groups carry a numeric step (<code>50</code>-<code>950</code>). Shape and density groups carry a named step.</p>
+  <p>Colour groups carry a numeric step (<code>50</code>-<code>900</code>). Shape and density groups carry a named step.</p>
+
+  <div class="note n-warn">
+    <span class="note-t">Primitives are keyed by value, Semantics by role</span>
+    <p>A primitive is <code>scale/8</code>, never <code>radius/md</code>; <code>font/weight/400</code>, never <code>font/weight/regular</code>. A primitive carrying a role name collides with the Semantics token of the same name - twelve CSS custom properties once had two tokens claiming them, and the build silently dropped one. <code>scale/*</code> holds the numbers that <code>radius/*</code> and <code>border-width/*</code> give names to.</p>
+  </div>
+
+  <div class="note">
+    <span class="note-t">Two icon scales</span>
+    <p><code>control/&lt;step&gt;/icon-size</code> is the icon <em>inside a control</em> and moves with it (16/20/24). <code>icon-size/xs...xl</code> is standalone (12/16/20/24/32), for icons in text, tables and empty states. Conflating them forces every standalone icon to pretend it lives in a control.</p>
+  </div>
 </section>
 
 <!-- ============ 05 ============ -->
