@@ -20,7 +20,7 @@ const meta: Meta<typeof Input> = {
     docs: {
       description: {
         component:
-          'Measured from Figma `Input` (80:275) and `Form Field` (80:330). Three sizes, seven states. Passing a `label` or `description` renders the Form Field wrapper; without either, the bare field is returned.\n\nInput deliberately does **not** read the control scale for padding: Figma pins padding-x to 10/12/16 where `control` says 12/16/20, and the Large icon to 20 where `control/lg/icon-size` is 24.',
+          'Measured from Figma `Input` (80:275) and `Form Field` (80:330). Three sizes, seven states. Passing a `label` or `description` renders the Form Field wrapper; without either, the bare field is returned.\n\nInput deliberately does **not** read the control scale for padding: Figma pins padding-x to 12/12/16 where `control` says 12/16/20, and the Large icon to 20 where `control/lg/icon-size` is 24.',
       },
     },
   },
@@ -148,9 +148,10 @@ export const RenderedGeometryMatchesFigma: Story = {
 };
 
 /**
- * Small is the size that most easily drifts: its 10px padding is unbound in
- * Figma and off the spacing scale, so it is the one measurement here that no
- * token check can catch.
+ * Small shares Medium's 12px padding — it was 10px and unbound in Figma, the
+ * one measurement in either component that no token check could see. Height,
+ * gap, radius and the type ramp still separate the two sizes, and those are
+ * what this pins.
  */
 export const SmallAndLargeGeometry: Story = {
   render: (args) => (
@@ -171,7 +172,7 @@ export const SmallAndLargeGeometry: Story = {
     await expect(Math.round(small.getBoundingClientRect().height)).toBe(32);
     await expect(
       parseFloat(sm.paddingLeft) + parseFloat(sm.borderLeftWidth),
-    ).toBe(10);
+    ).toBe(12);
     await expect(sm.columnGap).toBe('6px');
     await expect(sm.borderRadius).toBe('6px');
     await expect(sm.fontSize).toBe('14px');
@@ -204,6 +205,30 @@ export const FocusDoesNotShiftText: Story = {
 
     await expect(getComputedStyle(box).borderLeftWidth).toBe('2px');
     await expect(Math.round(after - before)).toBe(0);
+  },
+};
+
+/**
+ * Invalid is 2px, matching Focus and matching Select.
+ *
+ * This was 1px until the stroke weights were bound in Figma. At 1px the invalid
+ * state differed from default only in hue, which fails WCAG 1.4.1 — error has
+ * to be perceivable without relying on colour. Neither component bound its
+ * stroke weight, which is why the two were allowed to disagree at all.
+ */
+export const InvalidBorderIsTwoPixels: Story = {
+  render: (args) => <Input {...args} isInvalid aria-label="Field" />,
+  play: async ({ canvas }) => {
+    const box = canvas
+      .getByLabelText('Field')
+      .closest('.ion-input') as HTMLElement;
+    const cs = getComputedStyle(box);
+
+    await expect(cs.borderLeftWidth).toBe('2px');
+    // The inset still resolves to 12px, so the value does not move.
+    await expect(
+      parseFloat(cs.paddingLeft) + parseFloat(cs.borderLeftWidth),
+    ).toBe(12);
   },
 };
 

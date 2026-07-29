@@ -10,10 +10,10 @@
  *   - a chevron replaces the trailing icon slot, and is always icon/tertiary
  *     rather than icon/interactive
  *   - there is no Read-only state, because a native <select> has no readonly
- *   - Figma's Invalid stroke is 2px here and 1px on Input
  *
- * That last one is reproduced rather than smoothed over: it is a value decision
- * and belongs in Figma. It is flagged in the Select story.
+ * Invalid used to be 2px here and 1px on Input. That was drift, not intent —
+ * neither component bound its stroke weight to a token, so nothing held the
+ * two together. Both are now 2px, bound to border-width/thick in Figma.
  *
  * The rules are not shared with Input despite the overlap. A shared base class
  * would couple two components that Figma models separately, and the first time
@@ -50,10 +50,10 @@
     background-color 150ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* See input.css — 10px is unbound in Figma and off the spacing scale. */
+/* Small shares Medium's padding — see input.css. */
 .ion-select--sm {
   --ion-select-height: var(--control-sm-size);
-  --ion-select-padding-x: calc(var(--spacing-12) - var(--spacing-2));
+  --ion-select-padding-x: var(--spacing-12);
   --ion-select-gap: var(--spacing-6);
   --ion-select-icon-size: var(--icon-size-sm);
   --ion-select-radius: var(--radius-sm);
@@ -134,7 +134,7 @@
   border-color: var(--border-focus);
 }
 
-/* 2px, unlike Input's 1px — Figma's value, reproduced deliberately. */
+/* 2px, matching Focus and now matching Input. See input.css. */
 .ion-select--invalid,
 .ion-select[data-invalid='true'] {
   --ion-select-border-width: var(--border-width-thick);

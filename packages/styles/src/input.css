@@ -7,7 +7,7 @@
  * TWO THINGS THE MEASUREMENT CHANGED
  *
  * 1. Input does NOT read the control scale for padding. Figma pins padding-x to
- *    10 / 12 / 16 where `control/<size>/padding-x` is 12 / 16 / 20, and the Large
+ *    12 / 12 / 16 where `control/<size>/padding-x` is 12 / 16 / 20, and the Large
  *    icon to 20 where `control/lg/icon-size` is 24. Button reads the control
  *    scale and is correct to; Input would be 4px wider at every size if it did.
  *    So the padding and icon slots below come from spacing and icon-size
@@ -65,14 +65,14 @@
 }
 
 /*
- * Small is 10px, which is not on the spacing scale and is unbound in Figma —
- * the only untokenised measurement in either component. Written as 12 - 2 so it
- * is built from spacing primitives and stays exact; swap it for `--spacing-10`
- * if that step is ever added, or for `--spacing-12` if the design moves to it.
+ * Small shares Medium's padding. It was 10px and unbound in Figma — the only
+ * untokenised measurement in either component, and off a scale that runs
+ * 8, 12, 16, 20. Resolved in Figma by moving to 12; height, gap, radius and the
+ * type ramp still separate the two sizes.
  */
 .ion-input--sm {
   --ion-input-height: var(--control-sm-size);
-  --ion-input-padding-x: calc(var(--spacing-12) - var(--spacing-2));
+  --ion-input-padding-x: var(--spacing-12);
   --ion-input-gap: var(--spacing-6);
   --ion-input-icon-size: var(--icon-size-sm);
   --ion-input-radius: var(--radius-sm);
@@ -177,8 +177,16 @@
   border-color: var(--border-focus);
 }
 
+/*
+ * 2px, matching Focus and matching Select. At 1px the invalid state differed
+ * from default only in hue, which is the exact failure mode WCAG 1.4.1 is
+ * about — error has to be perceivable without relying on colour alone.
+ * Reconciled in Figma; Input was the one that was wrong.
+ */
 .ion-input--invalid,
 .ion-input[data-invalid='true'] {
+  --ion-input-border-width: var(--border-width-thick);
+
   border-color: var(--border-error-strong);
 }
 

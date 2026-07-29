@@ -23,7 +23,7 @@ const meta: Meta<typeof Select> = {
     docs: {
       description: {
         component:
-          "Measured from Figma `Select` (82:379). Three sizes, six states. Geometry is identical to Input; the differences are a chevron in place of the trailing icon, no Read-only state, and a 2px Invalid border where Input uses 1px.\n\nWraps a native `<select>`. React Aria's `useSelect` builds a listbox in a popover, which is right when the menu needs custom rows — but Figma models only the trigger here, and the dropdown list is a separate component on the Menu page.",
+          "Measured from Figma `Select` (82:379). Three sizes, six states. Geometry is identical to Input; the differences are a chevron in place of the trailing icon, and no Read-only state. Invalid was 2px here and 1px on Input; that was drift rather than intent, and both are now 2px bound to `border-width/thick`.\n\nWraps a native `<select>`. React Aria's `useSelect` builds a listbox in a popover, which is right when the menu needs custom rows — but Figma models only the trigger here, and the dropdown list is a separate component on the Menu page.",
       },
     },
   },
@@ -131,7 +131,7 @@ export const SmallAndLargeGeometry: Story = {
     await expect(Math.round(small.getBoundingClientRect().height)).toBe(32);
     await expect(
       parseFloat(sm.paddingLeft) + parseFloat(sm.borderLeftWidth),
-    ).toBe(10);
+    ).toBe(12);
     await expect(sm.borderRadius).toBe('6px');
     await expect(sm.fontSize).toBe('14px');
 
@@ -145,9 +145,12 @@ export const SmallAndLargeGeometry: Story = {
 };
 
 /**
- * Figma gives Select a 2px Invalid stroke where Input's is 1px. Reproduced
- * rather than smoothed over — it is a value decision and belongs in Figma. This
- * assertion is what will fail, loudly, if the two are ever reconciled there.
+ * Invalid is 2px, matching Focus and matching Input.
+ *
+ * At 1px the invalid state differed from default only in hue — the exact
+ * failure mode WCAG 1.4.1 exists for, since error has to be perceivable without
+ * relying on colour. Input was the one that was wrong; both are now bound to
+ * `border-width/thick` in Figma, so neither can drift from the other again.
  */
 export const InvalidBorderIsTwoPixels: Story = {
   render: (args) => <Select {...args} isInvalid aria-label="Status" />,
