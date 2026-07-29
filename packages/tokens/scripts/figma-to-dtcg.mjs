@@ -11,7 +11,13 @@
  * the leaf under a `DEFAULT` child and strip that segment back off when
  * generating CSS names, so `--bg-brand` survives the round trip untouched.
  */
-import { readFileSync, writeFileSync, mkdirSync, readdirSync } from 'node:fs';
+import {
+  readFileSync,
+  writeFileSync,
+  mkdirSync,
+  readdirSync,
+  unlinkSync,
+} from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -133,6 +139,16 @@ export function toDtcg(collection, mode, collisions) {
 
 function main() {
   mkdirSync(DTCG_DIR, { recursive: true });
+
+  // Clear first. A renamed or deleted collection leaves its old DTCG file
+  // behind, and build-css.mjs sources files by name — so a stale
+  // `component.json` would silently keep feeding a tier that no longer exists.
+  // This bit after the v2 migration: `semantic.light.json` outlived the
+  // collection by a full build.
+  for (const f of readdirSync(DTCG_DIR)) {
+    if (f.endsWith('.json')) unlinkSync(join(DTCG_DIR, f));
+  }
+
   const collections = loadCollections();
   const collisions = findCollisions(collections);
   const written = [];

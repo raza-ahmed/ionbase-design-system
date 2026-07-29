@@ -26,9 +26,20 @@ const lines = [
   '',
 ];
 
+/**
+ * Collection name -> exported identifier.
+ *
+ * `interface` is a reserved word in TypeScript, so `export const interface`
+ * will not compile. `ui` reads better at the call site anyway — this is the
+ * layer components consume: `ui['surface/primary']`.
+ */
+const EXPORT_NAME = { Interface: 'ui' };
+const exportName = (collection) =>
+  EXPORT_NAME[collection] ?? collection.toLowerCase();
+
 // One exported const per collection, so consumers can lint on tier.
 for (const c of collections) {
-  const key = c.collection.toLowerCase();
+  const key = exportName(c.collection);
   lines.push(`/** ${c.collection} tokens — modes: ${c.modes.join(', ')}. */`);
   lines.push(`export const ${key} = {`);
   for (const name of Object.keys(c.variables)) {
@@ -38,19 +49,26 @@ for (const c of collections) {
   lines.push('');
 }
 
-const names = collections.map((c) => c.collection.toLowerCase());
+const names = collections.map((c) => exportName(c.collection));
 lines.push(`export const tokens = { ${names.join(', ')} } as const;`);
 lines.push('');
 lines.push(`export type TokenTier = keyof typeof tokens;`);
 for (const c of collections) {
-  const key = c.collection.toLowerCase();
+  const key = exportName(c.collection);
   const type = c.collection;
   lines.push(`export type ${type}Token = keyof typeof ${key};`);
 }
 lines.push('');
 lines.push(
+  // Theme is an Interface concept in v2 — Semantics carries brand, not theme.
   `export type Theme = ${collections
-    .find((c) => c.collection === 'Semantic')
+    .find((c) => c.collection === 'Interface')
+    .modes.map((m) => `'${m.toLowerCase()}'`)
+    .join(' | ')};`,
+);
+lines.push(
+  `export type Brand = ${collections
+    .find((c) => c.collection === 'Semantics')
     .modes.map((m) => `'${m.toLowerCase()}'`)
     .join(' | ')};`,
 );

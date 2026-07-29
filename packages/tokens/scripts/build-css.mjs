@@ -148,26 +148,32 @@ function writeDiffFile(baseFile, modeFile, outName) {
 async function main() {
   mkdirSync(join(DIST, 'css'), { recursive: true });
 
-  // Base layer: primitives + light theme + desktop + component aliases.
+  // Base layer: the whole chain resolved at Light + Desktop.
   await buildCss({
     source: [
       'primitives.json',
-      'semantic.light.json',
+      'semantics.json',
+      'interface.light.json',
       'breakpoint.desktop.json',
-      'component.json',
     ],
     output: 'base.css',
     selector: ':root',
   });
 
-  // Dark theme — only the semantic tokens that actually differ.
+  // Dark theme — only the Interface tokens that actually differ. Theme lives
+  // entirely in Interface now; Semantics is brand, and does not vary by theme.
   const darkCount = writeDiffFile(
-    'semantic.light.json',
-    'semantic.dark.json',
+    'interface.light.json',
+    'interface.dark.json',
     '_dark.diff.json',
   );
   await buildCss({
-    source: ['primitives.json', 'semantic.light.json', '_dark.diff.json'],
+    source: [
+      'primitives.json',
+      'semantics.json',
+      'interface.light.json',
+      '_dark.diff.json',
+    ],
     output: 'theme-dark.css',
     selector: '[data-theme="dark"]',
     onlyFrom: '_dark.diff.json',

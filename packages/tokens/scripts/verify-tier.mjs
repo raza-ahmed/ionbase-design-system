@@ -1,148 +1,147 @@
 /**
- * The Component tier holds geometry. Nothing else.
+ * The alias chain is the architecture. This checks it holds.
  *
- * This is the gate for spec section 6, Rule 06 — the rule that decides whether
- * this system is manageable at 100 components or not.
+ *   Interface  -> Semantics  -> Primitives
+ *   Breakpoint -> Primitives
+ *   Primitives -> nothing
  *
- * WHY COLOUR CANNOT LIVE HERE
+ * Four failures, each of which has actually happened in this file:
  *
- * Two rules the spec already states, taken together, leave no room for a
- * component colour token:
+ *   WRONG TIER      An Interface token aliasing a primitive cannot be
+ *                   re-branded; a component binding Semantics cannot be
+ *                   re-themed. Both look fine the day they are made.
+ *   DANGLING ALIAS  Deleting a variable leaves aliases pointing at it, exactly
+ *                   as it leaves node bindings pointing at it. Removing
+ *                   `gray/850` left `surface/sunken` [Dark] dangling.
+ *   CSS COLLISION   Two tokens whose paths produce one custom property. Twelve
+ *                   of these existed when Primitives still held role names like
+ *                   `radius/full` alongside the Semantics token of the same
+ *                   name — one silently overwrote the other in the CSS build.
+ *   RAW VALUE       A Semantics or Interface token holding a literal instead of
+ *                   an alias. That is a value escaping the tier it belongs to.
  *
- *   1. "Never skip a tier for colour" (section 14). A component colour token
- *      must alias a semantic token — it may not reach past it to a primitive
- *      or hold a literal.
- *   2. "Don't create a token you use once" (Rule 07). A token that only
- *      forwards another token adds a name, not a value.
- *
- * A component colour token can therefore only ever be a 1:1 forward, which
- * Rule 07 forbids. Bind the semantic token directly instead — in Figma and in
- * CSS. There is no legal exception, which is why this check takes none.
- *
- * That layer was 70 of 89 tokens (79% of the tier) and bought nothing except
- * the desyncs: `badge/neutral/border` existed while Figma bound
- * `border/neutral/default` straight past it, and `tabs/underline/item/*` moved
- * in code while Figma stayed on `radius/8`. One less indirection is one less
- * thing that can disagree.
- *
- * GEOMETRY IS DIFFERENT, and that is not an inconsistency. A geometry token
- * can hold a value nothing else offers — Tabs' 20px icon where the control
- * scale says 24. It earns its place by diverging. Colour never diverges,
- * because its value is always some semantic token's value.
- *
- * Existing violations are grandfathered in tier-baseline.json, which only ever
- * shrinks. New ones fail the build.
+ * This replaces the v1 check of the same name, which enforced "no colour in the
+ * Component tier". There is no Component tier now.
  */
-import { readFileSync } from 'node:fs';
-import { join, dirname } from 'node:path';
-import { fileURLToPath } from 'node:url';
 import { loadCollections } from './figma-to-dtcg.mjs';
 
-const here = dirname(fileURLToPath(import.meta.url));
-const baseline = JSON.parse(
-  readFileSync(join(here, '..', 'tier-baseline.json'), 'utf8'),
-);
-const grandfathered = new Set(baseline.colourTokens);
+const CHAIN = {
+  Interface: 'Semantics',
+  Semantics: 'Primitives',
+  Breakpoint: 'Primitives',
+};
+const REQUIRED = ['Primitives', 'Semantics', 'Interface', 'Breakpoint'];
 
-const component = loadCollections().find((c) => c.collection === 'Component');
-const tokens = Object.entries(component.variables);
+const collections = loadCollections();
+const byName = new Map(collections.map((c) => [c.collection, c]));
 
-const errors = [];
-
-// -- Rule 06: no colour in the Component tier -------------------------------
-const colour = tokens.filter(([, t]) => t.type === 'COLOR').map(([n]) => n);
-const newColour = colour.filter((n) => !grandfathered.has(n));
-
-for (const name of newColour) {
-  const target = component.variables[name].values.Value;
-  errors.push({
-    rule: 'R06',
-    name,
-    detail: `component colour token forwarding ${target}`,
-    fix: `bind ${String(target).replace(/[{}]/g, '').split('.').join('/')} directly in Figma and in CSS, and create nothing`,
-  });
-}
-
-// -- The ratchet: a baseline entry that no longer violates is dead weight ----
-const stale = [...grandfathered].filter(
-  (n) => !component.variables[n] || component.variables[n].type !== 'COLOR',
-);
-
-// -- Budget: geometry per component -----------------------------------------
-const perComponent = new Map();
-for (const [name, token] of tokens) {
-  if (token.type === 'COLOR') continue;
-  const root = name.split('/')[0];
-  perComponent.set(root, (perComponent.get(root) || 0) + 1);
-}
-
-const overBudget = [];
-for (const [root, count] of perComponent) {
-  const allowed = baseline.budgetExceptions[root]?.actual ?? baseline.budget;
-  if (count > allowed) overBudget.push({ root, count, allowed });
-}
-
-// A budget exception that has been earned back must be removed, same ratchet.
-const staleBudget = Object.entries(baseline.budgetExceptions)
-  .filter(([root, e]) => (perComponent.get(root) ?? 0) < e.actual)
-  .map(([root, e]) => ({
-    root,
-    was: e.actual,
-    now: perComponent.get(root) ?? 0,
-  }));
-
-// -- Report ------------------------------------------------------------------
-if (errors.length) {
+const missing = REQUIRED.filter((n) => !byName.has(n));
+if (missing.length) {
+  console.error(`\nMissing collection(s): ${missing.join(', ')}`);
+  console.error('Expected Primitives, Semantics, Interface, Breakpoint.');
   console.error(
-    `\nRule 06 — ${errors.length} token(s) put colour in the Component tier:\n`,
+    'If a collection was renamed in Figma, update scripts/verify-tier.mjs.',
   );
-  for (const e of errors) {
-    console.error(`  ${e.name}`);
-    console.error(`      ${e.detail}`);
-    console.error(`      -> ${e.fix}`);
-  }
-  console.error(
-    '\nThe Component tier is geometry-only. A colour token here can only forward\n' +
-      'a semantic token, which Rule 07 forbids. There is no exceptions file for\n' +
-      'this one on purpose.',
-  );
-}
-
-if (stale.length) {
-  console.error(
-    `\n${stale.length} stale entr(ies) in tier-baseline.json — the token is gone or is no longer colour. Remove:`,
-  );
-  for (const s of stale) console.error(`  ${s}`);
-}
-
-if (overBudget.length) {
-  console.error(`\nBudget — ${overBudget.length} component(s) over:\n`);
-  for (const o of overBudget) {
-    console.error(
-      `  ${o.root}: ${o.count} geometry tokens, budget ${o.allowed}`,
-    );
-  }
-  console.error(
-    '\nMove the shared ones into the control scale, or record the overage in\n' +
-      'tier-baseline.json under budgetExceptions with a reason.',
-  );
-}
-
-if (staleBudget.length) {
-  console.error(
-    `\nBudget exception(s) no longer needed — remove from tier-baseline.json:`,
-  );
-  for (const s of staleBudget) {
-    console.error(`  ${s.root}: recorded ${s.was}, now ${s.now}`);
-  }
-}
-
-if (errors.length || stale.length || overBudget.length || staleBudget.length) {
   process.exit(1);
 }
 
-const geometry = tokens.length - colour.length;
+/** Which collection owns a given token name. A name can exist in more than one
+ *  collection, so resolve toward the tier the reference is allowed to reach. */
+function owner(name, referrer) {
+  const below = CHAIN[referrer];
+  if (below && byName.get(below).variables[name]) return below;
+  for (const c of collections) if (c.variables[name]) return c.collection;
+  return null;
+}
+
+const wrongTier = [];
+const dangling = [];
+const rawValue = [];
+
+for (const c of collections) {
+  for (const [name, token] of Object.entries(c.variables)) {
+    for (const [mode, value] of Object.entries(token.values)) {
+      const isAlias = typeof value === 'string' && value.startsWith('{');
+
+      if (!isAlias) {
+        // Primitives are literals by definition; Breakpoint holds real numbers
+        // for grid and spacing alongside its aliased type ramp.
+        if (c.collection === 'Semantics' || c.collection === 'Interface') {
+          rawValue.push(
+            `${c.collection}/${name} [${mode}] = ${JSON.stringify(value)}`,
+          );
+        }
+        continue;
+      }
+
+      const target = value.slice(1, -1).split('.').join('/');
+      const tier = owner(target, c.collection);
+
+      if (tier === null) {
+        dangling.push(`${c.collection}/${name} [${mode}] -> ${target}`);
+      } else if (c.collection === 'Primitives') {
+        wrongTier.push(
+          `Primitives/${name} aliases ${tier}/${target} — primitives hold values, not references`,
+        );
+      } else if (tier !== CHAIN[c.collection]) {
+        wrongTier.push(
+          `${c.collection}/${name} [${mode}] -> ${tier}/${target}, must be ${CHAIN[c.collection]}`,
+        );
+      }
+    }
+  }
+}
+
+/** Two tokens producing one CSS custom property. */
+const cssNames = new Map();
+for (const c of collections) {
+  for (const name of Object.keys(c.variables)) {
+    const css = '--' + name.split('/').join('-');
+    if (!cssNames.has(css)) cssNames.set(css, []);
+    cssNames.get(css).push(`${c.collection}/${name}`);
+  }
+}
+const collisions = [...cssNames].filter(([, owners]) => owners.length > 1);
+
+const fail = (label, rows, advice) => {
+  if (!rows.length) return 0;
+  console.error(`\n${label} — ${rows.length}\n${'='.repeat(60)}`);
+  for (const r of rows) console.error(`  ${r}`);
+  if (advice) console.error(`\n${advice}`);
+  return rows.length;
+};
+
+let bad = 0;
+bad += fail(
+  'WRONG TIER',
+  wrongTier,
+  'Interface may only alias Semantics; Semantics may only alias Primitives.',
+);
+bad += fail(
+  'DANGLING ALIAS',
+  dangling,
+  'The target no longer exists. Unbind before deleting — the variable graph needs\n' +
+    'the same discipline as the canvas.',
+);
+bad += fail(
+  'RAW VALUE',
+  rawValue,
+  'Semantics and Interface hold aliases, never literals.',
+);
+bad += fail(
+  'CSS COLLISION',
+  collisions.map(([css, owners]) => `${css}  <-  ${owners.join(', ')}`),
+  'Two tokens claim one custom property; the CSS build silently drops one.\n' +
+    'Usually means a primitive is carrying a role name.',
+);
+
+if (bad) process.exit(1);
+
+const total = collections.reduce(
+  (n, c) => n + Object.keys(c.variables).length,
+  0,
+);
 console.log(
-  `Tier: ${geometry} geometry tokens across ${perComponent.size} components, ` +
-    `${colour.length} colour token(s) grandfathered and shrinking, budget ${baseline.budget}`,
+  `Tier chain: ${total} variables across ${collections.length} collections — ` +
+    `Interface -> Semantics -> Primitives intact, no dangling aliases, no CSS collisions`,
 );

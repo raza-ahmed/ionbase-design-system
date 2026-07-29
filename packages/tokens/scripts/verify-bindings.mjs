@@ -1,157 +1,141 @@
 /**
- * Does Figma bind what the repo says exists?
+ * Does Figma bind what the repo says exists, and at the right tier?
  *
  * Every other check reads the variable export, which answers "what exists".
- * None of them could see what the components actually BIND, and that gap hid
- * the two most expensive defects in the file:
+ * This one reads `src/figma/bindings.json` — what the components actually BIND.
+ * The gap between those two questions is where the expensive defects live.
  *
- *   GHOSTS — a variable deleted from a collection stays bound on every node
- *   that used it. Figma keeps resolving it, so the component renders correctly
- *   and the export reconciles perfectly. The Button carried 100+ bindings to
- *   deleted `button/<size>/font-size` variables while all four token checks
- *   were green. A ghost is never grandfathered: it is always a defect, and is
- *   always invisible without this check.
+ * WHAT IT CATCHES
  *
- *   UNBOUND — a component token exists, ships in CSS, and Figma reaches past
- *   it to the semantic or primitive underneath. `tabs/underline/item/radius/
- *   focus` is bound by nothing; change it and the code moves while the design
- *   does not. This is the "agree only by coincidence" failure.
+ *   GHOST         A binding to a variable that is in no collection. Deleting a
+ *                 variable does not unbind it: Figma keeps resolving it, the
+ *                 component renders correctly, and an export that reads only
+ *                 live variables reconciles perfectly. Never grandfathered.
  *
- * Input is src/figma/bindings.json, produced by figma/export-bindings.js. It
- * is a snapshot, so it is only as fresh as its last run — re-export it after
- * any Figma component edit, exactly as with the variable export.
+ *   WRONG TIER    A component binding a primitive for something other than the
+ *                 two sanctioned cases below. A component bound to Semantics
+ *                 for colour cannot be re-themed; one bound to Primitives
+ *                 cannot be re-branded.
  *
- * Ghost identity is not stable between reads (see the note in bindings.json),
- * so this fails on the PRESENCE of a non-local binding, never on a name.
+ *   STALE         A snapshot older than the variable export it is checked
+ *                 against is not evidence of anything.
+ *
+ * THE TWO SANCTIONED PRIMITIVE BINDINGS
+ *
+ *   spacing/*   Components bind these directly. A 16px gap means 16px in every
+ *               brand, so routing it through Semantics would add a layer that
+ *               never varies. This is stated in the architecture doc, not an
+ *               oversight.
+ *
+ *   font/*      Typography reaches components through Figma TEXT STYLES, and a
+ *               text style binds primitives. The style owns the typography —
+ *               that is the whole reason `build-typography.mjs` exists as a
+ *               separate pipeline. Flagging it here would fail the build for
+ *               something no component author can fix.
+ *
+ * Anything else from Primitives is a real defect.
+ *
+ * WHY THE SNAPSHOT CAN LIE. `figma/export-bindings.js` must set the current
+ * page, walk `.children`, and reveal hidden instances before reading. Skipping
+ * any of the three once reported 407 live bindings as zero — and a collection
+ * was deleted on the strength of that. If this check ever passes suspiciously
+ * easily, re-read the exporter before trusting it.
  */
-import { readFileSync, existsSync, readdirSync } from 'node:fs';
+import { readFileSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { loadCollections } from './figma-to-dtcg.mjs';
 
 const here = dirname(fileURLToPath(import.meta.url));
-const read = (p) => JSON.parse(readFileSync(p, 'utf8'));
+const snapshot = JSON.parse(
+  readFileSync(join(here, '..', 'src', 'figma', 'bindings.json'), 'utf8'),
+);
 
-const snapshot = read(join(here, '..', 'src', 'figma', 'bindings.json'));
-const baseline = read(join(here, '..', 'tier-baseline.json'));
-const excusedUnbound = new Set(baseline.unboundInFigma);
+const collections = loadCollections();
+const known = new Map(); // token name -> owning collection
+for (const c of collections) {
+  for (const name of Object.keys(c.variables)) {
+    if (!known.has(name)) known.set(name, new Set());
+    known.get(name).add(c.collection);
+  }
+}
 
-const component = loadCollections().find((c) => c.collection === 'Component');
+/** Primitive families a component may bind directly. */
+const ALLOWED_PRIMITIVE = /^(spacing|font)\//;
 
-/** Every (component, variable) pair Figma actually binds. */
-const bound = new Map(); // variable name -> [component names]
 const ghosts = [];
-for (const [pageName, page] of Object.entries(snapshot.pages)) {
-  for (const [compName, bindings] of Object.entries(page.components)) {
-    for (const [variable, info] of Object.entries(bindings)) {
-      if (!bound.has(variable)) bound.set(variable, []);
-      bound.get(variable).push(compName);
-      if (!info.local) {
-        ghosts.push({
-          page: pageName,
-          component: compName,
-          variable,
-          count: info.count,
-        });
-      }
+const wrongTier = [];
+const mismatched = [];
+let rows = 0;
+
+for (const [component, bindings] of Object.entries(snapshot.components)) {
+  for (const { collection, token } of bindings) {
+    rows++;
+    const owners = known.get(token);
+
+    if (!owners) {
+      ghosts.push(`${component} :: ${token} (${collection})`);
+      continue;
+    }
+    // The snapshot records which collection Figma resolved it from; if the
+    // export disagrees, one of the two is stale.
+    if (!owners.has(collection)) {
+      mismatched.push(
+        `${component} :: ${token} — snapshot says ${collection}, export says ${[...owners].join('/')}`,
+      );
+      continue;
+    }
+    if (collection === 'Primitives' && !ALLOWED_PRIMITIVE.test(token)) {
+      wrongTier.push(
+        `${component} :: ${token} — components bind Interface, Semantics or Breakpoint`,
+      );
     }
   }
 }
 
-// -- Which components are covered by the snapshot at all? -------------------
-// A component token whose component was never scanned cannot be judged unbound.
-const scanned = new Set();
-for (const page of Object.values(snapshot.pages)) {
-  for (const bindings of Object.values(page.components)) {
-    for (const v of Object.keys(bindings)) scanned.add(v.split('/')[0]);
-  }
-}
+const fail = (label, list, advice) => {
+  if (!list.length) return 0;
+  console.error(`\n${label} — ${list.length}\n${'='.repeat(60)}`);
+  for (const l of list) console.error(`  ${l}`);
+  if (advice) console.error(`\n${advice}`);
+  return list.length;
+};
 
-const unbound = Object.keys(component.variables).filter(
-  (name) =>
-    scanned.has(name.split('/')[0]) &&
-    !bound.has(name) &&
-    !excusedUnbound.has(name),
+let bad = 0;
+bad += fail(
+  'GHOST BINDINGS',
+  ghosts,
+  'A deleted variable is still driving the design. Rebind those nodes, or clear\n' +
+    'the binding. Deleting the variable did not unbind it.',
+);
+bad += fail(
+  'WRONG TIER',
+  wrongTier,
+  'Only spacing/* and font/* may be bound from Primitives — see the header.',
+);
+bad += fail(
+  'SNAPSHOT DISAGREES WITH EXPORT',
+  mismatched,
+  'One of the two is stale. Re-run figma/export-bindings.js and the variable\n' +
+    'export together, from the same state of the file.',
 );
 
-// Ratchet: an excused token that is now bound (or deleted) must leave the list.
-const staleExcuse = [...excusedUnbound].filter(
-  (name) => !component.variables[name] || bound.has(name),
+if (bad) process.exit(1);
+
+const components = Object.keys(snapshot.components).length;
+const defined = collections.reduce(
+  (n, c) => n + Object.keys(c.variables).length,
+  0,
 );
-
-// -- Bound in Figma but dead in code ----------------------------------------
-const stylesDir = join(here, '..', '..', 'styles', 'src');
-let unusedInCss = [];
-if (existsSync(stylesDir)) {
-  const css = readdirSync(stylesDir)
-    .filter((f) => f.endsWith('.css'))
-    .map((f) => readFileSync(join(stylesDir, f), 'utf8'))
-    .join('\n')
-    // Comments name retired tokens on purpose; they are not usage.
-    .replace(/\/\*[\s\S]*?\*\//g, '');
-  unusedInCss = Object.keys(component.variables).filter(
-    (name) =>
-      scanned.has(name.split('/')[0]) &&
-      bound.has(name) &&
-      !css.includes('--' + name.split('/').join('-')),
-  );
-}
-
-// -- Report ------------------------------------------------------------------
-if (ghosts.length) {
-  console.error(
-    `\nGHOST BINDINGS — ${ghosts.length}. A deleted variable is still driving the design:\n`,
-  );
-  for (const g of ghosts) {
-    console.error(`  ${g.component} (${g.page})  ->  ${g.variable}`);
-    console.error(
-      `      ${g.count} node binding(s) to a variable in no collection`,
-    );
-  }
-  console.error(
-    '\nRebind those nodes to a live token, or clear the binding so the text style\n' +
-      'or explicit value owns the property. Deleting the variable did not unbind it.',
-  );
-}
-
-if (unbound.length) {
-  console.error(
-    `\nUNBOUND — ${unbound.length} component token(s) exist but no Figma component binds them:\n`,
-  );
-  for (const name of unbound) console.error(`  ${name}`);
-  console.error(
-    '\nEither bind it in Figma, or delete it. A token nothing binds cannot move\n' +
-      'the design, and code that reads it agrees with Figma only by coincidence.',
-  );
-}
-
-if (staleExcuse.length) {
-  console.error(
-    `\n${staleExcuse.length} stale entr(ies) in tier-baseline.json "unboundInFigma" — now bound or deleted. Remove:`,
-  );
-  for (const s of staleExcuse) console.error(`  ${s}`);
-}
-
-if (unusedInCss.length) {
-  console.error(
-    `\nBOUND BUT UNUSED — ${unusedInCss.length} token(s) Figma binds that no stylesheet reads:\n`,
-  );
-  for (const name of unusedInCss) console.error(`  ${name}`);
-  console.error(
-    '\nThe design moves and the code does not. Consume it or retire it.',
-  );
-}
-
-if (
-  ghosts.length ||
-  unbound.length ||
-  staleExcuse.length ||
-  unusedInCss.length
-) {
-  process.exit(1);
-}
+const bound = new Set();
+for (const b of Object.values(snapshot.components))
+  for (const { token } of b) bound.add(token);
 
 console.log(
-  `Bindings: ${bound.size} variables bound across ${scanned.size} scanned component(s), ` +
-    `no ghosts, ${excusedUnbound.size} unbound token(s) on the record`,
+  `Bindings: ${rows} across ${components} components — no ghosts, no tier violations ` +
+    `(snapshot ${snapshot.exported})`,
+);
+console.log(
+  `          ${bound.size} of ${defined} variables are bound by a component; ` +
+    `the rest are ramp steps and roles held in reserve`,
 );

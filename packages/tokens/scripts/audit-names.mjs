@@ -1,35 +1,83 @@
 /**
- * Validates every Figma variable name against the grammar in
+ * Validates every Figma variable name against the v2 grammar in
  * docs/variable-naming-spec.html.
  *
- * The spec's whole claim is that names are parseable: read left to right,
- * `<component>/<variant>/<part>/<property>/<state>`, each slot drawn from a
- * closed list. If that's true, a machine can check it — and anything a machine
- * can't parse is a name a person will guess wrong.
+ *   Primitives   family / step              color/blue/500, scale/8
+ *   Semantics    group / step               primary/500, radius/xl
+ *   Interface    element / role [/ state]   surface/primary/hover
+ *   Breakpoint   group / role / property    type/h1/line-height
+ *
+ * The spec's whole claim is that names are parseable: read left to right, each
+ * slot drawn from a closed list. If that's true a machine can check it, and
+ * anything a machine can't parse is a name a person will guess wrong.
  *
  * Reports only. Renaming happens in Figma, because Figma owns names.
+ *
+ * WHY THIS WAS REWRITTEN. The v1 version branched on `c.collection === 'Semantic'`
+ * and `=== 'Component'`. After the v2 migration neither collection exists, so
+ * every structural check was skipped and the audit reported a clean 0/0/0 while
+ * validating essentially nothing. A gate that cannot fail is worse than no gate:
+ * it is a green light nobody earned. If you rename a collection, come here.
  */
 import { loadCollections } from './figma-to-dtcg.mjs';
 
-// §5 closed vocabularies.
-export const PROPERTY = new Set([
-  'bg',
-  'fg',
-  'border',
-  'ring',
-  'shadow',
-  'radius',
-  'gap',
-  'padding-x',
-  'padding-y',
-  'size',
-  'border-width',
-  'font-size',
-  'font-weight',
-  'line-height',
-  'letter-spacing',
+// -- Interface vocabulary ---------------------------------------------------
+
+/** First slot of an Interface token. Closed, and effectively never grows —
+ *  five elements cover every paintable property Figma exposes. */
+export const ELEMENTS = new Set(['text', 'icon', 'surface', 'border', 'ring']);
+
+/** Second slot: prominence within the neutrals, or a structural layer. */
+export const NEUTRAL_ROLES = new Set([
+  // prominence
+  'default',
+  'secondary',
+  'tertiary',
+  'placeholder',
+  'disabled',
+  'strong',
+  'stronger',
+  'subtle',
+  'muted',
+  // structural surfaces
+  'page',
+  'sunken',
+  'raised',
+  'overlay',
+  'scrim',
+  'placeholder',
+  // inversion and contrast
+  'inverse',
+  'inverse-subtle',
+  'on-color',
+  // interaction washes, which are roles at this position
+  'hover',
+  'pressed',
+  'selected',
+  'selected-hover',
+  'transparent',
+  // affordances
+  'interactive',
+  'link',
+  'focus',
+  'focus-error',
+  'offset',
 ]);
 
+/** The five meanings. Every accent role carries the same slots — that is what
+ *  stops one role's `default` meaning a saturated 500 and another's a 200 tint. */
+export const ACCENTS = new Set([
+  'primary',
+  'error',
+  'success',
+  'warning',
+  'information',
+]);
+
+/** Weight suffixes an accent role may take, hyphenated into the role slot. */
+export const ACCENT_SUFFIXES = new Set(['strong', 'subtle', 'tint']);
+
+/** Third slot. `default` is implicit and never written. */
 export const STATE_ORDER = [
   'hover',
   'pressed',
@@ -41,217 +89,292 @@ export const STATE_ORDER = [
   'invalid',
   'loading',
   'read-only',
-  'disabled',
+  'visited',
 ];
-const STATE = new Set(STATE_ORDER);
+const STATES = new Set(STATE_ORDER);
 
-/** Ordered faint -> strong. The order is load-bearing: it is what gives a new
- *  value an obvious slot instead of a new synonym. */
-export const ROLE_ORDER = [
-  'muted',
-  'subtle',
-  'tint',
-  'secondary',
-  'body',
-  'default',
-  'emphasized',
-  'strong',
-  'bold',
-  'emphasis',
-  'inverse',
-];
-/** Off-scale: a condition rather than a prominence step. */
-const ROLE_OFF_SCALE = ['disabled'];
-const ROLE = new Set([...ROLE_ORDER, ...ROLE_OFF_SCALE]);
+// -- Semantics and Primitives ----------------------------------------------
 
-const INTENT = new Set([
+/** Groups allowed at the head of a Semantics name. */
+export const SEMANTIC_GROUPS = new Set([
+  'primary',
   'neutral',
-  'brand',
-  'link',
-  'scrim',
   'success',
   'warning',
-  'danger',
-  'info',
+  'error',
+  'information',
+  'chart',
+  'base',
+  'alpha',
+  'radius',
+  'border-width',
+  'font',
+  'control',
+  'icon-size',
 ]);
 
-/**
- * Roots that name a *scale* rather than a component or a property.
- * `control` is the shared size ramp every control reads from — see the spec's
- * Q3: a value more than one component uses lives here, not in the component tier.
- */
-const SCALE_ROOTS = new Set([
-  'control',
+/** Families allowed at the head of a Primitives name. All value-keyed —
+ *  a primitive named for a role (`radius/full`, `font/weight/regular`) is the
+ *  layering mistake v2 corrected. */
+export const PRIMITIVE_FAMILIES = new Set([
   'color',
   'spacing',
-  'radius',
+  'scale',
   'font',
-  'border-width',
+]);
+
+export const BREAKPOINT_GROUPS = new Set([
   'grid',
   'container',
   'section',
   'type',
 ]);
 
-/** `on-<intent>`: the foreground sitting on that intent's fill. */
-const isIntent = (s) =>
-  INTENT.has(s) || (s.startsWith('on-') && INTENT.has(s.slice(3)));
+/** Words retired in v2. Catching these by name gives a far better error than
+ *  "unknown role", because the fix is a rename, not an amendment.
+ *
+ *  These are POSITION-SENSITIVE. `body` is a legitimate Breakpoint type role
+ *  (`type/body`) and `bold` a legitimate font weight (`font/weight/bold`) — only
+ *  the v1 element/intent words are wrong everywhere. Applying the full list
+ *  globally is a false positive, which is exactly what the first run produced. */
+const RETIRED_ANYWHERE = {
+  bg: 'surface',
+  fg: 'text or icon',
+  brand: 'primary',
+  danger: 'error',
+  info: 'information',
+};
+const RETIRED_IN_INTERFACE_ROLE = {
+  emphasis: 'strong or inverse',
+  emphasized: 'strong',
+  bold: 'stronger',
+  body: 'secondary',
+  variant: '(slot removed)',
+  part: '(slot removed)',
+};
+
+const isNumericStep = (s) => /^(?:\d+|\d+-\d+)$/.test(s);
 
 export function auditNames(collections) {
   const findings = [];
   const report = (severity, name, collection, rule, detail, suggestion) =>
     findings.push({ severity, name, collection, rule, detail, suggestion });
 
-  function auditComponentTier(name, collection) {
+  /** An accent role, with or without a weight suffix. */
+  function isAccentRole(s) {
+    if (ACCENTS.has(s)) return true;
+    const i = s.lastIndexOf('-');
+    if (i < 1) return false;
+    return ACCENTS.has(s.slice(0, i)) && ACCENT_SUFFIXES.has(s.slice(i + 1));
+  }
+
+  function isState(s) {
+    if (STATES.has(s)) return true;
+    const parts = s.split('-');
+    return parts.length > 1 && parts.every((p) => STATES.has(p));
+  }
+
+  function auditInterface(name, collection) {
     const segs = name.split('/');
-    const propIdx = segs.findIndex((s) => PROPERTY.has(s));
+    const [element, role, ...rest] = segs;
 
-    if (propIdx === -1) {
+    if (!ELEMENTS.has(element)) {
       report(
         'error',
         name,
         collection,
-        'R2',
-        'no Property segment — nothing says what attribute is being set',
+        'R-element',
+        `'${element}' is not an element`,
+        `one of: ${[...ELEMENTS].join(', ')}`,
       );
       return;
     }
-
-    // A State word before the property makes the name read as a *kind* of
-    // thing rather than a condition of one — `button/disabled/bg` implies a
-    // "disabled button" variant exists.
-    for (let i = 1; i < propIdx; i++) {
-      if (STATE.has(segs[i])) {
+    if (role === undefined) {
+      report(
+        'error',
+        name,
+        collection,
+        'R-role',
+        'no role — an element alone names nothing',
+        `${element}/default`,
+      );
+      return;
+    }
+    if (RETIRED_IN_INTERFACE_ROLE[role]) {
+      report(
+        'error',
+        name,
+        collection,
+        'R-retired',
+        `'${role}' was retired from the role slot in v2`,
+        `use ${RETIRED_IN_INTERFACE_ROLE[role]}`,
+      );
+    } else if (!NEUTRAL_ROLES.has(role) && !isAccentRole(role)) {
+      if (isState(role)) {
         report(
           'error',
           name,
           collection,
-          'R4',
-          `state '${segs[i]}' appears before the property — state is always last`,
-          [...segs.slice(0, i), ...segs.slice(i + 1), segs[i]].join('/'),
+          'R-order',
+          `'${role}' is a state, and state is never second`,
+        );
+      } else {
+        report(
+          'error',
+          name,
+          collection,
+          'R-role',
+          `'${role}' is not a role`,
+          `accents take -strong / -subtle / -tint; neutrals come from the closed list`,
         );
       }
     }
-
-    for (let i = propIdx + 1; i < segs.length; i++) {
-      const s = segs[i];
-      if (STATE.has(s)) continue;
-
-      // Composed states are legal, but only in vocabulary order — one spelling
-      // per combination, or the closed list stops being closed.
-      const parts = s.split('-');
-      if (parts.length > 1 && parts.every((p) => STATE.has(p))) {
-        const ordered = [...parts].sort(
-          (a, b) => STATE_ORDER.indexOf(a) - STATE_ORDER.indexOf(b),
+    // Everything after the role must be a state, and only one slot of it.
+    if (rest.length > 1) {
+      report(
+        'error',
+        name,
+        collection,
+        'R-depth',
+        `${segs.length} segments — Interface is element/role[/state]`,
+        `compose states with a hyphen: ${element}/${role}/${rest.join('-')}`,
+      );
+      return;
+    }
+    if (rest.length === 1) {
+      const st = rest[0];
+      if (st === 'default') {
+        report(
+          'error',
+          name,
+          collection,
+          'R-state',
+          'the resting state is never written',
+          `${element}/${role}`,
         );
-        if (parts.join('-') !== ordered.join('-')) {
-          report(
-            'error',
-            name,
-            collection,
-            'R3',
-            `composed state '${s}' is out of vocabulary order`,
-            name.replace(s, ordered.join('-')),
+      } else if (st === 'disabled') {
+        report(
+          'error',
+          name,
+          collection,
+          'R-state',
+          '`disabled` is a role, not a state — it never combines',
+        );
+      } else if (!isState(st)) {
+        report(
+          'error',
+          name,
+          collection,
+          'R-state',
+          `'${st}' is not a state`,
+          `one of: ${STATE_ORDER.join(', ')}`,
+        );
+      } else {
+        const parts = st.split('-');
+        if (parts.length > 1) {
+          const ordered = [...parts].sort(
+            (a, b) => STATE_ORDER.indexOf(a) - STATE_ORDER.indexOf(b),
           );
+          if (parts.join('-') !== ordered.join('-')) {
+            report(
+              'error',
+              name,
+              collection,
+              'R-state-order',
+              `composed state '${st}' is out of vocabulary order`,
+              `${element}/${role}/${ordered.join('-')}`,
+            );
+          }
         }
-      } else if (ROLE.has(s)) {
-        report(
-          'error',
-          name,
-          collection,
-          'R5',
-          `'${s}' is a Role, which the spec restricts to the semantic tier`,
-          'move it into the Part slot, or alias a semantic token',
-        );
-      } else {
-        report(
-          'error',
-          name,
-          collection,
-          'R3',
-          `'${s}' follows the property but is not a State`,
-          `if it names a piece, it belongs before '${segs[propIdx]}' as a Part`,
-        );
       }
     }
   }
 
-  function auditSemanticTier(name, collection) {
-    const [property, ...rest] = name.split('/');
-    if (!PROPERTY.has(property)) {
+  function auditSemantics(name, collection) {
+    const segs = name.split('/');
+    const group = segs[0];
+    if (!SEMANTIC_GROUPS.has(group)) {
       report(
         'error',
         name,
         collection,
-        'R2',
-        `'${property}' is not a Property word`,
+        'R-group',
+        `'${group}' is not a Semantics group`,
+        `one of: ${[...SEMANTIC_GROUPS].join(', ')}`,
       );
       return;
     }
-    if (!rest.length) {
-      report(
-        'info',
-        name,
-        collection,
-        'NEUTRAL',
-        'bare property with no intent or role',
-        `${property}/neutral/default`,
-      );
-      return;
-    }
-    if (!isIntent(rest[0])) {
-      // Intent slot must be filled. A Role or State here means it was skipped.
-      if (ROLE.has(rest[0]) || STATE.has(rest[0])) {
-        report(
-          'info',
-          name,
-          collection,
-          'NEUTRAL',
-          `intent slot omitted — reads as '${property}/${rest[0]}'`,
-          `${property}/neutral/${rest.join('/')}`,
-        );
-      } else {
-        report(
-          'warn',
-          name,
-          collection,
-          'R-vocab',
-          `'${rest[0]}' sits in the Intent position but is in no closed list`,
-          'amend §5, or rename to an existing word',
-        );
-      }
-      return;
-    }
-    // Intent present — everything after it must be Role then optional State.
-    const [role, ...tail] = rest.slice(1);
-    if (role !== undefined && !ROLE.has(role) && !STATE.has(role)) {
-      report(
-        'warn',
-        name,
-        collection,
-        'R-vocab',
-        `'${role}' sits in the Role position but is in no closed list`,
-      );
-    }
-    for (const s of tail) {
-      const parts = s.split('-');
-      const composed = parts.length > 1 && parts.every((p) => STATE.has(p));
-      if (!STATE.has(s) && !composed) {
+    // Colour ramps are numeric steps and nothing else.
+    if (ACCENTS.has(group) || group === 'neutral') {
+      if (segs.length !== 2 || !isNumericStep(segs[1])) {
         report(
           'error',
           name,
           collection,
-          'R3',
-          `'${s}' trails the role but is not a State`,
+          'R-step',
+          `a colour ramp is '<group>/<step>'`,
+          `${group}/500`,
         );
       }
     }
   }
 
+  function auditPrimitives(name, collection) {
+    const family = name.split('/')[0];
+    if (!PRIMITIVE_FAMILIES.has(family)) {
+      report(
+        'error',
+        name,
+        collection,
+        'R-family',
+        `'${family}' is not a primitive family`,
+        `Primitives are value-keyed: ${[...PRIMITIVE_FAMILIES].join(', ')}`,
+      );
+    }
+  }
+
+  function auditBreakpoint(name, collection) {
+    const group = name.split('/')[0];
+    if (!BREAKPOINT_GROUPS.has(group)) {
+      report(
+        'error',
+        name,
+        collection,
+        'R-group',
+        `'${group}' is not a Breakpoint group`,
+        `one of: ${[...BREAKPOINT_GROUPS].join(', ')}`,
+      );
+    }
+    if (/\b(color|colour|surface|text|icon)\b/.test(name)) {
+      report(
+        'error',
+        name,
+        collection,
+        'R-colour',
+        'colour does not belong in Breakpoint — it does not vary by screen size',
+      );
+    }
+  }
+
+  const KNOWN = new Set(['Primitives', 'Semantics', 'Interface', 'Breakpoint']);
   for (const c of collections) {
+    // A renamed or unexpected collection must be loud, never silently skipped.
+    if (!KNOWN.has(c.collection)) {
+      report(
+        'error',
+        `(collection) ${c.collection}`,
+        c.collection,
+        'R-collection',
+        'unknown collection — this audit checks Primitives, Semantics, Interface, Breakpoint',
+        'if a collection was renamed, update scripts/audit-names.mjs',
+      );
+      continue;
+    }
+
     for (const name of Object.keys(c.variables)) {
-      // R1 applies everywhere: lowercase-kebab, max 5 segments.
       const segs = name.split('/');
+
+      // Universal: lowercase-kebab, depth budget, no retired vocabulary.
       for (const s of segs) {
         if (!/^[a-z0-9-]+$/.test(s)) {
           report(
@@ -262,21 +385,33 @@ export function auditNames(collections) {
             `segment '${s}' is not lowercase-kebab`,
           );
         }
+        if (RETIRED_ANYWHERE[s]) {
+          report(
+            'error',
+            name,
+            c.collection,
+            'R-retired',
+            `'${s}' was retired in v2`,
+            `use ${RETIRED_ANYWHERE[s]}`,
+          );
+        }
       }
-      if (segs.length > 5) {
+      if (segs.length > 4) {
         report(
           'error',
           name,
           c.collection,
-          'R1',
-          `${segs.length} segments, max is 5`,
+          'R-depth',
+          `${segs.length} segments, max is 4`,
         );
       }
 
-      if (SCALE_ROOTS.has(segs[0])) continue; // Primitive / Breakpoint scales
-      if (c.collection === 'Semantic') auditSemanticTier(name, c.collection);
-      else if (c.collection === 'Component')
-        auditComponentTier(name, c.collection);
+      if (c.collection === 'Interface') auditInterface(name, c.collection);
+      else if (c.collection === 'Semantics') auditSemantics(name, c.collection);
+      else if (c.collection === 'Primitives')
+        auditPrimitives(name, c.collection);
+      else if (c.collection === 'Breakpoint')
+        auditBreakpoint(name, c.collection);
     }
   }
 
@@ -287,26 +422,31 @@ export function printFindings(findings) {
   const label = {
     error: 'BREAKS THE GRAMMAR',
     warn: 'VOCABULARY DRIFT',
-    info: 'INTENT SLOT OMITTED',
+    info: 'NOTE',
   };
   for (const sev of ['error', 'warn', 'info']) {
     const group = findings.filter((f) => f.severity === sev);
     if (!group.length) continue;
-    console.log(`\n${label[sev]} — ${group.length}\n${'='.repeat(60)}`);
+    console.log(`\n${label[sev]} - ${group.length}\n${'='.repeat(60)}`);
     for (const f of group) {
-      console.log(`  ${f.name}  [${f.collection} · ${f.rule}]`);
+      console.log(`  ${f.name}  [${f.collection} / ${f.rule}]`);
       console.log(`    ${f.detail}`);
       if (f.suggestion) console.log(`    -> ${f.suggestion}`);
     }
   }
   const n = (s) => findings.filter((f) => f.severity === s).length;
   console.log(
-    `\n${n('error')} errors, ${n('warn')} warnings, ${n('info')} intent-slot omissions.`,
+    `\n${n('error')} errors, ${n('warn')} warnings, ${n('info')} notes.`,
   );
   return n('error') + n('warn') + n('info');
 }
 
 if (import.meta.url === `file://${process.argv[1]}`) {
-  const total = printFindings(auditNames(loadCollections()));
+  const collections = loadCollections();
+  const counted = collections
+    .map((c) => `${c.collection}:${Object.keys(c.variables).length}`)
+    .join('  ');
+  console.log(`Auditing ${counted}`);
+  const total = printFindings(auditNames(collections));
   process.exit(total === 0 ? 0 : 1);
 }
