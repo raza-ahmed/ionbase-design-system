@@ -1,0 +1,187 @@
+/*
+ * Checkbox
+ *
+ * Measured from Figma `Checkbox` (54 variants: 3 colours x 3 sizes x 6 states).
+ *
+ * The indicator is a sibling of the label, not a wrapper, because Figma lays
+ * them out as a row with a gap. The native input is visually hidden rather than
+ * replaced: it keeps the control focusable, announceable and form-associated,
+ * and the styled square follows it via :checked / :focus-visible.
+ *
+ * ONE OFF-LADDER VALUE
+ *
+ * The mark is 12 / 14 / 16. 12 and 16 are on both the spacing and icon-size
+ * ladders; 14 is on neither, so it reads `--scale-14` — the raw ramp. Recorded
+ * as an open item rather than silently rounded, because moving it changes the
+ * tick's weight inside the box.
+ *
+ * FOCUS RING
+ *
+ * Figma draws a separate `Focus Ring` frame 2px larger than the indicator on
+ * every side (16 -> 20, 20 -> 24, 24 -> 28). A CSS outline does exactly that at
+ * `outline-offset: 0`, so the ring needs no element of its own and cannot
+ * disturb the row's layout — which a real 24px sibling would.
+ */
+.ion-checkbox {
+  --ion-checkbox-size: var(--spacing-20);
+  --ion-checkbox-gap: var(--spacing-8);
+  --ion-checkbox-radius: var(--radius-xs);
+  --ion-checkbox-mark: var(--scale-14);
+  --ion-checkbox-font-size: var(--type-body);
+  --ion-checkbox-line-height: var(--type-body-line-height);
+
+  /* Filled by the intent modifier; unchecked is intent-independent. */
+  --ion-checkbox-fill: var(--surface-primary);
+  --ion-checkbox-border: var(--border-primary-strong);
+
+  display: inline-flex;
+  align-items: flex-start;
+  gap: var(--ion-checkbox-gap);
+  font-family: var(--font-family-sans);
+  font-size: var(--ion-checkbox-font-size);
+  line-height: var(--ion-checkbox-line-height);
+  cursor: pointer;
+}
+
+.ion-checkbox--sm {
+  --ion-checkbox-size: var(--spacing-16);
+  --ion-checkbox-mark: var(--spacing-12);
+  --ion-checkbox-font-size: var(--type-body-sm);
+  --ion-checkbox-line-height: var(--type-body-sm-line-height);
+}
+
+/* Large is the only size that widens the gap, and the only one with a larger
+ * corner — Figma moves it from radius/xs to radius/sm at 24px. */
+.ion-checkbox--lg {
+  --ion-checkbox-size: var(--spacing-24);
+  --ion-checkbox-gap: var(--spacing-12);
+  --ion-checkbox-radius: var(--radius-sm);
+  --ion-checkbox-mark: var(--spacing-16);
+}
+
+/*
+ * The native input carries every bit of behaviour and none of the appearance.
+ * Kept in the layout (not `display: none`) so it stays focusable and reachable
+ * by assistive tech; the indicator beside it renders the state.
+ */
+.ion-checkbox__input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: 0;
+  padding: 0;
+  border: none;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.ion-checkbox__indicator {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: var(--ion-checkbox-size);
+  height: var(--ion-checkbox-size);
+  background-color: var(--surface-default);
+  border-style: solid;
+  border-width: var(--border-width-default);
+  border-color: var(--border-strong);
+  border-radius: var(--ion-checkbox-radius);
+
+  /*
+   * Centred on the FIRST LINE of the label, not the whole block, so a wrapping
+   * label keeps its box beside line one. The label's line box is taller than
+   * the indicator at every size, so the offset is half the difference.
+   */
+  margin-top: calc(
+    (var(--ion-checkbox-line-height) - var(--ion-checkbox-size)) / 2
+  );
+  transition:
+    background-color 150ms cubic-bezier(0.4, 0, 0.2, 1),
+    border-color 150ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.ion-checkbox__mark {
+  width: var(--ion-checkbox-mark);
+  height: var(--ion-checkbox-mark);
+  color: var(--icon-on-color);
+
+  /* Hidden rather than unmounted so the box never reflows when it appears. */
+  opacity: 0;
+}
+
+.ion-checkbox__mark svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.ion-checkbox__label {
+  color: var(--text-secondary);
+  user-select: none;
+}
+
+/* Checked and indeterminate share one appearance — Figma differs only in the mark. */
+.ion-checkbox__input:checked + .ion-checkbox__indicator,
+.ion-checkbox__input:indeterminate + .ion-checkbox__indicator {
+  background-color: var(--ion-checkbox-fill);
+  border-color: var(--ion-checkbox-border);
+}
+
+.ion-checkbox__input:checked + .ion-checkbox__indicator .ion-checkbox__mark,
+.ion-checkbox__input:indeterminate
+  + .ion-checkbox__indicator
+  .ion-checkbox__mark {
+  opacity: 1;
+}
+
+/* Intent modifiers. Only the checked fill and border differ. */
+.ion-checkbox--neutral {
+  --ion-checkbox-fill: var(--surface-inverse);
+  --ion-checkbox-border: var(--border-inverse);
+}
+
+.ion-checkbox--danger {
+  --ion-checkbox-fill: var(--surface-error);
+  --ion-checkbox-border: var(--border-error-strong);
+}
+
+/*
+ * See the header: the ring is an outline, so it grows outside the box without
+ * taking part in layout. 2px at offset 0 reproduces Figma's +2px-per-side frame.
+ */
+.ion-checkbox__input:focus-visible + .ion-checkbox__indicator,
+.ion-checkbox[data-focused='true'] .ion-checkbox__indicator {
+  outline: var(--border-width-thick) solid var(--border-focus);
+  outline-offset: 0;
+}
+
+/*
+ * Disabled is driven off the input's own `:disabled`, not off a class on the
+ * wrapper, because it has to BEAT `:checked`.
+ *
+ * `.ion-checkbox--disabled .ion-checkbox__indicator` is (0,2,0) while
+ * `.ion-checkbox__input:checked + .ion-checkbox__indicator` is (0,3,0), so a
+ * disabled checked box would have kept its filled appearance no matter where
+ * the rule sat in the file. Matching `:checked:disabled` is (0,4,0) and wins.
+ */
+.ion-checkbox__input:disabled + .ion-checkbox__indicator,
+.ion-checkbox__input:checked:disabled + .ion-checkbox__indicator,
+.ion-checkbox__input:indeterminate:disabled + .ion-checkbox__indicator {
+  background-color: var(--surface-disabled);
+  border-color: var(--border-disabled);
+}
+
+.ion-checkbox__input:disabled + .ion-checkbox__indicator .ion-checkbox__mark {
+  color: var(--icon-disabled);
+}
+
+.ion-checkbox--disabled,
+.ion-checkbox[data-disabled='true'] {
+  cursor: not-allowed;
+}
+
+.ion-checkbox--disabled .ion-checkbox__label,
+.ion-checkbox[data-disabled='true'] .ion-checkbox__label {
+  color: var(--text-disabled);
+}

@@ -1,0 +1,165 @@
+/*
+ * Toggle
+ *
+ * Measured from Figma `Toggle` (18 variants: 3 colours x 3 sizes x 2 states).
+ *
+ *   track   36x20 / 44x24 / 52x28, inset 2 all round, radius/full
+ *   thumb   16 / 20 / 24, surface/default
+ *   off     surface/muted with a border/strong outline
+ *   on      the intent surface, and NO border at all
+ *
+ * THE TRACK IS DERIVED, NOT MEASURED
+ *
+ * 36, 44, 52 and 28 are on no ladder — spacing skips all four. But they are not
+ * arbitrary: the track is exactly the thumb plus its inset.
+ *
+ *     height = thumb + 2 x inset      16+4=20   20+4=24   24+4=28
+ *     width  = 2 x thumb + 2 x inset  36        44        52
+ *
+ * So the only numbers this file states are the thumb (16/20/24, all on the
+ * spacing scale) and the inset (spacing/2). Everything else follows. That is
+ * both closer to how the control actually works and the reason nothing here
+ * needs an off-ladder literal.
+ *
+ * ON HAS NO BORDER
+ *
+ * Easy to miss and it matters: Figma's On track carries no stroke. Keeping a
+ * 1px border would make the on-track 2px narrower than the design and shift the
+ * thumb. The border goes transparent rather than away, so the box never resizes
+ * between states.
+ *
+ * The thumb slides with `margin-left: auto` inside a flex track rather than a
+ * transform, so the inset is honoured on both sides automatically — the same
+ * way Figma flips the track's alignment from MIN to MAX.
+ */
+.ion-toggle {
+  --ion-toggle-thumb: var(--spacing-20);
+  --ion-toggle-inset: var(--spacing-2);
+  --ion-toggle-gap: var(--spacing-8);
+  --ion-toggle-font-size: var(--type-body);
+  --ion-toggle-line-height: var(--type-body-line-height);
+  --ion-toggle-on: var(--surface-primary);
+
+  /* Derived — see the header. */
+  --ion-toggle-track-h: calc(
+    var(--ion-toggle-thumb) + 2 * var(--ion-toggle-inset)
+  );
+  --ion-toggle-track-w: calc(
+    2 * var(--ion-toggle-thumb) + 2 * var(--ion-toggle-inset)
+  );
+
+  display: inline-flex;
+  align-items: flex-start;
+  gap: var(--ion-toggle-gap);
+  font-family: var(--font-family-sans);
+  font-size: var(--ion-toggle-font-size);
+  line-height: var(--ion-toggle-line-height);
+  cursor: pointer;
+}
+
+.ion-toggle--sm {
+  --ion-toggle-thumb: var(--spacing-16);
+  --ion-toggle-font-size: var(--type-body-sm);
+  --ion-toggle-line-height: var(--type-body-sm-line-height);
+}
+
+.ion-toggle--lg {
+  --ion-toggle-thumb: var(--spacing-24);
+  --ion-toggle-gap: var(--spacing-12);
+}
+
+.ion-toggle__input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: 0;
+  padding: 0;
+  border: none;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.ion-toggle__track {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  width: var(--ion-toggle-track-w);
+  height: var(--ion-toggle-track-h);
+
+  /*
+   * Figma's stroke is drawn INSIDE the track, so the 2px inset is measured from
+   * the outer edge and the stroke overlaps it. A CSS border sits outside the
+   * padding box, so the border width is subtracted back out — the same
+   * correction Input, Badge and Tabs needed. Without it the thumb's travel is
+   * 2px short and the track reads unbalanced.
+   */
+  padding: calc(var(--ion-toggle-inset) - var(--border-width-default));
+  background-color: var(--surface-muted);
+  border-style: solid;
+  border-width: var(--border-width-default);
+  border-color: var(--border-strong);
+  border-radius: var(--radius-full);
+
+  /* Centred on the label's first line — see checkbox.css. */
+  margin-top: calc(
+    (var(--ion-toggle-line-height) - var(--ion-toggle-track-h)) / 2
+  );
+  transition:
+    background-color 150ms cubic-bezier(0.4, 0, 0.2, 1),
+    border-color 150ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.ion-toggle__thumb {
+  width: var(--ion-toggle-thumb);
+  height: var(--ion-toggle-thumb);
+  background-color: var(--surface-default);
+  border-radius: var(--radius-full);
+  transition: margin 150ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.ion-toggle__label {
+  color: var(--text-secondary);
+  user-select: none;
+}
+
+.ion-toggle__input:checked + .ion-toggle__track {
+  background-color: var(--ion-toggle-on);
+
+  /* Transparent, not removed — see the header. */
+  border-color: transparent;
+}
+
+.ion-toggle__input:checked + .ion-toggle__track .ion-toggle__thumb {
+  margin-left: auto;
+}
+
+.ion-toggle--neutral {
+  --ion-toggle-on: var(--surface-inverse);
+}
+
+.ion-toggle--danger {
+  --ion-toggle-on: var(--surface-error);
+}
+
+.ion-toggle__input:focus-visible + .ion-toggle__track,
+.ion-toggle[data-focused='true'] .ion-toggle__track {
+  outline: var(--border-width-thick) solid var(--border-focus);
+  outline-offset: 0;
+}
+
+/* Driven off `:disabled` so it out-specifies `:checked` — see checkbox.css. */
+.ion-toggle__input:disabled + .ion-toggle__track,
+.ion-toggle__input:checked:disabled + .ion-toggle__track {
+  background-color: var(--surface-disabled);
+  border-color: var(--border-disabled);
+}
+
+.ion-toggle--disabled,
+.ion-toggle[data-disabled='true'] {
+  cursor: not-allowed;
+}
+
+.ion-toggle--disabled .ion-toggle__label,
+.ion-toggle[data-disabled='true'] .ion-toggle__label {
+  color: var(--text-disabled);
+}

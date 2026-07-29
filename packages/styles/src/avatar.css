@@ -1,0 +1,138 @@
+/*
+ * Avatar
+ *
+ * Measured from Figma `Avatar` (77:22248) and `Avatar Group`.
+ *
+ *   mini    24   type 12/18   icon 12   square radius/xs
+ *   small   32   type 14/20   icon 16   square radius/sm
+ *   medium  40   type 16/24   icon 20   square radius/md
+ *   large   48   type 20/32   icon 24   square radius/md
+ *
+ * Circle is radius/full at every size; square steps up with the box, which is
+ * concentric-corner arithmetic rather than one shared corner.
+ *
+ * Surface is surface/muted with a 1px border/strong at every size and type —
+ * the border is what separates overlapping avatars in a group, so it is not
+ * decoration and must not be dropped.
+ */
+.ion-avatar {
+  --ion-avatar-size: var(--spacing-40);
+  --ion-avatar-radius: var(--radius-md);
+  --ion-avatar-font-size: var(--type-body);
+  --ion-avatar-line-height: var(--type-body-line-height);
+  --ion-avatar-icon: var(--icon-size-md);
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  overflow: hidden;
+  width: var(--ion-avatar-size);
+  height: var(--ion-avatar-size);
+  background-color: var(--surface-muted);
+  border-style: solid;
+  border-width: var(--border-width-default);
+  border-color: var(--border-strong);
+  border-radius: var(--ion-avatar-radius);
+  color: var(--text-tertiary);
+  font-family: var(--font-family-sans);
+  font-size: var(--ion-avatar-font-size);
+  line-height: var(--ion-avatar-line-height);
+  font-weight: var(--font-weight-medium);
+  user-select: none;
+}
+
+.ion-avatar--mini {
+  --ion-avatar-size: var(--spacing-24);
+  --ion-avatar-radius: var(--radius-xs);
+  --ion-avatar-font-size: var(--type-caption);
+  --ion-avatar-line-height: var(--type-caption-line-height);
+  --ion-avatar-icon: var(--icon-size-xs);
+}
+
+.ion-avatar--sm {
+  --ion-avatar-size: var(--spacing-32);
+  --ion-avatar-radius: var(--radius-sm);
+  --ion-avatar-font-size: var(--type-body-sm);
+  --ion-avatar-line-height: var(--type-body-sm-line-height);
+  --ion-avatar-icon: var(--icon-size-sm);
+}
+
+/* Large shares Medium's corner — the square ladder stops climbing at radius/md. */
+.ion-avatar--lg {
+  --ion-avatar-size: var(--spacing-48);
+  --ion-avatar-font-size: var(--type-h5);
+  --ion-avatar-line-height: var(--type-h5-line-height);
+  --ion-avatar-icon: var(--icon-size-lg);
+}
+
+.ion-avatar--circle {
+  --ion-avatar-radius: var(--radius-full);
+}
+
+/* The image fills the box and is cropped by `overflow: hidden` on the parent,
+ * so it inherits the corner without repeating it. */
+.ion-avatar__image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.ion-avatar__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--icon-tertiary);
+}
+
+.ion-avatar__icon svg {
+  width: var(--ion-avatar-icon);
+  height: var(--ion-avatar-icon);
+}
+
+/*
+ * Avatar Group
+ *
+ * Figma overlaps the avatars with a NEGATIVE gap: -6 / -8 / -10 / -12, which is
+ * a quarter of each avatar's size. Negative space cannot be a spacing token —
+ * the scale has no negative rungs and inventing them to express overlap would
+ * be worse than the arithmetic. So the overlap is derived from the size, the
+ * same way the toggle's track is.
+ *
+ * STACKING DIRECTION IS FIGMA'S, AND IT IS THE LESS OBVIOUS ONE
+ *
+ * Each avatar paints OVER the one before it, so the last in the list — usually
+ * the `+N` overflow — sits on top. The first attempt here reversed the row to
+ * put the first avatar on top, which is the more common convention elsewhere
+ * and is not what this design does. Rendering in natural order gives Figma's
+ * order for free: later siblings paint later, so no z-index is needed at all.
+ */
+.ion-avatar-group {
+  --ion-avatar-group-overlap: calc(-1 * var(--ion-avatar-size) / 4);
+
+  display: inline-flex;
+  align-items: center;
+}
+
+.ion-avatar-group > * + * {
+  margin-left: var(--ion-avatar-group-overlap);
+}
+
+/* The group publishes its size to the children so the overlap and the avatars
+ * agree without the caller setting both. */
+.ion-avatar-group--mini {
+  --ion-avatar-size: var(--spacing-24);
+}
+
+.ion-avatar-group--sm {
+  --ion-avatar-size: var(--spacing-32);
+}
+
+.ion-avatar-group--md {
+  --ion-avatar-size: var(--spacing-40);
+}
+
+.ion-avatar-group--lg {
+  --ion-avatar-size: var(--spacing-48);
+}

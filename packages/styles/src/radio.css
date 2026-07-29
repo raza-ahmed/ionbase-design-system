@@ -1,0 +1,160 @@
+/*
+ * Radio
+ *
+ * Measured from Figma `Radio` (18 variants: 3 colours x 3 sizes x 2 states).
+ *
+ * Same construction as Checkbox — hidden native input, styled sibling, outline
+ * for the focus ring — with three differences Figma is explicit about:
+ *
+ *   - the indicator is a circle (radius/full), not a rounded square
+ *   - the selected mark is a filled dot, not a glyph, so it scales with the box
+ *   - there is no disabled variant in the design; disabled is handled here
+ *     anyway, because a form can always disable a field and the component must
+ *     not fall back to looking enabled
+ *
+ * The dot is 6 / 8 / 10. 10 is on no ladder (spacing skips it), so it reads
+ * `--scale-10` — flagged rather than rounded, since changing it changes how
+ * filled the selected state looks.
+ */
+.ion-radio {
+  --ion-radio-size: var(--spacing-20);
+  --ion-radio-gap: var(--spacing-8);
+  --ion-radio-dot: var(--spacing-8);
+  --ion-radio-font-size: var(--type-body);
+  --ion-radio-line-height: var(--type-body-line-height);
+  --ion-radio-fill: var(--surface-primary);
+  --ion-radio-border: var(--border-primary-strong);
+
+  display: inline-flex;
+  align-items: flex-start;
+  gap: var(--ion-radio-gap);
+  font-family: var(--font-family-sans);
+  font-size: var(--ion-radio-font-size);
+  line-height: var(--ion-radio-line-height);
+  cursor: pointer;
+}
+
+.ion-radio--sm {
+  --ion-radio-size: var(--spacing-16);
+  --ion-radio-dot: var(--spacing-6);
+  --ion-radio-font-size: var(--type-body-sm);
+  --ion-radio-line-height: var(--type-body-sm-line-height);
+}
+
+.ion-radio--lg {
+  --ion-radio-size: var(--spacing-24);
+  --ion-radio-gap: var(--spacing-12);
+  --ion-radio-dot: var(--scale-10);
+}
+
+.ion-radio__input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: 0;
+  padding: 0;
+  border: none;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.ion-radio__indicator {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: var(--ion-radio-size);
+  height: var(--ion-radio-size);
+  background-color: var(--surface-default);
+  border-style: solid;
+  border-width: var(--border-width-default);
+  border-color: var(--border-strong);
+  border-radius: var(--radius-full);
+
+  /* Centred on the label's first line — see checkbox.css. */
+  margin-top: calc((var(--ion-radio-line-height) - var(--ion-radio-size)) / 2);
+  transition:
+    background-color 150ms cubic-bezier(0.4, 0, 0.2, 1),
+    border-color 150ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.ion-radio__dot {
+  width: var(--ion-radio-dot);
+  height: var(--ion-radio-dot);
+  background-color: var(--icon-on-color);
+  border-radius: var(--radius-full);
+
+  /* Hidden rather than unmounted so selecting never reflows the row. */
+  opacity: 0;
+}
+
+.ion-radio__label {
+  color: var(--text-secondary);
+  user-select: none;
+}
+
+.ion-radio__input:checked + .ion-radio__indicator {
+  background-color: var(--ion-radio-fill);
+  border-color: var(--ion-radio-border);
+}
+
+.ion-radio__input:checked + .ion-radio__indicator .ion-radio__dot {
+  opacity: 1;
+}
+
+.ion-radio--neutral {
+  --ion-radio-fill: var(--surface-inverse);
+  --ion-radio-border: var(--border-inverse);
+}
+
+.ion-radio--danger {
+  --ion-radio-fill: var(--surface-error);
+  --ion-radio-border: var(--border-error-strong);
+}
+
+.ion-radio__input:focus-visible + .ion-radio__indicator,
+.ion-radio[data-focused='true'] .ion-radio__indicator {
+  outline: var(--border-width-thick) solid var(--border-focus);
+  outline-offset: 0;
+}
+
+/* Driven off `:disabled` so it out-specifies `:checked` — see checkbox.css. */
+.ion-radio__input:disabled + .ion-radio__indicator,
+.ion-radio__input:checked:disabled + .ion-radio__indicator {
+  background-color: var(--surface-disabled);
+  border-color: var(--border-disabled);
+}
+
+.ion-radio__input:disabled + .ion-radio__indicator .ion-radio__dot {
+  background-color: var(--icon-disabled);
+}
+
+.ion-radio--disabled,
+.ion-radio[data-disabled='true'] {
+  cursor: not-allowed;
+}
+
+.ion-radio--disabled .ion-radio__label,
+.ion-radio[data-disabled='true'] .ion-radio__label {
+  color: var(--text-disabled);
+}
+
+/* The group stacks its radios; Figma has no group component, so this is the
+ * minimum a fieldset needs rather than an invented layout. */
+.ion-radio-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-8);
+  border: none;
+  margin: 0;
+  padding: 0;
+}
+
+.ion-radio-group__label {
+  color: var(--text-secondary);
+  font-family: var(--font-family-sans);
+  font-size: var(--type-body-sm);
+  line-height: var(--type-body-sm-line-height);
+  font-weight: var(--font-weight-medium);
+  padding: 0;
+}
