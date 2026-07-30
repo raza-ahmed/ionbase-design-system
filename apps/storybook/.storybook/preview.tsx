@@ -24,6 +24,22 @@ const preview: Preview = {
     },
     a11y: {
       test: 'todo',
+      options: {
+        rules: {
+          /*
+           * `region` requires all page content to sit inside a landmark. A
+           * story is a fragment rendered bare in an iframe — there is no
+           * `<main>` for it to be inside — so it cannot satisfy this rule by
+           * construction. Verified it is not component-specific: it fires on
+           * Divider, Badge and Checkbox exactly as it does on Table.
+           *
+           * Disabled because it is unactionable at this level, NOT because
+           * landmarks stop mattering. An app composing these components still
+           * owns its landmark structure, and nothing here checks that.
+           */
+          region: { enabled: false },
+        },
+      },
     },
   },
   // Apply our custom theme decorator globally
