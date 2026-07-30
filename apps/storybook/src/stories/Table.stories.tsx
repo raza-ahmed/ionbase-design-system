@@ -306,22 +306,43 @@ export const HeaderRowHasNoEmptyColumnHeader: Story = {
         <TableRow>
           <TableCell />
           <TableCell header>Name</TableCell>
+          <TableCell header>Status</TableCell>
+          <TableCell header align="trailing">
+            Amount
+          </TableCell>
         </TableRow>
       </TableHead>
       <TableBody>
-        <TableRow selection={{ 'aria-label': 'Select row' }}>
-          <TableCell>Invoice #1024</TableCell>
-        </TableRow>
+        {ROWS.map((row) => (
+          <TableRow
+            key={row.name}
+            selection={{ 'aria-label': `Select ${row.name}` }}
+          >
+            <TableCell>{row.name}</TableCell>
+            <TableCell>{row.status}</TableCell>
+            <TableCell align="trailing">{row.amount}</TableCell>
+          </TableRow>
+        ))}
       </TableBody>
     </Table>
   ),
   play: async ({ canvasElement }) => {
-    // No <th> in the header row may be empty.
+    // Every column header carries text, and there are several of them — a
+    // single-column table would satisfy this vacuously.
     const headers = [...canvasElement.querySelectorAll('thead th')];
-    await expect(headers.length).toBeGreaterThan(0);
+    await expect(headers.length).toBe(3);
     for (const th of headers) {
       await expect(th.textContent!.trim().length).toBeGreaterThan(0);
     }
+
+    // The selection column contributes exactly one non-header cell.
+    await expect(canvasElement.querySelectorAll('thead td').length).toBe(1);
+
+    // Header and body row cell counts agree, so the spacer really is standing
+    // in for the checkbox column rather than papering over a ragged table.
+    const headRow = canvasElement.querySelector('thead tr') as HTMLElement;
+    const bodyRow = canvasElement.querySelector('tbody tr') as HTMLElement;
+    await expect(headRow.children.length).toBe(bodyRow.children.length);
 
     // The non-header cell still paints as a header, so the band reads as one.
     const spacer = canvasElement.querySelector('thead td') as HTMLElement;
