@@ -96,7 +96,14 @@ export const WithSelectionAndIcons: Story = {
     <Table>
       <TableHead>
         <TableRow>
-          <TableCell header aria-label="select all" />
+          {/*
+           * Deliberately NOT `header`: the selection column labels nothing, so
+           * a `<th>` here would be an empty column header — which axe flags
+           * (`empty-table-header`) and which `aria-label` does not fix, that
+           * rule being about text a sighted user can see too. A `<td>` is the
+           * honest markup, and `thead td` still gets the header fill.
+           */}
+          <TableCell />
           <TableCell header>Name</TableCell>
           <TableCell header showDivider>
             Status
@@ -281,5 +288,55 @@ export const SelectionIsARealCheckbox: Story = {
     // lands on the wrapping `<label>`, which delegates to the input.
     await userEvent.click(checkbox.closest('label') as HTMLLabelElement);
     await expect(checkbox.checked).toBe(true);
+  },
+};
+
+/**
+ * A header row may contain a cell that is not a column header — the selection
+ * checkbox column labels nothing. That cell must be a `<td>`, not an empty
+ * `<th>`: axe's `empty-table-header` flags the latter, and `aria-label` does
+ * not rescue it, since the rule is about text a sighted screen-reader user can
+ * see too. This asserts both halves — the markup is honest, and the cell still
+ * looks like part of the header.
+ */
+export const HeaderRowHasNoEmptyColumnHeader: Story = {
+  render: () => (
+    <Table>
+      <TableHead>
+        <TableRow>
+          <TableCell />
+          <TableCell header>Name</TableCell>
+        </TableRow>
+      </TableHead>
+      <TableBody>
+        <TableRow selection={{ 'aria-label': 'Select row' }}>
+          <TableCell>Invoice #1024</TableCell>
+        </TableRow>
+      </TableBody>
+    </Table>
+  ),
+  play: async ({ canvasElement }) => {
+    // No <th> in the header row may be empty.
+    const headers = [...canvasElement.querySelectorAll('thead th')];
+    await expect(headers.length).toBeGreaterThan(0);
+    for (const th of headers) {
+      await expect(th.textContent!.trim().length).toBeGreaterThan(0);
+    }
+
+    // The non-header cell still paints as a header, so the band reads as one.
+    const spacer = canvasElement.querySelector('thead td') as HTMLElement;
+    const labelled = headers[0] as HTMLElement;
+    await expect(getComputedStyle(spacer).backgroundColor).toBe(
+      getComputedStyle(labelled).backgroundColor,
+    );
+    await expect(getComputedStyle(spacer).fontWeight).toBe(
+      getComputedStyle(labelled).fontWeight,
+    );
+
+    // ...and is distinct from a body cell.
+    const bodyCell = canvasElement.querySelector('tbody td') as HTMLElement;
+    await expect(getComputedStyle(spacer).backgroundColor).not.toBe(
+      getComputedStyle(bodyCell).backgroundColor,
+    );
   },
 };

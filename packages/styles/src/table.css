@@ -53,16 +53,52 @@
   vertical-align: middle;
 }
 
-.ion-table th {
-  background-color: var(--surface-page);
-  color: var(--text-secondary);
-  font-weight: var(--font-weight-medium);
-  border-bottom: var(--border-width-default) solid var(--border-default);
+/*
+ * Density — vertical padding only. See the header.
+ *
+ * Sits here, next to the padding it overrides, rather than further down with
+ * the other modifiers: `.ion-table--compact td` is (0,1,1), lower than the
+ * `.ion-table thead td` below it, so trailing it would read as descending
+ * specificity. Grouping layout before appearance is the better order anyway.
+ */
+.ion-table--compact th,
+.ion-table--compact td {
+  padding-top: var(--spacing-8);
+  padding-bottom: var(--spacing-8);
+}
+
+.ion-table--relaxed th,
+.ion-table--relaxed td {
+  padding-top: var(--spacing-20);
+  padding-bottom: var(--spacing-20);
 }
 
 .ion-table td {
   color: var(--text-default);
   font-weight: var(--font-weight-regular);
+}
+
+/*
+ * Header appearance follows EITHER condition: the cell is a `<th>`, or it sits
+ * inside `<thead>`.
+ *
+ * The `<th>` half is the Figma binding (see the header). The `thead` half
+ * exists because a header row can legitimately contain a cell that is not a
+ * column header — a selection-checkbox column has nothing to label, and an
+ * empty `<th>` is an accessibility failure rather than a neutral one: axe's
+ * `empty-table-header` flags it, and `aria-label` does not rescue it, since the
+ * rule is specifically about text a sighted screen-reader user can also see.
+ * Such a cell should be a `<td>`, which then still needs to look like a header.
+ *
+ * Declared after `.ion-table td` so specificity reads non-decreasing; the two
+ * `td` selectors would otherwise trip `no-descending-specificity`.
+ */
+.ion-table th,
+.ion-table thead td {
+  background-color: var(--surface-page);
+  color: var(--text-secondary);
+  font-weight: var(--font-weight-medium);
+  border-bottom: var(--border-width-default) solid var(--border-default);
 }
 
 .ion-table tr {
@@ -108,19 +144,6 @@
 .ion-table th[data-align='center'],
 .ion-table td[data-align='center'] {
   text-align: center;
-}
-
-/* Density — vertical padding only. See the header. */
-.ion-table--compact th,
-.ion-table--compact td {
-  padding-top: var(--spacing-8);
-  padding-bottom: var(--spacing-8);
-}
-
-.ion-table--relaxed th,
-.ion-table--relaxed td {
-  padding-top: var(--spacing-20);
-  padding-bottom: var(--spacing-20);
 }
 
 /* Cell content — icon, label, icon, matching Figma's `Cell Text`. */
