@@ -194,3 +194,70 @@ export const LabelClickToggles: Story = {
     await expect(input.checked).toBe(true);
   },
 };
+
+/**
+ * The empty box is a 2px `border/stronger` outline; the filled box drops to 1px
+ * of its intent colour. Worth pinning because it is invisible to every other
+ * check: `tokens:verify` only sees variables, and nothing else in the suite
+ * reads a border width. It is also the exact pair a future edit is most likely
+ * to collapse back into one value.
+ *
+ * The box must stay 20px across both states — `box-sizing: border-box` is what
+ * reproduces Figma's INSIDE stroke, and without it the 2px border would grow
+ * the unchecked box by 2px against the checked one.
+ */
+export const UncheckedBorderIsHeavier: Story = {
+  render: () => (
+    <div>
+      <Checkbox aria-label="empty" />
+      <Checkbox defaultChecked aria-label="filled" />
+    </div>
+  ),
+  play: async ({ canvas }) => {
+    const indicator = (label: string) =>
+      canvas
+        .getByLabelText(label)
+        .closest('.ion-checkbox')!
+        .querySelector('.ion-checkbox__indicator') as HTMLElement;
+
+    const empty = getComputedStyle(indicator('empty'));
+    const filled = getComputedStyle(indicator('filled'));
+
+    await expect(empty.borderTopWidth).toBe('2px');
+    await expect(filled.borderTopWidth).toBe('1px');
+
+    const stronger = getComputedStyle(document.documentElement)
+      .getPropertyValue('--border-stronger')
+      .trim();
+    const rgb = `rgb(${[1, 3, 5]
+      .map((i) => parseInt(stronger.slice(i, i + 2), 16))
+      .join(', ')})`;
+    await expect(empty.borderTopColor).toBe(rgb);
+
+    // Border grows inward, so the outer box is identical in both states.
+    await expect(indicator('empty').getBoundingClientRect().width).toBe(
+      indicator('filled').getBoundingClientRect().width,
+    );
+  },
+};
+
+/** Disabled is 2px in every state, checked included — so it must restate the
+ *  width to beat `:checked`, which sets 1px. */
+export const DisabledKeepsTheHeavyBorder: Story = {
+  render: () => (
+    <div>
+      <Checkbox disabled aria-label="off" />
+      <Checkbox disabled defaultChecked aria-label="on" />
+    </div>
+  ),
+  play: async ({ canvas }) => {
+    const indicator = (label: string) =>
+      canvas
+        .getByLabelText(label)
+        .closest('.ion-checkbox')!
+        .querySelector('.ion-checkbox__indicator') as HTMLElement;
+
+    await expect(getComputedStyle(indicator('off')).borderTopWidth).toBe('2px');
+    await expect(getComputedStyle(indicator('on')).borderTopWidth).toBe('2px');
+  },
+};

@@ -98,8 +98,23 @@
   height: var(--ion-checkbox-size);
   background-color: var(--surface-default);
   border-style: solid;
-  border-width: var(--border-width-default);
-  border-color: var(--border-strong);
+
+  /*
+   * The EMPTY box carries the heavier border: 2px `border/stronger`, where the
+   * filled box drops to 1px of its intent colour. An unchecked checkbox is
+   * nothing but its outline, so it has to hold the row on its own; once filled,
+   * the fill does that work and a thinner edge stops it reading as ringed.
+   *
+   * Figma strokes this INSIDE, and `box-sizing: border-box` (set globally in
+   * index.css) is what reproduces that — the box stays 16/20/24 and the border
+   * eats inward. Without it, switching to 2px would grow every checkbox by 2px.
+   *
+   * Radio still uses 1px `border/strong` for its unselected circle. That is a
+   * real divergence between two controls that otherwise mirror each other, and
+   * it is deliberate here only in the sense that Figma currently says so.
+   */
+  border-width: var(--border-width-thick);
+  border-color: var(--border-stronger);
   border-radius: var(--ion-checkbox-radius);
 
   /*
@@ -138,6 +153,8 @@
 /* Checked and indeterminate share one appearance — Figma differs only in the mark. */
 .ion-checkbox__input:checked + .ion-checkbox__indicator,
 .ion-checkbox__input:indeterminate + .ion-checkbox__indicator {
+  /* Back to 1px — see the indicator's border comment. */
+  border-width: var(--border-width-default);
   background-color: var(--ion-checkbox-fill);
   border-color: var(--ion-checkbox-border);
 
@@ -187,6 +204,13 @@
 .ion-checkbox__input:indeterminate:disabled + .ion-checkbox__indicator {
   background-color: var(--surface-disabled);
   border-color: var(--border-disabled);
+
+  /*
+   * 2px in all three disabled states, checked included — measured. So this has
+   * to restate the width to beat `:checked`, which sets 1px; the compound
+   * `:checked:disabled` selector is what makes it win, not source order.
+   */
+  border-width: var(--border-width-thick);
 
   /* A disabled box is flat whether or not it is checked. */
   box-shadow: none;
