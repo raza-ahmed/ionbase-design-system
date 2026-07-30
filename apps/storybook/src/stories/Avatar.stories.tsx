@@ -4,9 +4,9 @@ import { expect } from 'storybook/test';
 import { Avatar, AvatarGroup } from '@ionbase/react';
 import { Icon } from '@ionbase/icons';
 import { User } from 'lucide-react';
-// Placeholder art, not a photo of a real person — see the note on `Types`
-// below for how to swap in a real one.
-import avatarPhoto from './assets/avatar-photo.svg';
+// A real photo, supplied for this repo's own demo — not stock art standing
+// in for one. See the note on `Types` for how any consumer swaps their own.
+import avatarPhoto from './assets/avatar-photo.jpg';
 
 const meta: Meta<typeof Avatar> = {
   title: 'Components/Avatar',
@@ -55,16 +55,15 @@ export const Shapes: Story = {
 /**
  * The three `Type` variants Figma defines: image, initials, icon.
  *
- * `avatarPhoto` here is placeholder art generated for this repo, not a photo
- * of a real person — shipping an actual stock photo would be a licensing and
- * likeness question that has no place in a component library. Swap it for a
- * real image the same way any consumer would: drop a file in next to it and
- * point `src` at it, or pass a URL. Nothing else about the component changes.
+ * `avatarPhoto` is a real image, checked into `assets/avatar-photo.jpg`.
+ * Swap it for a different one the same way any consumer would: replace the
+ * file at that path, or point `src` at a URL instead. Nothing else about the
+ * component changes.
  */
 export const Types: Story = {
   render: (args) => (
     <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-      <Avatar {...args} src={avatarPhoto} alt="Ada Byron" />
+      <Avatar {...args} src={avatarPhoto} alt="Profile photo" />
       <Avatar {...args} initials="AB" />
       <Avatar {...args} initials={undefined} icon={<Icon as={User} />} />
     </div>
@@ -179,11 +178,11 @@ export const InitialsAvatarIsLabelled: Story = {
 export const WithImage: Story = {
   render: () => (
     <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-      <Avatar src={avatarPhoto} initials="AB" alt="Ada Byron" size="lg" />
+      <Avatar src={avatarPhoto} initials="AB" alt="Profile photo" size="lg" />
       <Avatar
         src={avatarPhoto}
         initials="AB"
-        alt="Ada Byron"
+        alt="Profile photo"
         size="lg"
         shape="square"
       />
@@ -198,7 +197,7 @@ export const WithImage: Story = {
     // Image wins: initials never render as visible text alongside it.
     await expect(img.parentElement?.textContent).toBe('');
     // Falls back to the same name a text-only avatar would announce.
-    await expect(img.alt).toBe('Ada Byron');
+    await expect(img.alt).toBe('Profile photo');
     await expect(getComputedStyle(img).objectFit).toBe('cover');
   },
 };
