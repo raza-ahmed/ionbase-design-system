@@ -30,6 +30,9 @@
   --ion-radio-fill: var(--surface-primary);
   --ion-radio-border: var(--border-primary-strong);
 
+  /* Bevelled when selected — flush, size-indexed. Same rungs as Checkbox. */
+  --ion-radio-raised: var(--ion-shadow-raised-flush-sm);
+
   /* Derived — see the header. */
   --ion-radio-dot: calc(var(--ion-radio-size) / 2 - var(--spacing-2));
 
@@ -46,11 +49,13 @@
   --ion-radio-size: var(--spacing-16);
   --ion-radio-font-size: var(--type-body-sm);
   --ion-radio-line-height: var(--type-body-sm-line-height);
+  --ion-radio-raised: var(--ion-shadow-raised-flush-xs);
 }
 
 .ion-radio--lg {
   --ion-radio-size: var(--spacing-24);
   --ion-radio-gap: var(--spacing-12);
+  --ion-radio-raised: var(--ion-shadow-raised-flush-lg);
 }
 
 .ion-radio__input {
@@ -102,6 +107,9 @@
 .ion-radio__input:checked + .ion-radio__indicator {
   background-color: var(--ion-radio-fill);
   border-color: var(--ion-radio-border);
+
+  /* Only the selected dot is bevelled; an empty circle stays flat. */
+  box-shadow: var(--ion-radio-raised);
 }
 
 .ion-radio__input:checked + .ion-radio__indicator .ion-radio__dot {
@@ -129,6 +137,9 @@
 .ion-radio__input:checked:disabled + .ion-radio__indicator {
   background-color: var(--surface-disabled);
   border-color: var(--border-disabled);
+
+  /* Flat whether or not it is selected. */
+  box-shadow: none;
 }
 
 .ion-radio__input:disabled + .ion-radio__indicator .ion-radio__dot {

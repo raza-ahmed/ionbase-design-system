@@ -7,13 +7,31 @@
  * the other — otherwise `--primary-brand:active` (0,2,0) and `:focus-visible`
  * (0,2,0) tie, and whichever is written last silently wins.
  *
- * Ring stays on tokens so it themes. Elevation comes from elevation.css, which
- * is hand-authored — Figma effect styles are not variables and are not exported.
+ * Ring and elevation both come from elevation.css, generated from the Figma
+ * effect styles. Those are not variable-bound and so cannot be tokens — there
+ * is nothing for them to alias — which is why the values are exported and
+ * committed instead of aliased.
  */
 .ion-button {
   --ion-button-ring: var(--ion-shadow-none);
   --ion-button-elevation: var(--ion-shadow-none);
-  --ion-button-focus-ring: var(--ion-shadow-button-raised-focus);
+
+  /*
+   * ELEVATION IS INDEXED BY SIZE, NOT BY VARIANT
+   *
+   * Measured: Primary Brand, Primary Neutral, Secondary and Destructive all sit
+   * on the same rung at a given size — Small is `xs`, Medium `sm`, Large `lg`.
+   * The variant chooses only the *family* it presses into, so these are slots
+   * the size modifiers reassign and the variants select from. This replaces the
+   * old per-variant `button-raised` / `button-surface` pair, which encoded a
+   * distinction Figma no longer draws.
+   */
+  --ion-button-raised: var(--ion-shadow-raised-lifted-sm);
+  --ion-button-inset-lifted: var(--ion-shadow-inset-lifted-sm);
+  --ion-button-inset-flush: var(--ion-shadow-inset-flush-sm);
+
+  /* Which inset family this variant presses into; overridden per variant. */
+  --ion-button-pressed: var(--ion-button-inset-lifted);
 
   /*
    * Size is a set of slots defaulting to medium, so a size modifier reassigns
@@ -82,6 +100,9 @@
   --ion-button-icon-size: var(--icon-size-sm);
   --ion-button-font-size: var(--type-body-sm);
   --ion-button-line-height: var(--type-body-sm-line-height);
+  --ion-button-raised: var(--ion-shadow-raised-lifted-xs);
+  --ion-button-inset-lifted: var(--ion-shadow-inset-lifted-xs);
+  --ion-button-inset-flush: var(--ion-shadow-inset-flush-xs);
 }
 
 .ion-button--lg {
@@ -89,26 +110,29 @@
   --ion-button-padding-x: var(--spacing-20);
   --ion-button-gap: var(--spacing-8);
   --ion-button-icon-size: var(--icon-size-lg);
+  --ion-button-raised: var(--ion-shadow-raised-lifted-lg);
+  --ion-button-inset-lifted: var(--ion-shadow-inset-lifted-lg);
+  --ion-button-inset-flush: var(--ion-shadow-inset-flush-lg);
 }
 
 /*
- * Focus ring — generated from the Figma `Button/Raised Focus` and
- * `Button/Surface Focus` effect styles.
+ * Focus ring — one ring for every variant and size, from the Figma `Focus/md`
+ * effect style.
  *
- * Previously this was assembled from `--button-offset-ring` / `--button-ring`,
+ * There used to be two, `Button/Raised Focus` and `Button/Surface Focus`, with
+ * secondary and tertiary opting into the second. They were byte-identical: two
+ * names over one value, which is why they collapsed into `Focus/md` and why
+ * there is no per-variant ring slot here any more.
+ *
+ * Before that they were assembled from `--button-offset-ring` / `--button-ring`,
  * component tokens hand-mapped to the nearest solid semantic colour. That made
  * the outer ring fully opaque where Figma renders it at 50% alpha, and nothing
  * caught it: effect styles are not variable-bound, so the token pipeline cannot
  * see them at all.
  */
-.ion-button--secondary,
-.ion-button--tertiary {
-  --ion-button-focus-ring: var(--ion-shadow-button-surface-focus);
-}
-
 .ion-button:focus-visible,
 .ion-button[data-focused='true'] {
-  --ion-button-ring: var(--ion-button-focus-ring);
+  --ion-button-ring: var(--ion-shadow-focus-md);
 
   outline: none;
 }
@@ -121,11 +145,17 @@
  * elsewhere. `[data-hovered]` comes from React Aria's useHover, which is
  * already pointer-aware. The media query keeps the stylesheet working without
  * React; the attribute makes it correct with it.
+ *
+ * HOVER DOES NOT CHANGE ELEVATION — only the surface colour moves. Measured:
+ * every Hover variant in Figma carries the same effect style as its Default,
+ * across all four elevated types. Reproduced as measured rather than preserved
+ * from the old `button-raised-hover` step, which encodes a difference the
+ * current design no longer draws.
  */
 
 /* Primary Brand Variant */
 .ion-button--primary-brand {
-  --ion-button-elevation: var(--ion-shadow-button-raised);
+  --ion-button-elevation: var(--ion-button-raised);
 
   background-color: var(--surface-primary);
   color: var(--text-on-color);
@@ -134,28 +164,33 @@
 
 @media (hover: hover) {
   .ion-button--primary-brand:hover {
-    --ion-button-elevation: var(--ion-shadow-button-raised-hover);
-
     background-color: var(--surface-primary-hover);
   }
 }
 
 .ion-button--primary-brand[data-hovered='true'] {
-  --ion-button-elevation: var(--ion-shadow-button-raised-hover);
-
   background-color: var(--surface-primary-hover);
 }
 
 .ion-button--primary-brand:active,
 .ion-button--primary-brand[data-pressed='true'] {
-  --ion-button-elevation: var(--ion-shadow-button-pressed);
+  --ion-button-elevation: var(--ion-button-pressed);
 
   background-color: var(--surface-primary-pressed);
 }
 
-/* Primary Neutral Variant */
+/*
+ * Primary Neutral Variant
+ *
+ * The one variant whose press does NOT track its own rung: Figma pins all three
+ * sizes to `Inset/Flush/lg` while their rest states scale xs/sm/lg like every
+ * other type. Reproduced as measured, not normalised — but flagged, because it
+ * is the only place in the component where size stops mattering, and it reads
+ * more like an unfinished edit than a decision.
+ */
 .ion-button--primary-neutral {
-  --ion-button-elevation: var(--ion-shadow-button-raised);
+  --ion-button-elevation: var(--ion-button-raised);
+  --ion-button-pressed: var(--ion-shadow-inset-flush-lg);
 
   background-color: var(--surface-inverse);
   color: var(--text-on-color);
@@ -164,28 +199,25 @@
 
 @media (hover: hover) {
   .ion-button--primary-neutral:hover {
-    --ion-button-elevation: var(--ion-shadow-button-raised-hover);
-
     background-color: var(--surface-inverse);
   }
 }
 
 .ion-button--primary-neutral[data-hovered='true'] {
-  --ion-button-elevation: var(--ion-shadow-button-raised-hover);
-
   background-color: var(--surface-inverse);
 }
 
 .ion-button--primary-neutral:active,
 .ion-button--primary-neutral[data-pressed='true'] {
-  --ion-button-elevation: var(--ion-shadow-button-pressed);
+  --ion-button-elevation: var(--ion-button-pressed);
 
   background-color: var(--surface-inverse);
 }
 
-/* Secondary Variant */
+/* Secondary Variant — presses flush, losing its lift; brand and destructive keep theirs. */
 .ion-button--secondary {
-  --ion-button-elevation: var(--ion-shadow-button-surface);
+  --ion-button-elevation: var(--ion-button-raised);
+  --ion-button-pressed: var(--ion-button-inset-flush);
 
   background-color: var(--surface-default);
   color: var(--text-secondary);
@@ -194,23 +226,19 @@
 
 @media (hover: hover) {
   .ion-button--secondary:hover {
-    --ion-button-elevation: var(--ion-shadow-button-surface-hover);
-
     background-color: var(--surface-page);
     border-color: var(--border-stronger);
   }
 }
 
 .ion-button--secondary[data-hovered='true'] {
-  --ion-button-elevation: var(--ion-shadow-button-surface-hover);
-
   background-color: var(--surface-page);
   border-color: var(--border-stronger);
 }
 
 .ion-button--secondary:active,
 .ion-button--secondary[data-pressed='true'] {
-  --ion-button-elevation: var(--ion-shadow-button-surface-pressed);
+  --ion-button-elevation: var(--ion-button-pressed);
 
   background-color: var(--surface-muted);
 }
@@ -239,7 +267,7 @@
 
 /* Destructive Variant */
 .ion-button--destructive {
-  --ion-button-elevation: var(--ion-shadow-button-raised);
+  --ion-button-elevation: var(--ion-button-raised);
 
   background-color: var(--surface-error);
   color: var(--text-on-color);
@@ -248,21 +276,17 @@
 
 @media (hover: hover) {
   .ion-button--destructive:hover {
-    --ion-button-elevation: var(--ion-shadow-button-raised-hover);
-
     background-color: var(--surface-error-hover);
   }
 }
 
 .ion-button--destructive[data-hovered='true'] {
-  --ion-button-elevation: var(--ion-shadow-button-raised-hover);
-
   background-color: var(--surface-error-hover);
 }
 
 .ion-button--destructive:active,
 .ion-button--destructive[data-pressed='true'] {
-  --ion-button-elevation: var(--ion-shadow-button-pressed);
+  --ion-button-elevation: var(--ion-button-pressed);
 
   background-color: var(--surface-error-pressed);
 }
@@ -272,7 +296,6 @@
 .ion-button[data-disabled='true'] {
   --ion-button-ring: var(--ion-shadow-none);
   --ion-button-elevation: var(--ion-shadow-none);
-  --ion-button-focus-ring: var(--ion-shadow-button-raised-focus);
 
   background-color: var(--surface-disabled);
   color: var(--text-disabled);

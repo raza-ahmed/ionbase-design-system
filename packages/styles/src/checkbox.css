@@ -37,6 +37,14 @@
   --ion-checkbox-fill: var(--surface-primary);
   --ion-checkbox-border: var(--border-primary-strong);
 
+  /*
+   * The checked box is bevelled, not flat. `Raised/Flush/*` — flush, with no
+   * cast shadow, because a 16-24px control sits ON the surface rather than
+   * above it. Indexed by size like Button's, and identical across all three
+   * intents: Figma varies only the fill.
+   */
+  --ion-checkbox-raised: var(--ion-shadow-raised-flush-sm);
+
   /* Derived — see the header. */
   --ion-checkbox-mark: calc(var(--ion-checkbox-size) / 2 + var(--spacing-4));
 
@@ -53,6 +61,7 @@
   --ion-checkbox-size: var(--spacing-16);
   --ion-checkbox-font-size: var(--type-body-sm);
   --ion-checkbox-line-height: var(--type-body-sm-line-height);
+  --ion-checkbox-raised: var(--ion-shadow-raised-flush-xs);
 }
 
 /* Large is the only size that widens the gap, and the only one with a larger
@@ -61,6 +70,7 @@
   --ion-checkbox-size: var(--spacing-24);
   --ion-checkbox-gap: var(--spacing-12);
   --ion-checkbox-radius: var(--radius-sm);
+  --ion-checkbox-raised: var(--ion-shadow-raised-flush-lg);
 }
 
 /*
@@ -130,6 +140,9 @@
 .ion-checkbox__input:indeterminate + .ion-checkbox__indicator {
   background-color: var(--ion-checkbox-fill);
   border-color: var(--ion-checkbox-border);
+
+  /* Only the filled box is bevelled; an empty box stays flat. */
+  box-shadow: var(--ion-checkbox-raised);
 }
 
 .ion-checkbox__input:checked + .ion-checkbox__indicator .ion-checkbox__mark,
@@ -174,6 +187,9 @@
 .ion-checkbox__input:indeterminate:disabled + .ion-checkbox__indicator {
   background-color: var(--surface-disabled);
   border-color: var(--border-disabled);
+
+  /* A disabled box is flat whether or not it is checked. */
+  box-shadow: none;
 }
 
 .ion-checkbox__input:disabled + .ion-checkbox__indicator .ion-checkbox__mark {

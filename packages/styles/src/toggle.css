@@ -40,6 +40,14 @@
   --ion-toggle-line-height: var(--type-body-line-height);
   --ion-toggle-on: var(--surface-primary);
 
+  /*
+   * Two different shadow families on one control, which is the point of
+   * splitting them: the thumb genuinely floats above the track, so it casts
+   * (`Shadow/xs`), while the on-track is bevelled into the surface and casts
+   * nothing (`Raised/Flush/*`). A single combined style could not express both.
+   */
+  --ion-toggle-raised: var(--ion-shadow-raised-flush-sm);
+
   /* Derived — see the header. */
   --ion-toggle-track-h: calc(
     var(--ion-toggle-thumb) + 2 * var(--ion-toggle-inset)
@@ -61,11 +69,13 @@
   --ion-toggle-thumb: var(--spacing-16);
   --ion-toggle-font-size: var(--type-body-sm);
   --ion-toggle-line-height: var(--type-body-sm-line-height);
+  --ion-toggle-raised: var(--ion-shadow-raised-flush-xs);
 }
 
 .ion-toggle--lg {
   --ion-toggle-thumb: var(--spacing-24);
   --ion-toggle-gap: var(--spacing-12);
+  --ion-toggle-raised: var(--ion-shadow-raised-flush-lg);
 }
 
 .ion-toggle__input {
@@ -114,6 +124,9 @@
   height: var(--ion-toggle-thumb);
   background-color: var(--surface-default);
   border-radius: var(--radius-full);
+
+  /* Cast, not bevelled — and the same in both states, so it is unconditional. */
+  box-shadow: var(--ion-shadow-shadow-xs);
   transition: margin 150ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -127,6 +140,9 @@
 
   /* Transparent, not removed — see the header. */
   border-color: transparent;
+
+  /* Only the on-track is bevelled; the off-track is a plain muted surface. */
+  box-shadow: var(--ion-toggle-raised);
 }
 
 .ion-toggle__input:checked + .ion-toggle__track .ion-toggle__thumb {
@@ -152,6 +168,9 @@
 .ion-toggle__input:checked:disabled + .ion-toggle__track {
   background-color: var(--surface-disabled);
   border-color: var(--border-disabled);
+
+  /* Flat whether or not it is on — matches Checkbox and Radio. */
+  box-shadow: none;
 }
 
 .ion-toggle--disabled,
