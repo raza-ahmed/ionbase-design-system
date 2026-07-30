@@ -1,0 +1,63 @@
+/*
+ * Logo
+ *
+ * Measured from Figma `Logo-Ionbase` (52:21369) — Small (24px mark) and Large
+ * (32px), each with two wordmark treatments.
+ *
+ * TWO WORDMARK KINDS, TWO DIFFERENT TYPEFACES, TWO DIFFERENT TOKENS
+ *
+ * Figma's `Type=Logo` draws the wordmark as outlined vector paths in a serif
+ * logotype — frozen brand artwork, bound to `icon/default`, same colour as
+ * the mark. `Type=Icon` draws it as live text in sans-serif Host Grotesk,
+ * bound to `text/tertiary` — one step lighter, the same text/icon split v2
+ * uses everywhere else. These are not the same word in two technologies; they
+ * are two different marks for two different contexts, confirmed by rendering
+ * both rather than assumed from Figma's node names. Both colours are kept
+ * distinct rather than unified under one `currentColor` flowing from the
+ * wrapper, because the tokens genuinely differ.
+ *
+ * ONE VALUE LEFT AS FIGMA DREW IT
+ *
+ * The Large text wordmark is unbound in Figma — 21.333px over a 32px
+ * line-height, exactly Small's 16/24 scaled by 4/3. Not on the font-size
+ * ladder, and not rounded here: rounding would make the live-text lockup a
+ * different size than the vector one sitting right next to it in Figma.
+ */
+.ion-logo {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-4);
+}
+
+.ion-logo--lg {
+  gap: var(--spacing-8);
+}
+
+.ion-logo__mark {
+  display: block;
+  flex-shrink: 0;
+  color: var(--icon-default);
+}
+
+.ion-logo__wordmark--vector {
+  display: block;
+  flex-shrink: 0;
+  color: var(--icon-default);
+}
+
+.ion-logo__wordmark--text {
+  color: var(--text-tertiary);
+  font-family: var(--font-family-sans);
+  font-weight: var(--font-weight-medium);
+  font-size: var(--type-body);
+  line-height: var(--type-body-line-height);
+  white-space: nowrap;
+}
+
+.ion-logo--lg .ion-logo__wordmark--text {
+  /* Figma's own unbound 4/3 scale of 16/24 — see the header. Written as
+   * arithmetic on type/body so the value stays a token expression, not a
+   * literal, even though the relationship itself is Figma's, not derived. */
+  font-size: calc(var(--type-body) * 4 / 3);
+  line-height: calc(var(--type-body-line-height) * 4 / 3);
+}

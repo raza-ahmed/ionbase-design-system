@@ -1,7 +1,7 @@
 import React from 'react';
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { expect } from 'storybook/test';
-import { Header, Button, Avatar } from '@ionbase/react';
+import { Header, Button, Avatar, Logo } from '@ionbase/react';
 
 const meta: Meta<typeof Header> = {
   title: 'Components/Header',
@@ -12,7 +12,7 @@ const meta: Meta<typeof Header> = {
     docs: {
       description: {
         component:
-          'Measured from Figma `Header` — Desktop 56 tall with 8/64 padding, Tablet 64 with 12/32, Mobile 64 with 12/16.\n\n**Device is a media query, not a prop.** It is the one variant axis the browser already knows the answer to: a header is Mobile because the viewport is narrow. Every other component takes its variant from the caller because the caller is the only one who knows. Breakpoints match the Breakpoint collection — Tablet below 1216, Mobile below 896.\n\nNote the header is *taller* on Tablet and Mobile (64) than Desktop (56); touch targets need the height more than a pointer does.',
+          'Measured from Figma `Header` — Desktop 56 tall with 8/64 padding, Tablet 64 with 12/32, Mobile 64 with 12/16.\n\n**Device is a media query, not a prop.** It is the one variant axis the browser already knows the answer to: a header is Mobile because the viewport is narrow. Every other component takes its variant from the caller because the caller is the only one who knows. Breakpoints match the Breakpoint collection — Tablet below 1216, Mobile below 896.\n\nNote the header is *taller* on Tablet and Mobile (64) than Desktop (56); touch targets need the height more than a pointer does.\n\nThe brand slot is `<Logo size="sm" wordmark="vector" />` — Figma\'s Header instance binds the exact same variant, outlined artwork rather than live text, so the header never depends on the brand font having loaded.',
       },
     },
   },
@@ -21,14 +21,10 @@ const meta: Meta<typeof Header> = {
 export default meta;
 type Story = StoryObj<typeof Header>;
 
-const Brand = () => (
-  <span style={{ fontWeight: 600, fontSize: '1rem' }}>IonBase</span>
-);
-
 export const Default: Story = {
   render: () => (
     <Header
-      brand={<Brand />}
+      brand={<Logo size="sm" wordmark="vector" />}
       end={
         <>
           <Button variant="tertiary" size="sm">
@@ -44,7 +40,7 @@ export const Default: Story = {
 export const WithCenterSlot: Story = {
   render: () => (
     <Header
-      brand={<Brand />}
+      brand={<Logo size="sm" wordmark="vector" />}
       center={
         <>
           <Button variant="tertiary" size="sm">
@@ -64,7 +60,7 @@ export const WithCenterSlot: Story = {
 };
 
 export const BrandOnly: Story = {
-  render: () => <Header brand={<Brand />} />,
+  render: () => <Header brand={<Logo size="sm" wordmark="vector" />} />,
 };
 
 /**
@@ -76,7 +72,7 @@ export const BrandOnly: Story = {
  * property of the component.
  */
 export const RenderedGeometryMatchesFigma: Story = {
-  render: () => <Header brand={<Brand />} />,
+  render: () => <Header brand={<Logo size="sm" wordmark="vector" />} />,
   play: async ({ canvasElement }) => {
     const header = canvasElement.querySelector('.ion-header') as HTMLElement;
     const cs = getComputedStyle(header);
@@ -91,7 +87,12 @@ export const RenderedGeometryMatchesFigma: Story = {
 /** The centre slot is collapsed below the desktop breakpoint, matching Figma's
  *  Tablet and Mobile variants which both ship it at zero width. */
 export const CenterSlotIsHiddenBelowDesktop: Story = {
-  render: () => <Header brand={<Brand />} center={<Brand />} />,
+  render: () => (
+    <Header
+      brand={<Logo size="sm" wordmark="vector" />}
+      center={<Logo size="sm" wordmark="vector" />}
+    />
+  ),
   play: async ({ canvasElement }) => {
     const center = canvasElement.querySelector(
       '.ion-header__center',

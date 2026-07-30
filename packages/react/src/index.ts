@@ -34,3 +34,10 @@ export type {
 } from './Avatar.js';
 export { Header } from './Header.js';
 export type { HeaderProps } from './Header.js';
+export { Logo, LogoMark } from './Logo.js';
+export type {
+  LogoProps,
+  LogoMarkProps,
+  LogoSize,
+  LogoWordmark,
+} from './Logo.js';

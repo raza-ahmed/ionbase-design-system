@@ -1,0 +1,15 @@
+<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder portrait">
+  <defs>
+    <linearGradient id="avatar-bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#5A4CD6" />
+      <stop offset="100%" stop-color="#286EF0" />
+    </linearGradient>
+  </defs>
+  <rect width="200" height="200" fill="url(#avatar-bg)" />
+  <circle cx="100" cy="82" r="34" fill="#ffffff" fill-opacity="0.92" />
+  <path
+    d="M40 190C40 148.2 66.86 118 100 118C133.14 118 160 148.2 160 190"
+    fill="#ffffff"
+    fill-opacity="0.92"
+  />
+</svg>

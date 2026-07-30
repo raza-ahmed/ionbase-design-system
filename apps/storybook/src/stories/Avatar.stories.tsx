@@ -4,6 +4,9 @@ import { expect } from 'storybook/test';
 import { Avatar, AvatarGroup } from '@ionbase/react';
 import { Icon } from '@ionbase/icons';
 import { User } from 'lucide-react';
+// Placeholder art, not a photo of a real person — see the note on `Types`
+// below for how to swap in a real one.
+import avatarPhoto from './assets/avatar-photo.svg';
 
 const meta: Meta<typeof Avatar> = {
   title: 'Components/Avatar',
@@ -49,9 +52,19 @@ export const Shapes: Story = {
   ),
 };
 
+/**
+ * The three `Type` variants Figma defines: image, initials, icon.
+ *
+ * `avatarPhoto` here is placeholder art generated for this repo, not a photo
+ * of a real person — shipping an actual stock photo would be a licensing and
+ * likeness question that has no place in a component library. Swap it for a
+ * real image the same way any consumer would: drop a file in next to it and
+ * point `src` at it, or pass a URL. Nothing else about the component changes.
+ */
 export const Types: Story = {
   render: (args) => (
     <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+      <Avatar {...args} src={avatarPhoto} alt="Ada Byron" />
       <Avatar {...args} initials="AB" />
       <Avatar {...args} initials={undefined} icon={<Icon as={User} />} />
     </div>
@@ -152,5 +165,40 @@ export const InitialsAvatarIsLabelled: Story = {
   play: async ({ canvas }) => {
     const el = canvas.getByLabelText('Ada Byron');
     await expect(el).toHaveAttribute('role', 'img');
+  },
+};
+
+/**
+ * With `src` present, the image wins over `initials` — Figma's precedence,
+ * not a caller decision. The initials still matter: they become the `<img>`'s
+ * `alt` fallback for a broken/slow-loading image, rather than being discarded.
+ *
+ * Crop is `object-fit: cover` inside `overflow: hidden`, so a non-square photo
+ * fills the box without distorting rather than being letterboxed.
+ */
+export const WithImage: Story = {
+  render: () => (
+    <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+      <Avatar src={avatarPhoto} initials="AB" alt="Ada Byron" size="lg" />
+      <Avatar
+        src={avatarPhoto}
+        initials="AB"
+        alt="Ada Byron"
+        size="lg"
+        shape="square"
+      />
+    </div>
+  ),
+  play: async ({ canvasElement }) => {
+    const img = canvasElement.querySelector(
+      '.ion-avatar__image',
+    ) as HTMLImageElement;
+
+    await expect(img).toBeTruthy();
+    // Image wins: initials never render as visible text alongside it.
+    await expect(img.parentElement?.textContent).toBe('');
+    // Falls back to the same name a text-only avatar would announce.
+    await expect(img.alt).toBe('Ada Byron');
+    await expect(getComputedStyle(img).objectFit).toBe('cover');
   },
 };
