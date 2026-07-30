@@ -1,0 +1,31 @@
+/*
+ * Divider
+ *
+ * Measured from Figma `Border` (70:22153) — a single 1px line, `border/strong`
+ * rather than `border/default`. That is the one surprising fact here: every
+ * other hairline in the system (Input, Table row rules, Menu) reads
+ * `border/default`. A divider is drawn at a stronger weight deliberately —
+ * its only job is to separate, so it is allowed to be the most visible line
+ * in the system rather than competing with content-carrying borders.
+ *
+ * Horizontal and vertical are one component in Figma (`Style` variant), and
+ * one class here: a fixed 1px cross-axis with the main axis left to `100%`,
+ * since Figma's 80-unit length is canvas demo filler, not a real constraint.
+ */
+.ion-divider {
+  flex-shrink: 0;
+  background-color: var(--border-strong);
+  border: none;
+  margin: 0;
+}
+
+.ion-divider--horizontal {
+  width: 100%;
+  height: var(--border-width-default);
+}
+
+.ion-divider--vertical {
+  width: var(--border-width-default);
+  height: 100%;
+  align-self: stretch;
+}

@@ -1,4 +1,35 @@
-/* Table Container for horizontal overflow */
+/*
+ * Table
+ *
+ * Measured from Figma `Table Row` / `Table Cell` / `Cell Text` (173:42).
+ * Replaces a pre-v2 file that predated this measurement: its header used
+ * `font-weight: semibold` where Figma's header cell is Medium, and its three
+ * density paddings were wrong on both axes — see DENSITY below.
+ *
+ * DENSITY ONLY MOVES VERTICAL PADDING
+ *
+ * Compact/Default/Relaxed are 8/16/20 top-and-bottom, but all three share the
+ * SAME 16px horizontal padding. Columns do not get any narrower as density
+ * increases — only row height does. A density system that also squeezed the
+ * horizontal padding would have been a plausible-looking invention with
+ * nothing in Figma behind it.
+ *
+ * HEADER FILL IS PER-CELL, NOT PER-ROW
+ *
+ * `surface/page` is bound on the header CELL, not on `<thead>`. Visually
+ * identical when every header cell shares it, but it is why this reads
+ * `.ion-table th` rather than a `.ion-table__header` row class — matching
+ * where Figma actually put the token means a table that mixes header cells
+ * into a body row (a sticky first column, say) still gets the fill from the
+ * right place.
+ *
+ * ROW BORDER IS BOTTOM ONLY
+ *
+ * Figma's row stroke resolves to top 0 / right 0 / bottom 1 / left 0, not a
+ * mixed/mystery value — confirmed by reading all four edges rather than
+ * assuming "MIXED" meant "top and bottom". One `border-bottom`, not a
+ * 4-sided border that needs collapsing.
+ */
 .ion-table-container {
   width: 100%;
   overflow-x: auto;
@@ -6,7 +37,6 @@
   border-radius: var(--radius-md);
 }
 
-/* Table Base */
 .ion-table {
   width: 100%;
   border-collapse: collapse;
@@ -17,93 +47,123 @@
   text-align: left;
 }
 
-/* Table Header Row */
-.ion-table__header {
-  background-color: var(--surface-page);
-  color: var(--text-secondary);
-  font-weight: var(--font-weight-semibold);
-  border-bottom: var(--border-width-default) solid var(--border-default);
-}
-
-/* Table Row base and states */
-.ion-table__row {
-  background-color: var(--surface-default);
-  border-bottom: var(--border-width-default) solid var(--border-default);
-  transition: background-color 150ms cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-/* Row Hover State */
-.ion-table__row:hover,
-.ion-table__row[data-hovered='true'] {
-  background-color: var(--surface-hover);
-}
-
-/* Row Selected State */
-.ion-table__row.is-selected,
-.ion-table__row[data-selected='true'] {
-  background-color: var(--surface-primary-subtle);
-}
-
-/* Row Selected Hover State */
-.ion-table__row.is-selected:hover,
-.ion-table__row[data-selected='true']:hover,
-.ion-table__row[data-selected='true'][data-hovered='true'] {
-  background-color: var(--surface-primary-subtle);
-}
-
-/* Striped Rows (via modifier on row or via table class) */
-.ion-table__row--striped,
-.ion-table--striped .ion-table__row:nth-child(even) {
-  background-color: var(--surface-page);
-}
-
-/* Striped Row Hover / Selection Overrides */
-.ion-table__row--striped:hover,
-.ion-table--striped .ion-table__row:nth-child(even):hover,
-.ion-table__row--striped[data-hovered='true'],
-.ion-table--striped .ion-table__row:nth-child(even)[data-hovered='true'] {
-  background-color: var(--surface-hover);
-}
-
-.ion-table__row--striped.is-selected,
-.ion-table--striped .ion-table__row:nth-child(even).is-selected,
-.ion-table__row--striped[data-selected='true'],
-.ion-table--striped .ion-table__row:nth-child(even)[data-selected='true'] {
-  background-color: var(--surface-primary-subtle);
-}
-
-/* Cells Base (th, td) */
-.ion-table__header-cell,
-.ion-table__cell {
-  padding: var(--spacing-12) var(--spacing-16); /* Default / Medium density */
+.ion-table th,
+.ion-table td {
+  padding: var(--spacing-16) var(--spacing-16);
   vertical-align: middle;
 }
 
-.ion-table__cell {
-  color: var(--text-default);
+.ion-table th {
+  background-color: var(--surface-page);
+  color: var(--text-secondary);
+  font-weight: var(--font-weight-medium);
+  border-bottom: var(--border-width-default) solid var(--border-default);
 }
 
-/* Alignment Modifiers */
-.ion-table__header-cell--align-right,
-.ion-table__cell--align-right {
+.ion-table td {
+  color: var(--text-default);
+  font-weight: var(--font-weight-regular);
+}
+
+.ion-table tr {
+  background-color: var(--surface-default);
+  transition: background-color 150ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.ion-table tbody tr {
+  border-bottom: var(--border-width-default) solid var(--border-default);
+}
+
+/*
+ * Striped rows have to come BEFORE hover/selected in the file, not just
+ * "be a plain background" — `.ion-table--striped tbody tr:nth-of-type(even)`
+ * and `.ion-table tbody tr:hover` carry the same specificity (one class, one
+ * pseudo-class, two elements), so with equal specificity the later rule in
+ * the file wins. Checked, not assumed: swapping the order silently makes a
+ * striped, hovered row show the page stripe instead of the hover tint.
+ */
+.ion-table--striped tbody tr:nth-of-type(even) {
+  background-color: var(--surface-page);
+}
+
+@media (hover: hover) {
+  .ion-table tbody tr:hover {
+    background-color: var(--surface-hover);
+  }
+}
+
+.ion-table tbody tr[data-hovered='true'] {
+  background-color: var(--surface-hover);
+}
+
+.ion-table tbody tr[data-selected='true'] {
+  background-color: var(--surface-primary-subtle);
+}
+
+.ion-table th[data-align='trailing'],
+.ion-table td[data-align='trailing'] {
   text-align: right;
 }
 
-.ion-table__header-cell--align-center,
-.ion-table__cell--align-center {
+.ion-table th[data-align='center'],
+.ion-table td[data-align='center'] {
   text-align: center;
 }
 
-/* Density Modifiers */
-
-/* Compact Density */
-.ion-table--compact .ion-table__header-cell,
-.ion-table--compact .ion-table__cell {
-  padding: var(--spacing-8) var(--spacing-12);
+/* Density — vertical padding only. See the header. */
+.ion-table--compact th,
+.ion-table--compact td {
+  padding-top: var(--spacing-8);
+  padding-bottom: var(--spacing-8);
 }
 
-/* Spacious Density */
-.ion-table--spacious .ion-table__header-cell,
-.ion-table--spacious .ion-table__cell {
-  padding: var(--spacing-16) var(--spacing-24);
+.ion-table--relaxed th,
+.ion-table--relaxed td {
+  padding-top: var(--spacing-20);
+  padding-bottom: var(--spacing-20);
+}
+
+/* Cell content — icon, label, icon, matching Figma's `Cell Text`. */
+.ion-table__cell-content {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-6);
+}
+
+.ion-table__cell-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: var(--icon-interactive);
+}
+
+.ion-table__cell-icon--trailing {
+  color: var(--icon-tertiary);
+}
+
+.ion-table__cell-icon svg {
+  width: var(--icon-size-sm);
+  height: var(--icon-size-sm);
+}
+
+.ion-table th .ion-table__cell-icon--trailing {
+  color: var(--icon-secondary);
+}
+
+/* Link cells — Figma's `Type=Link`. */
+.ion-table__cell-content--link {
+  color: var(--text-link);
+}
+
+/*
+ * Column divider — Figma's per-cell `Show Divider`. A border-right rather
+ * than the fixed-height rule Figma draws: Figma's rule is only ever as tall
+ * as that one demo cell's text, which is an artifact of the canvas, not a
+ * measurement to reproduce. A full-height border-right is the version that
+ * still looks right at any row height.
+ */
+.ion-table th[data-divider='true'],
+.ion-table td[data-divider='true'] {
+  border-right: var(--border-width-default) solid var(--border-default);
 }

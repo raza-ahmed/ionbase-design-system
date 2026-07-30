@@ -1,0 +1,171 @@
+/*
+ * Scroll Progress
+ *
+ * Measured from Figma `Line` / `Progress` / `Progress Heading` (191:927).
+ *
+ * FIGMA SPECIFIES STATES, NOT SCROLL-TRACKING
+ *
+ * The "32%" and the one heavier tick in Figma's mockup are just that variant's
+ * static content — evidence of what the rail looks like at some scroll
+ * position, not a scroll-tracking algorithm to reproduce. This component
+ * takes `progress` and `activeId` as props for the same reason Select takes
+ * `value` rather than reading a DOM scroll position itself: which container
+ * scrolls, whether the page is one document or many, and how "the active
+ * section" is defined are all facts only the consuming app has.
+ *
+ * TICKS ARE 2px, NOT 1px — MEASURED, NOT A TYPO
+ *
+ * Figma's `Line` stroke is 2, `border-width/thick`, not `/default`. Easy to
+ * misread as a mistake since every hairline elsewhere in the system is 1px;
+ * checked against the node rather than assumed.
+ *
+ * THE FLYOUT IS A DISCLOSURE, NOT A MENU
+ *
+ * No `role="menu"` here, for the same reason `Menu` itself doesn't claim one:
+ * that role promises roving-tabindex arrow-key navigation and typeahead, and
+ * this component doesn't implement either — its rows sit in normal tab order.
+ * The trigger/panel pair follows the WAI-ARIA Disclosure pattern instead:
+ * `aria-expanded` + `aria-controls`, nothing more elaborate.
+ *
+ * REVEAL TRANSITION IS DELIBERATELY PLAIN
+ *
+ * Opacity and an 8px slide, the same 150ms/cubic-bezier(0.4,0,0.2,1) language
+ * every hover state in the system already uses. The deeper choreography this
+ * component could eventually justify — a staggered reveal per row, easing
+ * that matches the rail's own scale — is future work, tracked in
+ * docs/motion-system.md, not invented here ahead of that decision.
+ */
+.ion-scroll-progress {
+  position: relative;
+  display: inline-flex;
+}
+
+.ion-scroll-progress__trigger {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-8);
+  padding: 0;
+  background: none;
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+}
+
+.ion-scroll-progress__trigger:focus-visible {
+  outline: var(--border-width-thick) solid var(--border-focus);
+  outline-offset: 2px;
+}
+
+.ion-scroll-progress__percent {
+  color: var(--text-tertiary);
+  font-family: var(--font-family-sans);
+  font-size: var(--type-body-sm);
+  line-height: var(--type-body-sm-line-height);
+  transition: color 150ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.ion-scroll-progress__rail {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-12);
+}
+
+.ion-scroll-progress__tick {
+  width: var(--spacing-32);
+  height: var(--border-width-thick);
+  background-color: var(--border-strong);
+  transition: background-color 150ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.ion-scroll-progress__tick--active {
+  background-color: var(--border-stronger);
+}
+
+@media (hover: hover) {
+  .ion-scroll-progress__trigger:hover .ion-scroll-progress__percent {
+    color: var(--text-secondary);
+  }
+}
+
+.ion-scroll-progress__trigger[data-hovered='true']
+  .ion-scroll-progress__percent {
+  color: var(--text-secondary);
+}
+
+/*
+ * Hidden via visibility + opacity, not `display: none` — the transition needs
+ * a property to animate, and `visibility` still pulls the panel's buttons out
+ * of tab order and the accessibility tree while closed, same as a native
+ * `<details>` collapses its content.
+ */
+.ion-scroll-progress__panel {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-12);
+  min-width: 220px;
+  padding: var(--spacing-8);
+  background-color: var(--surface-default);
+  border: var(--border-width-default) solid var(--border-default);
+  border-radius: var(--radius-md);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: translateY(-50%) translateX(-4px);
+  transition:
+    opacity 150ms cubic-bezier(0.4, 0, 0.2, 1),
+    transform 150ms cubic-bezier(0.4, 0, 0.2, 1),
+    visibility 150ms;
+}
+
+.ion-scroll-progress__panel[data-open='true'] {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transform: translateY(-50%) translateX(0);
+}
+
+.ion-scroll-progress__heading {
+  display: flex;
+  align-items: center;
+  padding: var(--spacing-2) var(--spacing-8);
+  background-color: transparent;
+  border: var(--border-width-default) solid transparent;
+  border-radius: var(--radius-md);
+  color: var(--text-secondary);
+  font-family: var(--font-family-sans);
+  font-size: var(--type-body-sm);
+  line-height: var(--type-body-sm-line-height);
+  font-weight: var(--font-weight-regular);
+  text-align: left;
+  cursor: pointer;
+  transition:
+    background-color 150ms cubic-bezier(0.4, 0, 0.2, 1),
+    border-color 150ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@media (hover: hover) {
+  .ion-scroll-progress__heading:hover {
+    background-color: var(--surface-muted);
+    border-color: var(--border-strong);
+  }
+}
+
+.ion-scroll-progress__heading[data-hovered='true'] {
+  background-color: var(--surface-muted);
+  border-color: var(--border-strong);
+}
+
+.ion-scroll-progress__heading--selected {
+  background-color: var(--surface-muted);
+}
+
+.ion-scroll-progress__heading:focus-visible {
+  outline: var(--border-width-thick) solid var(--border-focus);
+  outline-offset: -1px;
+}

@@ -13,6 +13,9 @@
 @import url('./header.css');
 @import url('./logo.css');
 @import url('./table.css');
+@import url('./divider.css');
+@import url('./nav-item.css');
+@import url('./scroll-progress.css');
 
 /*
  * Every IonBase element is border-box.

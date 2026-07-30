@@ -1,0 +1,120 @@
+/*
+ * Nav Item
+ *
+ * Measured from Figma `Nav Item` (70:22078). Two states only: Default, Hover.
+ *
+ * NO BACKGROUND ON HOVER — TEXT AND ICON RECOLOUR ONLY
+ *
+ * Unlike every other interactive surface in this system (Button, Menu Item,
+ * Table Row all paint `surface/hover` underneath), Nav Item's hover is
+ * `text/interactive/hover` and `icon/interactive/hover` and nothing else — no
+ * fill, no border. Reproduced as measured, not "fixed" to match the others:
+ * a primary nav bar sitting directly on the header's own surface has nothing
+ * to contrast a hover fill against without inventing a colour Figma never
+ * specified.
+ *
+ * A FOCUS RING FIGMA DOESN'T SHOW, ADDED ANYWAY
+ *
+ * Figma has no third state for keyboard focus. Every other interactive
+ * component in the system has one, so the same outline treatment is added
+ * here for the same reason Input's disabled state was — an interaction a
+ * real browser can reach that the static variant set doesn't enumerate isn't
+ * optional just because Figma has no swatch for it.
+ */
+.ion-nav-item {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-4);
+  padding: var(--spacing-8);
+  background-color: transparent;
+  border: none;
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  font-family: var(--font-family-sans);
+  font-size: var(--type-body-sm);
+  line-height: var(--type-body-sm-line-height);
+  font-weight: var(--font-weight-regular);
+  text-decoration: none;
+  cursor: pointer;
+  user-select: none;
+  transition: color 150ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.ion-nav-item__icon,
+.ion-nav-item__chevron {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: var(--icon-tertiary);
+  transition: color 150ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.ion-nav-item__icon svg,
+.ion-nav-item__chevron svg {
+  width: var(--icon-size-sm);
+  height: var(--icon-size-sm);
+}
+
+.ion-nav-item:focus-visible,
+.ion-nav-item[data-focused='true'] {
+  outline: var(--border-width-thick) solid var(--border-focus);
+  outline-offset: 2px;
+}
+
+.ion-nav-item--disabled,
+.ion-nav-item[data-disabled='true'] {
+  color: var(--text-disabled);
+  cursor: not-allowed;
+}
+
+.ion-nav-item--disabled .ion-nav-item__icon,
+.ion-nav-item--disabled .ion-nav-item__chevron,
+.ion-nav-item[data-disabled='true'] .ion-nav-item__icon,
+.ion-nav-item[data-disabled='true'] .ion-nav-item__chevron {
+  color: var(--icon-disabled);
+}
+
+/*
+ * Every hover selector excludes disabled with one `:not()` argument list,
+ * rather than relying on disabled simply appearing earlier in the file. Both
+ * states target the same nested icon/chevron element at equal specificity
+ * (one qualifier + one descendant), so without the exclusion, source order
+ * alone would decide the winner — fragile, and the same shape of bug
+ * Checkbox's disabled/checked conflict already was. Excluding disabled from
+ * hover directly means the two can never collide regardless of file order;
+ * disabled is written above only because it is the simpler selector and
+ * stylelint wants specificity to read non-decreasing top to bottom.
+ */
+@media (hover: hover) {
+  .ion-nav-item:hover:not(.ion-nav-item--disabled, [data-disabled='true']) {
+    color: var(--text-interactive-hover);
+  }
+
+  .ion-nav-item:hover:not(.ion-nav-item--disabled, [data-disabled='true'])
+    .ion-nav-item__icon,
+  .ion-nav-item:hover:not(.ion-nav-item--disabled, [data-disabled='true'])
+    .ion-nav-item__chevron {
+    color: var(--icon-interactive-hover);
+  }
+}
+
+.ion-nav-item[data-hovered='true']:not(
+    .ion-nav-item--disabled,
+    [data-disabled='true']
+  ) {
+  color: var(--text-interactive-hover);
+}
+
+.ion-nav-item[data-hovered='true']:not(
+    .ion-nav-item--disabled,
+    [data-disabled='true']
+  )
+  .ion-nav-item__icon,
+.ion-nav-item[data-hovered='true']:not(
+    .ion-nav-item--disabled,
+    [data-disabled='true']
+  )
+  .ion-nav-item__chevron {
+  color: var(--icon-interactive-hover);
+}

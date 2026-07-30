@@ -41,3 +41,20 @@ export type {
   LogoSize,
   LogoWordmark,
 } from './Logo.js';
+export { Divider } from './Divider.js';
+export type { DividerProps, DividerOrientation } from './Divider.js';
+export { NavItem } from './NavItem.js';
+export type { NavItemProps } from './NavItem.js';
+export { Table, TableHead, TableBody, TableRow, TableCell } from './Table.js';
+export type {
+  TableProps,
+  TableDensity,
+  TableRowProps,
+  TableCellProps,
+  TableCellAlign,
+} from './Table.js';
+export { ScrollProgress } from './ScrollProgress.js';
+export type {
+  ScrollProgressProps,
+  ScrollProgressSection,
+} from './ScrollProgress.js';
