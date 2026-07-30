@@ -78,8 +78,19 @@
   height: var(--ion-radio-size);
   background-color: var(--surface-default);
   border-style: solid;
-  border-width: var(--border-width-default);
-  border-color: var(--border-strong);
+
+  /*
+   * The EMPTY circle carries the heavier border: 2px `border/stronger`, where
+   * the selected one drops to 1px of its intent colour. Same reasoning as
+   * Checkbox — an unselected control is nothing but its outline, so it has to
+   * hold the row on its own; once filled, the fill does that work.
+   *
+   * Figma strokes this INSIDE, and the global `box-sizing: border-box` in
+   * index.css is what reproduces it: the circle stays 16/20/24 and the border
+   * eats inward instead of growing the control.
+   */
+  border-width: var(--border-width-thick);
+  border-color: var(--border-stronger);
   border-radius: var(--radius-full);
 
   /* Centred on the label's first line — see checkbox.css. */
@@ -105,6 +116,8 @@
 }
 
 .ion-radio__input:checked + .ion-radio__indicator {
+  /* Back to 1px — see the indicator's border comment. */
+  border-width: var(--border-width-default);
   background-color: var(--ion-radio-fill);
   border-color: var(--ion-radio-border);
 
@@ -137,6 +150,16 @@
 .ion-radio__input:checked:disabled + .ion-radio__indicator {
   background-color: var(--surface-disabled);
   border-color: var(--border-disabled);
+
+  /*
+   * NOT MEASURED — mirrored from Checkbox. Radio's variant set has only
+   * Unselected and Selected, so Figma says nothing about a disabled border
+   * width. Checkbox does have the variants and keeps 2px in all three disabled
+   * states, so Radio follows it rather than inheriting 1px from `:checked` by
+   * accident of specificity. Restated here for the same reason Checkbox has to:
+   * `:checked` sets 1px, and only the compound `:checked:disabled` beats it.
+   */
+  border-width: var(--border-width-thick);
 
   /* Flat whether or not it is selected. */
   box-shadow: none;

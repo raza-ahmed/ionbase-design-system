@@ -163,3 +163,76 @@ export const GroupSharesNameAndSelection: Story = {
     await expect(b.checked).toBe(false);
   },
 };
+
+/**
+ * The empty circle is a 2px `border/stronger` outline; the selected one drops
+ * to 1px of its intent colour — the same pair Checkbox uses, kept in step
+ * deliberately. Pinned for the same reason: `tokens:verify` only sees
+ * variables, so nothing else in the pipeline can catch a border width
+ * regressing.
+ *
+ * The circle must stay 20px in both states — `box-sizing: border-box` is what
+ * reproduces Figma's INSIDE stroke, and without it the 2px border would grow
+ * the unselected circle against the selected one.
+ */
+export const UnselectedBorderIsHeavier: Story = {
+  render: () => (
+    <RadioGroup label="Plan" defaultValue="b">
+      <Radio value="a">empty</Radio>
+      <Radio value="b">filled</Radio>
+    </RadioGroup>
+  ),
+  play: async ({ canvas }) => {
+    const indicator = (label: string) =>
+      canvas
+        .getByLabelText(label)
+        .closest('.ion-radio')!
+        .querySelector('.ion-radio__indicator') as HTMLElement;
+
+    const empty = getComputedStyle(indicator('empty'));
+    const filled = getComputedStyle(indicator('filled'));
+
+    await expect(empty.borderTopWidth).toBe('2px');
+    await expect(filled.borderTopWidth).toBe('1px');
+
+    const stronger = getComputedStyle(document.documentElement)
+      .getPropertyValue('--border-stronger')
+      .trim();
+    const rgb = `rgb(${[1, 3, 5]
+      .map((i) => parseInt(stronger.slice(i, i + 2), 16))
+      .join(', ')})`;
+    await expect(empty.borderTopColor).toBe(rgb);
+
+    // Border grows inward, so the outer circle is identical in both states.
+    await expect(indicator('empty').getBoundingClientRect().width).toBe(
+      indicator('filled').getBoundingClientRect().width,
+    );
+  },
+};
+
+/**
+ * Disabled keeps the 2px border whether or not it is selected.
+ *
+ * Figma has no disabled variants for Radio, so this mirrors Checkbox rather
+ * than reproducing a measurement. Without it, a disabled+selected radio would
+ * inherit 1px from `:checked` by accident of specificity — which is a cascade
+ * outcome, not a decision, and worth pinning either way.
+ */
+export const DisabledKeepsTheHeavyBorder: Story = {
+  render: () => (
+    <RadioGroup label="Plan" defaultValue="b" isDisabled>
+      <Radio value="a">off</Radio>
+      <Radio value="b">on</Radio>
+    </RadioGroup>
+  ),
+  play: async ({ canvas }) => {
+    const indicator = (label: string) =>
+      canvas
+        .getByLabelText(label)
+        .closest('.ion-radio')!
+        .querySelector('.ion-radio__indicator') as HTMLElement;
+
+    await expect(getComputedStyle(indicator('off')).borderTopWidth).toBe('2px');
+    await expect(getComputedStyle(indicator('on')).borderTopWidth).toBe('2px');
+  },
+};

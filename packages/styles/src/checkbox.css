@@ -109,9 +109,7 @@
    * index.css) is what reproduces that — the box stays 16/20/24 and the border
    * eats inward. Without it, switching to 2px would grow every checkbox by 2px.
    *
-   * Radio still uses 1px `border/strong` for its unselected circle. That is a
-   * real divergence between two controls that otherwise mirror each other, and
-   * it is deliberate here only in the sense that Figma currently says so.
+   * Radio matches this exactly; the two controls stay in step.
    */
   border-width: var(--border-width-thick);
   border-color: var(--border-stronger);
