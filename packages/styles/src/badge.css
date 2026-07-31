@@ -52,7 +52,7 @@
 /*
  * The icon does NOT track the label. v2 splits `fg` into `text` and `icon`
  * precisely so an icon can sit a step brighter than the copy beside it — for
- * error that is #dc2828 against the label's #ba1c1c. `@ionbase/icons` renders
+ * error that is #dc2828 against the label's #ba1c1c. `@ionbase-ui/icons` renders
  * with `currentColor`, so each intent sets `color` on the svg directly.
  *
  * Icon size is deliberately not set here. Figma has it at 14px, which is not on

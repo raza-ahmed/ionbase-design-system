@@ -44,13 +44,13 @@ importers:
 
   apps/storybook:
     dependencies:
-      '@ionbase/icons':
+      '@ionbase-ui/icons':
         specifier: workspace:*
         version: link:../../packages/icons
-      '@ionbase/react':
+      '@ionbase-ui/react':
         specifier: workspace:*
         version: link:../../packages/react
-      '@ionbase/styles':
+      '@ionbase-ui/styles':
         specifier: workspace:*
         version: link:../../packages/styles
       lucide-react:
@@ -116,7 +116,7 @@ importers:
 
   packages/react:
     dependencies:
-      '@ionbase/styles':
+      '@ionbase-ui/styles':
         specifier: workspace:*
         version: link:../styles
       '@react-stately/collections':
@@ -131,13 +131,16 @@ importers:
       react-aria:
         specifier: ^3.34.0
         version: 3.50.0(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
+      react-dom:
+        specifier: ^18.0.0 || ^19.0.0
+        version: 19.2.8(react@19.2.8)
       react-stately:
         specifier: ^3.48.0
         version: 3.48.0(react@19.2.8)
 
   packages/styles:
     dependencies:
-      '@ionbase/tokens':
+      '@ionbase-ui/tokens':
         specifier: workspace:*
         version: link:../tokens
 

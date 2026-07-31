@@ -1,7 +1,7 @@
 import React from 'react';
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { expect, waitFor } from 'storybook/test';
-import { Button } from '@ionbase/react';
+import { Button } from '@ionbase-ui/react';
 
 const meta: Meta<typeof Button> = {
   title: 'Components/Button',

@@ -110,7 +110,7 @@ const emphasisWeight = textStyles['Body/Default Emphasis'].fontWeight;
 const header = [
   '/**',
   ' * Generated from the Figma text styles. Do not edit.',
-  ' * Regenerate with `pnpm --filter @ionbase/tokens build`.',
+  ' * Regenerate with `pnpm --filter @ionbase-ui/tokens build`.',
   ' *',
   ' * Responsive by construction: font-size and line-height reference',
   ' * breakpoint-scoped type/* tokens, so these classes resize on their own.',

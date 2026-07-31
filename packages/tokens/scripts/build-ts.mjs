@@ -22,7 +22,7 @@ const collections = loadCollections();
 
 const lines = [
   '// Generated from the IonBase Figma file. Do not edit directly.',
-  '// Regenerate with `pnpm --filter @ionbase/tokens build`.',
+  '// Regenerate with `pnpm --filter @ionbase-ui/tokens build`.',
   '',
 ];
 

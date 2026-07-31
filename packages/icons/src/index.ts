@@ -1,5 +1,5 @@
 /**
- * @ionbase/icons
+ * @ionbase-ui/icons
  *
  * The IonBase icon set is Lucide — the 1,753 components on the Figma "Icons-
  * Lucide" page are the stock set, unmodified. So this package does NOT export
@@ -10,12 +10,12 @@
  * colour inherited from context, and the accessibility defaults.
  *
  *   import { Plus } from 'lucide-react';
- *   import { Icon } from '@ionbase/icons';
+ *   import { Icon } from '@ionbase-ui/icons';
  *
  *   <Icon as={Plus} size="sm" />
  *   <Icon as={Plus} label="Add item" />   // meaningful, gets an a11y name
  *
- * `pnpm --filter @ionbase/icons icons:verify` checks that the Figma page and the
+ * `pnpm --filter @ionbase-ui/icons icons:verify` checks that the Figma page and the
  * installed lucide-react still describe the same set.
  */
 export { Icon } from './Icon.js';

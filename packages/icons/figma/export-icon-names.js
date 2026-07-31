@@ -3,7 +3,7 @@
  *
  * Paste into `use_figma` with the IonBase file open, then feed the result to:
  *
- *   pnpm --filter @ionbase/icons icons:verify -- --expect <count> <checksum>
+ *   pnpm --filter @ionbase-ui/icons icons:verify -- --expect <count> <checksum>
  *
  * Returns a checksum rather than 1,753 names on purpose: the whole list is a
  * ~35KB payload to move and read every time, and the only question worth asking

@@ -1,7 +1,7 @@
 import React from 'react';
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { expect } from 'storybook/test';
-import { Checkbox } from '@ionbase/react';
+import { Checkbox } from '@ionbase-ui/react';
 
 const meta: Meta<typeof Checkbox> = {
   title: 'Components/Checkbox',

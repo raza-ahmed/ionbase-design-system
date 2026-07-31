@@ -7,8 +7,8 @@ import {
   TableBody,
   TableRow,
   TableCell,
-} from '@ionbase/react';
-import { Icon } from '@ionbase/icons';
+} from '@ionbase-ui/react';
+import { Icon } from '@ionbase-ui/icons';
 import { ArrowUpRight, Mail } from 'lucide-react';
 
 const meta: Meta<typeof Table> = {

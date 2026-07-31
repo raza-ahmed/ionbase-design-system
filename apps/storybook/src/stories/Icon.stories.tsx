@@ -1,6 +1,6 @@
 import React from 'react';
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { Icon } from '@ionbase/icons';
+import { Icon } from '@ionbase-ui/icons';
 import {
   Plus,
   ArrowRight,
@@ -11,7 +11,7 @@ import {
   Settings,
   Download,
 } from 'lucide-react';
-import { Button } from '@ionbase/react';
+import { Button } from '@ionbase-ui/react';
 
 const meta: Meta<typeof Icon> = {
   title: 'Foundations/Icon',

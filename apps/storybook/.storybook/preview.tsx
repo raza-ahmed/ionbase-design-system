@@ -1,6 +1,6 @@
 import React from 'react';
 import type { Preview, Decorator } from '@storybook/react-vite';
-import '@ionbase/styles/src/index.css';
+import '@ionbase-ui/styles/src/index.css';
 
 // Custom theme switcher decorator
 const withTheme: Decorator = (Story, context) => {

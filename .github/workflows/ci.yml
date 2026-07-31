@@ -95,7 +95,7 @@ jobs:
       # Typecheck does not catch a story that throws on render, or an import
       # that only resolves through Storybook's Vite config.
       - name: Build Storybook
-        run: pnpm --filter @ionbase/storybook build-storybook
+        run: pnpm --filter @ionbase-ui/storybook build-storybook
 
       # Interaction tests run the stories in a real Chromium. They assert the
       # data-attribute contract button.css depends on — before React Aria's
@@ -103,7 +103,7 @@ jobs:
       # data-pressed, so [data-hovered] and [data-focused] were dead selectors
       # and nothing noticed.
       - name: Install Playwright Chromium
-        run: pnpm --filter @ionbase/storybook exec playwright install --with-deps chromium
+        run: pnpm --filter @ionbase-ui/storybook exec playwright install --with-deps chromium
 
       - name: Interaction tests
-        run: pnpm --filter @ionbase/storybook test
+        run: pnpm --filter @ionbase-ui/storybook test

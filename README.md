@@ -2,7 +2,20 @@
 
 IonBase is a modern, high-performance design system monorepo built to deliver cohesive, accessible, and fast user interfaces. The workspace is powered by `pnpm workspaces` and `Turborepo` for efficient task execution and caching, utilizing strict TypeScript (ESM) and modern linting/formatting standards (ESLint flat config, Prettier) to ensure code consistency across all packages and applications.
 
-## Getting started
+## Using IonBase in a product
+
+```bash
+pnpm add @ionbase-ui/react @ionbase-ui/styles @ionbase-ui/icons lucide-react
+```
+
+```tsx
+import '@ionbase-ui/styles/css';
+import { Button } from '@ionbase-ui/react';
+```
+
+Install / theme / publish (same local `npm publish` flow as Beacon): [`docs/publishing.md`](docs/publishing.md).
+
+## Getting started (this repo)
 
 ```bash
 pnpm install
@@ -13,6 +26,7 @@ pnpm build      # also lint / typecheck / format
 
 | If you want to…                            | Read                                                                                                                                    |
 | ------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------- |
+| Install / publish the packages             | [`docs/publishing.md`](docs/publishing.md)                                                                                              |
 | Change a design token                      | [`packages/tokens/README.md`](packages/tokens/README.md) — **start here**, the workflow has a Figma half that is not runnable from Node |
 | Name a token                               | [`docs/variable-naming-spec.html`](docs/variable-naming-spec.html) — the grammar, and the validator that enforces it                    |
 | Know which tokens exist and what they hold | [`docs/token-architecture-v2.md`](docs/token-architecture-v2.md) — the full inventory, four collections, ~392 variables                 |
@@ -38,14 +52,14 @@ ionbase-design-system/
 ├── apps/
 │   └── storybook/          # Storybook application workspace
 ├── packages/
-│   ├── tokens/             # Design tokens package (@ionbase/tokens)
+│   ├── tokens/             # Design tokens package (@ionbase-ui/tokens)
 │   │   ├── src/figma/      #   committed Figma export — the source of truth
 │   │   ├── scripts/        #   Node: build, audit, verify
 │   │   └── figma/          #   Plugin API scripts, run inside Figma
-│   ├── styles/             # Global/component style styles package (@ionbase/styles)
-│   ├── react/              # React component library package (@ionbase/react)
-│   └── icons/              # Icon set and asset package (@ionbase/icons)
-├── docs/                   # Documentation workspace (@ionbase/docs)
+│   ├── styles/             # Global/component style styles package (@ionbase-ui/styles)
+│   ├── react/              # React component library package (@ionbase-ui/react)
+│   └── icons/              # Icon set and asset package (@ionbase-ui/icons)
+├── docs/                   # Documentation workspace (@ionbase-ui/docs)
 ├── eslint.config.js        # ESLint flat config
 ├── .prettierrc             # Prettier configuration
 ├── tsconfig.base.json      # Base TypeScript strict config

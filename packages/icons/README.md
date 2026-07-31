@@ -1,4 +1,4 @@
-# @ionbase/icons
+# @ionbase-ui/icons
 
 The IonBase icon set is **Lucide**.
 
@@ -14,7 +14,7 @@ What this package owns is how an icon is _used_.
 
 ```tsx
 import { Plus } from 'lucide-react';
-import { Icon } from '@ionbase/icons';
+import { Icon } from '@ionbase-ui/icons';
 
 <Icon as={Plus} size="sm" />              // 16px, decorative (aria-hidden)
 <Icon as={Plus} label="Add item" />       // meaningful: role=img + aria-label
@@ -74,7 +74,7 @@ about this component.
 ```bash
 # 1. run figma/export-icon-names.js in Figma via use_figma
 # 2. compare against the installed lucide-react:
-pnpm --filter @ionbase/icons icons:verify -- --expect <count> <checksum>
+pnpm --filter @ionbase-ui/icons icons:verify -- --expect <count> <checksum>
 ```
 
 It compares checksums rather than moving 1,753 names, and reports the _direction_

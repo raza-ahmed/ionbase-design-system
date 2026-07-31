@@ -37,7 +37,7 @@ export interface SelectProps extends Omit<
 /**
  * The chevron from Figma's `Chevron` slot, inlined.
  *
- * Inlined rather than taken from `@ionbase/icons` because the chevron is part
+ * Inlined rather than taken from `@ionbase-ui/icons` because the chevron is part
  * of the component rather than a slot a consumer fills — Select would otherwise
  * be the only thing in this package that depends on the icon library, to draw a
  * shape that never varies. Sizing comes from the CSS, so it tracks the size

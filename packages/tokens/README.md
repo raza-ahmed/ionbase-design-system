@@ -1,4 +1,4 @@
-# @ionbase/tokens
+# @ionbase-ui/tokens
 
 > **Architecture v2 is agreed but not yet migrated.** Collections are moving to
 > Primitives → Semantics → Interface (brand modes in Semantics, light/dark in
@@ -23,13 +23,13 @@ Figma file: `gaLbGd0QNb1fUl6BjSpfBA` (IonBase Design System)
 ## Using the tokens
 
 ```ts
-import { semantic, tokens } from '@ionbase/tokens';
+import { semantic, tokens } from '@ionbase-ui/tokens';
 
 semantic['bg/brand/default']; // 'var(--bg-brand-default)'
 ```
 
 ```css
-@import '@ionbase/tokens/css'; /* base + dark + breakpoints */
+@import '@ionbase-ui/tokens/css'; /* base + dark + breakpoints */
 ```
 
 Exports `var()` references rather than resolved values on purpose: a component
@@ -154,7 +154,7 @@ else, so they collapse to one modifier, `.ion-text--emphasis`. The generator
 asserts that and fails the build if it stops being true.
 
 Effect styles (shadows) are the opposite case — **not** variable-bound, so they
-are hand-authored in `@ionbase/styles/src/elevation.css` and are not part of
+are hand-authored in `@ionbase-ui/styles/src/elevation.css` and are not part of
 this pipeline.
 
 ---

@@ -1,8 +1,8 @@
 import React from 'react';
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { expect } from 'storybook/test';
-import { Menu, MenuItem } from '@ionbase/react';
-import { Icon } from '@ionbase/icons';
+import { Menu, MenuItem } from '@ionbase-ui/react';
+import { Icon } from '@ionbase-ui/icons';
 import { Bell, Palette, Shield, User } from 'lucide-react';
 
 const meta: Meta<typeof Menu> = {

@@ -36,7 +36,7 @@ Checksum after the `fg` revert: `296 / 2693417935`.
 
 ## Why this was worth doing before Stage 2
 
-Nothing consumes these tokens yet. Once `@ionbase/styles` and the React
+Nothing consumes these tokens yet. Once `@ionbase-ui/styles` and the React
 components are written against them, every one of these renames becomes a
 breaking change with a migration guide attached. The window was now.
 
@@ -138,7 +138,7 @@ ID, so nothing rebound and no design work was disturbed.
 
 ## Standing guarantees
 
-`pnpm --filter @ionbase/tokens build` now fails if any of these regress:
+`pnpm --filter @ionbase-ui/tokens build` now fails if any of these regress:
 
 - a name stops parsing against the grammar (`tokens:audit`)
 - `codeSyntax` stops matching the token path (`tokens:verify`)

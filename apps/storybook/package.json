@@ -1,5 +1,5 @@
 {
-  "name": "@ionbase/storybook",
+  "name": "@ionbase-ui/storybook",
   "version": "0.0.0",
   "private": true,
   "type": "module",
@@ -16,11 +16,11 @@
     "test": "vitest run --project=storybook"
   },
   "dependencies": {
-    "@ionbase/react": "workspace:*",
-    "@ionbase/styles": "workspace:*",
+    "@ionbase-ui/react": "workspace:*",
+    "@ionbase-ui/styles": "workspace:*",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "@ionbase/icons": "workspace:*",
+    "@ionbase-ui/icons": "workspace:*",
     "lucide-react": "^1.27.0"
   },
   "devDependencies": {

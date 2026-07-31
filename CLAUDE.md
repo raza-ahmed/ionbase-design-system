@@ -179,7 +179,7 @@ sees this — and it is only trustworthy if it follows the three rules above.
 Before calling any component done — new, changed, or deleted:
 
 ```bash
-pnpm --filter @ionbase/tokens tokens:gate
+pnpm --filter @ionbase-ui/tokens tokens:gate
 ```
 
 ### Generated vs committed

@@ -1,8 +1,8 @@
 import React from 'react';
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { expect, waitFor } from 'storybook/test';
-import { NavItem } from '@ionbase/react';
-import { Icon } from '@ionbase/icons';
+import { NavItem } from '@ionbase-ui/react';
+import { Icon } from '@ionbase-ui/icons';
 import { Settings } from 'lucide-react';
 
 const meta: Meta<typeof NavItem> = {

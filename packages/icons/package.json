@@ -1,10 +1,40 @@
 {
-  "name": "@ionbase/icons",
-  "version": "0.0.0",
-  "private": true,
+  "name": "@ionbase-ui/icons",
+  "version": "0.1.0",
+  "description": "IonBase icon wrapper — Lucide icons sized to the design-system ladder",
+  "license": "MIT",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "keywords": [
+    "design-system",
+    "icons",
+    "react",
+    "lucide",
+    "ionbase"
+  ],
+  "files": [
+    "dist"
+  ],
+  "sideEffects": false,
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/raza-ahmed/ionbase-design-system.git",
+    "directory": "packages/icons"
+  },
+  "homepage": "https://github.com/raza-ahmed/ionbase-design-system/tree/main/packages/icons#readme",
+  "bugs": {
+    "url": "https://github.com/raza-ahmed/ionbase-design-system/issues"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "dev": "tsc --watch",
     "build": "tsc",

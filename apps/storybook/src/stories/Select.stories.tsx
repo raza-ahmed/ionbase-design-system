@@ -1,7 +1,7 @@
 import React from 'react';
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { expect } from 'storybook/test';
-import { Select } from '@ionbase/react';
+import { Select } from '@ionbase-ui/react';
 
 const OPTIONS = [
   { value: 'draft', label: 'Draft' },

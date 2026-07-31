@@ -60,7 +60,7 @@ export default {
           'max-content',
           'min-content',
         ],
-        message: 'Raw CSS values are forbidden. Use design token variables defined in @ionbase/tokens (e.g., var(--bg-neutral-default)) instead.',
+        message: 'Raw CSS values are forbidden. Use design token variables defined in @ionbase-ui/tokens (e.g., var(--bg-neutral-default)) instead.',
       },
     ],
 

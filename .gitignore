@@ -36,9 +36,6 @@ test-results/
 blob-report/
 .playwright/
 
-# ---- Changesets ----
-# Keep .changeset/config.json and pending changesets; ignore nothing here by default.
-
 # ---- Env & secrets ----
 .env
 .env.*

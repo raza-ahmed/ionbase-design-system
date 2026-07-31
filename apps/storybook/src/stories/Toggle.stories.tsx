@@ -1,7 +1,7 @@
 import React from 'react';
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { expect } from 'storybook/test';
-import { Toggle } from '@ionbase/react';
+import { Toggle } from '@ionbase-ui/react';
 
 const meta: Meta<typeof Toggle> = {
   title: 'Components/Toggle',

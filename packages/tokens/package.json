@@ -1,7 +1,8 @@
 {
-  "name": "@ionbase/tokens",
-  "version": "0.0.0",
-  "private": true,
+  "name": "@ionbase-ui/tokens",
+  "version": "0.1.0",
+  "description": "IonBase design tokens — CSS custom properties and TypeScript exports from Figma",
+  "license": "MIT",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -13,9 +14,31 @@
     "./css": "./dist/css/index.css",
     "./css/*": "./dist/css/*"
   },
+  "keywords": [
+    "design-system",
+    "design-tokens",
+    "figma",
+    "css-variables",
+    "ionbase"
+  ],
   "files": [
     "dist"
   ],
+  "sideEffects": [
+    "**/*.css"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/raza-ahmed/ionbase-design-system.git",
+    "directory": "packages/tokens"
+  },
+  "homepage": "https://github.com/raza-ahmed/ionbase-design-system/tree/main/packages/tokens#readme",
+  "bugs": {
+    "url": "https://github.com/raza-ahmed/ionbase-design-system/issues"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "dev": "node scripts/figma-to-dtcg.mjs && node scripts/build-css.mjs && node scripts/build-ts.mjs && tsc --watch",
     "build": "pnpm run tokens:dtcg && pnpm run tokens:audit && pnpm run tokens:tier && pnpm run tokens:verify && pnpm run tokens:css && pnpm run tokens:typography && pnpm run tokens:elevation && pnpm run tokens:ts && tsc",

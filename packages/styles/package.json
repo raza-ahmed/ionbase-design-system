@@ -1,17 +1,38 @@
 {
-  "name": "@ionbase/styles",
-  "version": "0.0.0",
-  "private": true,
+  "name": "@ionbase-ui/styles",
+  "version": "0.1.0",
+  "description": "IonBase component styles — CSS for every React component, built on design tokens",
+  "license": "MIT",
   "type": "module",
-  "main": "./dist/index.js",
-  "types": "./dist/index.d.ts",
   "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "default": "./dist/index.js"
-    },
+    "./css": "./dist/css/index.css",
     "./css/*": "./dist/css/*",
     "./src/*": "./src/*"
+  },
+  "keywords": [
+    "design-system",
+    "css",
+    "design-tokens",
+    "ionbase",
+    "ui"
+  ],
+  "files": [
+    "dist"
+  ],
+  "sideEffects": [
+    "**/*.css"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/raza-ahmed/ionbase-design-system.git",
+    "directory": "packages/styles"
+  },
+  "homepage": "https://github.com/raza-ahmed/ionbase-design-system/tree/main/packages/styles#readme",
+  "bugs": {
+    "url": "https://github.com/raza-ahmed/ionbase-design-system/issues"
+  },
+  "publishConfig": {
+    "access": "public"
   },
   "scripts": {
     "dev": "tsc --watch",
@@ -21,6 +42,6 @@
     "format": "prettier --check ."
   },
   "dependencies": {
-    "@ionbase/tokens": "workspace:*"
+    "@ionbase-ui/tokens": "workspace:*"
   }
 }

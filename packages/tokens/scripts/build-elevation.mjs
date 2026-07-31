@@ -67,7 +67,7 @@ for (const [name, effects] of Object.entries(effectStyles)) {
 
 const css = `/**
  * Generated from the Figma effect styles. Do not edit.
- * Regenerate with \`pnpm --filter @ionbase/tokens build\`.
+ * Regenerate with \`pnpm --filter @ionbase-ui/tokens build\`.
  *
  * Source: src/figma/effect-styles.json
  *

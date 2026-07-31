@@ -1,7 +1,7 @@
 import React from 'react';
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { expect } from 'storybook/test';
-import { Header, Button, Avatar, Logo } from '@ionbase/react';
+import { Header, Button, Avatar, Logo } from '@ionbase-ui/react';
 
 const meta: Meta<typeof Header> = {
   title: 'Components/Header',

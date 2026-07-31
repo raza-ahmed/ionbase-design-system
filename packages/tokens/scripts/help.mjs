@@ -8,7 +8,7 @@
 const cmd = (c, what) => `  ${c.padEnd(38)} ${what}`;
 
 console.log(`
-@ionbase/tokens — Figma owns token names and values. This repo does not.
+@ionbase-ui/tokens — Figma owns token names and values. This repo does not.
 Full guide: packages/tokens/README.md     Figma file: gaLbGd0QNb1fUl6BjSpfBA
 
 NODE SIDE (runs here)
