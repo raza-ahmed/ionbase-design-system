@@ -54,10 +54,13 @@
 
   /*
    * Typography comes from the type ramp, not from button tokens. In Figma the
-   * Label carries a text style — Body/Default at Medium and Large, Body/Small
-   * at Small — and a text style owns fontSize/fontStyle/lineHeight outright.
-   * Button-level type tokens were tried and deleted: they are a second source
-   * of truth that the text style silently overrides, so they can never win.
+   * Label carries a text style — Body/Default Emphasis at Medium, Body/Small
+   * Emphasis at Small, Body/Medium Emphasis at Large — and a text style owns
+   * fontSize/fontStyle/lineHeight outright. Button-level type tokens were
+   * tried and deleted: they are a second source of truth that the text style
+   * silently overrides, so they can never win.
+   *
+   * Weight is Medium (500) across all three sizes — the Emphasis body styles.
    */
   --ion-button-font-size: var(--type-body);
   --ion-button-line-height: var(--type-body-line-height);
@@ -77,7 +80,7 @@
   padding-right: var(--ion-button-padding-x);
   gap: var(--ion-button-gap);
   font-family: var(--font-family-sans);
-  font-weight: var(--font-weight-regular);
+  font-weight: var(--font-weight-medium);
   font-size: var(--ion-button-font-size);
   line-height: var(--ion-button-line-height);
   text-decoration: none;
@@ -110,6 +113,8 @@
   --ion-button-padding-x: var(--spacing-20);
   --ion-button-gap: var(--spacing-8);
   --ion-button-icon-size: var(--icon-size-lg);
+  --ion-button-font-size: var(--type-body-md);
+  --ion-button-line-height: var(--type-body-md-line-height);
   --ion-button-raised: var(--ion-shadow-raised-lifted-lg);
   --ion-button-inset-lifted: var(--ion-shadow-inset-lifted-lg);
   --ion-button-inset-flush: var(--ion-shadow-inset-flush-lg);
