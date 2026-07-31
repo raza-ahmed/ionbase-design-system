@@ -1,61 +1,81 @@
 # Changelog
 
-## Unreleased
+## 0.3.0 — 2026-07-31
 
-Four correctness fixes found auditing the published 0.2.0 dist. No breaking
-changes; the `InputProps` and `TabsProps` changes are both widenings.
+Correctness, accessibility, and API/packaging cleanup since the published
+0.2.0 dist. Breaking changes are called out first.
 
-### Added — `'use client'` on the nine modules that need it
+### Breaking — JS tokens leave the main barrel
 
-No directive shipped at all, so every React Server Components consumer — the
-default in the Next.js App Router — had to hand-write a re-export shim before
-the library could be imported.
+`export * as tokens from './tokens/index.js'` is gone from the root entry.
+Importing a single component no longer pulls ~48KB of token JSON into bundlers
+that do not tree-shake namespace re-exports.
 
-The directive is per-module, not blanket. Nine components use client-only React
-APIs and carry it; **`Avatar`, `Badge`, `Divider`, `Header`, `Logo`, `Menu`,
-`Table` and `Icon` stay renderable from a Server Component**, because
-`forwardRef` and `memo` do exist in React's server build. A page using only
-those ships no client JavaScript for them. Importing from the root entry works
-either way — the barrel re-exports both kinds and the bundler resolves per
-module.
+```ts
+// before
+import { tokens } from 'ionbase-ui';
 
-`scripts/verify-client-boundaries.mjs` now runs as part of the build. It
-derives which modules need the directive from what they import, and fails both
-when one is missing and when the build drops it from `dist/`.
+// after
+import { semantic, tokens } from 'ionbase-ui/tokens-js';
+```
+
+CSS custom properties are unchanged at `ionbase-ui/tokens` / `ionbase-ui/styles`.
+
+### Breaking — Input / Select `className` always lands on the control
+
+`className` used to move: on the control box when there was no label/helper, on
+the `.ion-field` wrapper when there was. It now always targets `.ion-input` /
+`.ion-select`. Style the wrapper with the new `wrapperClassName` prop.
+
+### Breaking — AvatarGroup no longer force-overwrites children
+
+Group `size` / `shape` only fill in when a child `Avatar` omitted them. Explicit
+child props win. Non-Avatar children are left alone (no invalid DOM props).
+
+### Changed — `isDisabled` is the library-wide disabled prop
+
+Canonical name is React Aria's `isDisabled`. Checkbox, Toggle, Radio and
+MenuItem join Button, NavItem, Select, Input and RadioGroup. Native `disabled`
+remains accepted as a `@deprecated` alias for one minor; when both are passed,
+`isDisabled` wins.
+
+### Added — accessibility fixes
+
+- Table: `<th>` gets `scope` (inferred `col`/`row`, overridable); scroll
+  container is a named, focusable `role="region"`; row `selection` requires a
+  label and renders `<th scope="col">` in thead (select-all).
+- Global `prefers-reduced-motion` and `forced-colors` handling in the stylesheet.
+- Disabled NavItem links strip activation handlers and leave the tab order.
+- Avatar falls through to initials/icon when `src` errors.
+
+### Added — `ARIA_TAB_LIST_NON_DOM_PROPS`
+
+Same typed omit list as Button/Input. Tabs can spread HTML attributes onto the
+root without leaking collection/selection props to the DOM.
+
+### Added — `'use client'` on modules that need it
+
+No directive shipped in 0.2.0, so every RSC consumer had to shim imports.
+Per-module now: client-only APIs get the directive; `Badge`, `Divider`,
+`Header`, `Logo`, `Menu` and `Icon` stay server-renderable. **Avatar and Table
+are client modules** after the a11y work (`useState` / context).
+
+`scripts/verify-client-boundaries.mjs` runs as part of the build.
 
 ### Fixed — `Tabs` ignored `orientation` for keyboard navigation
 
-`orientation` was destructured out before the rest of the props reached
-`useTabListState` / `useTabList`, so React Aria always assumed horizontal: a
-vertical track kept left/right arrow keys and announced
-`aria-orientation="horizontal"`.
-
-`TabsProps['orientation']` widens from `'horizontal'` to
-`'horizontal' | 'vertical'`, and `.ion-tabs__track--vertical` now stacks the
-track. Vertical is keyboard-, ARIA- and layout-complete, but still wears the
-horizontal _decoration_ — which edge the underline moves to is a Figma
-decision, not one to invent here.
+`orientation` was destructured out before the hooks saw it, so React Aria
+always assumed horizontal. Vertical is keyboard-, ARIA- and layout-complete;
+decoration is still horizontal pending Figma.
 
 ### Fixed — `Radio` discarded the consumer's `onChange` when the group was controlled
 
-The controlled branch replaced the caller's handler where the uncontrolled
-branch chained it, so `<Radio onChange={…}>` fired inside an uncontrolled
-`RadioGroup` and was silently dead inside a controlled one. Both branches now
-share one handler.
+Both controlled and uncontrolled branches now chain the caller's handler.
 
 ### Fixed — `Input` silently dropped unrecognised props
 
-`Input` never built a rest object, so anything outside `AriaTextFieldProps`
-never reached the `<input>`. It now spreads the rest, with React Aria's non-DOM
-props stripped the same way `Button` strips them.
-
-`InputProps` widens to accept plain `<input>` attributes — `title`, `list`,
-`onClick`, `style` and so on. Without that the runtime change would have been
-unusable, since the type refused the props it now forwards.
-
-Note for anyone who hit this: `data-*` and `aria-*` attributes were **not**
-affected. React Aria's own `filterDOMProps` already forwarded those. What was
-lost was everything else.
+Rest props spread onto the `<input>`, with React Aria non-DOM props stripped
+first. `InputProps` widens to plain `<input>` attributes.
 
 ## 0.2.0 — 2026-07-31
 
