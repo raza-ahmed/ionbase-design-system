@@ -1,3 +1,5 @@
+'use client';
+
 import React, { forwardRef, useRef, useImperativeHandle } from 'react';
 
 export type ToggleSize = 'sm' | 'md' | 'lg';

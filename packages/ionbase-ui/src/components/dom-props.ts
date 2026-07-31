@@ -1,4 +1,4 @@
-import type { AriaButtonProps } from 'react-aria';
+import type { AriaButtonProps, AriaTextFieldProps } from 'react-aria';
 
 /**
  * React Aria prop types are not DOM prop types.
@@ -56,6 +56,65 @@ export const ARIA_BUTTON_NON_DOM_PROPS = [
   'target',
   'rel',
 ] as const satisfies readonly (keyof AriaButtonProps<'button'>)[];
+
+/**
+ * The same, for `AriaTextFieldProps` — Input's prop type.
+ *
+ * Input had the opposite defect to Button's: it destructured ten named props
+ * and never built a rest object at all, so nothing outside `AriaTextFieldProps`
+ * ever reached the `<input>`. `data-testid` and every other custom attribute
+ * vanished with no warning. Spreading the rest fixes that, but only if these
+ * come out first.
+ *
+ * Sources, as of react-aria 3.50:
+ *   LabelableProps  label
+ *   HelpTextProps   description, errorMessage
+ *   InputBase       isDisabled, isReadOnly
+ *   Validation      isRequired, isInvalid, validationState, validationBehavior,
+ *                   validate
+ *   ValueBase       onChange — takes a string, not an event; `useTextField`
+ *                   returns a real DOM handler in its place
+ *   FocusEvents     onFocusChange
+ *   FocusableDOMProps  excludeFromTabOrder
+ *
+ * Several of these Input already destructures by name; they are listed anyway
+ * so this reads as a complete statement about the type rather than a diff
+ * against one component's parameter list.
+ *
+ * `spellCheck` is the odd one out: a real input attribute, but React Aria types
+ * it as `string` where React wants `Booleanish`, so forwarding it from the rest
+ * spread does not typecheck. It is dropped rather than cast because
+ * `useTextField` already returns it — verified: `inputProps` carries the whole
+ * of `TextInputDOMProps`, `spellCheck` and `autoCorrect` included.
+ *
+ * `value` and `defaultValue` are here for a subtler reason than the rest.
+ * "`inputProps` is spread afterwards and wins" only holds for the SAME key —
+ * and `useTextField` always returns `value`, even when the caller passed
+ * `defaultValue`. Forwarding `defaultValue` therefore puts both on the element
+ * and React warns that the input is neither controlled nor uncontrolled. This
+ * was a real regression, caught by the Input stories, not a precaution.
+ *
+ * `placeholder`, `name`, `autoComplete` and `id` stay out of the list: they are
+ * single-key collisions, so `inputProps` genuinely does win.
+ */
+export const ARIA_TEXT_FIELD_NON_DOM_PROPS = [
+  'label',
+  'description',
+  'errorMessage',
+  'isDisabled',
+  'isReadOnly',
+  'isRequired',
+  'isInvalid',
+  'validationState',
+  'validationBehavior',
+  'validate',
+  'onChange',
+  'onFocusChange',
+  'excludeFromTabOrder',
+  'spellCheck',
+  'value',
+  'defaultValue',
+] as const satisfies readonly (keyof AriaTextFieldProps)[];
 
 /**
  * Returns `props` without `keys`, leaving `props` untouched.

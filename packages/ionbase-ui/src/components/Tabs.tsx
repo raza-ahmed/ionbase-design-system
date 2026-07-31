@@ -1,3 +1,5 @@
+'use client';
+
 import React, { forwardRef, useRef } from 'react';
 import {
   useTabList,
@@ -21,10 +23,14 @@ export interface TabsProps<T extends object> extends AriaTabListProps<T> {
   /** Matches the Figma `Size` variant. */
   size?: TabsSize;
   /**
-   * Only `horizontal` is implemented. Figma also defines vertical; the prop
-   * exists so adding it later is additive rather than a breaking rename.
+   * Drives both the arrow-key axis and the track layout.
+   *
+   * `vertical` is keyboard- and ARIA-complete — up/down move between tabs, and
+   * the track stacks — but its *decoration* is not: the underline rule and the
+   * pill track's padding are still written for the horizontal axis only. Those
+   * are Figma's to specify, not this file's to invent. See tabs.css.
    */
-  orientation?: 'horizontal';
+  orientation?: 'horizontal' | 'vertical';
   className?: string;
 }
 
@@ -107,8 +113,17 @@ export const Tabs = forwardRef(function Tabs<T extends object>(
     size = 'md',
     orientation = 'horizontal',
     className: customClassName,
-    ...ariaProps
+    ...rest
   } = props;
+
+  /*
+   * `orientation` is destructured for the class name, so it has to be put back
+   * before the hooks see it. It was not, and React Aria therefore fell back to
+   * its own default of horizontal: a vertical track kept left/right arrow
+   * navigation and announced the wrong aria-orientation, while the CSS class
+   * said vertical. One value, two sources of truth.
+   */
+  const ariaProps = { ...rest, orientation };
 
   const state = useTabListState(ariaProps);
   const listRef = useRef<HTMLDivElement>(null);

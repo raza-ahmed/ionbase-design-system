@@ -46,7 +46,7 @@
   },
   "scripts": {
     "dev": "tsc --watch",
-    "build": "node scripts/sync-tokens.mjs && tsc --build --force && node scripts/copy-css.mjs",
+    "build": "node scripts/sync-tokens.mjs && tsc --build --force && node scripts/copy-css.mjs && node scripts/verify-client-boundaries.mjs",
     "typecheck": "tsc --noEmit",
     "lint": "eslint . && stylelint \"src/styles/*.css\"",
     "format": "prettier --check .",

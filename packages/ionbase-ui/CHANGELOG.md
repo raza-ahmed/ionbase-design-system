@@ -1,5 +1,62 @@
 # Changelog
 
+## Unreleased
+
+Four correctness fixes found auditing the published 0.2.0 dist. No breaking
+changes; the `InputProps` and `TabsProps` changes are both widenings.
+
+### Added — `'use client'` on the nine modules that need it
+
+No directive shipped at all, so every React Server Components consumer — the
+default in the Next.js App Router — had to hand-write a re-export shim before
+the library could be imported.
+
+The directive is per-module, not blanket. Nine components use client-only React
+APIs and carry it; **`Avatar`, `Badge`, `Divider`, `Header`, `Logo`, `Menu`,
+`Table` and `Icon` stay renderable from a Server Component**, because
+`forwardRef` and `memo` do exist in React's server build. A page using only
+those ships no client JavaScript for them. Importing from the root entry works
+either way — the barrel re-exports both kinds and the bundler resolves per
+module.
+
+`scripts/verify-client-boundaries.mjs` now runs as part of the build. It
+derives which modules need the directive from what they import, and fails both
+when one is missing and when the build drops it from `dist/`.
+
+### Fixed — `Tabs` ignored `orientation` for keyboard navigation
+
+`orientation` was destructured out before the rest of the props reached
+`useTabListState` / `useTabList`, so React Aria always assumed horizontal: a
+vertical track kept left/right arrow keys and announced
+`aria-orientation="horizontal"`.
+
+`TabsProps['orientation']` widens from `'horizontal'` to
+`'horizontal' | 'vertical'`, and `.ion-tabs__track--vertical` now stacks the
+track. Vertical is keyboard-, ARIA- and layout-complete, but still wears the
+horizontal _decoration_ — which edge the underline moves to is a Figma
+decision, not one to invent here.
+
+### Fixed — `Radio` discarded the consumer's `onChange` when the group was controlled
+
+The controlled branch replaced the caller's handler where the uncontrolled
+branch chained it, so `<Radio onChange={…}>` fired inside an uncontrolled
+`RadioGroup` and was silently dead inside a controlled one. Both branches now
+share one handler.
+
+### Fixed — `Input` silently dropped unrecognised props
+
+`Input` never built a rest object, so anything outside `AriaTextFieldProps`
+never reached the `<input>`. It now spreads the rest, with React Aria's non-DOM
+props stripped the same way `Button` strips them.
+
+`InputProps` widens to accept plain `<input>` attributes — `title`, `list`,
+`onClick`, `style` and so on. Without that the runtime change would have been
+unusable, since the type refused the props it now forwards.
+
+Note for anyone who hit this: `data-*` and `aria-*` attributes were **not**
+affected. React Aria's own `filterDOMProps` already forwarded those. What was
+lost was everything else.
+
 ## 0.2.0 — 2026-07-31
 
 ### Breaking — the package no longer loads any webfonts

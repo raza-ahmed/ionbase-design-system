@@ -1,6 +1,6 @@
 import React from 'react';
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { expect } from 'storybook/test';
+import { expect, fn } from 'storybook/test';
 import { Input, Icon } from 'ionbase-ui';
 import { Search, X } from 'lucide-react';
 
@@ -27,6 +27,9 @@ const meta: Meta<typeof Input> = {
 
 export default meta;
 type Story = StoryObj<typeof Input>;
+
+/* Module-scope spy: the story below renders through `render`, not `args`. */
+const handlers = { inputClick: fn() };
 
 export const Default: Story = { args: { 'aria-label': 'Field' } };
 
@@ -281,5 +284,71 @@ export const ErrorMessageReplacesHelper: Story = {
       .trim();
     const rgb = `rgb(${[1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16)).join(', ')})`;
     await expect(getComputedStyle(helper).color).toBe(rgb);
+  },
+};
+
+/*
+ * Props Input does not recognise must still reach the <input>.
+ *
+ * Input destructured ten named props and never built a rest object, so
+ * anything outside `AriaTextFieldProps` was dropped on the floor. Every other
+ * component in the library spreads its rest, which is what made this an
+ * oversight rather than a policy.
+ *
+ * `title`, `list` and `onClick` are the half that fails against the old code.
+ * `data-*` is deliberately NOT the assertion that carries this test: React
+ * Aria's own `filterDOMProps` already forwards `data-*` and `aria-*` through
+ * `inputProps`, so a data-testid check passes with or without the fix. It is
+ * kept below only to pin that behaviour, not to prove anything.
+ */
+export const UnknownPropsReachTheInput: Story = {
+  render: () => (
+    <Input
+      label="Email"
+      title="Work address"
+      list="suggestions"
+      data-testid="email-field"
+      name="email"
+      autoComplete="email"
+      onClick={handlers.inputClick}
+    />
+  ),
+  play: async ({ canvas, userEvent }) => {
+    handlers.inputClick.mockClear();
+    const input = canvas.getByLabelText('Email');
+
+    // Dropped entirely before the fix — not in React Aria's DOM allowlist.
+    await expect(input).toHaveAttribute('title', 'Work address');
+    await expect(input).toHaveAttribute('list', 'suggestions');
+
+    await userEvent.click(input);
+    await expect(handlers.inputClick).toHaveBeenCalledTimes(1);
+
+    // Already worked via filterDOMProps; pinned, not proven.
+    await expect(input).toHaveAttribute('data-testid', 'email-field');
+
+    // Props useTextField owns must still come from useTextField.
+    await expect(input).toHaveAttribute('name', 'email');
+    await expect(input).toHaveAttribute('autocomplete', 'email');
+    await expect(input).toHaveAttribute('type', 'text');
+
+    // And the new spread must not reintroduce the 0.1.1 leak.
+    const leaked = input
+      .getAttributeNames()
+      .filter((n) =>
+        [
+          'isdisabled',
+          'isreadonly',
+          'isinvalid',
+          'isrequired',
+          'validate',
+          'validationbehavior',
+          'onfocuschange',
+          'excludefromtaborder',
+          'errormessage',
+          'description',
+        ].includes(n.toLowerCase()),
+      );
+    await expect(leaked).toEqual([]);
   },
 };

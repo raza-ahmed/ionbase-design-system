@@ -193,3 +193,65 @@ export const RenderedHeightMatchesTokens: Story = {
     }
   },
 };
+
+/*
+ * `orientation` must reach React Aria, not just the class name.
+ *
+ * It was destructured out of props before the remainder went to
+ * `useTabListState` / `useTabList`, so React Aria fell back to its own default
+ * of horizontal. A vertical track therefore kept left/right arrow navigation
+ * and announced `aria-orientation="horizontal"` while its CSS class said
+ * vertical — one value with two sources of truth, and only the invisible half
+ * was wrong.
+ *
+ * Down-arrow is the assertion that fails against the old code. The
+ * aria-orientation check is the cheaper half of the same contract.
+ */
+export const VerticalArrowKeys: Story = {
+  render: (args) => (
+    <Tabs {...args} orientation="vertical" aria-label="Vertical">
+      {items}
+    </Tabs>
+  ),
+  play: async ({ canvas, userEvent }) => {
+    const list = canvas.getByRole('tablist', { name: 'Vertical' });
+    await expect(list).toHaveAttribute('aria-orientation', 'vertical');
+
+    const tabs = canvas.getAllByRole('tab');
+    await userEvent.click(tabs[0]);
+    await expect(tabs[0]).toHaveAttribute('aria-selected', 'true');
+
+    // Horizontal keyboard handling ignores ArrowDown entirely, so this is a
+    // no-op against the bug and selection stays on the first tab.
+    await userEvent.keyboard('{ArrowDown}');
+    await waitFor(() =>
+      expect(canvas.getAllByRole('tab')[1]).toHaveAttribute(
+        'aria-selected',
+        'true',
+      ),
+    );
+  },
+};
+
+/** The horizontal axis must keep working — the fix passes orientation through
+ *  rather than hardcoding the other value. */
+export const HorizontalArrowKeys: Story = {
+  render: (args) => (
+    <Tabs {...args} aria-label="Horizontal">
+      {items}
+    </Tabs>
+  ),
+  play: async ({ canvas, userEvent }) => {
+    const list = canvas.getByRole('tablist', { name: 'Horizontal' });
+    await expect(list).toHaveAttribute('aria-orientation', 'horizontal');
+
+    await userEvent.click(canvas.getAllByRole('tab')[0]);
+    await userEvent.keyboard('{ArrowRight}');
+    await waitFor(() =>
+      expect(canvas.getAllByRole('tab')[1]).toHaveAttribute(
+        'aria-selected',
+        'true',
+      ),
+    );
+  },
+};

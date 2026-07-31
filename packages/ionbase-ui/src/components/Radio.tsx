@@ -1,3 +1,5 @@
+'use client';
+
 import React, {
   forwardRef,
   useRef,
@@ -69,6 +71,20 @@ export const Radio = forwardRef<HTMLInputElement, RadioProps>(
     // defaultValue seeds the native input and the DOM owns the selection.
     const controlled = group && group.value !== undefined;
 
+    /*
+     * One handler for both branches.
+     *
+     * These used to be written inline per branch, and only the uncontrolled one
+     * chained `rest.onChange`. So `<Radio onChange={...}>` fired inside an
+     * uncontrolled RadioGroup and was silently dead inside a controlled one —
+     * the same component honouring two different contracts depending on a prop
+     * set by its parent, with nothing to warn you which one you were getting.
+     */
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      group?.onChange?.(value);
+      rest.onChange?.(e);
+    };
+
     return (
       <label className={classNames}>
         <input
@@ -79,18 +95,10 @@ export const Radio = forwardRef<HTMLInputElement, RadioProps>(
           value={value}
           disabled={disabled}
           className="ion-radio__input"
+          onChange={handleChange}
           {...(controlled
-            ? {
-                checked: group!.value === value,
-                onChange: () => group!.onChange?.(value),
-              }
-            : {
-                defaultChecked: group?.defaultValue === value,
-                onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
-                  group?.onChange?.(value);
-                  rest.onChange?.(e);
-                },
-              })}
+            ? { checked: group!.value === value }
+            : { defaultChecked: group?.defaultValue === value })}
         />
         <span className="ion-radio__indicator" aria-hidden="true">
           <span className="ion-radio__dot" />

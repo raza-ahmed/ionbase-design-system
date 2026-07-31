@@ -9,9 +9,13 @@
  * variables rather than restating five declarations, and the icon rule needs no
  * per-size override.
  *
- * Only the horizontal orientation is implemented. Figma also defines vertical;
- * the track modifier is named `--horizontal` so vertical is additive rather
- * than a rename.
+ * Vertical is STRUCTURAL ONLY. `--vertical` stacks the track and stretches the
+ * items, which is what the word means and needs no design input. Its
+ * decoration does: the underline rule is a `border-bottom` and the pill track's
+ * padding is written for the horizontal axis, and which edge the underline
+ * moves to is Figma's call, not this file's. Until that is specified, a
+ * vertical track is correctly stacked, correctly navigable and correctly
+ * announced, but wears the horizontal type styling.
  */
 
 /* Track */
@@ -21,6 +25,11 @@
   list-style: none;
   margin: 0;
   padding: 0;
+}
+
+.ion-tabs__track--vertical {
+  flex-direction: column;
+  align-items: stretch;
 }
 
 .ion-tabs__track--underline.ion-tabs__track--horizontal {

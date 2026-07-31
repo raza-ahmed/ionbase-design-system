@@ -1,12 +1,37 @@
+'use client';
+
 import React, { forwardRef, useRef, useImperativeHandle } from 'react';
 import { useTextField, useHover, useFocusRing, mergeProps } from 'react-aria';
 import type { AriaTextFieldProps } from 'react-aria';
+import { ARIA_TEXT_FIELD_NON_DOM_PROPS, omitProps } from './dom-props.js';
 
 export type InputSize = 'sm' | 'md' | 'lg';
 
-export interface InputProps extends AriaTextFieldProps {
+/**
+ * The plain `<input>` attributes that React Aria has no opinion about —
+ * `title`, `list`, `onClick`, `style` and the rest.
+ *
+ * `AriaTextFieldProps` wins every overlap: it is omitted from this side, so
+ * `value`, `onChange`, `placeholder` and friends keep React Aria's types and
+ * semantics rather than the DOM's. Without this, spreading the rest props onto
+ * the element was pointless — the runtime would forward attributes the type
+ * refused to accept, so no caller could pass them in the first place.
+ */
+type InputDOMProps = Omit<
+  React.InputHTMLAttributes<HTMLInputElement>,
+  keyof AriaTextFieldProps | 'size' | 'autoCapitalize'
+>;
+
+export interface InputProps extends AriaTextFieldProps, InputDOMProps {
   /** Matches the Figma `Size` variant: Small, Medium, Large. */
   size?: InputSize;
+  /**
+   * Narrower than React's own typing, which also allows any `string`.
+   * `autoCapitalize` is declared on `AriaTextFieldOptions` rather than
+   * `AriaTextFieldProps`, so `keyof AriaTextFieldProps` above cannot omit it —
+   * and the wide DOM version does not satisfy what `useTextField` accepts.
+   */
+  autoCapitalize?: 'none' | 'off' | 'on' | 'sentences' | 'words' | 'characters';
   /** Leading icon. Figma's `Show Leading Icon` + `Leading Icon` swap. */
   leadingIcon?: React.ReactNode;
   /** Trailing icon. Figma's `Show Trailing Icon` + `Trailing Icon` swap. */
@@ -45,7 +70,22 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
       isDisabled,
       isReadOnly,
       isInvalid,
+      ...restProps
     } = props;
+
+    /*
+     * Everything the caller passed that this component and React Aria have no
+     * opinion about — `data-testid`, `name`, `autoComplete`, arbitrary `data-*`
+     * and `aria-*`.
+     *
+     * There was no rest object here at all, so those props were silently
+     * dropped: the ten named ones were used and the remainder went nowhere.
+     * Every other component in the library spreads its rest, which is what made
+     * this read as an oversight rather than a policy. Non-DOM React Aria props
+     * are stripped first for the same reason Button strips them — see
+     * ./dom-props.ts.
+     */
+    const domProps = omitProps(restProps, ARIA_TEXT_FIELD_NON_DOM_PROPS);
 
     const domRef = useRef<HTMLInputElement>(null);
     useImperativeHandle(forwardedRef, () => domRef.current!);
@@ -88,6 +128,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
           </span>
         )}
         <input
+          {...domProps}
           {...mergeProps(inputProps, focusProps)}
           ref={domRef}
           className="ion-input__field"

@@ -1,6 +1,6 @@
 import React from 'react';
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { expect } from 'storybook/test';
+import { expect, fn, waitFor } from 'storybook/test';
 import { Radio, RadioGroup } from 'ionbase-ui';
 
 const meta: Meta<typeof RadioGroup> = {
@@ -26,6 +26,13 @@ const meta: Meta<typeof RadioGroup> = {
 
 export default meta;
 type Story = StoryObj<typeof RadioGroup>;
+
+/* Module-scope spies: the stories below render through a `render` function, so
+ * they cannot take these from `args`. */
+const handlers = {
+  radioOnChange: fn(),
+  uncontrolledOnChange: fn(),
+};
 
 const OPTIONS = ['Weekly', 'Monthly', 'Never'];
 
@@ -234,5 +241,62 @@ export const DisabledKeepsTheHeavyBorder: Story = {
 
     await expect(getComputedStyle(indicator('off')).borderTopWidth).toBe('2px');
     await expect(getComputedStyle(indicator('on')).borderTopWidth).toBe('2px');
+  },
+};
+
+/*
+ * A Radio's own `onChange` must fire whether or not its group is controlled.
+ *
+ * The controlled and uncontrolled branches used to be written inline and only
+ * the uncontrolled one chained `rest.onChange`. So the same `<Radio
+ * onChange={...}>` worked or was silently dead depending on whether its parent
+ * RadioGroup happened to be controlled — two contracts, one component, no
+ * warning. This is the controlled case, which is the one that was broken.
+ */
+export const ControlledGroupStillCallsRadioOnChange: Story = {
+  render: function Render() {
+    const [value, setValue] = React.useState('a');
+    return (
+      <RadioGroup label="Plan" value={value} onChange={setValue}>
+        <Radio value="a">A</Radio>
+        <Radio value="b" onChange={handlers.radioOnChange}>
+          B
+        </Radio>
+      </RadioGroup>
+    );
+  },
+  play: async ({ canvas, userEvent }) => {
+    handlers.radioOnChange.mockClear();
+    const b = canvas.getByLabelText('B') as HTMLInputElement;
+
+    // Click the label, not the input: the native control is visually hidden
+    // and `pointer-events: none`, so a direct click is not a real interaction.
+    await userEvent.click(canvas.getByText('B'));
+
+    // The group is controlled, so selection only moves if its onChange ran.
+    await waitFor(() => expect(b).toBeChecked());
+    // ...and the Radio's own handler must have run too, with a real event.
+    await expect(handlers.radioOnChange).toHaveBeenCalledTimes(1);
+    await expect(handlers.radioOnChange.mock.calls[0][0].target).toBe(b);
+  },
+};
+
+/** The uncontrolled path was already correct; pinned so the shared handler
+ *  cannot regress it while fixing the controlled one. */
+export const UncontrolledGroupStillCallsRadioOnChange: Story = {
+  render: () => (
+    <RadioGroup label="Plan" defaultValue="a">
+      <Radio value="a">A</Radio>
+      <Radio value="b" onChange={handlers.uncontrolledOnChange}>
+        B
+      </Radio>
+    </RadioGroup>
+  ),
+  play: async ({ canvas, userEvent }) => {
+    handlers.uncontrolledOnChange.mockClear();
+    const b = canvas.getByLabelText('B') as HTMLInputElement;
+    await userEvent.click(canvas.getByText('B'));
+    await waitFor(() => expect(b).toBeChecked());
+    await expect(handlers.uncontrolledOnChange).toHaveBeenCalledTimes(1);
   },
 };
