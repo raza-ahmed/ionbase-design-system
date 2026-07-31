@@ -47,8 +47,8 @@
   font-size: var(--ion-select-font-size);
   line-height: var(--ion-select-line-height);
   transition:
-    border-color 150ms cubic-bezier(0.4, 0, 0.2, 1),
-    background-color 150ms cubic-bezier(0.4, 0, 0.2, 1);
+    border-color var(--ion-duration-base) var(--ion-ease-out),
+    background-color var(--ion-duration-base) var(--ion-ease-out);
 }
 
 /* Small shares Medium's padding — see input.css. */

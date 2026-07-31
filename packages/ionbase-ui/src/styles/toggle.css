@@ -115,8 +115,8 @@
     (var(--ion-toggle-line-height) - var(--ion-toggle-track-h)) / 2
   );
   transition:
-    background-color 150ms cubic-bezier(0.4, 0, 0.2, 1),
-    border-color 150ms cubic-bezier(0.4, 0, 0.2, 1);
+    background-color var(--ion-duration-base) var(--ion-ease-out),
+    border-color var(--ion-duration-base) var(--ion-ease-out);
 }
 
 .ion-toggle__thumb {
@@ -127,7 +127,14 @@
 
   /* Cast, not bevelled — and the same in both states, so it is unconditional. */
   box-shadow: var(--ion-shadow-shadow-xs);
-  transition: margin 150ms cubic-bezier(0.4, 0, 0.2, 1);
+
+  /*
+   * `ease-in-out`, not the `ease-out` every colour change uses. The knob is the
+   * one thing in the system that travels the same path in both directions, so
+   * a symmetric curve is what makes on and off feel like the same gesture
+   * reversed. Everything else enters a state and stays there.
+   */
+  transition: margin var(--ion-duration-base) var(--ion-ease-in-out);
 }
 
 .ion-toggle__label {

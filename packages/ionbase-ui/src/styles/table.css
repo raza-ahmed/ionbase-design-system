@@ -107,7 +107,7 @@
 
 .ion-table tr {
   background-color: var(--surface-default);
-  transition: background-color 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  transition: background-color var(--ion-duration-base) var(--ion-ease-out);
 }
 
 .ion-table tbody tr {

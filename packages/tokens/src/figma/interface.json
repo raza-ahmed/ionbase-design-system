@@ -45,7 +45,7 @@
     "surface/raised": {"type": "COLOR", "scopes": ["FRAME_FILL", "SHAPE_FILL"], "codeSyntax": "var(--surface-raised)", "values": {"Light": "{base.white}", "Dark": "{neutral.800}"}},
     "surface/overlay": {"type": "COLOR", "scopes": ["FRAME_FILL", "SHAPE_FILL"], "codeSyntax": "var(--surface-overlay)", "values": {"Light": "{base.white}", "Dark": "{base.black}"}},
     "surface/scrim": {"type": "COLOR", "scopes": ["FRAME_FILL", "SHAPE_FILL"], "codeSyntax": "var(--surface-scrim)", "values": {"Light": "{alpha.black-40}", "Dark": "{alpha.black-60}"}},
-    "surface/inverse": {"type": "COLOR", "scopes": ["FRAME_FILL", "SHAPE_FILL"], "codeSyntax": "var(--surface-inverse)", "values": {"Light": "{neutral.900}", "Dark": "{base.white}"}},
+    "surface/inverse": {"type": "COLOR", "scopes": ["FRAME_FILL", "SHAPE_FILL"], "codeSyntax": "var(--surface-inverse)", "values": {"Light": "{neutral.800}", "Dark": "{base.white}"}},
     "surface/inverse-subtle": {"type": "COLOR", "scopes": ["FRAME_FILL", "SHAPE_FILL"], "codeSyntax": "var(--surface-inverse-subtle)", "values": {"Light": "{neutral.700}", "Dark": "{neutral.200}"}},
     "surface/disabled": {"type": "COLOR", "scopes": ["FRAME_FILL", "SHAPE_FILL"], "codeSyntax": "var(--surface-disabled)", "values": {"Light": "{neutral.100}", "Dark": "{neutral.800}"}},
     "surface/placeholder": {"type": "COLOR", "scopes": ["FRAME_FILL", "SHAPE_FILL"], "codeSyntax": "var(--surface-placeholder)", "values": {"Light": "{neutral.300}", "Dark": "{neutral.600}"}},

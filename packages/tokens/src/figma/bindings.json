@@ -15,7 +15,7 @@
     "would triple the file for one repeated fact."
   ],
   "file": "gaLbGd0QNb1fUl6BjSpfBA",
-  "exported": "2026-07-30",
+  "exported": "2026-07-31",
   "components": {
     "Avatar/Avatar": [
       {"collection": "Breakpoint", "token": "type/body"},
@@ -99,6 +99,7 @@
       {"collection": "Interface", "token": "surface/error/hover"},
       {"collection": "Interface", "token": "surface/error/pressed"},
       {"collection": "Interface", "token": "surface/inverse"},
+      {"collection": "Interface", "token": "surface/inverse-subtle"},
       {"collection": "Interface", "token": "surface/muted"},
       {"collection": "Interface", "token": "surface/page"},
       {"collection": "Interface", "token": "surface/primary"},

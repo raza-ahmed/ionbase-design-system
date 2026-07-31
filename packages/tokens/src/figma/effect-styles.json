@@ -3,7 +3,7 @@
   "count": 21,
   "$comment": [
     "Exported by figma/export-effect-styles.js. Effect styles are a third Figma",
-    "API — neither the variable export nor the text-style export covers them.",
+    "API \u2014 neither the variable export nor the text-style export covers them.",
     "",
     "They are NOT variable-bound in this file, so they cannot become tokens:",
     "there is nothing to alias. dist/css/elevation.css is generated from this",
@@ -131,7 +131,7 @@
         "r": 0,
         "g": 0,
         "b": 0,
-        "a": 0.4
+        "a": 0.25
       },
       {
         "type": "INNER_SHADOW",
@@ -177,7 +177,7 @@
         "r": 0,
         "g": 0,
         "b": 0,
-        "a": 0.3
+        "a": 0.25
       },
       {
         "type": "INNER_SHADOW",
@@ -223,7 +223,7 @@
         "r": 0,
         "g": 0,
         "b": 0,
-        "a": 0.4
+        "a": 0.25
       },
       {
         "type": "INNER_SHADOW",
@@ -269,7 +269,7 @@
         "r": 0,
         "g": 0,
         "b": 0,
-        "a": 0.35
+        "a": 0.25
       },
       {
         "type": "INNER_SHADOW",
@@ -411,7 +411,7 @@
         "r": 0,
         "g": 0,
         "b": 0,
-        "a": 0.4
+        "a": 0.25
       },
       {
         "type": "INNER_SHADOW",
@@ -435,7 +435,7 @@
         "r": 0,
         "g": 0,
         "b": 0,
-        "a": 0.3
+        "a": 0.25
       },
       {
         "type": "INNER_SHADOW",
@@ -459,7 +459,7 @@
         "r": 0,
         "g": 0,
         "b": 0,
-        "a": 0.4
+        "a": 0.25
       },
       {
         "type": "INNER_SHADOW",
@@ -483,7 +483,7 @@
         "r": 0,
         "g": 0,
         "b": 0,
-        "a": 0.35
+        "a": 0.25
       },
       {
         "type": "INNER_SHADOW",

@@ -29,8 +29,10 @@
  *
  * REVEAL TRANSITION IS DELIBERATELY PLAIN
  *
- * Opacity and an 8px slide, the same 150ms/cubic-bezier(0.4,0,0.2,1) language
- * every hover state in the system already uses. The deeper choreography this
+ * Opacity and an 8px slide on the shared motion ladder — `--ion-duration-base`
+ * and `--ion-ease-out`, the same language every hover state in the system
+ * already uses. It reads as a reveal rather than travel, so it stays on `base`
+ * rather than taking the `slow` rung. The deeper choreography this
  * component could eventually justify — a staggered reveal per row, easing
  * that matches the rail's own scale — is future work, tracked in
  * docs/motion-system.md, not invented here ahead of that decision.
@@ -62,7 +64,7 @@
   font-family: var(--font-family-sans);
   font-size: var(--type-body-sm);
   line-height: var(--type-body-sm-line-height);
-  transition: color 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  transition: color var(--ion-duration-base) var(--ion-ease-out);
 }
 
 .ion-scroll-progress__rail {
@@ -76,7 +78,7 @@
   width: var(--spacing-32);
   height: var(--border-width-thick);
   background-color: var(--border-strong);
-  transition: background-color 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  transition: background-color var(--ion-duration-base) var(--ion-ease-out);
 }
 
 .ion-scroll-progress__tick--active {
@@ -118,9 +120,9 @@
   pointer-events: none;
   transform: translateY(-50%) translateX(-4px);
   transition:
-    opacity 150ms cubic-bezier(0.4, 0, 0.2, 1),
-    transform 150ms cubic-bezier(0.4, 0, 0.2, 1),
-    visibility 150ms;
+    opacity var(--ion-duration-base) var(--ion-ease-out),
+    transform var(--ion-duration-base) var(--ion-ease-out),
+    visibility var(--ion-duration-base);
 }
 
 .ion-scroll-progress__panel[data-open='true'] {
@@ -145,8 +147,8 @@
   text-align: left;
   cursor: pointer;
   transition:
-    background-color 150ms cubic-bezier(0.4, 0, 0.2, 1),
-    border-color 150ms cubic-bezier(0.4, 0, 0.2, 1);
+    background-color var(--ion-duration-base) var(--ion-ease-out),
+    border-color var(--ion-duration-base) var(--ion-ease-out);
 }
 
 @media (hover: hover) {

@@ -1,0 +1,65 @@
+{
+  "$comment": [
+    "Interaction motion. REPO-OWNED — this file is not a Figma export.",
+    "",
+    "It lives at the package root, beside token-overrides.json and deliberately",
+    "OUTSIDE src/figma/, because a re-export overwrites everything in there.",
+    "",
+    "WHY THESE ARE NOT TOKENS",
+    "",
+    "Figma can express motion — it is authored as prototype reactions, readable",
+    "at node.reactions[].action.transition — but it is not a variable, so there",
+    "is nothing for a token to alias. Same situation as effect styles, same",
+    "answer: commit the values and generate CSS from them. The `--ion-` prefix",
+    "marks it, exactly as it does for `--ion-shadow-*`: anything named",
+    "`--duration-*` would have come from the token pipeline, and none of this",
+    "does.",
+    "",
+    "The one prototype interaction in the Figma file (Button, Primary Brand,",
+    "Small + Medium) specifies 300ms cubic-bezier(0.4, 0, 1, 1). That curve is",
+    "Figma's Ease In preset: flat start, arriving at full velocity. It is the",
+    "wrong shape for a colour hold and is not reproduced here — see `ease.in`,",
+    "which carries the value for the cases it does suit.",
+    "",
+    "A LADDER, NOT A SET OF RECIPES",
+    "",
+    "These are indexed by value and a component picks a rung. There is no",
+    "`duration/hover` or `ease/press` and there should not be: that is indexed",
+    "by usage, so it needs a new entry per usage pattern. The same reasoning",
+    "deleted the control/<size>/* group from Semantics."
+  ],
+
+  "duration": {
+    "fast": {
+      "ms": 120,
+      "use": "Press and release. Must resolve before the finger leaves the button, or the feedback reads as lag rather than as a press."
+    },
+    "base": {
+      "ms": 200,
+      "use": "The default for any state colour change — hover, focus, selection, validation. Replaces a hardcoded 150ms that read as abrupt."
+    },
+    "slow": {
+      "ms": 320,
+      "use": "Anything that travels or changes size: panels, overlays, disclosure. Distance needs time; a colour does not."
+    }
+  },
+
+  "ease": {
+    "out": {
+      "curve": "cubic-bezier(0.2, 0, 0, 1)",
+      "use": "The default. Leaves immediately and decelerates into the end state, so the change reads as settling. Correct for anything entering a state and staying there."
+    },
+    "in": {
+      "curve": "cubic-bezier(0.4, 0, 1, 1)",
+      "use": "Accelerates and arrives at full velocity. Only for things leaving — dismissing an overlay, collapsing a panel. On a state a user is entering it reads as a snap."
+    },
+    "in-out": {
+      "curve": "cubic-bezier(0.4, 0, 0.2, 1)",
+      "use": "Symmetric, for two-way travel where the same element moves back and forth — the Toggle knob. This is the curve every stylesheet used for everything, which is why state changes felt jerky."
+    },
+    "linear": {
+      "curve": "linear",
+      "use": "Continuous progress only, where easing would misreport position. Never for interaction."
+    }
+  }
+}

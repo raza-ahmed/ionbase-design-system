@@ -96,8 +96,8 @@
   /* Centred on the label's first line — see checkbox.css. */
   margin-top: calc((var(--ion-radio-line-height) - var(--ion-radio-size)) / 2);
   transition:
-    background-color 150ms cubic-bezier(0.4, 0, 0.2, 1),
-    border-color 150ms cubic-bezier(0.4, 0, 0.2, 1);
+    background-color var(--ion-duration-base) var(--ion-ease-out),
+    border-color var(--ion-duration-base) var(--ion-ease-out);
 }
 
 .ion-radio__dot {

@@ -107,6 +107,25 @@ their own export, and they behave differently:
 `loadCollections()` filters on shape, because `src/figma/` now holds both
 variable collections and the text-style export.
 
+### Motion is repo-owned, and Figma _does_ express it
+
+`motion.json` → `build-motion.mjs` → `dist/css/motion.css` as
+`--ion-duration-*` / `--ion-ease-*`. Same `--ion-` reasoning as shadows: not a
+variable, so nothing to alias.
+
+Figma **can** express motion — as **prototype reactions**, at
+`node.reactions[].action.transition`. Do not repeat the mistake of concluding
+otherwise: `get_motion_context` and `manualKeyframeTracks` both return empty
+for these, so absence there proves nothing. Reactions, styles and keyframe
+tracks are three separate places, and `getLocalVariablesAsync` sees none of
+them.
+
+It is still not a variable, so it stays repo-owned rather than becoming a fifth
+collection. The values also deliberately **disagree** with the one reaction
+authored in Figma (Button, 300ms Ease In) — see
+[docs/motion-system.md](docs/motion-system.md) §2. That is a recorded decision,
+not drift.
+
 ## Token architecture v2 — LIVE in Figma since 29 Jul 2026
 
 Full inventory: [docs/token-architecture-v2.md](docs/token-architecture-v2.md).
@@ -231,6 +250,9 @@ because a re-export overwrites everything in there. It records what Figma cannot
 express — currently that `grid/columns` is a count, not a length, so it ships as
 `12` rather than `12px`. Figma scopes it `WIDTH_HEIGHT` like every other FLOAT,
 so nothing in the export distinguishes them.
+
+`motion.json` is repo-owned for the same reason and lives beside it, also
+outside `src/figma/`.
 
 `src/figma/*.json` is formatted one token per line and is in
 `.prettierignore` **on purpose** — Prettier explodes each entry to six lines and

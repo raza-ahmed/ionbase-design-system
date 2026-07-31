@@ -29,7 +29,7 @@
   },
   "scripts": {
     "dev": "node scripts/figma-to-dtcg.mjs && node scripts/build-css.mjs && node scripts/build-ts.mjs && tsc --watch",
-    "build": "pnpm run tokens:dtcg && pnpm run tokens:audit && pnpm run tokens:tier && pnpm run tokens:verify && pnpm run tokens:css && pnpm run tokens:typography && pnpm run tokens:elevation && pnpm run tokens:ts && tsc",
+    "build": "pnpm run tokens:dtcg && pnpm run tokens:audit && pnpm run tokens:tier && pnpm run tokens:verify && pnpm run tokens:css && pnpm run tokens:typography && pnpm run tokens:elevation && pnpm run tokens:motion && pnpm run tokens:ts && tsc",
     "tokens:dtcg": "node scripts/figma-to-dtcg.mjs",
     "tokens:verify": "node scripts/verify-code-syntax.mjs",
     "tokens:css": "node scripts/build-css.mjs",
@@ -43,6 +43,7 @@
     "tokens:sync": "node scripts/verify-export.mjs",
     "tokens:typography": "node scripts/build-typography.mjs",
     "tokens:elevation": "node scripts/build-elevation.mjs",
+    "tokens:motion": "node scripts/build-motion.mjs",
     "tokens:tier": "node scripts/verify-tier.mjs",
     "tokens:bindings": "node scripts/verify-bindings.mjs",
     "tokens:gate": "pnpm run tokens:audit && pnpm run tokens:tier && pnpm run tokens:verify && pnpm run tokens:bindings && pnpm run tokens:geometry",

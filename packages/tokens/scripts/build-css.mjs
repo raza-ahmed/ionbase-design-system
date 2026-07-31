@@ -252,6 +252,7 @@ async function main() {
       '@import "./breakpoint-mobile.css";',
       '@import "./typography.css";',
       '@import "./elevation.css";',
+      '@import "./motion.css";',
       '',
     ].join('\n'),
   );

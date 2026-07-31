@@ -1,5 +1,72 @@
 # Changelog
 
+## 0.4.0 — 2026-07-31
+
+A Figma re-sync and the first motion layer. No API changes — every change here
+is visual or additive, so no code needs to move.
+
+### Added — motion custom properties
+
+A shared ladder of durations and easings, new at `ionbase-ui/tokens`:
+
+```css
+--ion-duration-fast: 120ms; /* press and release */
+--ion-duration-base: 200ms; /* any state colour change — the default */
+--ion-duration-slow: 320ms; /* things that travel or resize */
+
+--ion-ease-out: cubic-bezier(0.2, 0, 0, 1); /* entering a state — the default */
+--ion-ease-in: cubic-bezier(0.4, 0, 1, 1); /* leaving: dismiss, collapse */
+--ion-ease-in-out: cubic-bezier(0.4, 0, 0.2, 1); /* two-way travel */
+--ion-ease-linear: linear; /* continuous progress only */
+```
+
+Also reachable individually at `ionbase-ui/tokens/motion.css`. The `--ion-`
+prefix means the same thing it does for `--ion-shadow-*`: generated from
+committed values, not from the Figma variable pipeline.
+
+Source is `packages/tokens/motion.json`, which is repo-owned. See
+[docs/motion-system.md](../../docs/motion-system.md).
+
+### Changed — transitions are slower and no longer symmetric
+
+Every component stylesheet used a hardcoded
+`150ms cubic-bezier(0.4, 0, 0.2, 1)` — 16 occurrences across 12 files. Both
+halves were wrong for a state change, and both are fixed:
+
+- **150ms → 200ms.** Short enough that a colour change read as a jump.
+- **`ease-in-out` → `ease-out`.** The old curve is symmetric, so it has a slow
+  _start_; a hover colour appeared to arrive late and then snap. The larger of
+  the two fixes.
+
+Three deliberate exceptions: Button's press drops to `fast`, the Toggle knob
+keeps `ease-in-out` (the only element that travels the same path both ways),
+and Scroll Progress's panel stays on `base` rather than `slow`.
+
+`prefers-reduced-motion` is unaffected — the existing global override still
+neutralises all of it.
+
+### Changed — Button, re-synced from Figma
+
+- **Primary Neutral** now has a visible hover. It resolves
+  `--surface-inverse-subtle`; the stylesheet was repeating `--surface-inverse`,
+  so the variant did not change on hover at all.
+- **Secondary** no longer moves its border on hover. Figma binds `border/strong`
+  on Default, Hover and Focus alike.
+- **Secondary** pressed now steps to `--border-stronger`, which is where that
+  step actually belongs.
+
+### Changed — token values re-exported from Figma
+
+- `--surface-inverse` (light) `#131923` → `#1d2735`. Dark is unchanged. Affects
+  Button Primary Neutral, Toggle `neutral`, and anything else on an inverse
+  surface.
+- The top inner-shadow alpha on all eight `Raised/*` elevations is normalised to
+  25% — `--ion-shadow-raised-lifted-*` and `--ion-shadow-raised-flush-*` at xs,
+  sm, lg and xl were 40/30/40/35%. `Inset/*` and `Focus/*` are unchanged.
+
+Variable names and count are unchanged (380, checksum `3840062063`), so nothing
+resolves differently by name.
+
 ## 0.3.0 — 2026-07-31
 
 Correctness, accessibility, and API/packaging cleanup since the published

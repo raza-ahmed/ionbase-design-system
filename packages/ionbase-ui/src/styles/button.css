@@ -89,10 +89,34 @@
   border-style: solid;
   border-width: var(--border-width-default);
   border-radius: var(--radius-md);
+
+  /*
+   * `base` + `ease-out`, from the shared motion ladder in motion.css.
+   *
+   * This was `150ms cubic-bezier(0.4, 0, 0.2, 1)`, hardcoded here and in eleven
+   * other stylesheets. Both halves were wrong for a state change: 150ms is
+   * short enough to read as a jump rather than a change, and that curve is
+   * symmetric — its slow tail means a colour appears to arrive late and then
+   * snap. `ease-out` leaves immediately and decelerates in, so the same change
+   * reads as settling.
+   */
   transition:
-    background-color 150ms cubic-bezier(0.4, 0, 0.2, 1),
-    border-color 150ms cubic-bezier(0.4, 0, 0.2, 1),
-    box-shadow 150ms cubic-bezier(0.4, 0, 0.2, 1);
+    background-color var(--ion-duration-base) var(--ion-ease-out),
+    border-color var(--ion-duration-base) var(--ion-ease-out),
+    box-shadow var(--ion-duration-base) var(--ion-ease-out);
+}
+
+/*
+ * Press drops to `fast`.
+ *
+ * A press must resolve while the pointer is still down or the feedback reads as
+ * lag rather than as a press — it is the one interaction the user is actively
+ * waiting on. Release still returns at `base`, because the rule only overrides
+ * the duration while the pressed state holds.
+ */
+.ion-button:active,
+.ion-button[data-pressed='true'] {
+  transition-duration: var(--ion-duration-fast);
 }
 
 /* Size modifiers — radius, border-width and font-weight are size-invariant. */
@@ -204,12 +228,12 @@
 
 @media (hover: hover) {
   .ion-button--primary-neutral:hover {
-    background-color: var(--surface-inverse);
+    background-color: var(--surface-inverse-subtle);
   }
 }
 
 .ion-button--primary-neutral[data-hovered='true'] {
-  background-color: var(--surface-inverse);
+  background-color: var(--surface-inverse-subtle);
 }
 
 .ion-button--primary-neutral:active,
@@ -229,16 +253,20 @@
   border-color: var(--border-strong);
 }
 
+/*
+ * The border does NOT move on hover — Figma binds `border/strong` on Default,
+ * Hover and Focus alike, and only steps to `border/stronger` on Pressed. The
+ * hover step was previously reproduced here and is a difference the current
+ * design does not draw.
+ */
 @media (hover: hover) {
   .ion-button--secondary:hover {
     background-color: var(--surface-page);
-    border-color: var(--border-stronger);
   }
 }
 
 .ion-button--secondary[data-hovered='true'] {
   background-color: var(--surface-page);
-  border-color: var(--border-stronger);
 }
 
 .ion-button--secondary:active,
@@ -246,6 +274,7 @@
   --ion-button-elevation: var(--ion-button-pressed);
 
   background-color: var(--surface-muted);
+  border-color: var(--border-stronger);
 }
 
 /* Tertiary Variant — intentionally flat; a ghost button has no surface to raise. */
