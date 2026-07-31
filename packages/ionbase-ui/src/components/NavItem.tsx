@@ -2,6 +2,7 @@
 
 import React, { forwardRef, useRef, useImperativeHandle } from 'react';
 import { useHover, useFocusRing, mergeProps } from 'react-aria';
+import { resolveDisabled } from './resolve-disabled.js';
 
 /** Figma's `Chevron` slot — always the same downward caret, shown only when
  *  `showChevron` is set. Inlined for the same reason Select's is: it is part
@@ -24,6 +25,10 @@ interface NavItemOwnProps {
   /** Figma's `Show Chevron`. Set on a nav item that opens a menu, not a plain link. */
   showChevron?: boolean;
   isDisabled?: boolean;
+  /**
+   * @deprecated Use `isDisabled`. Accepted as an alias for one minor version.
+   */
+  disabled?: boolean;
   children?: React.ReactNode;
   className?: string;
 }
@@ -56,8 +61,18 @@ export const NavItem = forwardRef<
   HTMLAnchorElement | HTMLButtonElement,
   NavItemProps
 >((props, forwardedRef) => {
-  const { icon, showChevron, isDisabled, children, className, href, ...rest } =
-    props as NavItemOwnProps & { href?: string };
+  const {
+    icon,
+    showChevron,
+    isDisabled: isDisabledProp,
+    disabled,
+    children,
+    className,
+    href,
+    ...rest
+  } = props as NavItemOwnProps & { href?: string };
+
+  const isDisabled = resolveDisabled(isDisabledProp, disabled);
 
   const domRef = useRef<HTMLAnchorElement | HTMLButtonElement>(null);
   useImperativeHandle(forwardedRef, () => domRef.current!);

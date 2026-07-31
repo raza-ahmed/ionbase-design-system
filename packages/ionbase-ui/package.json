@@ -14,7 +14,11 @@
     "./styles": "./dist/styles/index.css",
     "./styles/*": "./dist/styles/*",
     "./tokens": "./dist/styles/tokens/index.css",
-    "./tokens/*": "./dist/styles/tokens/*"
+    "./tokens/*": "./dist/styles/tokens/*",
+    "./tokens-js": {
+      "types": "./dist/tokens-js.d.ts",
+      "default": "./dist/tokens-js.js"
+    }
   },
   "keywords": [
     "design-system",

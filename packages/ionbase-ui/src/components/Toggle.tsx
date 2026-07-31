@@ -1,6 +1,7 @@
 'use client';
 
 import React, { forwardRef, useRef, useImperativeHandle } from 'react';
+import { resolveDisabled } from './resolve-disabled.js';
 
 export type ToggleSize = 'sm' | 'md' | 'lg';
 export type ToggleIntent = 'brand' | 'neutral' | 'danger';
@@ -13,6 +14,12 @@ export interface ToggleProps extends Omit<
   size?: ToggleSize;
   /** Matches the Figma `Color` variant: Brand, Neutral, Danger. */
   intent?: ToggleIntent;
+  /** Whether the toggle is disabled. */
+  isDisabled?: boolean;
+  /**
+   * @deprecated Use `isDisabled`. Accepted as an alias for one minor version.
+   */
+  disabled?: boolean;
   children?: React.ReactNode;
 }
 
@@ -36,9 +43,12 @@ export const Toggle = forwardRef<HTMLInputElement, ToggleProps>(
       intent = 'brand',
       className,
       children,
+      isDisabled,
       disabled,
       ...rest
     } = props;
+
+    const resolvedDisabled = resolveDisabled(isDisabled, disabled);
 
     const domRef = useRef<HTMLInputElement>(null);
     useImperativeHandle(forwardedRef, () => domRef.current!);
@@ -47,7 +57,7 @@ export const Toggle = forwardRef<HTMLInputElement, ToggleProps>(
       'ion-toggle',
       size !== 'md' ? `ion-toggle--${size}` : '',
       intent !== 'brand' ? `ion-toggle--${intent}` : '',
-      disabled ? 'ion-toggle--disabled' : '',
+      resolvedDisabled ? 'ion-toggle--disabled' : '',
       className || '',
     ]
       .filter(Boolean)
@@ -60,7 +70,7 @@ export const Toggle = forwardRef<HTMLInputElement, ToggleProps>(
           ref={domRef}
           type="checkbox"
           role="switch"
-          disabled={disabled}
+          disabled={resolvedDisabled}
           className="ion-toggle__input"
         />
         <span className="ion-toggle__track" aria-hidden="true">

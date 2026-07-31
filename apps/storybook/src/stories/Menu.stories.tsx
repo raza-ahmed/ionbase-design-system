@@ -54,7 +54,7 @@ export const MultiSelect: Story = {
       <MenuItem icon={<Icon as={Palette} />} isSelected>
         Appearance
       </MenuItem>
-      <MenuItem icon={<Icon as={Shield} />} disabled>
+      <MenuItem icon={<Icon as={Shield} />} isDisabled>
         Privacy
       </MenuItem>
     </Menu>

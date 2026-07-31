@@ -9,6 +9,7 @@ import {
   type AriaButtonProps,
 } from 'react-aria';
 import { ARIA_BUTTON_NON_DOM_PROPS, omitProps } from './dom-props.js';
+import { resolveDisabled } from './resolve-disabled.js';
 
 export interface ButtonProps extends AriaButtonProps<'button'> {
   /** The visual style variant of the button. */
@@ -28,6 +29,10 @@ export interface ButtonProps extends AriaButtonProps<'button'> {
   className?: string;
   /** Children element to render inside the button. */
   children?: React.ReactNode;
+  /**
+   * @deprecated Use `isDisabled`. Accepted as an alias for one minor version.
+   */
+  disabled?: boolean;
 }
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
@@ -39,14 +44,18 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       endIcon,
       className: customClassName,
       children,
-      isDisabled,
+      isDisabled: isDisabledProp,
+      disabled,
       ...restProps
     } = props;
+
+    const isDisabled = resolveDisabled(isDisabledProp, disabled);
+    const ariaProps = { ...props, isDisabled };
 
     const domRef = useRef<HTMLButtonElement>(null);
     useImperativeHandle(forwardedRef, () => domRef.current!);
 
-    const { buttonProps, isPressed } = useButton(props, domRef);
+    const { buttonProps, isPressed } = useButton(ariaProps, domRef);
 
     /*
      * Interaction state comes from React Aria rather than CSS pseudo-classes.

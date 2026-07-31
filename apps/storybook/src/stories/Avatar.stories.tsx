@@ -156,6 +156,31 @@ export const OverflowCounts: Story = {
   },
 };
 
+/**
+ * Group defaults fill gaps only — an Avatar that already set `size` keeps it,
+ * and non-Avatar children are not given `size`/`shape` as DOM attributes.
+ */
+export const GroupRespectsChildSizeAndSkipsNonAvatars: Story = {
+  render: () => (
+    <AvatarGroup size="lg">
+      <Avatar initials="AA" alt="defaulted" />
+      <Avatar initials="BB" alt="explicit" size="mini" />
+      <span data-testid="not-avatar">x</span>
+    </AvatarGroup>
+  ),
+  play: async ({ canvas, canvasElement }) => {
+    const defaulted = canvas.getByLabelText('defaulted');
+    const explicit = canvas.getByLabelText('explicit');
+    await expect(Math.round(defaulted.getBoundingClientRect().width)).toBe(48);
+    await expect(Math.round(explicit.getBoundingClientRect().width)).toBe(24);
+
+    const stranger = canvas.getByTestId('not-avatar');
+    await expect(stranger.getAttribute('size')).toBeNull();
+    await expect(stranger.getAttribute('shape')).toBeNull();
+    await expect(canvasElement.querySelectorAll('.ion-avatar').length).toBe(2);
+  },
+};
+
 /** An avatar without an image still has to announce who it is — initials alone
  *  read as nonsense to a screen reader. */
 export const InitialsAvatarIsLabelled: Story = {

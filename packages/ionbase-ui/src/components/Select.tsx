@@ -2,6 +2,7 @@
 
 import React, { forwardRef, useRef, useImperativeHandle, useId } from 'react';
 import { useHover, useFocusRing, mergeProps } from 'react-aria';
+import { resolveDisabled } from './resolve-disabled.js';
 
 export type SelectSize = 'sm' | 'md' | 'lg';
 
@@ -13,7 +14,7 @@ export interface SelectOption {
 
 export interface SelectProps extends Omit<
   React.SelectHTMLAttributes<HTMLSelectElement>,
-  'size'
+  'size' | 'disabled'
 > {
   /** Matches the Figma `Size` variant: Small, Medium, Large. */
   size?: SelectSize;
@@ -32,8 +33,17 @@ export interface SelectProps extends Omit<
   errorMessage?: React.ReactNode;
   isInvalid?: boolean;
   isDisabled?: boolean;
-  /** Additional CSS class names, applied to the outermost element. */
+  /**
+   * @deprecated Use `isDisabled`. Accepted as an alias for one minor version.
+   */
+  disabled?: boolean;
+  /**
+   * Class names for the control box (`.ion-select`). Always lands here —
+   * never on the form-field wrapper. Use `wrapperClassName` for that.
+   */
   className?: string;
+  /** Class names for the `.ion-field` wrapper when a label or helper is shown. */
+  wrapperClassName?: string;
 }
 
 /**
@@ -80,14 +90,18 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
       description,
       errorMessage,
       isInvalid,
-      isDisabled,
+      isDisabled: isDisabledProp,
+      disabled,
       className: customClassName,
+      wrapperClassName,
       value,
       defaultValue,
       children,
       id: providedId,
       ...rest
     } = props;
+
+    const isDisabled = resolveDisabled(isDisabledProp, disabled);
 
     const domRef = useRef<HTMLSelectElement>(null);
     useImperativeHandle(forwardedRef, () => domRef.current!);
@@ -126,7 +140,7 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
       isPlaceholder ? 'ion-select--placeholder' : '',
       isInvalid ? 'ion-select--invalid' : '',
       isDisabled ? 'ion-select--disabled' : '',
-      !label && !helper ? customClassName || '' : '',
+      customClassName || '',
     ]
       .filter(Boolean)
       .join(' ');
@@ -176,7 +190,7 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
         className={[
           'ion-field',
           isInvalid ? 'ion-field--error' : '',
-          customClassName || '',
+          wrapperClassName || '',
         ]
           .filter(Boolean)
           .join(' ')}

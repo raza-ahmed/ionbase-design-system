@@ -69,10 +69,10 @@ export const States: Story = {
       <Toggle {...args} defaultChecked>
         On
       </Toggle>
-      <Toggle {...args} disabled>
+      <Toggle {...args} isDisabled>
         Disabled off
       </Toggle>
-      <Toggle {...args} disabled defaultChecked>
+      <Toggle {...args} isDisabled defaultChecked>
         Disabled on
       </Toggle>
     </div>

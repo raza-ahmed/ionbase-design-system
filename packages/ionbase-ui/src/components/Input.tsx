@@ -4,6 +4,7 @@ import React, { forwardRef, useRef, useImperativeHandle } from 'react';
 import { useTextField, useHover, useFocusRing, mergeProps } from 'react-aria';
 import type { AriaTextFieldProps } from 'react-aria';
 import { ARIA_TEXT_FIELD_NON_DOM_PROPS, omitProps } from './dom-props.js';
+import { resolveDisabled } from './resolve-disabled.js';
 
 export type InputSize = 'sm' | 'md' | 'lg';
 
@@ -19,7 +20,7 @@ export type InputSize = 'sm' | 'md' | 'lg';
  */
 type InputDOMProps = Omit<
   React.InputHTMLAttributes<HTMLInputElement>,
-  keyof AriaTextFieldProps | 'size' | 'autoCapitalize'
+  keyof AriaTextFieldProps | 'size' | 'autoCapitalize' | 'disabled'
 >;
 
 export interface InputProps extends AriaTextFieldProps, InputDOMProps {
@@ -36,8 +37,17 @@ export interface InputProps extends AriaTextFieldProps, InputDOMProps {
   leadingIcon?: React.ReactNode;
   /** Trailing icon. Figma's `Show Trailing Icon` + `Trailing Icon` swap. */
   trailingIcon?: React.ReactNode;
-  /** Additional CSS class names, applied to the outermost element. */
+  /**
+   * @deprecated Use `isDisabled`. Accepted as an alias for one minor version.
+   */
+  disabled?: boolean;
+  /**
+   * Class names for the control box (`.ion-input`). Always lands here —
+   * never on the form-field wrapper. Use `wrapperClassName` for that.
+   */
   className?: string;
+  /** Class names for the `.ion-field` wrapper when a label or helper is shown. */
+  wrapperClassName?: string;
 }
 
 /**
@@ -64,14 +74,19 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
       leadingIcon,
       trailingIcon,
       className: customClassName,
+      wrapperClassName,
       label,
       description,
       errorMessage,
-      isDisabled,
+      isDisabled: isDisabledProp,
+      disabled,
       isReadOnly,
       isInvalid,
       ...restProps
     } = props;
+
+    const isDisabled = resolveDisabled(isDisabledProp, disabled);
+    const ariaProps = { ...props, isDisabled };
 
     /*
      * Everything the caller passed that this component and React Aria have no
@@ -91,7 +106,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
     useImperativeHandle(forwardedRef, () => domRef.current!);
 
     const { labelProps, inputProps, descriptionProps, errorMessageProps } =
-      useTextField(props, domRef);
+      useTextField(ariaProps, domRef);
 
     const { hoverProps, isHovered } = useHover({ isDisabled });
     const { focusProps, isFocusVisible } = useFocusRing({ isTextInput: true });
@@ -102,9 +117,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
       isInvalid ? 'ion-input--invalid' : '',
       isReadOnly ? 'ion-input--readonly' : '',
       isDisabled ? 'ion-input--disabled' : '',
-      // With no label or helper there is no wrapper, so the consumer's class
-      // belongs on the box instead.
-      !label && !description && !errorMessage ? customClassName || '' : '',
+      customClassName || '',
     ]
       .filter(Boolean)
       .join(' ');
@@ -154,7 +167,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
         className={[
           'ion-field',
           isInvalid ? 'ion-field--error' : '',
-          customClassName || '',
+          wrapperClassName || '',
         ]
           .filter(Boolean)
           .join(' ')}

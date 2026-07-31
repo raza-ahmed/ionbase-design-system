@@ -1,4 +1,8 @@
-import type { AriaButtonProps, AriaTextFieldProps } from 'react-aria';
+import type {
+  AriaButtonProps,
+  AriaTextFieldProps,
+  AriaTabListProps,
+} from 'react-aria';
 
 /**
  * React Aria prop types are not DOM prop types.
@@ -115,6 +119,35 @@ export const ARIA_TEXT_FIELD_NON_DOM_PROPS = [
   'value',
   'defaultValue',
 ] as const satisfies readonly (keyof AriaTextFieldProps)[];
+
+/**
+ * The same, for `AriaTabListProps` — Tabs' prop type.
+ *
+ * Tabs previously forwarded its leftover props only into the Aria/Stately
+ * hooks, so HTML attributes like `data-testid` never reached the root. The
+ * list below is what must stay off the DOM when the rest is spread onto the
+ * outer element; the hooks still see the full object.
+ *
+ * Sources, as of react-aria / react-stately 3.50:
+ *   CollectionBase   children, items, disabledKeys
+ *   TabListProps     isDisabled, selectedKey, defaultSelectedKey,
+ *                    onSelectionChange
+ *   AriaTabListProps keyboardActivation, orientation
+ *
+ * `id`, `aria-*` and other `DOMProps` / `AriaLabelingProps` members are valid
+ * on the root and are deliberately absent.
+ */
+export const ARIA_TAB_LIST_NON_DOM_PROPS = [
+  'children',
+  'items',
+  'disabledKeys',
+  'isDisabled',
+  'selectedKey',
+  'defaultSelectedKey',
+  'onSelectionChange',
+  'keyboardActivation',
+  'orientation',
+] as const satisfies readonly (keyof AriaTabListProps<object>)[];
 
 /**
  * Returns `props` without `keys`, leaving `props` untouched.

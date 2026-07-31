@@ -6,6 +6,7 @@ import React, {
   useImperativeHandle,
   useEffect,
 } from 'react';
+import { resolveDisabled } from './resolve-disabled.js';
 
 export type CheckboxSize = 'sm' | 'md' | 'lg';
 export type CheckboxIntent = 'brand' | 'neutral' | 'danger';
@@ -23,6 +24,12 @@ export interface CheckboxProps extends Omit<
    * DOM property only, so it has to be assigned after render.
    */
   isIndeterminate?: boolean;
+  /** Whether the checkbox is disabled. */
+  isDisabled?: boolean;
+  /**
+   * @deprecated Use `isDisabled`. Accepted as an alias for one minor version.
+   */
+  disabled?: boolean;
   /** Figma's `Show Label` + `Label`. Omit for a bare box. */
   children?: React.ReactNode;
 }
@@ -72,9 +79,12 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
       isIndeterminate = false,
       className,
       children,
+      isDisabled,
       disabled,
       ...rest
     } = props;
+
+    const resolvedDisabled = resolveDisabled(isDisabled, disabled);
 
     const domRef = useRef<HTMLInputElement>(null);
     useImperativeHandle(forwardedRef, () => domRef.current!);
@@ -87,7 +97,7 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
       'ion-checkbox',
       size !== 'md' ? `ion-checkbox--${size}` : '',
       intent !== 'brand' ? `ion-checkbox--${intent}` : '',
-      disabled ? 'ion-checkbox--disabled' : '',
+      resolvedDisabled ? 'ion-checkbox--disabled' : '',
       className || '',
     ]
       .filter(Boolean)
@@ -99,7 +109,7 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
           {...rest}
           ref={domRef}
           type="checkbox"
-          disabled={disabled}
+          disabled={resolvedDisabled}
           className="ion-checkbox__input"
         />
         <span className="ion-checkbox__indicator" aria-hidden="true">

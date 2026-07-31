@@ -1,4 +1,5 @@
 import React, { forwardRef } from 'react';
+import { resolveDisabled } from './resolve-disabled.js';
 
 export interface MenuProps extends React.HTMLAttributes<HTMLUListElement> {
   children?: React.ReactNode;
@@ -41,6 +42,12 @@ export interface MenuItemProps extends Omit<
   isSelected?: boolean;
   /** Figma's `Show Leading Icon` + `Leading Icon` swap. */
   icon?: React.ReactNode;
+  /** Whether the item is disabled. */
+  isDisabled?: boolean;
+  /**
+   * @deprecated Use `isDisabled`. Accepted as an alias for one minor version.
+   */
+  disabled?: boolean;
   children?: React.ReactNode;
 }
 
@@ -59,34 +66,41 @@ const Check = () => (
 );
 
 export const MenuItem = forwardRef<HTMLButtonElement, MenuItemProps>(
-  ({ isSelected, icon, className, children, disabled, ...rest }, ref) => (
-    <li>
-      <button
-        {...rest}
-        ref={ref}
-        type="button"
-        disabled={disabled}
-        aria-pressed={isSelected}
-        className={[
-          'ion-menu__item',
-          isSelected ? 'ion-menu__item--selected' : '',
-          className || '',
-        ]
-          .filter(Boolean)
-          .join(' ')}
-      >
-        {icon && (
-          <span className="ion-menu__icon" aria-hidden="true">
-            {icon}
+  (
+    { isSelected, icon, className, children, isDisabled, disabled, ...rest },
+    ref,
+  ) => {
+    const resolvedDisabled = resolveDisabled(isDisabled, disabled);
+
+    return (
+      <li>
+        <button
+          {...rest}
+          ref={ref}
+          type="button"
+          disabled={resolvedDisabled}
+          aria-pressed={isSelected}
+          className={[
+            'ion-menu__item',
+            isSelected ? 'ion-menu__item--selected' : '',
+            className || '',
+          ]
+            .filter(Boolean)
+            .join(' ')}
+        >
+          {icon && (
+            <span className="ion-menu__icon" aria-hidden="true">
+              {icon}
+            </span>
+          )}
+          <span className="ion-menu__label">{children}</span>
+          <span className="ion-menu__check" aria-hidden="true">
+            <Check />
           </span>
-        )}
-        <span className="ion-menu__label">{children}</span>
-        <span className="ion-menu__check" aria-hidden="true">
-          <Check />
-        </span>
-      </button>
-    </li>
-  ),
+        </button>
+      </li>
+    );
+  },
 );
 
 MenuItem.displayName = 'MenuItem';

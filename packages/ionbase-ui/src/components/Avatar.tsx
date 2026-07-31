@@ -113,10 +113,9 @@ export interface AvatarGroupProps extends React.HTMLAttributes<HTMLDivElement> {
  * AvatarGroup overlaps its children by a quarter of the avatar size, matching
  * Figma's -6 / -8 / -10 / -12 gaps at Mini / Small / Medium / Large.
  *
- * It passes `size` and `shape` down rather than trusting the caller to set them
- * on every child: the overlap is computed from the size, so a mismatched child
- * would overlap by the wrong amount and the error would look like a design bug
- * rather than a wiring one.
+ * Group defaults fill in `size` / `shape` only when a child Avatar has not set
+ * them itself — an explicit child prop wins. Non-Avatar children are left
+ * alone so `size`/`shape` are never pushed onto arbitrary DOM nodes.
  *
  * Children render in source order because that is Figma's stacking: each avatar
  * paints over the one before it, so the `+N` overflow ends up on top. Later
@@ -131,13 +130,20 @@ export const AvatarGroup = forwardRef<HTMLDivElement, AvatarGroupProps>(
     const shown = max !== undefined ? items.slice(0, max) : items;
     const overflow = items.length - shown.length;
 
-    const sized = shown.map((child, i) =>
-      React.cloneElement(child as React.ReactElement<AvatarProps>, {
-        size,
-        shape,
-        key: (child as React.ReactElement).key ?? i,
-      }),
-    );
+    const sized = shown.map((child, i) => {
+      if (child.type !== Avatar) {
+        return child.key != null
+          ? child
+          : React.cloneElement(child, { key: i });
+      }
+
+      const props = child.props as AvatarProps;
+      return React.cloneElement(child as React.ReactElement<AvatarProps>, {
+        size: props.size ?? size,
+        shape: props.shape ?? shape,
+        key: child.key ?? i,
+      });
+    });
 
     if (overflow > 0) {
       sized.push(

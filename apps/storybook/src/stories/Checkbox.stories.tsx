@@ -72,10 +72,10 @@ export const States: Story = {
       <Checkbox {...args} isIndeterminate>
         Indeterminate
       </Checkbox>
-      <Checkbox {...args} disabled>
+      <Checkbox {...args} isDisabled>
         Disabled
       </Checkbox>
-      <Checkbox {...args} disabled defaultChecked>
+      <Checkbox {...args} isDisabled defaultChecked>
         Checked disabled
       </Checkbox>
     </div>
@@ -153,6 +153,7 @@ export const DerivedMarkMatchesFigma: Story = {
  */
 export const DisabledBeatsChecked: Story = {
   render: (args) => (
+    // `disabled` is the deprecated alias — still must resolve the same way.
     <Checkbox {...args} disabled defaultChecked aria-label="field" />
   ),
   play: async ({ canvas }) => {
@@ -246,8 +247,8 @@ export const UncheckedBorderIsHeavier: Story = {
 export const DisabledKeepsTheHeavyBorder: Story = {
   render: () => (
     <div>
-      <Checkbox disabled aria-label="off" />
-      <Checkbox disabled defaultChecked aria-label="on" />
+      <Checkbox isDisabled aria-label="off" />
+      <Checkbox isDisabled defaultChecked aria-label="on" />
     </div>
   ),
   play: async ({ canvas }) => {

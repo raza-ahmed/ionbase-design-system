@@ -8,6 +8,7 @@ import React, {
   createContext,
   useId,
 } from 'react';
+import { resolveDisabled } from './resolve-disabled.js';
 
 export type RadioSize = 'sm' | 'md' | 'lg';
 export type RadioIntent = 'brand' | 'neutral' | 'danger';
@@ -37,6 +38,12 @@ export interface RadioProps extends Omit<
   value: string;
   size?: RadioSize;
   intent?: RadioIntent;
+  /** Whether this radio is disabled. Falls back to the group's `isDisabled`. */
+  isDisabled?: boolean;
+  /**
+   * @deprecated Use `isDisabled`. Accepted as an alias for one minor version.
+   */
+  disabled?: boolean;
   children?: React.ReactNode;
 }
 
@@ -49,10 +56,14 @@ export const Radio = forwardRef<HTMLInputElement, RadioProps>(
       intent = group?.intent ?? 'brand',
       className,
       children,
-      disabled = group?.isDisabled,
+      isDisabled,
+      disabled,
       name = group?.name,
       ...rest
     } = props;
+
+    const resolvedDisabled =
+      resolveDisabled(isDisabled, disabled) ?? group?.isDisabled;
 
     const domRef = useRef<HTMLInputElement>(null);
     useImperativeHandle(forwardedRef, () => domRef.current!);
@@ -61,7 +72,7 @@ export const Radio = forwardRef<HTMLInputElement, RadioProps>(
       'ion-radio',
       size !== 'md' ? `ion-radio--${size}` : '',
       intent !== 'brand' ? `ion-radio--${intent}` : '',
-      disabled ? 'ion-radio--disabled' : '',
+      resolvedDisabled ? 'ion-radio--disabled' : '',
       className || '',
     ]
       .filter(Boolean)
@@ -93,7 +104,7 @@ export const Radio = forwardRef<HTMLInputElement, RadioProps>(
           type="radio"
           name={name}
           value={value}
-          disabled={disabled}
+          disabled={resolvedDisabled}
           className="ion-radio__input"
           onChange={handleChange}
           {...(controlled
@@ -123,7 +134,12 @@ export interface RadioGroupProps extends Omit<
   label?: React.ReactNode;
   size?: RadioSize;
   intent?: RadioIntent;
+  /** Whether every radio in the group is disabled. */
   isDisabled?: boolean;
+  /**
+   * @deprecated Use `isDisabled`. Accepted as an alias for one minor version.
+   */
+  disabled?: boolean;
   children?: React.ReactNode;
 }
 
@@ -144,11 +160,13 @@ export const RadioGroup = forwardRef<HTMLFieldSetElement, RadioGroupProps>(
       size,
       intent,
       isDisabled,
+      disabled,
       className,
       children,
       ...rest
     } = props;
 
+    const resolvedDisabled = resolveDisabled(isDisabled, disabled);
     const generated = useId();
 
     return (
@@ -160,12 +178,13 @@ export const RadioGroup = forwardRef<HTMLFieldSetElement, RadioGroupProps>(
           onChange,
           size,
           intent,
-          isDisabled,
+          isDisabled: resolvedDisabled,
         }}
       >
         <fieldset
           {...rest}
           ref={ref}
+          disabled={resolvedDisabled}
           className={['ion-radio-group', className].filter(Boolean).join(' ')}
         >
           {label && <legend className="ion-radio-group__label">{label}</legend>}

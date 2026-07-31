@@ -13,6 +13,7 @@ import {
 import { useTabListState, type TabListState } from 'react-stately';
 import { Item } from '@react-stately/collections';
 import type { Node } from '@react-types/shared';
+import { ARIA_TAB_LIST_NON_DOM_PROPS, omitProps } from './dom-props.js';
 
 export type TabsType = 'pill' | 'underline';
 export type TabsSize = 'sm' | 'md' | 'lg';
@@ -124,6 +125,7 @@ export const Tabs = forwardRef(function Tabs<T extends object>(
    * said vertical. One value, two sources of truth.
    */
   const ariaProps = { ...rest, orientation };
+  const domProps = omitProps(rest, ARIA_TAB_LIST_NON_DOM_PROPS);
 
   const state = useTabListState(ariaProps);
   const listRef = useRef<HTMLDivElement>(null);
@@ -137,6 +139,7 @@ export const Tabs = forwardRef(function Tabs<T extends object>(
 
   return (
     <div
+      {...domProps}
       ref={forwardedRef}
       className={['ion-tabs', customClassName].filter(Boolean).join(' ')}
     >
