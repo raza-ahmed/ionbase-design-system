@@ -1,7 +1,16 @@
-import React, { forwardRef } from 'react';
+'use client';
+
+import React, { createContext, forwardRef, useContext } from 'react';
 import { Checkbox } from './Checkbox.js';
 
 export type TableDensity = 'compact' | 'default' | 'relaxed';
+
+/**
+ * Section context so `TableRow` / `TableCell` can tell head from body without
+ * a prop the caller has to keep in sync with where the row actually sits.
+ * `createContext` is client-only — see verify-client-boundaries.mjs.
+ */
+const TableSectionContext = createContext<'head' | 'body' | null>(null);
 
 export interface TableProps extends React.TableHTMLAttributes<HTMLTableElement> {
   /** Matches Figma's `Density` variant on `Table Cell` / `Table Row`. */
@@ -21,10 +30,33 @@ export interface TableProps extends React.TableHTMLAttributes<HTMLTableElement> 
  * padding, which `.ion-table--compact td` and friends apply through the CSS
  * cascade from this one class. A context provider for a value nothing in JS
  * ever reads would be infrastructure with no consumer.
+ *
+ * The scroll container is a keyboard-reachable region (WCAG 2.1.1): overflow
+ * alone is not enough. `aria-label` / `aria-labelledby` on `Table` name that
+ * region — the container accepts no props of its own, so the table's name is
+ * the only place the label can live. Prefer a `<caption>` via
+ * `aria-labelledby` when the name should also be visible.
  */
 export const Table = forwardRef<HTMLTableElement, TableProps>(
-  ({ density = 'default', isStriped, className, children, ...rest }, ref) => (
-    <div className="ion-table-container">
+  (
+    {
+      density = 'default',
+      isStriped,
+      className,
+      children,
+      'aria-label': ariaLabel,
+      'aria-labelledby': ariaLabelledBy,
+      ...rest
+    },
+    ref,
+  ) => (
+    <div
+      className="ion-table-container"
+      role="region"
+      tabIndex={0}
+      aria-label={ariaLabel}
+      aria-labelledby={ariaLabelledBy}
+    >
       <table
         {...rest}
         ref={ref}
@@ -47,14 +79,33 @@ Table.displayName = 'Table';
 export const TableHead = forwardRef<
   HTMLTableSectionElement,
   React.HTMLAttributes<HTMLTableSectionElement>
->((props, ref) => <thead {...props} ref={ref} />);
+>(({ children, ...rest }, ref) => (
+  <TableSectionContext.Provider value="head">
+    <thead {...rest} ref={ref}>
+      {children}
+    </thead>
+  </TableSectionContext.Provider>
+));
 TableHead.displayName = 'TableHead';
 
 export const TableBody = forwardRef<
   HTMLTableSectionElement,
   React.HTMLAttributes<HTMLTableSectionElement>
->((props, ref) => <tbody {...props} ref={ref} />);
+>(({ children, ...rest }, ref) => (
+  <TableSectionContext.Provider value="body">
+    <tbody {...rest} ref={ref}>
+      {children}
+    </tbody>
+  </TableSectionContext.Provider>
+));
 TableBody.displayName = 'TableBody';
+
+/**
+ * Row selection checkboxes have no visible label by design, so an accessible
+ * name is required — either `aria-label` or label `children` on the Checkbox.
+ */
+export type TableRowSelection = React.ComponentProps<typeof Checkbox> &
+  ({ 'aria-label': string } | { children: React.ReactNode });
 
 export interface TableRowProps extends React.HTMLAttributes<HTMLTableRowElement> {
   isSelected?: boolean;
@@ -62,8 +113,11 @@ export interface TableRowProps extends React.HTMLAttributes<HTMLTableRowElement>
    * Renders a leading `Checkbox` cell — Figma's `Show Selection`. Takes the
    * checkbox's own props directly rather than a boolean, since a selectable
    * row needs `checked`/`onChange` wiring, not just a decorative box.
+   *
+   * Inside `<thead>` the cell is a `<th scope="col">` (select-all). Inside
+   * `<tbody>` it is a `<td>`.
    */
-  selection?: React.ComponentProps<typeof Checkbox>;
+  selection?: TableRowSelection;
 }
 
 /**
@@ -76,25 +130,36 @@ export interface TableRowProps extends React.HTMLAttributes<HTMLTableRowElement>
  * nesting an interactive role on `<tr>` itself is not valid HTML.
  */
 export const TableRow = forwardRef<HTMLTableRowElement, TableRowProps>(
-  ({ isSelected, selection, className, children, ...rest }, ref) => (
-    <tr
-      {...rest}
-      ref={ref}
-      data-selected={isSelected || undefined}
-      className={['ion-table__row', className].filter(Boolean).join(' ')}
-    >
-      {selection && (
-        <td>
-          <Checkbox {...selection} />
-        </td>
-      )}
-      {children}
-    </tr>
-  ),
+  ({ isSelected, selection, className, children, ...rest }, ref) => {
+    const section = useContext(TableSectionContext);
+    const inHead = section === 'head';
+
+    return (
+      <tr
+        {...rest}
+        ref={ref}
+        data-selected={isSelected || undefined}
+        className={['ion-table__row', className].filter(Boolean).join(' ')}
+      >
+        {selection &&
+          (inHead ? (
+            <th scope="col">
+              <Checkbox {...selection} />
+            </th>
+          ) : (
+            <td>
+              <Checkbox {...selection} />
+            </td>
+          ))}
+        {children}
+      </tr>
+    );
+  },
 );
 TableRow.displayName = 'TableRow';
 
 export type TableCellAlign = 'leading' | 'trailing' | 'center';
+export type TableCellScope = 'col' | 'row' | 'colgroup' | 'rowgroup';
 
 export interface TableCellProps extends Omit<
   React.TdHTMLAttributes<HTMLTableCellElement>,
@@ -103,6 +168,12 @@ export interface TableCellProps extends Omit<
   /** Renders `<th>` instead of `<td>` — Figma's header cell, `surface/page`
    *  fill included. */
   header?: boolean;
+  /**
+   * `<th>` scope. Inferred when omitted: `col` in `<thead>`, `row` in
+   * `<tbody>`. Pass explicitly when the inference is wrong (e.g. a column
+   * header rendered outside `<thead>`).
+   */
+  scope?: TableCellScope;
   align?: TableCellAlign;
   /** Figma's `Type=Link` — recolours the content to `text/link` /
    *  `icon/primary` rather than the body defaults. */
@@ -129,6 +200,7 @@ export const TableCell = forwardRef<HTMLTableCellElement, TableCellProps>(
   (
     {
       header,
+      scope: scopeProp,
       align = 'leading',
       variant = 'default',
       showDivider,
@@ -140,7 +212,12 @@ export const TableCell = forwardRef<HTMLTableCellElement, TableCellProps>(
     },
     ref,
   ) => {
+    const section = useContext(TableSectionContext);
     const Tag = header ? 'th' : 'td';
+    // `scope` is only valid on `<th>` — never put it on a `<td>`.
+    const scope = header
+      ? (scopeProp ?? (section === 'body' ? 'row' : 'col'))
+      : undefined;
     const contentClassNames = [
       'ion-table__cell-content',
       variant === 'link' ? 'ion-table__cell-content--link' : '',
@@ -152,6 +229,7 @@ export const TableCell = forwardRef<HTMLTableCellElement, TableCellProps>(
       <Tag
         {...rest}
         ref={ref}
+        {...(scope ? { scope } : {})}
         data-align={align !== 'leading' ? align : undefined}
         data-divider={showDivider || undefined}
         className={className}

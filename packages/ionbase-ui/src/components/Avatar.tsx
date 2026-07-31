@@ -1,4 +1,6 @@
-import React, { forwardRef } from 'react';
+'use client';
+
+import React, { forwardRef, useState } from 'react';
 
 export type AvatarSize = 'mini' | 'sm' | 'md' | 'lg';
 export type AvatarShape = 'circle' | 'square';
@@ -15,7 +17,8 @@ export interface AvatarProps extends React.HTMLAttributes<HTMLSpanElement> {
    * avatar is never announced as an unlabelled image.
    */
   alt?: string;
-  /** Figma's `Type=Character`. Rendered when there is no `src`. */
+  /** Figma's `Type=Character`. Rendered when there is no `src`, or when `src`
+   *  fails to load. */
   initials?: string;
   /** Figma's `Type=Icon`. Rendered when there is neither `src` nor `initials`. */
   icon?: React.ReactNode;
@@ -26,6 +29,9 @@ export interface AvatarProps extends React.HTMLAttributes<HTMLSpanElement> {
  * precedence rather than by a prop: image, then initials, then icon. A caller
  * passing `src` and `initials` gets the image with the initials as its alt
  * fallback, which is what you want when the image 404s.
+ *
+ * A failed `src` falls through to initials (then icon) rather than leaving the
+ * browser's broken-image glyph — that is why initials exist alongside `src`.
  *
  * It is a `<span>`, not a `<div>`, so it can sit inline beside text without the
  * caller fighting a block element.
@@ -44,6 +50,16 @@ export const Avatar = forwardRef<HTMLSpanElement, AvatarProps>(
     },
     ref,
   ) => {
+    const [imgFailed, setImgFailed] = useState(false);
+    // Reset failure when `src` changes — adjust state during render rather than
+    // an effect, so a recovered URL shows the image on the same update.
+    const [prevSrc, setPrevSrc] = useState(src);
+    if (src !== prevSrc) {
+      setPrevSrc(src);
+      setImgFailed(false);
+    }
+
+    const showImage = Boolean(src) && !imgFailed;
     const classNames = [
       'ion-avatar',
       size !== 'md' ? `ion-avatar--${size}` : '',
@@ -62,10 +78,15 @@ export const Avatar = forwardRef<HTMLSpanElement, AvatarProps>(
         className={classNames}
         // With no image there is no <img> to carry the name, so the box itself
         // does. Initials alone read as nonsense without it.
-        {...(!src && label ? { role: 'img', 'aria-label': label } : {})}
+        {...(!showImage && label ? { role: 'img', 'aria-label': label } : {})}
       >
-        {src ? (
-          <img className="ion-avatar__image" src={src} alt={label ?? ''} />
+        {showImage ? (
+          <img
+            className="ion-avatar__image"
+            src={src}
+            alt={label ?? ''}
+            onError={() => setImgFailed(true)}
+          />
         ) : initials ? (
           <span aria-hidden="true">{initials}</span>
         ) : icon ? (

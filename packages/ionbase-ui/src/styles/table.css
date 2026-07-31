@@ -37,6 +37,12 @@
   border-radius: var(--radius-md);
 }
 
+/* Keyboard focus ring for the scroll region — see Table.tsx. */
+.ion-table-container:focus-visible {
+  outline: var(--border-width-thick) solid var(--border-focus);
+  outline-offset: 2px;
+}
+
 .ion-table {
   width: 100%;
   border-collapse: collapse;
@@ -83,12 +89,10 @@
  * inside `<thead>`.
  *
  * The `<th>` half is the Figma binding (see the header). The `thead` half
- * exists because a header row can legitimately contain a cell that is not a
- * column header — a selection-checkbox column has nothing to label, and an
- * empty `<th>` is an accessibility failure rather than a neutral one: axe's
- * `empty-table-header` flags it, and `aria-label` does not rescue it, since the
- * rule is specifically about text a sighted screen-reader user can also see.
- * Such a cell should be a `<td>`, which then still needs to look like a header.
+ * exists for cells that sit in the header row but are not column headers —
+ * rare, and mostly historical. Selection's select-all cell is a real `<th
+ * scope="col">` with a labelled checkbox, so it gets the fill from the `<th>`
+ * rule rather than this fallback.
  *
  * Declared after `.ion-table td` so specificity reads non-decreasing; the two
  * `td` selectors would otherwise trip `no-descending-specificity`.

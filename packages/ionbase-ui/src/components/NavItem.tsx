@@ -96,14 +96,43 @@ export const NavItem = forwardRef<
   );
 
   if (href !== undefined) {
+    /*
+     * A disabled link keeps the `<a>` (so the role stays "link") but must not
+     * fire handlers spread via `...rest`. `aria-disabled` alone does not stop
+     * `onClick` — strip pointer/keyboard activation and take the link out of
+     * the tab order.
+     */
+    const {
+      onClick,
+      onMouseDown,
+      onMouseUp,
+      onPointerDown,
+      onPointerUp,
+      onKeyDown,
+      onKeyUp,
+      ...anchorRest
+    } = rest as React.AnchorHTMLAttributes<HTMLAnchorElement>;
+
     return (
       <a
-        {...(rest as React.AnchorHTMLAttributes<HTMLAnchorElement>)}
+        {...anchorRest}
+        {...(isDisabled
+          ? {}
+          : {
+              onClick,
+              onMouseDown,
+              onMouseUp,
+              onPointerDown,
+              onPointerUp,
+              onKeyDown,
+              onKeyUp,
+            })}
         {...mergeProps(hoverProps, focusProps)}
         {...stateAttributes}
         ref={domRef as React.Ref<HTMLAnchorElement>}
         href={isDisabled ? undefined : href}
         aria-disabled={isDisabled || undefined}
+        tabIndex={isDisabled ? -1 : undefined}
         className={classNames}
       >
         {content}

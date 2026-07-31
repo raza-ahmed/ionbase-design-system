@@ -21,11 +21,14 @@ const meta: Meta<typeof Table> = {
       options: ['compact', 'default', 'relaxed'],
     },
   },
+  args: {
+    'aria-label': 'Invoices',
+  },
   parameters: {
     docs: {
       description: {
         component:
-          "Measured from Figma `Table Row` / `Table Cell` / `Cell Text` (173:42). Density (Compact/Default/Relaxed) only moves vertical padding — 8/16/20 — the same 16px horizontal padding runs through all three. `TableCell` covers Figma's `Table Cell` + `Cell Text` together: the two are never used apart in the design, so splitting them would only add API surface for a composition nothing varies independently.\n\n`header` decides `<th>` vs `<td>` directly, so the header fill and weight come from real table semantics rather than a `type` prop that could disagree with where the cell actually sits.",
+          "Measured from Figma `Table Row` / `Table Cell` / `Cell Text` (173:42). Density (Compact/Default/Relaxed) only moves vertical padding — 8/16/20, the same 16px horizontal padding runs through all three. `TableCell` covers Figma's `Table Cell` + `Cell Text` together: the two are never used apart in the design, so splitting them would only add API surface for a composition nothing varies independently.\n\n`header` decides `<th>` vs `<td>` directly, so the header fill and weight come from real table semantics rather than a `type` prop that could disagree with where the cell actually sits. `aria-label` / `aria-labelledby` name the scroll container (a keyboard-reachable region), not the `<table>` itself.",
       },
     },
   },
@@ -71,7 +74,7 @@ export const Density: Story = {
       {(['compact', 'default', 'relaxed'] as const).map((density) => (
         <div key={density}>
           <p style={{ margin: '0 0 0.5rem', fontSize: '0.75rem' }}>{density}</p>
-          <Table density={density}>
+          <Table density={density} aria-label={density}>
             <TableHead>
               <TableRow>
                 <TableCell header>Name</TableCell>
@@ -93,17 +96,9 @@ export const Density: Story = {
 
 export const WithSelectionAndIcons: Story = {
   render: () => (
-    <Table>
+    <Table aria-label="Selectable invoices">
       <TableHead>
-        <TableRow>
-          {/*
-           * Deliberately NOT `header`: the selection column labels nothing, so
-           * a `<th>` here would be an empty column header — which axe flags
-           * (`empty-table-header`) and which `aria-label` does not fix, that
-           * rule being about text a sighted user can see too. A `<td>` is the
-           * honest markup, and `thead td` still gets the header fill.
-           */}
-          <TableCell />
+        <TableRow selection={{ 'aria-label': 'Select all' }}>
           <TableCell header>Name</TableCell>
           <TableCell header showDivider>
             Status
@@ -149,7 +144,7 @@ export const WithSelectionAndIcons: Story = {
 
 export const Striped: Story = {
   render: () => (
-    <Table isStriped>
+    <Table isStriped aria-label="Striped invoices">
       <TableHead>
         <TableRow>
           <TableCell header>Name</TableCell>
@@ -174,7 +169,7 @@ export const Striped: Story = {
  */
 export const RenderedGeometryMatchesFigma: Story = {
   render: () => (
-    <Table>
+    <Table aria-label="Geometry">
       <TableHead>
         <TableRow>
           <TableCell header>Name</TableCell>
@@ -244,7 +239,7 @@ export const DensityOnlyMovesVerticalPadding: Story = {
  */
 export const StripedRowStillHovers: Story = {
   render: () => (
-    <Table isStriped>
+    <Table isStriped aria-label="Striped hover">
       <TableBody>
         <TableRow>
           <TableCell>Row 1</TableCell>
@@ -270,7 +265,7 @@ export const StripedRowStillHovers: Story = {
 /** Selecting a row is real form state — a `Checkbox`, not a decorative box. */
 export const SelectionIsARealCheckbox: Story = {
   render: () => (
-    <Table>
+    <Table aria-label="Selection">
       <TableBody>
         <TableRow selection={{ 'aria-label': 'Select row' }}>
           <TableCell>Row</TableCell>
@@ -292,19 +287,15 @@ export const SelectionIsARealCheckbox: Story = {
 };
 
 /**
- * A header row may contain a cell that is not a column header — the selection
- * checkbox column labels nothing. That cell must be a `<td>`, not an empty
- * `<th>`: axe's `empty-table-header` flags the latter, and `aria-label` does
- * not rescue it, since the rule is about text a sighted screen-reader user can
- * see too. This asserts both halves — the markup is honest, and the cell still
- * looks like part of the header.
+ * Header selection is a `<th scope="col">` with a labelled select-all
+ * checkbox — not an empty spacer `<td>`. Body selection stays a `<td>`.
+ * Every column header carries `scope="col"`.
  */
-export const HeaderRowHasNoEmptyColumnHeader: Story = {
+export const HeaderSelectionIsSelectAll: Story = {
   render: () => (
-    <Table>
+    <Table aria-label="Select-all">
       <TableHead>
-        <TableRow>
-          <TableCell />
+        <TableRow selection={{ 'aria-label': 'Select all' }}>
           <TableCell header>Name</TableCell>
           <TableCell header>Status</TableCell>
           <TableCell header align="trailing">
@@ -326,38 +317,56 @@ export const HeaderRowHasNoEmptyColumnHeader: Story = {
       </TableBody>
     </Table>
   ),
-  play: async ({ canvasElement }) => {
-    // Every column header carries text, and there are several of them — a
-    // single-column table would satisfy this vacuously.
+  play: async ({ canvas, canvasElement }) => {
+    await expect(canvas.getByLabelText('Select all')).toBeTruthy();
+
+    const headSelect = canvasElement.querySelector(
+      'thead th:first-child',
+    ) as HTMLTableCellElement;
+    await expect(headSelect.tagName).toBe('TH');
+    await expect(headSelect.scope).toBe('col');
+
+    const bodySelect = canvasElement.querySelector(
+      'tbody td:first-child',
+    ) as HTMLTableCellElement;
+    await expect(bodySelect.tagName).toBe('TD');
+
     const headers = [...canvasElement.querySelectorAll('thead th')];
-    await expect(headers.length).toBe(3);
+    // select-all + Name + Status + Amount
+    await expect(headers.length).toBe(4);
     for (const th of headers) {
-      await expect(th.textContent!.trim().length).toBeGreaterThan(0);
+      await expect((th as HTMLTableCellElement).scope).toBe('col');
     }
 
-    // The selection column contributes exactly one non-header cell.
-    await expect(canvasElement.querySelectorAll('thead td').length).toBe(1);
-
-    // Header and body row cell counts agree, so the spacer really is standing
-    // in for the checkbox column rather than papering over a ragged table.
     const headRow = canvasElement.querySelector('thead tr') as HTMLElement;
     const bodyRow = canvasElement.querySelector('tbody tr') as HTMLElement;
     await expect(headRow.children.length).toBe(bodyRow.children.length);
+  },
+};
 
-    // The non-header cell still paints as a header, so the band reads as one.
-    const spacer = canvasElement.querySelector('thead td') as HTMLElement;
-    const labelled = headers[0] as HTMLElement;
-    await expect(getComputedStyle(spacer).backgroundColor).toBe(
-      getComputedStyle(labelled).backgroundColor,
-    );
-    await expect(getComputedStyle(spacer).fontWeight).toBe(
-      getComputedStyle(labelled).fontWeight,
-    );
-
-    // ...and is distinct from a body cell.
-    const bodyCell = canvasElement.querySelector('tbody td') as HTMLElement;
-    await expect(getComputedStyle(spacer).backgroundColor).not.toBe(
-      getComputedStyle(bodyCell).backgroundColor,
-    );
+/** The scroll container is a named, focusable region so wide tables can be
+ *  scrolled from the keyboard (WCAG 2.1.1). */
+export const ScrollContainerIsKeyboardReachable: Story = {
+  render: () => (
+    <Table aria-label="Wide invoices">
+      <TableHead>
+        <TableRow>
+          <TableCell header>Name</TableCell>
+        </TableRow>
+      </TableHead>
+      <TableBody>
+        <TableRow>
+          <TableCell>Invoice #1024</TableCell>
+        </TableRow>
+      </TableBody>
+    </Table>
+  ),
+  play: async ({ canvasElement }) => {
+    const region = canvasElement.querySelector(
+      '.ion-table-container',
+    ) as HTMLElement;
+    await expect(region.getAttribute('role')).toBe('region');
+    await expect(region.tabIndex).toBe(0);
+    await expect(region.getAttribute('aria-label')).toBe('Wide invoices');
   },
 };

@@ -50,8 +50,10 @@ export type {
   TableProps,
   TableDensity,
   TableRowProps,
+  TableRowSelection,
   TableCellProps,
   TableCellAlign,
+  TableCellScope,
 } from './Table.js';
 export { ScrollProgress } from './ScrollProgress.js';
 export type {

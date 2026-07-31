@@ -62,3 +62,136 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+
+/*
+ * Reduced motion — WCAG 2.3.3.
+ *
+ * Ten component stylesheets carry transitions; none of them individually
+ * gated on the query. One global block covers every `ion-*` rule rather than
+ * duplicating the media query ten times. `0.01ms` rather than `0` so the
+ * browser still fires `transitionend` / `animationend` for anything that
+ * listens.
+ */
+@media (prefers-reduced-motion: reduce) {
+  [class^='ion-'],
+  [class*=' ion-'],
+  [class^='ion-'] *,
+  [class*=' ion-'] * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/*
+ * Forced colours — Windows High Contrast / WCAG 1.4.11.
+ *
+ * Components that convey state with background or border tokens flatten to
+ * unreadable blocks when the OS remaps colour. Re-express those states with
+ * system colour keywords so selected, checked, focused and disabled remain
+ * distinguishable. `forced-color-adjust: none` only where the system would
+ * otherwise erase a fill the mark depends on (checked boxes, selected pills).
+ */
+@media (forced-colors: active) {
+  .ion-button:focus-visible,
+  .ion-button[data-focused='true'],
+  .ion-nav-item:focus-visible,
+  .ion-nav-item[data-focused='true'],
+  .ion-tabs__item:focus-visible,
+  .ion-tabs__item[data-focused='true'],
+  .ion-tabs__panel:focus-visible,
+  .ion-menu__item:focus-visible,
+  .ion-input:focus-within,
+  .ion-select:focus-within,
+  .ion-scroll-progress__trigger:focus-visible,
+  .ion-scroll-progress__heading:focus-visible,
+  .ion-table-container:focus-visible {
+    outline: var(--border-width-thick) solid Highlight;
+    outline-offset: 2px;
+  }
+
+  .ion-checkbox__input:focus-visible + .ion-checkbox__indicator,
+  .ion-checkbox[data-focused='true'] .ion-checkbox__indicator,
+  .ion-radio__input:focus-visible + .ion-radio__indicator,
+  .ion-radio[data-focused='true'] .ion-radio__indicator,
+  .ion-toggle__input:focus-visible + .ion-toggle__track,
+  .ion-toggle[data-focused='true'] .ion-toggle__track {
+    outline: var(--border-width-thick) solid Highlight;
+    outline-offset: 2px;
+  }
+
+  /* Checked / selected before disabled so specificity reads non-decreasing. */
+  .ion-checkbox__input:checked + .ion-checkbox__indicator,
+  .ion-checkbox__input:indeterminate + .ion-checkbox__indicator,
+  .ion-radio__input:checked + .ion-radio__indicator,
+  .ion-toggle__input:checked + .ion-toggle__track {
+    forced-color-adjust: none;
+    background-color: Highlight;
+    border-color: Highlight;
+  }
+
+  .ion-checkbox__input:checked + .ion-checkbox__indicator .ion-checkbox__mark,
+  .ion-checkbox__input:indeterminate
+    + .ion-checkbox__indicator
+    .ion-checkbox__mark {
+    forced-color-adjust: none;
+    color: HighlightText;
+  }
+
+  .ion-radio__input:checked + .ion-radio__indicator .ion-radio__dot {
+    forced-color-adjust: none;
+    background-color: HighlightText;
+  }
+
+  .ion-toggle__input:checked + .ion-toggle__track .ion-toggle__thumb {
+    forced-color-adjust: none;
+    background-color: HighlightText;
+  }
+
+  .ion-table tbody tr[data-selected='true'] {
+    forced-color-adjust: none;
+    background-color: Highlight;
+    color: HighlightText;
+  }
+
+  .ion-tabs__item--underline[data-selected='true'] {
+    border-bottom-color: Highlight;
+  }
+
+  .ion-tabs__item--pill[data-selected='true'] {
+    forced-color-adjust: none;
+    background-color: Highlight;
+    color: HighlightText;
+  }
+
+  .ion-button:disabled,
+  .ion-button[data-disabled='true'],
+  .ion-nav-item--disabled,
+  .ion-nav-item[data-disabled='true'],
+  .ion-tabs__item[data-disabled='true'],
+  .ion-menu__item:disabled,
+  .ion-menu__item[data-disabled='true'],
+  .ion-input[data-disabled='true'],
+  .ion-select[data-disabled='true'],
+  .ion-checkbox--disabled,
+  .ion-checkbox[data-disabled='true'],
+  .ion-radio--disabled,
+  .ion-radio[data-disabled='true'],
+  .ion-toggle--disabled,
+  .ion-toggle[data-disabled='true'] {
+    color: GrayText;
+    border-color: GrayText;
+  }
+
+  .ion-checkbox__input:disabled + .ion-checkbox__indicator,
+  .ion-checkbox__input:checked:disabled + .ion-checkbox__indicator,
+  .ion-checkbox__input:indeterminate:disabled + .ion-checkbox__indicator,
+  .ion-radio__input:disabled + .ion-radio__indicator,
+  .ion-radio__input:checked:disabled + .ion-radio__indicator,
+  .ion-toggle__input:disabled + .ion-toggle__track,
+  .ion-toggle__input:checked:disabled + .ion-toggle__track {
+    border-color: GrayText;
+    background-color: Canvas;
+  }
+}

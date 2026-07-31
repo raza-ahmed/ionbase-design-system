@@ -49,6 +49,38 @@ export const Disabled: Story = {
   ),
 };
 
+/**
+ * A disabled link must not fire `onClick` from rest props — `aria-disabled`
+ * alone does not stop handlers spread onto the `<a>`.
+ */
+export const DisabledLinkDoesNotFireOnClick: Story = {
+  render: function Render() {
+    const [clicked, setClicked] = React.useState(false);
+    return (
+      <>
+        <NavItem
+          href="/nowhere"
+          isDisabled
+          onClick={() => setClicked(true)}
+          data-testid="disabled-nav-link"
+        >
+          Disabled link
+        </NavItem>
+        <span data-testid="click-flag">{clicked ? 'yes' : 'no'}</span>
+      </>
+    );
+  },
+  play: async ({ canvas, userEvent }) => {
+    const link = canvas.getByTestId('disabled-nav-link');
+    await expect(link).toHaveAttribute('aria-disabled', 'true');
+    await expect(link.getAttribute('href')).toBeNull();
+    await expect(link.tabIndex).toBe(-1);
+
+    await userEvent.click(link);
+    await expect(canvas.getByTestId('click-flag').textContent).toBe('no');
+  },
+};
+
 /** Figma: 8px padding all round, 4px gap, radius/sm. */
 export const RenderedGeometryMatchesFigma: Story = {
   render: () => <NavItem href="/products">Products</NavItem>,

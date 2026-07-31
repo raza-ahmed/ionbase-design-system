@@ -1,6 +1,6 @@
 import React from 'react';
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { expect } from 'storybook/test';
+import { expect, waitFor } from 'storybook/test';
 import { Avatar, AvatarGroup, Icon } from 'ionbase-ui';
 import { User } from 'lucide-react';
 // A real photo, supplied for this repo's own demo — not stock art standing
@@ -198,5 +198,25 @@ export const WithImage: Story = {
     // Falls back to the same name a text-only avatar would announce.
     await expect(img.alt).toBe('Profile photo');
     await expect(getComputedStyle(img).objectFit).toBe('cover');
+  },
+};
+
+/** A failing `src` falls through to initials rather than the broken-image glyph. */
+export const BrokenImageFallsBackToInitials: Story = {
+  render: () => (
+    <Avatar
+      src="/this-image-does-not-exist-404.png"
+      initials="AB"
+      alt="Ada Byron"
+    />
+  ),
+  play: async ({ canvas, canvasElement }) => {
+    // Wait for the error path: image gone, initials present, span labelled.
+    await waitFor(() => {
+      expect(canvasElement.querySelector('.ion-avatar__image')).toBeNull();
+    });
+    const avatar = canvas.getByLabelText('Ada Byron');
+    await expect(avatar).toBeTruthy();
+    await expect(avatar.textContent).toBe('AB');
   },
 };
