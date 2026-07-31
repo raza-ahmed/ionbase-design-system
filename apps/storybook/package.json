@@ -8,7 +8,7 @@
   "scripts": {
     "dev": "storybook dev -p 6006",
     "build": "tsc",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.node.json",
     "lint": "eslint .",
     "format": "prettier --check .",
     "storybook": "storybook dev -p 6006",
@@ -17,9 +17,9 @@
   },
   "dependencies": {
     "ionbase-ui": "workspace:*",
+    "lucide-react": "^1.27.0",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0",
-    "lucide-react": "^1.27.0"
+    "react-dom": "^19.0.0"
   },
   "devDependencies": {
     "@chromatic-com/storybook": "^5.2.1",
@@ -29,6 +29,7 @@
     "@storybook/addon-vitest": "^10.5.5",
     "@storybook/react": "^10.5.5",
     "@storybook/react-vite": "^10.5.5",
+    "@types/node": "^22",
     "@vitest/browser-playwright": "^4.1.10",
     "@vitest/coverage-v8": "^4.1.10",
     "eslint-plugin-storybook": "^10.5.5",

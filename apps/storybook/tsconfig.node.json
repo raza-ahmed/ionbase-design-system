@@ -1,0 +1,8 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": "./dist/tooling",
+    "jsx": "react-jsx"
+  },
+  "include": [".storybook/**/*", "vitest.config.ts", "vitest.shims.d.ts"]
+}

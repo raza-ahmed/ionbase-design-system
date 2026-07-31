@@ -1,6 +1,6 @@
 {
   "name": "ionbase-ui",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "IonBase Design System — accessible React components, styles and design tokens in one package",
   "license": "MIT",
   "type": "module",
@@ -14,8 +14,7 @@
     "./styles": "./dist/styles/index.css",
     "./styles/*": "./dist/styles/*",
     "./tokens": "./dist/styles/tokens/index.css",
-    "./tokens/*": "./dist/styles/tokens/*",
-    "./src/*": "./src/*"
+    "./tokens/*": "./dist/styles/tokens/*"
   },
   "keywords": [
     "design-system",

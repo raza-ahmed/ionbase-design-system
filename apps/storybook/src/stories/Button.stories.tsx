@@ -1,6 +1,6 @@
 import React from 'react';
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { expect, waitFor } from 'storybook/test';
+import { expect, fn, waitFor } from 'storybook/test';
 import { Button } from 'ionbase-ui';
 
 const meta: Meta<typeof Button> = {
@@ -228,6 +228,70 @@ export const PressFires: Story = {
 
     await userEvent.click(button);
     await waitFor(() => expect(events).toContain('pointerdown'));
+  },
+};
+
+/*
+ * React Aria props must not reach the DOM node.
+ *
+ * `useButton` is handed the full props object, so `onPress` always worked. The
+ * defect was that it ALSO survived into the rest-props spread and landed on
+ * the `<button>` — "Unknown event handler property `onPress`. It will be
+ * ignored." in every consuming app, on every render.
+ *
+ * This story passes the whole non-DOM set at once, not just `onPress`, and
+ * that is deliberate. React splits them into two behaviours, and only one is
+ * observable from a test:
+ *
+ *   - `onPress*` and `onFocusChange` are event-handler-shaped, and
+ *     `excludeFromTabOrder` / `preventFocusOnPress` are camelCase unknowns.
+ *     React warns on the console and renders NOTHING. There is no attribute,
+ *     no property — the leak is invisible to the DOM. (Asserting the console
+ *     instead would be worse than useless: React dedupes each warning by
+ *     property name for the lifetime of the page, so the assertion would pass
+ *     or fail on story ordering.)
+ *   - `href`, `target`, `rel` and `elementType` are lowercase-able, so React
+ *     really does write them onto the element. Verified: with the bug present
+ *     this element carries href, target, rel and elementtype.
+ *
+ * So the second group is what makes this gate able to fail, and the first
+ * group rides along because it is the same spread and the same fix. Dropping
+ * the link props from these args would leave a test that passes either way.
+ */
+export const AriaPropsDoNotReachTheDom: Story = {
+  args: {
+    children: 'Press me',
+    onPress: fn(),
+    onFocusChange: fn(),
+    excludeFromTabOrder: true,
+    preventFocusOnPress: true,
+    // Real members of AriaButtonProps<'button'> via LinkButtonProps, and
+    // meaningless on a component that always renders a <button>.
+    href: '/nowhere',
+    target: '_blank',
+    rel: 'noopener',
+    elementType: 'button',
+  },
+  play: async ({ canvas, userEvent, args }) => {
+    const button = canvas.getByRole('button');
+
+    const leaked = button
+      .getAttributeNames()
+      .filter((name) =>
+        [
+          'href',
+          'target',
+          'rel',
+          'elementtype',
+          'excludefromtaborder',
+        ].includes(name.toLowerCase()),
+      );
+    await expect(leaked).toEqual([]);
+
+    // ...and the handler still fires, which is the half that stops the fix
+    // from being "delete the props and call it clean".
+    await userEvent.click(button);
+    await waitFor(() => expect(args.onPress).toHaveBeenCalledTimes(1));
   },
 };
 

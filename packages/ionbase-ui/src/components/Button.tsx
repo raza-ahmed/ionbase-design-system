@@ -6,6 +6,7 @@ import {
   mergeProps,
   type AriaButtonProps,
 } from 'react-aria';
+import { ARIA_BUTTON_NON_DOM_PROPS, omitProps } from './dom-props.js';
 
 export interface ButtonProps extends AriaButtonProps<'button'> {
   /** The visual style variant of the button. */
@@ -79,9 +80,18 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       'data-disabled': isDisabled || undefined,
     };
 
+    /*
+     * `useButton` above was handed the *full* props object, so it has already
+     * taken `onPress` and friends and wired them up. What is left in
+     * `restProps` is a duplicate set that React Aria has no further use for —
+     * and spreading it would put `onPress` on the DOM node, which React warns
+     * about and ignores. See ./dom-props.ts for the list and its provenance.
+     */
+    const domProps = omitProps(restProps, ARIA_BUTTON_NON_DOM_PROPS);
+
     return (
       <button
-        {...restProps}
+        {...domProps}
         {...mergeProps(buttonProps, hoverProps, focusProps)}
         {...stateAttributes}
         ref={domRef}

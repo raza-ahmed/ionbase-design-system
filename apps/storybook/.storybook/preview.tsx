@@ -1,6 +1,17 @@
 import React from 'react';
 import type { Preview, Decorator } from '@storybook/react-vite';
-import 'ionbase-ui/src/styles/index.css';
+/*
+ * The source CSS, by relative path, on purpose.
+ *
+ * `ionbase-ui/styles` is the built stylesheet — correct for consumers, wrong
+ * here: it would make `storybook dev` depend on a prior `pnpm build` and would
+ * stop CSS edits hot-reloading. This used to go through an `./src/*` export
+ * subpath instead, but `src/` is not in the package's `files`, so that subpath
+ * resolved only inside this workspace and was broken for anyone installing
+ * from npm. Reaching across the workspace directly is the honest version of
+ * what was already happening, and it does not put raw source on npm.
+ */
+import '../../../packages/ionbase-ui/src/styles/index.css';
 
 // Custom theme switcher decorator
 const withTheme: Decorator = (Story, context) => {

@@ -5,5 +5,24 @@
     "rootDir": "./src",
     "jsx": "react-jsx"
   },
-  "include": ["src/**/*"]
+  "include": ["src/**/*"],
+  /*
+   * tsconfig.node.json covers the build-tooling files — .storybook/ and
+   * vitest.config.ts. They cannot live in this project: `rootDir` is ./src and
+   * TypeScript rejects inputs outside it (TS6059). Without that second project
+   * they belonged to no project at all, so `tsc` never checked them and an
+   * editor fell back to an inferred config — which, together with `@types/node`
+   * having been missing from this package entirely, is why `__dirname` in
+   * vitest.config.ts read as an undeclared global.
+   *
+   * This reference is what attributes those files to it. Not a build
+   * dependency: the `build` script is plain `tsc`, which ignores references —
+   * and so does `typecheck`, which is why that script names both projects
+   * explicitly. A referenced project must emit (`noEmit` there fails with
+   * TS6310), hence its throwaway `outDir` under the already-ignored dist/.
+   *
+   * Comments belong in this file rather than that one: an editor parses
+   * `tsconfig.json` as JSONC, but `tsconfig.node.json` as strict JSON.
+   */
+  "references": [{ "path": "./tsconfig.node.json" }]
 }
