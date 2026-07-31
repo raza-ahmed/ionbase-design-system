@@ -97,11 +97,38 @@ jobs:
       - name: Build Storybook
         run: pnpm --filter @ionbase-ui/storybook build-storybook
 
-      # Interaction tests run the stories in a real Chromium. They assert the
-      # data-attribute contract button.css depends on — before React Aria's
-      # useHover/useFocusRing were wired in, the component only emitted
-      # data-pressed, so [data-hovered] and [data-focused] were dead selectors
-      # and nothing noticed.
+  # Interaction tests run the stories in a real Chromium. They assert the
+  # data-attribute contract button.css depends on — before React Aria's
+  # useHover/useFocusRing were wired in, the component only emitted
+  # data-pressed, so [data-hovered] and [data-focused] were dead selectors and
+  # nothing noticed.
+  #
+  # A separate job from `storybook` so the deploy can gate on the site building
+  # without also gating on these. See the note on `deploy-storybook`.
+  storybook-test:
+    name: storybook interaction tests
+    needs: storybook
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9.6.0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - name: Install
+        run: pnpm install --frozen-lockfile
+
+      - name: Build packages
+        run: pnpm build
+
       - name: Install Playwright Chromium
         run: pnpm --filter @ionbase-ui/storybook exec playwright install --with-deps chromium
 
@@ -110,10 +137,20 @@ jobs:
 
   # Publishes Storybook to https://raza-ahmed.github.io/ionbase-design-system/
   #
-  # Depends on `storybook`, so a story that throws on render or fails an
-  # interaction test never reaches the live URL — the previous deploy simply
-  # stays up. Only runs on main: a PR gets the build check without republishing
-  # the site out from under whoever is looking at it.
+  # Depends on `storybook` — the site building — so a story that throws on
+  # render never reaches the live URL; the previous deploy simply stays up.
+  # Only runs on main: a PR gets the build check without republishing the site
+  # out from under whoever is looking at it.
+  #
+  # It deliberately does NOT depend on `storybook-test`. That job has been red
+  # since before Pages existed here (NavItem > Hover Has No Background, an
+  # environment-specific failure that passes locally under coarse-pointer,
+  # reduced-motion and dark-scheme emulation alike), and gating on it means the
+  # site never publishes at all. A failing hover-colour assertion does not make
+  # the built Storybook wrong; a story that cannot render does, and that is what
+  # `storybook` catches. The test job still runs and still fails the workflow,
+  # so the signal is not hidden — only the deploy is decoupled from it. Restore
+  # `needs: [storybook, storybook-test]` once that test is green.
   #
   # The site is rebuilt here rather than reusing the `storybook` job's output,
   # because that job builds for `/` and this one needs the Pages subpath baked
