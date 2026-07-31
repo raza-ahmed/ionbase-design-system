@@ -13,5 +13,35 @@
   "unitless": {
     "$comment": "FLOAT tokens that must NOT get a px suffix in CSS.",
     "tokens": ["grid/columns"]
+  },
+
+  "fontFallbacks": {
+    "$comment": [
+      "Generic-family fallbacks appended to every fontFamily token in CSS.",
+      "",
+      "Figma cannot express these. A Figma FONT_FAMILY variable holds one real",
+      "family that Figma has to be able to render; putting a CSS fallback list",
+      "in it would make Figma look for a font literally named",
+      "'Host Grotesk, system-ui, sans-serif'. So the stack is a CSS delivery",
+      "fact, which is exactly what this file is for.",
+      "",
+      "Keyed by the resolved family name, not by token path, so a Semantics",
+      "token inherits the stack from the Primitive it aliases. Style Dictionary",
+      "resolves aliases before value transforms run, so font/family/sans and",
+      "font/family/host-grotesk both arrive here as 'Host Grotesk'.",
+      "",
+      "Every family the export contains MUST have an entry — build-css.mjs",
+      "fails otherwise. Bare families are how the system came to render in a",
+      "default serif when the webfonts did not load.",
+      "",
+      "CSS generic families and system keywords are NOT quoted; the generator",
+      "quotes only names containing a space."
+    ],
+    "stacks": {
+      "Host Grotesk": ["system-ui", "-apple-system", "Segoe UI", "sans-serif"],
+      "Merriweather": ["Georgia", "Times New Roman", "serif"],
+      "STIX Two Text": ["Georgia", "Times New Roman", "serif"],
+      "Space Mono": ["ui-monospace", "SFMono-Regular", "Menlo", "monospace"]
+    }
   }
 }

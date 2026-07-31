@@ -50,12 +50,49 @@ StyleDictionary.registerTransform({
   transform: (token) => FONT_WEIGHTS[token.$value] ?? token.$value,
 });
 
+/**
+ * Repo-owned CSS fallback stacks. See token-overrides.json for why these
+ * cannot live in Figma.
+ */
+const FONT_FALLBACKS = JSON.parse(
+  readFileSync(join(PKG, 'token-overrides.json'), 'utf8'),
+).fontFallbacks.stacks;
+
+/** Quote only names containing a space — generics like `sans-serif`, and
+ *  keywords like `system-ui` or `-apple-system`, must stay bare to work. */
+const quoteFamily = (name) => (/\s/.test(name) ? `"${name}"` : name);
+
+StyleDictionary.registerTransform({
+  name: 'ionbase/fontFamily/fallback',
+  type: 'value',
+  filter: (token) => token.$type === 'fontFamily',
+  transform: (token) => {
+    const stack = FONT_FALLBACKS[token.$value];
+    /*
+     * Hard failure, not a pass-through. A family with no stack ships bare, and
+     * a bare family that fails to load falls through to the browser default —
+     * a serif — which looks like a broken token rather than a missing font.
+     * That cost real diagnosis time once; a new family in Figma should break
+     * the build here instead of shipping the same trap again.
+     */
+    if (!stack) {
+      throw new Error(
+        `No font fallback stack for "${token.$value}" (token ${token.path.join('/')}).\n` +
+          `Add one to token-overrides.json → fontFallbacks.stacks, and document ` +
+          `the family in packages/ionbase-ui/README.md.`,
+      );
+    }
+    return [token.$value, ...stack].map(quoteFamily).join(', ');
+  },
+});
+
 StyleDictionary.registerTransformGroup({
   name: 'ionbase/css',
   transforms: [
     'ionbase/name/css',
     'ionbase/dimension/px',
     'ionbase/fontWeight/numeric',
+    'ionbase/fontFamily/fallback',
     'color/css',
   ],
 });

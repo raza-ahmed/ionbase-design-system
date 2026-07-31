@@ -1,4 +1,24 @@
-@import url('https://fonts.googleapis.com/css2?family=Host+Grotesk:ital,wght@0,300..800;1,300..800&family=Merriweather:ital,wght@0,300..900;1,300..900&family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&family=STIX+Two+Text:ital,wght@0,400..700;1,400..700&display=swap');
+/*
+ * NO @import of a webfont host here, deliberately. Loading the fonts is the
+ * consuming app's job — see "Fonts" in the README.
+ *
+ * This file used to open with a Google Fonts @import, and it was broken for
+ * every consumer using a bundler. CSS requires @import to precede all other
+ * rules; a bundler that concatenates stylesheets puts other rules ahead of it,
+ * and the browser then drops it silently. Confirmed in a Next.js 16 /
+ * Turbopack app: the built bundle contained no @import and no
+ * `fonts.googleapis` string at all, so no font ever loaded.
+ *
+ * It failed quietly rather than loudly. The font tokens named bare families
+ * with no generic fallback, so the unresolved families fell through to the
+ * browser default and the whole system rendered in a default serif — which
+ * reads as a token bug, not a font-loading one. The fallbacks added to
+ * token-overrides.json are what makes that failure mode legible.
+ *
+ * Reaching a third-party host at CSS parse time was also the wrong default
+ * regardless: it is a render-blocking request the consumer did not opt into,
+ * it bypasses next/font and friends, and it hands visitor IPs to Google.
+ */
 @import url('./tokens/index.css');
 @import url('./button.css');
 @import url('./tabs.css');
