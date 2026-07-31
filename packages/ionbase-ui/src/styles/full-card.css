@@ -1,0 +1,287 @@
+/*
+ * Full Card
+ *
+ * Measured from Figma `Full Card` (592:857) — a component set with one axis,
+ * `Alignment`, whose `Right` (590:189) and `Left` (592:858) variants mirror the
+ * media panel across the card.
+ *
+ *   content column   padding 0 / 48, centred, hugs half the width
+ *   media column     surface/page, 1px rule facing the content, padding-top 48
+ *   media mat        surface/sunken, 8px inset, radius/6xl on the outer top corner
+ *   media frame      surface/default, 1px rule on three sides, radius/5xl
+ *
+ * WHAT WAS NOT COPIED FROM FIGMA, AND WHY
+ *
+ * 1. The 366px height and 1296px width are canvas measurements, not
+ *    constraints. 366 is what the parts add up to — 48 (column) + 8 (mat) +
+ *    310 (screen) — so it falls out of the box model and stating it again
+ *    would only pin the card to one media size. 1296 is the desktop container
+ *    width, which belongs to the page, not the card.
+ *
+ * 2. The description container's gap reads 9px in Figma. There is no 9 on the
+ *    spacing ladder and no token that resolves to one, so it is a nudge rather
+ *    than a decision; this uses `spacing/8`. Change it in Figma if the 9 was
+ *    meant, and it becomes a real token here.
+ *
+ * 3. The left variant carries its media rule on the media column's LEFT edge —
+ *    i.e. the card's outer edge — while the right variant carries it on the
+ *    edge facing the text. Only one of those is a divider; the other is a
+ *    stray line at the boundary of the card. Read as a mirroring oversight in
+ *    Figma, so both variants draw the rule on the inner edge here. Worth
+ *    fixing in the file, since the two disagree today.
+ *
+ * 4. The left variant's media column also hard-codes a 48px top padding where
+ *    the right variant binds `spacing/48`. Same oversight, same resolution:
+ *    the token, both times.
+ *
+ * 5. Figma has no narrow variant of this card, and a 1296-wide two-column row
+ *    is unusable below its own width. The stacked layout is repo-owned, on the
+ *    same reasoning as Header's device media queries: the browser knows the
+ *    viewport, so the caller should not have to say.
+ *
+ *    The split holds from 1080 — a chosen number, not a Breakpoint collection
+ *    container width, so it is stated here rather than in the token pipeline.
+ *    The two halves are even only while there is room for it: below roughly
+ *    1190 the media column holds at the panel plus its gutter and the text
+ *    column takes what is left, bottoming out near 375px of text at 1080. The
+ *    896 query below changes no layout at all — only the text gutter.
+ *
+ * STACKED PUTS THE MEDIA ON TOP, IN BOTH ALIGNMENTS
+ *
+ * `column-reverse`, so the DOM stays content-then-media while the media renders
+ * above the text. Two reasons it is the media rather than the headline:
+ *
+ *   - `Alignment` stops meaning anything once there is only one column. Letting
+ *     it decide the vertical order would turn one axis into two, and a card
+ *     whose text sits above the panel on some rows and below it on others reads
+ *     as a bug rather than a variant.
+ *   - The panel is the thing the card is about. Stacked, it is also the only
+ *     part with a fixed height, so putting it second would push it below the
+ *     fold on every narrow viewport.
+ */
+.ion-full-card {
+  --ion-full-card-padding-x: var(--spacing-24);
+  --ion-full-card-padding-y: var(--spacing-32);
+  --ion-full-card-gap: var(--spacing-8);
+  --ion-full-card-media-width: 562px;
+
+  /*
+   * The least space allowed between the centre rule and the media panel.
+   * Figma's is 86 at the design width (648 column − 562 panel), which is not on
+   * the spacing ladder and is a consequence of the 50/50 split rather than a
+   * decision. `spacing/48` is the floor, and it is the same 48 the panel is
+   * already inset from the top of the card — so when the row is too narrow for
+   * an even split, the panel keeps a gutter that matches its own top edge.
+   */
+  --ion-full-card-media-gutter: var(--spacing-48);
+
+  /*
+   * Placeholder geometry: the height of Figma's empty `Screen Container`. It
+   * is a floor, not a size — real media in the slot sets the height and this
+   * stops an empty card collapsing. Override per instance if the media has a
+   * known aspect ratio.
+   */
+  --ion-full-card-media-min-height: 310px;
+
+  display: flex;
+  flex-direction: column-reverse;
+  width: 100%;
+  border-top: var(--border-width-default) solid var(--border-default);
+  border-bottom: var(--border-width-default) solid var(--border-default);
+  font-family: var(--font-family-sans);
+}
+
+/*
+ * `flex: 0 0 auto` while stacked, not the `1 1 0` the split uses. In a column
+ * flex container a zero basis is a zero HEIGHT that then grows to fill — which
+ * is the two halves splitting the viewport instead of sizing to their content.
+ * The split re-states `1 1 0` at Desktop, where the axis is horizontal and a
+ * zero basis is what makes the halves equal regardless of text length.
+ */
+.ion-full-card__content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  flex: 0 0 auto;
+  min-width: 0;
+  padding: var(--ion-full-card-padding-y) var(--ion-full-card-padding-x);
+  overflow: hidden;
+}
+
+.ion-full-card__body {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--ion-full-card-gap);
+  width: 100%;
+}
+
+.ion-full-card__eyebrow,
+.ion-full-card__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-8);
+  flex-wrap: wrap;
+}
+
+/*
+ * The type styles are restated rather than delegated to `.ion-text-h3` /
+ * `.ion-text-body-sm`, so the card renders correctly whatever classes the
+ * caller puts on the headline. Both sets read the same breakpoint-scoped
+ * `type/*` tokens, so they resize together.
+ */
+.ion-full-card__headline {
+  margin: 0;
+  font-family: var(--font-family-sans);
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--type-h3);
+  line-height: var(--type-h3-line-height);
+  color: var(--text-default);
+}
+
+.ion-full-card__description {
+  margin: 0;
+  font-family: var(--font-family-sans);
+  font-weight: var(--font-weight-regular);
+  font-size: var(--type-body-sm);
+  line-height: var(--type-body-sm-line-height);
+  color: var(--text-secondary);
+}
+
+.ion-full-card__media {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: stretch;
+  flex: 0 0 auto;
+  min-width: 0;
+  padding-top: var(--spacing-48);
+
+  /*
+   * Stacked, the panel is inset from the card's left and right edges too, not
+   * just the top — and by the text's own gutter, so the panel and the headline
+   * share an edge instead of sitting on two arbitrary ones. In the split the
+   * panel deliberately bleeds off the outer edge, so this resets to zero there.
+   */
+  padding-inline: var(--ion-full-card-padding-x);
+  background-color: var(--surface-page);
+
+  /*
+   * The stacked analogue of the vertical rule between the two halves. The
+   * frame deliberately has no bottom border, so without this the white screen
+   * would run straight into the text with nothing separating them.
+   */
+  border-bottom: var(--border-width-default) solid var(--border-default);
+  overflow: hidden;
+}
+
+.ion-full-card__media-mat {
+  width: 100%;
+  padding-top: var(--spacing-8);
+  padding-inline: var(--spacing-8);
+  background-color: var(--surface-sunken);
+  border-start-start-radius: var(--radius-6xl);
+  border-start-end-radius: var(--radius-6xl);
+  overflow: hidden;
+}
+
+/*
+ * Three sides only. The card is a full-bleed band and the panel runs off its
+ * bottom edge, so a fourth rule would draw a line the design does not have.
+ */
+.ion-full-card__media-frame {
+  width: 100%;
+  border: var(--border-width-default) solid var(--border-default);
+  border-bottom: none;
+  border-start-start-radius: var(--radius-5xl);
+  border-start-end-radius: var(--radius-5xl);
+  overflow: hidden;
+}
+
+.ion-full-card__media-screen {
+  width: 100%;
+  min-height: var(--ion-full-card-media-min-height);
+  background-color: var(--surface-default);
+}
+
+/* Tablet is still stacked; only the text gutter opens up. */
+@media (width >= 896px) {
+  .ion-full-card {
+    --ion-full-card-padding-x: var(--spacing-32);
+  }
+}
+
+/*
+ * Side by side from 1080 up. Below it the card stacks, media first, the panel
+ * takes the text's own gutters and both its top corners round rather than the
+ * single outer one.
+ */
+@media (width >= 1080px) {
+  .ion-full-card {
+    --ion-full-card-padding-x: var(--spacing-48);
+    --ion-full-card-padding-y: var(--spacing-0);
+
+    flex-direction: row;
+    align-items: stretch;
+  }
+
+  .ion-full-card__content {
+    flex: 1 1 0;
+  }
+
+  .ion-full-card--media-left {
+    /*
+     * Reversed here, not in the DOM: the markup stays headline → actions →
+     * media in both alignments so reading and focus order follow the content
+     * rather than the mirror.
+     */
+    flex-direction: row-reverse;
+  }
+
+  /*
+   * `1 1 0` for the even split, floored so the panel is never the thing that
+   * gives. Below roughly 1190 the halves are narrower than the panel, and
+   * without the floor the panel shrank to fill its column — losing the gutter
+   * against the centre rule and reading as a full-bleed block right up to the
+   * moment the card stacked. The text column absorbs the difference instead:
+   * a paragraph reflows, and a panel with no gutter is a different design.
+   */
+  .ion-full-card__media {
+    align-items: flex-end;
+    flex: 1 1 0;
+    min-width: calc(
+      var(--ion-full-card-media-width) + var(--ion-full-card-media-gutter)
+    );
+    padding-inline: var(--spacing-0);
+    border-bottom: none;
+    border-inline-start: var(--border-width-default) solid var(--border-default);
+  }
+
+  .ion-full-card--media-left .ion-full-card__media {
+    align-items: flex-start;
+    border-inline-start: none;
+    border-inline-end: var(--border-width-default) solid var(--border-default);
+  }
+
+  .ion-full-card__media-mat {
+    width: var(--ion-full-card-media-width);
+    max-width: 100%;
+    padding-inline: var(--spacing-8) var(--spacing-0);
+    border-start-end-radius: var(--radius-none);
+  }
+
+  .ion-full-card--media-left .ion-full-card__media-mat {
+    padding-inline: var(--spacing-0) var(--spacing-8);
+    border-start-start-radius: var(--radius-none);
+    border-start-end-radius: var(--radius-6xl);
+  }
+
+  .ion-full-card__media-frame {
+    border-start-end-radius: var(--radius-none);
+  }
+
+  .ion-full-card--media-left .ion-full-card__media-frame {
+    border-start-start-radius: var(--radius-none);
+    border-start-end-radius: var(--radius-5xl);
+  }
+}

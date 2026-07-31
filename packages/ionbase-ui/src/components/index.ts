@@ -60,3 +60,9 @@ export type {
   ScrollProgressProps,
   ScrollProgressSection,
 } from './ScrollProgress.js';
+export { FullCard } from './FullCard.js';
+export type {
+  FullCardProps,
+  FullCardAlignment,
+  FullCardHeadingLevel,
+} from './FullCard.js';

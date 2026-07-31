@@ -1,5 +1,66 @@
 # Changelog
 
+## 0.5.0 — 2026-08-01
+
+One new component. Nothing existing moved, so this is additive for every
+consumer — no import changes, no token changes, no CSS that touches another
+component's selectors.
+
+### Added — `FullCard`
+
+The full-bleed case study band from Figma `Full Card` (592:857): a text column
+beside a framed media panel, split down the middle and mirrored by `alignment`.
+
+```tsx
+import { FullCard, Badge, Button } from 'ionbase-ui';
+
+<FullCard
+  alignment="right"
+  eyebrow={<Badge>Case Study</Badge>}
+  headline="AI Native Clinical Copilot"
+  description="…"
+  actions={
+    <Button variant="secondary" size="sm">
+      Explore
+    </Button>
+  }
+  media={<img src="…" alt="" />}
+/>;
+```
+
+`headline` is the only required prop. It is a server component — no
+`'use client'` — since nothing in it is stateful; the interactive parts arrive
+through `actions` and carry their own boundary.
+
+Stylesheet at `ionbase-ui/styles/full-card.css`, already included in
+`ionbase-ui/styles`.
+
+**Figma's `Show Eyebrow` / `Show Description` / `Show Actions` booleans are not
+in the API.** A Figma instance always holds every layer and needs a switch to
+hide one; React does not, so an absent prop is the switch — the same call Badge
+made with `Show Dot`. Carrying both would let `showActions` and `actions`
+disagree.
+
+**Size is a media query, not a prop**, as with Header's Device axis. The split
+holds from 1080 and stacks below it, media above content in _both_ alignments —
+`alignment` names a horizontal side and stops meaning anything once there is one
+column, so it does not get to decide the vertical order too. Content stays first
+in the DOM at every width; the mirror and the stack are both CSS reversals, so
+reading and focus order never change.
+
+The even split has a floor: below roughly 1190 the media column holds at the
+panel plus a 48px gutter and the text column absorbs the difference. A paragraph
+reflows; a panel with no gutter is a different design.
+
+**Four things in Figma were not reproduced literally**, each recorded in
+[full-card.css](src/styles/full-card.css): the 366px height falls out of the box
+model so it is not restated; the body gap reads 9px, which is not on the spacing
+ladder, so it is `spacing/8`; and the `Alignment=Left` variant puts its media
+rule on the card's outer edge and hard-codes a 48px padding where
+`Alignment=Right` binds `spacing/48`. The last two read as mirroring oversights
+and are worth fixing in the Figma file — the two variants disagree with each
+other today.
+
 ## 0.4.0 — 2026-07-31
 
 A Figma re-sync and the first motion layer. No API changes — every change here

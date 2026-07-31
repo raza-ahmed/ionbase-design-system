@@ -36,6 +36,7 @@
 @import url('./divider.css');
 @import url('./nav-item.css');
 @import url('./scroll-progress.css');
+@import url('./full-card.css');
 
 /*
  * Every IonBase element is border-box.
