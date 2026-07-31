@@ -2,9 +2,7 @@
   "files": [],
   "references": [
     { "path": "packages/tokens" },
-    { "path": "packages/styles" },
-    { "path": "packages/react" },
-    { "path": "packages/icons" },
+    { "path": "packages/ionbase-ui" },
     { "path": "apps/storybook" },
     { "path": "docs" }
   ]

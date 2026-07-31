@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { expect, fireEvent, waitFor } from 'storybook/test';
-import { ScrollProgress } from '@ionbase-ui/react';
+import { ScrollProgress } from 'ionbase-ui';
 
 const SECTIONS = [
   { id: 'intro', label: 'Introduction' },

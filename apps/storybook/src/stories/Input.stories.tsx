@@ -1,8 +1,7 @@
 import React from 'react';
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { expect } from 'storybook/test';
-import { Input } from '@ionbase-ui/react';
-import { Icon } from '@ionbase-ui/icons';
+import { Input, Icon } from 'ionbase-ui';
 import { Search, X } from 'lucide-react';
 
 const meta: Meta<typeof Input> = {

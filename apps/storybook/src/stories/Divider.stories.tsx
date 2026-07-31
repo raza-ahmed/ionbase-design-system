@@ -1,7 +1,7 @@
 import React from 'react';
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { expect } from 'storybook/test';
-import { Divider } from '@ionbase-ui/react';
+import { Divider } from 'ionbase-ui';
 
 const meta: Meta<typeof Divider> = {
   title: 'Components/Divider',

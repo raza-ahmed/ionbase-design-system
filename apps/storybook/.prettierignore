@@ -1,1 +1,8 @@
 dist/
+
+# Storybook's production build output. The root .prettierignore also lists this,
+# but Prettier resolves .prettierignore relative to its working directory and
+# the format script runs from this package — so the root entry never applied
+# here, and `pnpm format` failed on 52 generated files the moment anyone ran
+# build-storybook locally.
+storybook-static/

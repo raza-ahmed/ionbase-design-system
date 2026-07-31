@@ -4,13 +4,25 @@ IonBase is a modern, high-performance design system monorepo built to deliver co
 
 ## Using IonBase in a product
 
+The whole system ships as one package, `ionbase-ui`:
+
 ```bash
-pnpm add @ionbase-ui/react @ionbase-ui/styles @ionbase-ui/icons lucide-react
+pnpm add ionbase-ui
 ```
 
 ```tsx
-import '@ionbase-ui/styles/css';
-import { Button } from '@ionbase-ui/react';
+import 'ionbase-ui/styles';
+import { Button } from 'ionbase-ui';
+```
+
+Icons are not bundled — `Icon` takes the icon as a prop, so any SVG component
+works and you pick the library:
+
+```tsx
+import { Icon } from 'ionbase-ui';
+import { Plus } from 'lucide-react';
+
+<Icon as={Plus} size="sm" />;
 ```
 
 Install / theme / publish (same local `npm publish` flow as Beacon): [`docs/publishing.md`](docs/publishing.md).
@@ -52,13 +64,15 @@ ionbase-design-system/
 ├── apps/
 │   └── storybook/          # Storybook application workspace
 ├── packages/
-│   ├── tokens/             # Design tokens package (@ionbase-ui/tokens)
+│   ├── tokens/             # Token pipeline — PRIVATE, never published
 │   │   ├── src/figma/      #   committed Figma export — the source of truth
 │   │   ├── scripts/        #   Node: build, audit, verify
 │   │   └── figma/          #   Plugin API scripts, run inside Figma
-│   ├── styles/             # Global/component style styles package (@ionbase-ui/styles)
-│   ├── react/              # React component library package (@ionbase-ui/react)
-│   └── icons/              # Icon set and asset package (@ionbase-ui/icons)
+│   └── ionbase-ui/         # The ONLY published package (ionbase-ui)
+│       ├── src/components/ #   React components
+│       ├── src/styles/     #   component CSS; styles/tokens/ is generated
+│       ├── src/Icon.tsx    #   icon wrapper — takes any SVG component
+│       └── scripts/        #   sync-tokens, copy-css, verify-icons
 ├── docs/                   # Documentation workspace (@ionbase-ui/docs)
 ├── eslint.config.js        # ESLint flat config
 ├── .prettierrc             # Prettier configuration

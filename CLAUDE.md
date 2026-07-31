@@ -7,6 +7,38 @@ code, and getting it wrong is expensive rather than merely wrong.
 
 ---
 
+## Two packages, one published
+
+```
+packages/ionbase-ui   ionbase-ui   PUBLISHED — components + styles + tokens
+packages/tokens       (private)    the Figma pipeline and its five gates
+```
+
+`ionbase-ui` is the entire public surface. It is unscoped, mirroring `beacon-ui`.
+
+**`packages/tokens` must keep `"private": true`.** Its build output is copied
+into `ionbase-ui` by [`scripts/sync-tokens.mjs`](packages/ionbase-ui/scripts/sync-tokens.mjs);
+publishing it would put a second, competing source of token values on npm.
+`ionbase-ui` deliberately does **not** depend on it — a `workspace:*` on a
+private package publishes as a version that does not exist. Build ordering lives
+in `turbo.json` as an explicit `ionbase-ui#build` task dependency instead.
+
+This replaced four packages (`tokens`, `styles`, `react`, `icons`) before
+anything reached npm. Do not re-split. The tell that the split was not earning
+its keep: `sync-version` moved all four in lockstep, so it bought four manifests
+and a cross-package CSS `@import` of a bare specifier, and no independent
+versioning at all.
+
+**`tsc` can exit 0 having emitted nothing.** `composite: true` makes it trust
+`tsconfig.tsbuildinfo` over the filesystem, so deleting `dist/` without deleting
+the buildinfo produces a silent no-op — `tsc --build` does not catch it either.
+The old `@ionbase-ui/styles` shipped exactly that way: `main` pointed at a
+`dist/index.js` that was never emitted, and no build, lint, typecheck or format
+check could see it. The build now runs `tsc --build --force`, and
+`copy-css.mjs` asserts the entry exists before packing.
+
+---
+
 ## Commands
 
 ```bash
@@ -187,7 +219,12 @@ pnpm --filter @ionbase-ui/tokens tokens:gate
 Committed and reviewed: `src/figma/*.json` (the export), `renames.json`,
 `known-defects.json`.
 
-Generated, git-ignored, never edit: `src/dtcg/`, `src/generated/`, `dist/`.
+Generated, git-ignored, never edit: `src/dtcg/`, `src/generated/`, `dist/` — and,
+in the published package, `packages/ionbase-ui/src/tokens/` and
+`packages/ionbase-ui/src/styles/tokens/`, which `sync-tokens.mjs` copies in on
+every build. Both are declared as Turbo `build` outputs; if you drop them from
+`turbo.json`, a cache hit restores `dist/` while leaving those stale and the
+package compiles against last week's tokens.
 
 `token-overrides.json` is repo-owned and must stay **outside** `src/figma/`,
 because a re-export overwrites everything in there. It records what Figma cannot

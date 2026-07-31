@@ -16,11 +16,9 @@
     "test": "vitest run --project=storybook"
   },
   "dependencies": {
-    "@ionbase-ui/react": "workspace:*",
-    "@ionbase-ui/styles": "workspace:*",
+    "ionbase-ui": "workspace:*",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "@ionbase-ui/icons": "workspace:*",
     "lucide-react": "^1.27.0"
   },
   "devDependencies": {

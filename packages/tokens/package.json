@@ -1,8 +1,9 @@
 {
   "name": "@ionbase-ui/tokens",
   "version": "0.1.0",
-  "description": "IonBase design tokens — CSS custom properties and TypeScript exports from Figma",
+  "description": "IonBase token pipeline — Figma export, gates and generators. Not published; its output is copied into ionbase-ui at build time.",
   "license": "MIT",
+  "private": true,
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -14,16 +15,6 @@
     "./css": "./dist/css/index.css",
     "./css/*": "./dist/css/*"
   },
-  "keywords": [
-    "design-system",
-    "design-tokens",
-    "figma",
-    "css-variables",
-    "ionbase"
-  ],
-  "files": [
-    "dist"
-  ],
   "sideEffects": [
     "**/*.css"
   ],
@@ -35,9 +26,6 @@
   "homepage": "https://github.com/raza-ahmed/ionbase-design-system/tree/main/packages/tokens#readme",
   "bugs": {
     "url": "https://github.com/raza-ahmed/ionbase-design-system/issues"
-  },
-  "publishConfig": {
-    "access": "public"
   },
   "scripts": {
     "dev": "node scripts/figma-to-dtcg.mjs && node scripts/build-css.mjs && node scripts/build-ts.mjs && tsc --watch",

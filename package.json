@@ -13,11 +13,7 @@
     "format": "turbo run format",
     "typecheck": "turbo run typecheck",
     "sync:version": "node scripts/sync-version.mjs",
-    "publish:tokens": "pnpm --filter @ionbase-ui/tokens publish --access public",
-    "publish:styles": "pnpm --filter @ionbase-ui/styles publish --access public",
-    "publish:icons": "pnpm --filter @ionbase-ui/icons publish --access public",
-    "publish:react": "pnpm --filter @ionbase-ui/react publish --access public",
-    "publish:packages": "pnpm build && pnpm publish:tokens && pnpm publish:styles && pnpm publish:icons && pnpm publish:react"
+    "publish:package": "pnpm build && pnpm --filter ionbase-ui publish --access public"
   },
   "devDependencies": {
     "@eslint/js": "^9.6.0",

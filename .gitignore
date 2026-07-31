@@ -28,6 +28,12 @@ packages/tokens/src/dtcg/
 packages/tokens/src/generated/
 packages/tokens/build/
 
+# Copied into the published package by ionbase-ui/scripts/sync-tokens.mjs. Same
+# rule: derived from packages/tokens/src/figma/, never hand-edited. Committing
+# them would give the repo two sources of truth for every token value.
+packages/ionbase-ui/src/tokens/
+packages/ionbase-ui/src/styles/tokens/
+
 # ---- Tests / coverage ----
 coverage/
 .nyc_output/

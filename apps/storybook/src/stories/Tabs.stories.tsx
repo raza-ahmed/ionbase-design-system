@@ -1,7 +1,7 @@
 import React from 'react';
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { expect, waitFor } from 'storybook/test';
-import { Tabs, TabItem } from '@ionbase-ui/react';
+import { Tabs, TabItem } from 'ionbase-ui';
 
 const meta: Meta<typeof Tabs> = {
   title: 'Components/Tabs',

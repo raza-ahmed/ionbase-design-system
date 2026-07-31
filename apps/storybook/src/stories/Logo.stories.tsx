@@ -1,7 +1,7 @@
 import React from 'react';
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { expect } from 'storybook/test';
-import { Logo, LogoMark } from '@ionbase-ui/react';
+import { Logo, LogoMark } from 'ionbase-ui';
 
 const meta: Meta<typeof Logo> = {
   title: 'Components/Logo',

@@ -1,8 +1,7 @@
 import React from 'react';
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { expect } from 'storybook/test';
-import { Badge } from '@ionbase-ui/react';
-import { Icon } from '@ionbase-ui/icons';
+import { Badge, Icon } from 'ionbase-ui';
 import { Check, TriangleAlert } from 'lucide-react';
 
 const meta: Meta<typeof Badge> = {

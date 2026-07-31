@@ -1,17 +1,23 @@
 # Publishing IonBase to npm
 
-Same idea as Beacon: log in once, bump the version, build, publish. No CI tokens required.
+Log in once, bump the version, build, publish. No CI tokens required.
 
-## Org vs packages
+## One package
 
-You created the **organisation** `ionbase-ui` (`ionbase` was taken). That is enough.
+The whole design system ships as **`ionbase-ui`** — unscoped, same shape as
+`beacon-ui`. Components, stylesheets and design tokens are all inside it.
 
-Do **not** create a package named `ionbase-ui` or `@ionbase-ui` by hand. Publishing creates:
+There used to be four packages (`tokens`, `styles`, `react`, `icons`). They were
+consolidated before the first release: nothing had shipped to npm yet, and
+`sync-version` had always moved all four in lockstep, so the split was buying
+four manifests and a cross-package CSS import with no independent versioning to
+show for it.
 
-- `@ionbase-ui/tokens`
-- `@ionbase-ui/styles`
-- `@ionbase-ui/react`
-- `@ionbase-ui/icons`
+`packages/tokens` still exists and is **private**. It holds the Figma export,
+the generators and the five token gates; its output is copied into
+`packages/ionbase-ui` at build time by `scripts/sync-tokens.mjs`. It is never
+published, and it must keep `"private": true` — publishing it would put a
+second, competing source of token values on npm.
 
 ## First publish (and every publish after)
 
@@ -19,70 +25,75 @@ Do **not** create a package named `ionbase-ui` or `@ionbase-ui` by hand. Publish
 
 ```bash
 npm login
-```
-
-Use the npm account that owns the `ionbase-ui` org. Confirm:
-
-```bash
 npm whoami
 ```
 
-### 2. Set the version on all four packages
+`ionbase-ui` is unscoped, so no organisation membership is required. The
+`ionbase-ui` org exists and owning it does no harm, but nothing depends on it.
+
+### 2. Set the version
 
 ```bash
 pnpm sync:version 0.1.0
 ```
 
-Later releases: `0.1.1`, `0.2.0`, etc. Same command.
-
 ### 3. Build and publish
 
 ```bash
-pnpm publish:packages
+pnpm publish:package
 ```
 
-That runs `pnpm build`, then publishes in order: tokens → styles → icons → react (`--access public`).
+That runs `pnpm build` — which runs the token pipeline first, then syncs its
+output into the package — and then publishes with `--access public`.
 
-You will be prompted to confirm each package. After it finishes, check:
+Check it landed: https://www.npmjs.com/package/ionbase-ui
 
-- https://www.npmjs.com/package/@ionbase-ui/react
-- https://www.npmjs.com/package/@ionbase-ui/styles
-- https://www.npmjs.com/package/@ionbase-ui/tokens
-- https://www.npmjs.com/package/@ionbase-ui/icons
-
-### 4. Commit the version bump
+### 4. Commit and tag
 
 ```bash
-git add packages/*/package.json
+git add packages/ionbase-ui/package.json
 git commit -m "chore: release 0.1.0"
 git push
+git tag v0.1.0 && git push origin v0.1.0
 ```
 
-Optional: `git tag v0.1.0 && git push --tags`
+## Verify from outside the monorepo
+
+Worth doing on a first release, because a broken entry point is invisible to
+lint, typecheck and format:
+
+```bash
+cd $(mktemp -d) && npm init -y && npm i ionbase-ui react react-dom
+node -e "import('ionbase-ui').then(m => console.log(Object.keys(m)))"
+```
 
 ## Using it in a product
 
 ```bash
-pnpm add @ionbase-ui/react @ionbase-ui/styles @ionbase-ui/icons lucide-react
+npm i ionbase-ui
 ```
 
 ```tsx
-import '@ionbase-ui/styles/css';
-import { Button } from '@ionbase-ui/react';
+import 'ionbase-ui/styles';
+import { Button } from 'ionbase-ui';
 ```
 
-## One-package publish (rare)
+Icons are not bundled — `Icon` takes the icon as a prop, so bring whichever
+library you like:
 
-```bash
-pnpm build
-pnpm publish:tokens    # or :styles :icons :react
+```tsx
+import { Icon } from 'ionbase-ui';
+import { Plus } from 'lucide-react';
+
+<Icon as={Plus} size="sm" />;
 ```
 
 ## If publish fails
 
-| Error                         | Fix                                                                             |
-| ----------------------------- | ------------------------------------------------------------------------------- |
-| Not logged in / 401           | `npm login` again                                                               |
-| 403 / not allowed for scope   | Your user must be a member of the `ionbase-ui` org with publish rights          |
-| Package name already taken    | Someone else owns that name; rename or transfer                                 |
-| `workspace:*` left in tarball | Always publish with `pnpm publish` (not raw `npm publish` from a copied folder) |
+| Error                          | Fix                                                                                      |
+| ------------------------------ | ---------------------------------------------------------------------------------------- |
+| Not logged in / 401            | `npm login` again                                                                        |
+| Package name already taken     | Someone else owns `ionbase-ui`; rename or transfer                                       |
+| `workspace:*` left in tarball  | Always publish with `pnpm publish`, not raw `npm publish` from a copied folder           |
+| Tarball has no `dist/index.js` | `tsc` skipped emit against a stale tsbuildinfo — `copy-css.mjs` now fails loudly on this |
+| Git tree not clean             | `publish:package` has no `--no-git-checks`; commit first                                 |

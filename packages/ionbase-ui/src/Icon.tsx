@@ -1,5 +1,17 @@
 import React, { forwardRef } from 'react';
-import type { LucideIcon } from 'lucide-react';
+
+/**
+ * Any component that renders an SVG element and accepts SVG props.
+ *
+ * Typed structurally rather than as lucide-react's `LucideIcon`, so the icon
+ * set is the consumer's choice: lucide, heroicons, react-icons, a hand-rolled
+ * SVG component. Naming one library in the type would have made it a
+ * dependency of every install for the sake of a type that is erased at build
+ * time.
+ */
+export type IconComponent = React.ComponentType<
+  React.SVGProps<SVGSVGElement> & React.RefAttributes<SVGSVGElement>
+>;
 
 /**
  * The `icon-size` ladder, verbatim.
@@ -29,8 +41,11 @@ const SIZE_TOKENS = {
 export type IconSize = keyof typeof SIZE_TOKENS;
 
 export interface IconProps extends Omit<React.SVGProps<SVGSVGElement>, 'ref'> {
-  /** The Lucide icon to render, e.g. `import { Plus } from 'lucide-react'`. */
-  as: LucideIcon;
+  /**
+   * The icon component to render, e.g. `import { Plus } from 'lucide-react'`.
+   * Any SVG component works — the design system does not ship an icon set.
+   */
+  as: IconComponent;
   /**
    * A rung on the `icon-size` ladder — `xs` 12, `sm` 16, `md` 20, `lg` 24,
    * `xl` 32 — or any CSS length for a one-off. Omit to inherit the surrounding
@@ -47,12 +62,17 @@ export interface IconProps extends Omit<React.SVGProps<SVGSVGElement>, 'ref'> {
 }
 
 /**
- * Wrapper around a Lucide icon that applies the design system's sizing and
- * accessibility defaults.
+ * Wrapper that applies the design system's icon sizing and accessibility
+ * defaults to whatever icon component you hand it.
  *
- * Takes the icon as a prop rather than re-exporting all 1,753 of them: a barrel
- * that large defeats tree-shaking in several bundlers, so consumers import the
- * one icon they need straight from `lucide-react` and it is the only one bundled.
+ *   import { Plus } from 'lucide-react';
+ *   <Icon as={Plus} size="sm" />
+ *   <Icon as={Plus} label="Add item" />   // meaningful, gets an a11y name
+ *
+ * Takes the icon as a prop rather than re-exporting a set: a barrel of a
+ * thousand-plus icons defeats tree-shaking in several bundlers, and pinning one
+ * icon library would force it on every consumer. You import the one icon you
+ * need, from whichever library you use, and it is the only one bundled.
  */
 export const Icon = forwardRef<SVGSVGElement, IconProps>(
   ({ as: Component, size, label, className, ...rest }, ref) => {
