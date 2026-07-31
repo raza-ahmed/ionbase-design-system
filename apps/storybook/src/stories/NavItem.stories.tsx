@@ -107,17 +107,23 @@ export const HoverHasNoBackground: Story = {
     await userEvent.hover(item);
     await expect(item).toHaveAttribute('data-hovered', 'true');
 
-    const cs = getComputedStyle(item);
-    await expect(cs.backgroundColor).toBe('rgba(0, 0, 0, 0)');
+    await expect(getComputedStyle(item).backgroundColor).toBe(
+      'rgba(0, 0, 0, 0)',
+    );
 
-    const hoverColor = getComputedStyle(document.documentElement)
-      .getPropertyValue('--text-interactive-hover')
-      .trim();
-    const rgb = `rgb(${[1, 3, 5].map((i) => parseInt(hoverColor.slice(i, i + 2), 16)).join(', ')})`;
-    // `color` is a 150ms transition, not an instant flip — give it time to
-    // finish before reading the computed value.
+    // Resolve the token the same way the browser does — hex-slicing the
+    // custom property breaks when the value is already `rgb(...)` or has
+    // alpha, and a CSSStyleDeclaration captured once can freeze mid-
+    // transition (CI runs with prefers-reduced-motion, which still paints
+    // an intermediate frame).
+    const probe = document.createElement('span');
+    probe.style.color = 'var(--text-interactive-hover)';
+    document.documentElement.appendChild(probe);
+    const expected = getComputedStyle(probe).color;
+    probe.remove();
+
     await waitFor(async () => {
-      await expect(cs.color).toBe(rgb);
+      await expect(getComputedStyle(item).color).toBe(expected);
     });
   },
 };
@@ -133,13 +139,14 @@ export const DisabledIsRecoloured: Story = {
   render: () => <NavItem isDisabled>Unavailable</NavItem>,
   play: async ({ canvas }) => {
     const item = canvas.getByRole('button');
-    const cs = getComputedStyle(item);
 
-    const disabledColor = getComputedStyle(document.documentElement)
-      .getPropertyValue('--text-disabled')
-      .trim();
-    const rgb = `rgb(${[1, 3, 5].map((i) => parseInt(disabledColor.slice(i, i + 2), 16)).join(', ')})`;
-    await expect(cs.color).toBe(rgb);
+    const probe = document.createElement('span');
+    probe.style.color = 'var(--text-disabled)';
+    document.documentElement.appendChild(probe);
+    const expected = getComputedStyle(probe).color;
+    probe.remove();
+
+    await expect(getComputedStyle(item).color).toBe(expected);
   },
 };
 
