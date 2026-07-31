@@ -21,5 +21,21 @@ const config: StorybookConfig = {
     getAbsolutePath('@storybook/addon-mcp'),
   ],
   framework: getAbsolutePath('@storybook/react-vite'),
+
+  /*
+   * GitHub Pages serves this repo at /ionbase-design-system/, not at the root.
+   * Vite writes absolute asset URLs by default, so every chunk the preview
+   * iframe loads would resolve to /assets/... and 404 — the manager shell
+   * renders, the sidebar populates from a static index, and every story panel
+   * comes up blank. It fails to look broken, which is what makes it expensive.
+   *
+   * Read from the environment rather than hardcoded so `pnpm dev` and the CI
+   * interaction tests keep serving from `/`. The deploy workflow is the only
+   * caller that sets it.
+   */
+  viteFinal: (viteConfig) => ({
+    ...viteConfig,
+    base: process.env.STORYBOOK_BASE_PATH ?? '/',
+  }),
 };
 export default config;

@@ -107,3 +107,77 @@ jobs:
 
       - name: Interaction tests
         run: pnpm --filter @ionbase-ui/storybook test
+
+  # Publishes Storybook to https://raza-ahmed.github.io/ionbase-design-system/
+  #
+  # Depends on `storybook`, so a story that throws on render or fails an
+  # interaction test never reaches the live URL — the previous deploy simply
+  # stays up. Only runs on main: a PR gets the build check without republishing
+  # the site out from under whoever is looking at it.
+  #
+  # The site is rebuilt here rather than reusing the `storybook` job's output,
+  # because that job builds for `/` and this one needs the Pages subpath baked
+  # into the asset URLs. Uploading the wrong one is the failure mode this
+  # avoids.
+  deploy-storybook:
+    name: deploy storybook
+    needs: storybook
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    # Pages deploys use a short-lived OIDC token rather than a PAT, so the job
+    # needs both permissions declared. `contents: read` is the default the rest
+    # of the workflow relies on and must be restated once any permission is set.
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+
+    # One live site, so queue deploys instead of cancelling them. The
+    # workflow-level `concurrency` block cancels in progress, which for a
+    # deploy means a superseded run can be killed mid-upload.
+    concurrency:
+      group: pages
+      cancel-in-progress: false
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9.6.0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - name: Install
+        run: pnpm install --frozen-lockfile
+
+      - name: Build packages
+        run: pnpm build
+
+      - name: Configure Pages
+        id: pages
+        uses: actions/configure-pages@v5
+
+      # `base_path` is what Pages reports for this repo, so the subpath is not
+      # duplicated here — renaming the repo does not silently break the build.
+      - name: Build Storybook
+        run: pnpm --filter @ionbase-ui/storybook build-storybook
+        env:
+          STORYBOOK_BASE_PATH: ${{ steps.pages.outputs.base_path }}/
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: apps/storybook/storybook-static
+
+      - name: Deploy
+        id: deployment
+        uses: actions/deploy-pages@v4
