@@ -137,20 +137,11 @@ jobs:
 
   # Publishes Storybook to https://raza-ahmed.github.io/ionbase-design-system/
   #
-  # Depends on `storybook` — the site building — so a story that throws on
-  # render never reaches the live URL; the previous deploy simply stays up.
-  # Only runs on main: a PR gets the build check without republishing the site
-  # out from under whoever is looking at it.
-  #
-  # It deliberately does NOT depend on `storybook-test`. That job has been red
-  # since before Pages existed here (NavItem > Hover Has No Background, an
-  # environment-specific failure that passes locally under coarse-pointer,
-  # reduced-motion and dark-scheme emulation alike), and gating on it means the
-  # site never publishes at all. A failing hover-colour assertion does not make
-  # the built Storybook wrong; a story that cannot render does, and that is what
-  # `storybook` catches. The test job still runs and still fails the workflow,
-  # so the signal is not hidden — only the deploy is decoupled from it. Restore
-  # `needs: [storybook, storybook-test]` once that test is green.
+  # Gated on both the site building and the interaction tests, so neither a
+  # story that throws on render nor a broken component contract reaches the
+  # live URL — the previous deploy simply stays up. Only runs on main: a PR
+  # gets both checks without republishing the site out from under whoever is
+  # looking at it.
   #
   # The site is rebuilt here rather than reusing the `storybook` job's output,
   # because that job builds for `/` and this one needs the Pages subpath baked
@@ -158,7 +149,7 @@ jobs:
   # avoids.
   deploy-storybook:
     name: deploy storybook
-    needs: storybook
+    needs: [storybook, storybook-test]
     if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     timeout-minutes: 15
