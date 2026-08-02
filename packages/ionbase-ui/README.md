@@ -9,6 +9,8 @@ npm i ionbase-ui
 
 React 18 or 19 is a peer dependency.
 
+**[Browse every component in Storybook →](https://raza-ahmed.github.io/ionbase-design-system/)**
+
 ## Usage
 
 Import the stylesheet once, at your app entry:

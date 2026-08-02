@@ -2,6 +2,9 @@
 
 IonBase is a modern, high-performance design system monorepo built to deliver cohesive, accessible, and fast user interfaces. The workspace is powered by `pnpm workspaces` and `Turborepo` for efficient task execution and caching, utilizing strict TypeScript (ESM) and modern linting/formatting standards (ESLint flat config, Prettier) to ensure code consistency across all packages and applications.
 
+**[Browse the components →](https://raza-ahmed.github.io/ionbase-design-system/)**
+Storybook, published from `main` on every push.
+
 ## Using IonBase in a product
 
 The whole system ships as one package, `ionbase-ui`:
@@ -38,6 +41,7 @@ pnpm build      # also lint / typecheck / format
 
 | If you want to…                            | Read                                                                                                                                    |
 | ------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------- |
+| See the components running                 | [Storybook](https://raza-ahmed.github.io/ionbase-design-system/) — live, deployed from `main` by [`ci.yml`](.github/workflows/ci.yml)   |
 | Install / publish the packages             | [`docs/publishing.md`](docs/publishing.md)                                                                                              |
 | Change a design token                      | [`packages/tokens/README.md`](packages/tokens/README.md) — **start here**, the workflow has a Figma half that is not runnable from Node |
 | Name a token                               | [`docs/variable-naming-spec.html`](docs/variable-naming-spec.html) — the grammar, and the validator that enforces it                    |
