@@ -1,31 +1,46 @@
 /*
  * Header
  *
- * Measured from Figma `Header` (70:22088). Three device variants:
+ * Measured from Figma `Header` (69:335). Four Device variants, two axes:
  *
- *   Desktop  56 tall, padding 8 / 64, end-slot gap 12
- *   Tablet   64 tall, padding 12 / 32, end-slot gap 8
- *   Mobile   64 tall, padding 12 / 16, end-slot gap 8
+ *   Desktop        56 tall, padding  8 / 64, end-slot gap 12
+ *   Tablet         56 tall, padding  8 / 24, end-slot gap  8
+ *   Mobile-Closed  64 tall, padding 12 / 16, toggle only
+ *   Mobile-Open    as Mobile-Closed, plus the dropped Menu-Container
  *
- * WHY THIS IS MEDIA QUERIES AND NOT A PROP
+ * WHY DEVICE IS A MEDIA QUERY AND OPEN IS A PROP
  *
- * Device is the one variant axis in the whole system that the browser already
- * knows the answer to. Every other component takes its variant from the caller
+ * Device is the one variant axis in the whole system the browser already knows
+ * the answer to. Every other component takes its variant from the caller
  * because the caller is the only one who knows; a header is Mobile because the
  * viewport is narrow, and asking React to duplicate that is how the two get out
- * of step. The breakpoints match the Breakpoint collection's own container
- * widths — Tablet below 1216, Mobile below 896.
+ * of step. Breakpoints match the Breakpoint collection's own container widths —
+ * Tablet below 1216, Mobile below 896.
  *
- * Note the header is taller on Tablet and Mobile than on Desktop (64 vs 56).
+ * Open/Closed is the opposite: nothing in CSS knows it, so it is a prop, and it
+ * arrives here as `[data-open]`.
+ *
+ * Note the header is taller on Mobile (64) than on Desktop and Tablet (56).
  * That looks inverted but is deliberate in the design: touch targets need the
  * height more than the desktop pointer does.
+ *
+ * ONE TREE, TWO LAYOUTS
+ *
+ * `__menu` is `display: contents` above the mobile breakpoint, so `__center`
+ * and `__end` are flex items of the bar itself; below it, the same element
+ * becomes the absolutely positioned Menu-Container. The slots are therefore
+ * rendered once, never duplicated across breakpoints.
  */
 .ion-header {
-  --ion-header-height: var(--spacing-64);
-  --ion-header-padding-y: var(--spacing-12);
-  --ion-header-padding-x: var(--spacing-16);
-  --ion-header-end-gap: var(--spacing-8);
+  /* Desktop is the base; the two narrower breakpoints override downward, so a
+   * new rung is added in one place rather than three. */
+  --ion-header-height: calc(var(--spacing-48) + var(--spacing-8)); /* 56 */
+  --ion-header-padding-y: var(--spacing-8);
+  --ion-header-padding-x: var(--spacing-64);
+  --ion-header-center-gap: var(--spacing-8);
+  --ion-header-end-gap: var(--spacing-12);
 
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -43,20 +58,18 @@
   font-family: var(--font-family-sans);
 }
 
-@media (width >= 896px) {
+@media (width < 1216px) {
   .ion-header {
-    --ion-header-padding-x: var(--spacing-32);
+    --ion-header-padding-x: var(--spacing-24);
+    --ion-header-end-gap: var(--spacing-8);
   }
 }
 
-@media (width >= 1216px) {
+@media (width < 896px) {
   .ion-header {
-    /* 56 is off the spacing scale (it jumps 48 -> 64), so it is stated as
-     * arithmetic on two rungs rather than as a literal. */
-    --ion-header-height: calc(var(--spacing-64) - var(--spacing-8));
-    --ion-header-padding-y: var(--spacing-8);
-    --ion-header-padding-x: var(--spacing-64);
-    --ion-header-end-gap: var(--spacing-12);
+    --ion-header-height: var(--spacing-64);
+    --ion-header-padding-y: var(--spacing-12);
+    --ion-header-padding-x: var(--spacing-16);
   }
 }
 
@@ -69,22 +82,20 @@
 }
 
 /*
- * The centre slot is hidden on Tablet and Mobile in Figma — both variants ship
- * it collapsed to zero. It is display:none rather than visibility:hidden so it
- * does not hold width the narrow layouts do not have.
+ * Above the mobile breakpoint the wrapper contributes no box of its own — its
+ * two children are laid out by the bar. `display: contents` is what makes the
+ * single-tree approach possible; without it the slots would need to be either
+ * duplicated or moved by script.
  */
-.ion-header__center {
-  display: none;
-  align-items: center;
-  gap: var(--spacing-8);
-  flex: 1 1 auto;
-  min-width: 0;
+.ion-header__menu {
+  display: contents;
 }
 
-@media (width >= 1216px) {
-  .ion-header__center {
-    display: flex;
-  }
+.ion-header__center {
+  display: flex;
+  align-items: center;
+  gap: var(--ion-header-center-gap);
+  min-width: 0;
 }
 
 .ion-header__end {
@@ -92,4 +103,96 @@
   align-items: center;
   gap: var(--ion-header-end-gap);
   flex-shrink: 0;
+}
+
+/*
+ * The Mobile-Closed / Mobile-Open toggle. Figma builds it from the Icon Button
+ * component (Secondary, Small, Square) but the Header owns the instance, so the
+ * geometry is stated here rather than reached for across components: 32 square,
+ * radius/sm, 16px icon.
+ */
+.ion-header__toggle {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: var(--spacing-32);
+  height: var(--spacing-32);
+  padding: 0;
+  color: var(--icon-default);
+  background-color: var(--surface-default);
+  border: var(--border-width-default) solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--ion-shadow-raised-lifted-xs);
+  cursor: pointer;
+}
+
+.ion-header__toggle > svg {
+  width: var(--icon-size-sm);
+  height: var(--icon-size-sm);
+}
+
+.ion-header__toggle:focus-visible {
+  outline: var(--border-width-thick) solid var(--ring-focus);
+  outline-offset: var(--spacing-2);
+}
+
+@media (width < 896px) {
+  .ion-header__toggle {
+    display: inline-flex;
+  }
+
+  /*
+   * Menu-Container. Figma places it at y=67 against a 64-tall bar — a 3px nudge
+   * that is on no scale and matches no token, so it is anchored flush to the
+   * bar's bottom edge instead. Nothing else in the design depends on the gap.
+   */
+  .ion-header__menu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-12);
+    width: 100%;
+    padding: var(--spacing-12) var(--spacing-8);
+    background-color: var(--surface-default);
+    border: var(--border-width-default) solid var(--border-default);
+    border-radius: var(--radius-md);
+  }
+
+  .ion-header[data-open] .ion-header__menu {
+    display: flex;
+  }
+
+  .ion-header:not([data-open]) .ion-header__menu {
+    display: none;
+  }
+
+  /* Both slots stack full width inside the panel; the end slot keeps its row
+   * but shares the width evenly, as the two buttons do in Figma. */
+  .ion-header__center {
+    flex-direction: column;
+    align-items: stretch;
+    width: 100%;
+  }
+
+  .ion-header__end {
+    width: 100%;
+  }
+
+  .ion-header__end > * {
+    flex: 1 1 0;
+  }
+}
+
+/*
+ * Forced-colors: box-shadow is dropped by the OS, so the toggle would lose its
+ * only edge. A border in ButtonText keeps it visible.
+ */
+@media (forced-colors: active) {
+  .ion-header__toggle {
+    border-color: ButtonText;
+  }
 }
