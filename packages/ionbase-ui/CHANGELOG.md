@@ -1,5 +1,81 @@
 # Changelog
 
+## 0.6.0 — 2026-08-03
+
+A Figma re-export and a rebuilt `Header`. Colour, shadow and typography values
+moved, so **every component renders slightly differently even where its code did
+not change** — that is the token layer working, not drift.
+
+### Changed — `Header`, rebuilt for four device variants
+
+Figma now ships Desktop, Tablet, Mobile-Closed and Mobile-Open. Those are two
+axes, not one, and they are modelled differently because they are known by
+different people:
+
+- **Breakpoint stays a media query.** It is the one variant axis the browser
+  already knows the answer to. Unchanged from 0.5.0.
+- **Open/closed is new, and it is a prop:** `open`, `defaultOpen`,
+  `onOpenChange`, plus `menuLabel` for the toggle's accessible name.
+
+```tsx
+<Header
+  brand={<Logo size="sm" wordmark="vector" />}
+  center={navItems}
+  end={actions}
+  onOpenChange={(open) => console.log(open)}
+/>
+```
+
+`center` and `end` are rendered **once**. Above 896px they sit inline in the bar;
+below it the same elements become the dropped Menu-Container. They are not
+duplicated per breakpoint, so a nav link appears once in the accessibility tree
+and slot state survives a resize.
+
+#### Breaking, in ways that will not raise a type error
+
+1. **DOM structure.** `.ion-header__center` and `.ion-header__end` are now nested
+   inside a new `.ion-header__menu` wrapper (`display: contents` above 896px).
+   Custom CSS using a child combinator from `.ion-header` no longer matches.
+2. **`Header` is now a client component.** It carries `'use client'` because the
+   menu is stateful. It still works inside a Server Component — it becomes a
+   client boundary rather than an error — but it is no longer server-rendered.
+3. **A toggle `<button>` is always in the DOM**, `display: none` above 896px.
+   Snapshot tests and `getAllByRole('button')` counts will see it.
+4. **The centre slot is no longer hidden on Tablet.** Figma's Tablet variant
+   ships it populated; 0.5.0 collapsed it below 1216px, which was right for the
+   old design and wrong for this one.
+5. **Tablet geometry changed** — 56 tall with 8/24 padding, was 64 with 12/32.
+
+Escape closes the menu while focus is inside the header. It is a disclosure, not
+a modal: no focus trap, no scroll lock.
+
+### Changed — tokens re-exported from Figma
+
+Repo and Figma verified in sync: 381 variables, checksum `838923391`.
+
+- **Colour.** `text/placeholder` [Dark] `neutral.500 → neutral.600`;
+  `text/warning` [Light] `warning.700 → warning.600`; new `icon/placeholder`.
+- **Shadow.** The `Raised` family's top inner shadow was a flat 25% at every
+  size and is now a graduated ramp — `xs` 12%, `sm` 15%, `lg` 20%, `xl`
+  unchanged, across both `Lifted` and `Flush`. This reaches `Button`,
+  `Checkbox`, `Radio` and `Toggle` through `--ion-shadow-*` with no component
+  code change: their bevels are softer and now scale with size.
+- **Typography.** `.ion-text-h1` and `.ion-text-h2` move from the serif display
+  face to the sans — **headings are no longer serif.** `.ion-text-caption` drops
+  from medium to regular, and a `Caption Emphasis` style now pairs with it via
+  the existing `.ion-text--emphasis` modifier.
+
+### Fixed
+
+- `icon/placeholder` advertised `var(--icon-disabled)` in Figma Dev Mode, copied
+  from `icon/disabled`. CSS was always generated from the token path, so no
+  value was ever wrong — only what Dev Mode displayed.
+- Every text style bound its family and weight straight to Primitives rather than
+  the Semantics aliases. Nothing rendered differently, and nothing would have
+  until a second brand mode existed, at which point the whole type ramp would
+  have stopped re-branding at once. 38 fields rebound; `build-typography.mjs`
+  now warns on any that return.
+
 ## 0.5.0 — 2026-08-01
 
 One new component. Nothing existing moved, so this is additive for every
