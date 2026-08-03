@@ -1,14 +1,13 @@
 # @ionbase-ui/tokens
 
-> **Architecture v2 is agreed but not yet migrated.** Collections are moving to
-> Primitives → Semantics → Interface (brand modes in Semantics, light/dark in
-> Interface), and the Component collection is being deleted. Plan:
+> **Architecture v2 is live.** Four collections — Primitives (141) → Semantics
+> (106) → Interface (104), plus a parallel Breakpoint (30). The old `Semantic`
+> and `Component` collections are deleted. Inventory:
 > [`docs/token-architecture-v2.md`](../../docs/token-architecture-v2.md).
 >
-> **Everything below describes the pipeline as it works today and stays accurate
-> through the migration** — the export, rename, verification and build steps do
-> not change. Only the collection names and the token inventory do. The examples
-> using `bg/brand/default` become `surface/primary` once Figma is migrated.
+> Repo and Figma are in sync as of **3 Aug 2026**: 381 variables, checksum
+> `838923391`. To re-verify, run [`figma/checksum.js`](./figma/checksum.js)
+> inside Figma and feed its output to `scripts/verify-export.mjs`.
 
 Design tokens, exported from Figma and built to CSS custom properties + TypeScript.
 
@@ -75,8 +74,10 @@ tracked defect is fixed in Figma but left in `known-defects.json`.
 
 Half the workflow runs in Node; half runs **inside Figma**, because a
 non-Enterprise plan has no Variables REST API. The Figma half lives in
-[`figma/`](./figma) as real files — paste them into the `use_figma` MCP tool (or
-a Figma plugin console) with the file open.
+[`figma/`](./figma) as real files — plain JavaScript against the Figma Plugin
+API, with no tool-specific wrapper. Run them with the file open in the Figma
+desktop app, via whichever bridge you have: a plugin console, a dev-mode plugin,
+or an MCP bridge if your editor or agent provides one.
 
 | Node (`scripts/`)                           | Figma (`figma/`)                                        |
 | ------------------------------------------- | ------------------------------------------------------- |
@@ -138,7 +139,7 @@ from. So the map is always proven before it is applied.
 
 ## Typography
 
-The 20 Figma text styles are exported to `src/figma/text-styles.json` and
+The 21 Figma text styles are exported to `src/figma/text-styles.json` and
 generated into `dist/css/typography.css` as utility classes —
 `.ion-text-display`, `.ion-text-h1`…`h6`, `.ion-text-body-{lg,md,sm}`,
 `.ion-text-body`, `.ion-text-caption`, `.ion-text-editorial-*`.
@@ -153,9 +154,35 @@ The Figma `… Emphasis` styles differ from their base in font-weight and nothin
 else, so they collapse to one modifier, `.ion-text--emphasis`. The generator
 asserts that and fails the build if it stops being true.
 
+### A text style must bind Semantics, never a Primitive
+
+`font/family/sans` is a Semantics alias of the Primitive
+`font/family/host-grotesk`. A text style may be bound to either, and **they
+render identically** — so a style bound to the Primitive looks correct forever
+and silently stops following a brand mode the moment a second brand exists.
+
+Bind family to `font/family/{sans,serif,serif-display,mono}` and weight to
+`font/weight/{regular,medium,semibold,bold}`. Never to `font/family/host-grotesk`
+or `font/weight/600`.
+
+This is not hypothetical: 38 fields were in that state on 3 Aug 2026 and were
+rebound. Nothing caught it, because `tokens:tier` reads the _variable_ graph and
+text styles are not variables. `build-typography.mjs` now prints a warning naming
+every offending field; it is a warning rather than an error because the fix is a
+Figma rebind and the CSS emitted meanwhile is still correct.
+
+To fix a regression, derive the Primitive → Semantics map from the alias graph
+rather than typing it — the Semantics collection already records which alias
+points at which Primitive, so a derived map cannot be wrong in the way a
+hand-written one can. Load the fonts before writing a `fontFamily` / `fontStyle`
+binding, or the Plugin API throws. Then re-run
+[`figma/export-text-styles.js`](./figma/export-text-styles.js).
+
 Effect styles (shadows) are the opposite case — **not** variable-bound, so they
-are hand-authored in `@ionbase-ui/styles/src/elevation.css` and are not part of
-this pipeline.
+cannot be tokens: there is nothing to alias. They have their own export,
+[`figma/export-effect-styles.js`](./figma/export-effect-styles.js) →
+`src/figma/effect-styles.json` → `build-elevation.mjs` → `dist/css/elevation.css`
+as `--ion-shadow-*`. Never hand-write a shadow value.
 
 ---
 

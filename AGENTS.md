@@ -1,9 +1,24 @@
-# IonBase — working notes for AI agents
+# IonBase — working notes for contributors and AI agents
 
 Design system monorepo. pnpm workspaces + Turborepo, strict TypeScript ESM, Node 22.
 
 Read this before touching tokens. Most of what follows is non-obvious from the
 code, and getting it wrong is expensive rather than merely wrong.
+
+**This file is the canonical entry point, and it is deliberately vendor-neutral.**
+`AGENTS.md` is a conventional name that agent tooling looks for without being
+told to; it is also a plain Markdown document a human can read. Nothing here is
+specific to one assistant, one vendor or one editor.
+
+Any tool-specific file in this repo (`CLAUDE.md`, and any `GEMINI.md`,
+`.cursorrules` or `.github/copilot-instructions.md` added later) **must be a
+pointer to this file and must not hold content of its own.** Project knowledge
+that lives in exactly one vendor's file is knowledge the project loses the day it
+changes tools — and a second copy is worse, because the two drift and neither
+announces it. One source, many pointers.
+
+Durable design decisions belong in [`docs/`](docs/) and the package READMEs, not
+here. This file is the map and the traps; the docs are the reasoning.
 
 ---
 
@@ -73,16 +88,21 @@ reverts it, and the repo will disagree with Figma until someone notices.
 ### The workflow has a Figma half that is not runnable from Node
 
 The plan is non-Enterprise, so there is **no Variables REST API**. Every read and
-write to Figma variables goes through the Plugin API via the `use_figma` MCP
-tool, which needs the file open in the Figma desktop app.
+write to Figma variables goes through the **Figma Plugin API**, which runs inside
+Figma and needs the file open in the desktop app. How you get JavaScript in there
+is a tooling choice and does not matter to this repo: a Figma plugin console, a
+dev-mode plugin, or an MCP bridge (Claude Code and several other agents expose
+one as `use_figma`). The scripts are the same either way.
 
 That half is committed as real files in [`packages/tokens/figma/`](packages/tokens/figma/)
 — `export-variables.js`, `apply-renames.js`, `resync-code-syntax.js`,
 `checksum.js`. **Use those instead of writing new Plugin API code.** They already
-handle the ordering and truncation problems described below.
+handle the ordering and truncation problems described below. They are plain
+JavaScript with no tool-specific wrapper, so they paste into any of the above.
 
-Before calling `use_figma`, load the `figma-use` skill — it is a hard
-prerequisite, not advice.
+Whatever bridge you use, the three traversal rules further down are a hard
+prerequisite, not advice — a sweep that skips one returns a confident, wrong
+answer rather than an error.
 
 ### Styles are a second export, separate from variables
 
@@ -138,14 +158,14 @@ Primitives   141  Value                value-keyed scales only
    ↓
 Semantics    106  IonBase              brand identity — ramps, radius, border-width, icon-size
    ↓
-Interface    103  Light / Dark         text · icon · surface · border · ring
+Interface    104  Light / Dark         text · icon · surface · border · ring
    ↓
 components + CSS
 
 Breakpoint    30  Desktop/Tablet/Mobile   (parallel — type and grid only)
 ```
 
-Sync state: names `3840062063`, 380 variables.
+Sync state: names `838923391`, 381 variables (re-exported 3 Aug 2026).
 
 **Components bind Interface and Breakpoint for colour and type.** Interface may
 only alias Semantics; Semantics may only alias Primitives. `spacing/*` is the
@@ -169,7 +189,7 @@ on `spacing/*` or a ladder) and `figma/audit-geometry.js` (raw numbers in Figma,
 which no export can see — that is how a literal 10px padding and a whole
 component's unbound stroke weights both shipped).
 
-**380 variables, and that number does not grow with the component count.** A new
+**381 variables, and that number does not grow with the component count.** A new
 brand adds a _mode_, not tokens. So does a new theme.
 
 **Primitives are value-keyed.** `scale/8`, not `radius/md`; `font/weight/400`,
@@ -338,7 +358,13 @@ ramps live in Semantics; Interface picks the step.
 not "fixed": the values are a design decision. Resolve before a solid warning
 surface carries body text.
 
-**The repo has not been re-exported.** `src/figma/` is still v1 — see above.
+**Text styles must bind Semantics, never a Primitive.** They carry `fontFamily`
+and `fontStyle` bindings but are not variables, so `tokens:tier` cannot see them;
+both tiers render identically, so the defect is invisible until a second brand
+exists. `build-typography.mjs` warns on every offending field — treat that
+warning as a build break. Full rule and the recovery procedure:
+[docs/token-architecture-v2.md](docs/token-architecture-v2.md) §6b and
+[packages/tokens/README.md](packages/tokens/README.md#a-text-style-must-bind-semantics-never-a-primitive).
 
 ---
 

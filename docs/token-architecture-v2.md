@@ -1,10 +1,11 @@
 # Token architecture v2 — Primitive / Semantics / Interface
 
-**Status: SHIPPED.** Live in Figma and in code as of 29 Jul 2026.
-380 variables, four collections, checksum-matched with the repo at
-`555 / 1505770699` on every value in every mode.
+**Status: SHIPPED.** Live in Figma and in code since 29 Jul 2026.
+**381 variables**, four collections, checksum-matched with the repo at
+`838923391` — re-exported and re-verified 3 Aug 2026.
 
-Target: **380 variables, fixed**, serving 1,000+ components.
+Target: **~380 variables, fixed**, serving 1,000+ components. The one addition
+since launch is `icon/placeholder`; the count tracks UI roles, not components.
 
 ## The chain
 
@@ -360,20 +361,52 @@ Interface — and 17 of the 24 already do.
 | ---------- | ------- | ------------------------- | ----------------------------------------- |
 | Primitives | 141     | Value                     | A ramp gains a step                       |
 | Semantics  | 106     | IonBase                   | Never — a brand adds a _mode_, not tokens |
-| Interface  | 103     | Light, Dark               | A genuinely new UI role appears           |
+| Interface  | 104     | Light, Dark               | A genuinely new UI role appears           |
 | Breakpoint | 30      | Desktop / Tablet / Mobile | Never                                     |
 | Component  | 0       | —                         | Deleted; promotion only (§5)              |
-| **Total**  | **380** |                           |                                           |
+| **Total**  | **381** |                           |                                           |
 
-**380 variables at 26 components. 380 at 1,000.** A new brand adds a mode. A new
+**381 variables at 34 components. 381 at 1,000.** A new brand adds a mode. A new
 theme adds a mode. Neither adds tokens.
 
 The old `Semantic` (71) and `Component` (89) collections were deleted after every
-binding was moved. 8,514 bindings across 2,672 component nodes resolve
+binding was moved. Bindings across every component node resolve
 Interface → Semantics → Primitives, with zero ghosts.
 
-**Sync state:** names `932422769`, values `555 / 1505770699`. Both verified on
-each side independently.
+**Sync state:** names `838923391`, 381 variables, verified 3 Aug 2026. Computed
+independently on each side and compared — see `scripts/verify-export.mjs`.
+
+---
+
+# 6b. Text styles are bound to Semantics, and nothing else checks it
+
+The tier chain in §1–4 is enforced by `tokens:tier`, which walks the **variable**
+graph. Figma text styles are not variables, so they sit entirely outside it —
+and they carry two of the same bindings, `fontFamily` and `fontStyle`.
+
+A text style may bind either tier:
+
+| Bound to                                   | Renders  | Follows a brand mode |
+| ------------------------------------------ | -------- | -------------------- |
+| `font/family/sans` (Semantics)             | the same | **yes**              |
+| `font/family/host-grotesk` (the Primitive) | the same | **no**               |
+
+Because both render identically, a primitive-bound ramp is invisible until a
+second brand exists — at which point every heading and every body size quietly
+stops re-branding, all at once, with no error anywhere.
+
+**Rule: a text style binds `font/family/{sans,serif,serif-display,mono}` and
+`font/weight/{regular,medium,semibold,bold}`. Never a Primitive.**
+
+On 3 Aug 2026, 38 of the 21 styles' family/weight fields were found bound
+straight to Primitives and were rebound. `build-typography.mjs` now warns on any
+that return, naming each field. It warns rather than fails because the fix is a
+Figma edit and the CSS emitted in the meantime is still correct — but a warning
+that is ignored is the same as no gate, so treat it as a build break.
+
+The same reasoning applies to any future Figma construct that carries variable
+bindings without being a variable. `tokens:tier` will not see it; it needs its
+own check.
 
 ---
 

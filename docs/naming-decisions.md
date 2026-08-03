@@ -8,6 +8,39 @@ Newest first.
 
 ---
 
+## 2026-08-03 — a binding that is not a variable is a binding no gate can see
+
+The tier chain is enforced by `tokens:tier`, which walks the variable graph.
+Figma **text styles carry variable bindings but are not variables**, so they are
+invisible to it — and 38 of their `fontFamily` / `fontStyle` fields were bound
+straight to Primitives (`font/family/host-grotesk`, `font/weight/600`) instead of
+the Semantics aliases.
+
+Nothing rendered wrong. Nothing could: `font/family/sans` _is_ an alias of
+`font/family/host-grotesk`, so both resolve to the same family. The defect only
+becomes visible when a second brand mode exists, at which point the entire type
+ramp stops re-branding at once — long after anyone remembers touching it.
+
+Two rules come out of this, and the second is the general one:
+
+1. A text style binds `font/family/{sans,serif,serif-display,mono}` and
+   `font/weight/{regular,medium,semibold,bold}`. Never a Primitive.
+2. **Whenever a Figma construct carries variable bindings without being a
+   variable, it needs its own gate.** Text styles were the first; effect styles
+   and prototype reactions are the same shape. Assuming `tokens:tier` covers
+   "the tier rules" is how this one survived.
+
+`build-typography.mjs` now names every offending field. It warns rather than
+fails, because the fix is a Figma rebind and the CSS emitted meanwhile is
+correct — but an ignored warning is the same as no gate, so treat it as a break.
+
+When repairing this, **derive** the Primitive → Semantics map from the alias
+graph rather than typing it. The Semantics collection already records which alias
+points at which Primitive; a derived map reports ambiguity instead of guessing,
+and a hand-written one cannot.
+
+---
+
 ## 2026-07-30 (later still) — nothing reads the raw ramp, and `icon-size` means one thing
 
 ### Two off-ladder sizes turned out to be derivable

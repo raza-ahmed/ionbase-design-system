@@ -63,8 +63,8 @@ would have thrown it away.
 
 Indexed by value; a component picks a rung. There is deliberately no
 `--ion-duration-hover` — that is indexed by _usage_, so it needs a new entry
-per usage pattern. The `control/<size>/*` postmortem in `CLAUDE.md` is the
-cautionary example.
+per usage pattern. The `control/<size>/*` postmortem in
+[`AGENTS.md`](../AGENTS.md) is the cautionary example.
 
 ### What changed from the proposal, and why
 
