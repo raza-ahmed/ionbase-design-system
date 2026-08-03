@@ -98,7 +98,6 @@
     "radius/full": {"type": "FLOAT", "scopes": ["CORNER_RADIUS"], "codeSyntax": "var(--radius-full)", "values": {"IonBase": "{scale.full}"}},
     "border-width/default": {"type": "FLOAT", "scopes": ["STROKE_FLOAT"], "codeSyntax": "var(--border-width-default)", "values": {"IonBase": "{scale.1}"}},
     "border-width/thick": {"type": "FLOAT", "scopes": ["STROKE_FLOAT"], "codeSyntax": "var(--border-width-thick)", "values": {"IonBase": "{scale.2}"}},
-    "border-width/thicker": {"type": "FLOAT", "scopes": ["STROKE_FLOAT"], "codeSyntax": "var(--border-width-thicker)", "values": {"IonBase": "{scale.4}"}},
     "font/family/sans": {"type": "STRING", "scopes": ["FONT_FAMILY"], "codeSyntax": "var(--font-family-sans)", "values": {"IonBase": "{font.family.host-grotesk}"}},
     "font/family/serif": {"type": "STRING", "scopes": ["FONT_FAMILY"], "codeSyntax": "var(--font-family-serif)", "values": {"IonBase": "{font.family.merriweather}"}},
     "font/family/mono": {"type": "STRING", "scopes": ["FONT_FAMILY"], "codeSyntax": "var(--font-family-mono)", "values": {"IonBase": "{font.family.space-mono}"}},
@@ -111,6 +110,7 @@
     "icon-size/sm": {"type": "FLOAT", "scopes": ["WIDTH_HEIGHT"], "codeSyntax": "var(--icon-size-sm)", "values": {"IonBase": "{spacing.16}"}},
     "icon-size/md": {"type": "FLOAT", "scopes": ["WIDTH_HEIGHT"], "codeSyntax": "var(--icon-size-md)", "values": {"IonBase": "{spacing.20}"}},
     "icon-size/lg": {"type": "FLOAT", "scopes": ["WIDTH_HEIGHT"], "codeSyntax": "var(--icon-size-lg)", "values": {"IonBase": "{spacing.24}"}},
-    "icon-size/xl": {"type": "FLOAT", "scopes": ["WIDTH_HEIGHT"], "codeSyntax": "var(--icon-size-xl)", "values": {"IonBase": "{spacing.32}"}}
+    "icon-size/xl": {"type": "FLOAT", "scopes": ["WIDTH_HEIGHT"], "codeSyntax": "var(--icon-size-xl)", "values": {"IonBase": "{spacing.32}"}},
+    "border-width/thicker": {"type": "FLOAT", "scopes": ["STROKE_FLOAT"], "codeSyntax": "var(--border-width-thicker)", "values": {"IonBase": "{scale.4}"}}
   }
 }

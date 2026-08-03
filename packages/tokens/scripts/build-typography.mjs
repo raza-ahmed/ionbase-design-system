@@ -91,6 +91,25 @@ for (const [name, className] of Object.entries(CLASS_NAMES)) {
   );
 }
 
+/*
+ * A text style may bind a Primitive or the Semantics alias of one, and Figma
+ * gives no sign of which. Only the Semantics alias follows a brand mode, so a
+ * style bound to `font/family/host-grotesk` renders identically today and stops
+ * re-branding the moment a second brand exists. That is invisible until it is
+ * expensive, so it is reported — as a warning, not an error, because the fix is
+ * a Figma edit and the CSS emitted meanwhile is still correct.
+ */
+const PRIMITIVE_TYPE =
+  /^font\/(family\/(?!sans$|serif$|serif-display$|mono$)|weight\/\d)/;
+const primitiveBound = [];
+for (const [name, style] of Object.entries(textStyles)) {
+  for (const field of ['fontFamily', 'fontWeight']) {
+    if (style[field] && PRIMITIVE_TYPE.test(style[field])) {
+      primitiveBound.push(`${name}.${field} -> ${style[field]}`);
+    }
+  }
+}
+
 // Any exported style with no class is a gap, not a silent omission.
 const unmapped = Object.keys(textStyles).filter(
   (n) => !CLASS_NAMES[n] && !n.endsWith(' Emphasis'),
@@ -131,3 +150,15 @@ writeFileSync(join(OUT, 'typography.css'), css);
 console.log(
   `Typography: ${blocks.length} classes + 1 emphasis modifier -> dist/css/typography.css`,
 );
+
+if (primitiveBound.length) {
+  console.warn(
+    `\n  ${primitiveBound.length} text-style field(s) bind a Primitive rather than its\n` +
+      '  Semantics alias, so they will not follow a brand mode:',
+  );
+  for (const p of primitiveBound) console.warn(`    ${p}`);
+  console.warn(
+    '  Rebind in Figma to font/family/sans and font/weight/{regular,medium,semibold,bold},\n' +
+      '  then re-run figma/export-text-styles.js.',
+  );
+}
