@@ -1,5 +1,57 @@
 # Changelog
 
+## 0.6.1 — 2026-08-05
+
+### Fixed — `.ion-icon` had no stylesheet
+
+`Icon` has always emitted an `.ion-icon` class and nothing ever styled it. New
+[`icon.css`](src/styles/icon.css) supplies the rule that was missing:
+
+```css
+.ion-icon {
+  display: inline-block;
+  vertical-align: middle;
+}
+```
+
+An `<svg>` is inline-level and replaced, so when it shares a line box with
+anything else it sits on the text baseline and the font's descender space opens
+underneath it — the icon reads high and its box grows taller than the icon.
+Every slot in this system hid that, because `.ion-button__icon-start`,
+`.ion-menu__icon`, `.ion-input__icon-start` and the rest are flex or grid
+containers, and a flex/grid item is blockified. Measured: a direct icon, an icon
+in an `inline-grid` swap wrapper, and an icon in a `display: block` wrapper all
+centre to within 0.00px of the label.
+
+So alignment was correct as a side effect of the container, not because the icon
+defended itself. It failed once the icon stopped being alone on its line: with
+one text node beside it inside a wrapper, the icon measured 3px above the label
+centre and the button grew from 40px to 46px. Consumers nest icons inside their
+own wrappers routinely — swap and crossfade animations do it by construction —
+so "the parent is always a flex container" was not an invariant to rely on.
+
+`inline-block` rather than `block`, which is what most resets reach for:
+`display: block` forces an icon used mid-sentence onto its own line (measured, a
+600px paragraph went 2 lines to 3) and made the failing case worse — 12px off, a
+48px button. Both declarations are inert wherever it already worked, since a
+flex or grid item is blockified regardless of the `display` it was given and
+`vertical-align` does not apply to one.
+
+**Scope.** The rule matches `.ion-icon`, which only exists on SVGs rendered
+through `<Icon as={...} />`. Icons passed as raw components — `startIcon={<Copy
+/>}` — carry no class and are unaffected; sizing still reaches them because the
+component rules match on descendant `svg`.
+
+No visual change is expected in any component. All 12 icon slots — Button,
+Menu icon and check, Input start and end, NavItem, Tabs, Badge, Select,
+Table, Checkbox, Header toggle, Avatar — measured identical host height and
+icon offset before and after.
+
+**Not done:** an optical nudge. Icons centre on the line box while text is read
+on its cap-height band, so the two centres differ. Measured from rendered pixels
+against a descender-free label at Medium, the gap is 0.31px — below a device
+pixel at 1x, and smaller than the variation between individual Lucide glyphs.
+
 ## 0.6.0 — 2026-08-03
 
 A Figma re-export and a rebuilt `Header`. Colour, shadow and typography values
