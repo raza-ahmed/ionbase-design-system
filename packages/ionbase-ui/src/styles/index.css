@@ -20,6 +20,13 @@
  * it bypasses next/font and friends, and it hands visitor IPs to Google.
  */
 @import url('./tokens/index.css');
+
+/*
+ * Before the components, deliberately. `.ion-icon` is a primitive that every
+ * slot below sizes with its own `... svg` rule, and those rules have to be free
+ * to win on ordering as well as specificity.
+ */
+@import url('./icon.css');
 @import url('./button.css');
 @import url('./tabs.css');
 @import url('./badge.css');

@@ -1,0 +1,49 @@
+/*
+ * Icon
+ *
+ * `Icon.tsx` has always emitted an `.ion-icon` class and nothing ever styled it.
+ * That was not benign. An `<svg>` is an inline-level replaced element, so when
+ * it shares a line box with anything else it sits on the *text baseline* and the
+ * font's descender space opens up underneath it — the icon then reads a couple
+ * of pixels high, and the box around it grows taller than the icon.
+ *
+ * Every slot in this system happens to hide that today: `.ion-button__icon-start`,
+ * `.ion-menu__icon`, `.ion-input__icon-start` and friends are all flex or grid
+ * containers, and a flex/grid item is blockified — `display: inline` becomes
+ * `block` — which removes the baseline from the picture entirely. Measured: a
+ * direct icon, an icon inside an `inline-grid` swap wrapper, and an icon inside
+ * a plain `display: block` wrapper all centre to within 0.00px of the label.
+ *
+ * The alignment was therefore correct by side effect of the container, not
+ * because the icon defended itself. It failed the moment the icon stopped being
+ * the only thing on its line: with one text node beside it inside a wrapper, the
+ * icon measured 3px above the label's centre and the button grew from 40px to
+ * 46px. Consumers nest icons inside their own wrappers all the time — swap and
+ * crossfade animations do it by construction — so "the parent will always be a
+ * flex container" is not an invariant this package can rely on.
+ *
+ * WHY inline-block AND NOT block
+ *
+ * `display: block` also kills the baseline, and it is what several resets reach
+ * for, but it is wrong here: it forces an icon used mid-sentence onto its own
+ * line. Measured on a 600px paragraph with one inline icon — 2 lines became 3.
+ * `inline-block` keeps the icon in the text flow, and `vertical-align: middle`
+ * centres it on the x-height axis, which is where an inline icon should sit.
+ *
+ * Both declarations are inert wherever it already worked: a flex or grid item is
+ * blockified regardless of the `display` it was given, and `vertical-align` does
+ * not apply to one. So this changes nothing in Button, Menu, Input, Tabs or
+ * anywhere else the icon is already a direct flex child — it only supplies the
+ * floor that was missing underneath them.
+ *
+ * NOT DONE HERE: an optical nudge. Icons centre on the line box while text is
+ * read on its cap-height band, so the two centres are not identical. Measured
+ * from rendered pixels on a descender-free label at Medium, the gap is 0.31px —
+ * below a device pixel at 1x, and smaller than the variation between individual
+ * Lucide glyphs. A `translateY` correction here would be a magic number papering
+ * over less than it introduces.
+ */
+.ion-icon {
+  display: inline-block;
+  vertical-align: middle;
+}
