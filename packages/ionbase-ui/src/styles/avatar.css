@@ -47,7 +47,15 @@
   --ion-avatar-radius: var(--radius-xs);
   --ion-avatar-font-size: var(--type-caption);
   --ion-avatar-line-height: var(--type-caption-line-height);
-  --ion-avatar-icon: var(--icon-size-xs);
+
+  /*
+   * `2xs`, not `xs` — this is 12 and must stay 12.
+   *
+   * The ladder gained a 14px rung on 2026-08-06 and the old 12 was renamed
+   * `xs` -> `2xs` to keep it indexed by value. Left as `xs` this would have
+   * silently grown to 14 inside a 24px avatar.
+   */
+  --ion-avatar-icon: var(--icon-size-2xs);
 }
 
 .ion-avatar--sm {

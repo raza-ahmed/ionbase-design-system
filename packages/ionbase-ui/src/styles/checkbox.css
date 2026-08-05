@@ -10,14 +10,22 @@
  *
  * THE MARK IS DERIVED
  *
- * The mark is 12 / 14 / 16 against boxes of 16 / 20 / 24. 14 is on no ladder —
- * both spacing and icon-size skip it — but the mark is not arbitrary:
+ * The mark is 12 / 14 / 16 against boxes of 16 / 20 / 24, and it is derived,
+ * not picked:
  *
  *     mark = box / 2 + 4      16->12   20->14   24->16
  *
  * So the only number stated per size is the box, and nothing here reaches for
  * the raw `scale/*` ramp. Same move as the toggle track and the avatar overlap:
  * an off-ladder value is usually a question about what it is derived from.
+ *
+ * This comment used to add "14 is on no ladder — both spacing and icon-size
+ * skip it". That stopped being true on 2026-08-06, when `spacing/14` and
+ * `icon-size/xs` (14) were added for the small Button. **Do not rewrite the
+ * middle size to use them.** The coincidence is arithmetic, not meaning: these
+ * three numbers are one formula over the box, and binding the middle one to a
+ * token would split a derivation across two mechanisms and leave the other two
+ * unexplained. The mark is not an icon.
  *
  * FOCUS RING
  *

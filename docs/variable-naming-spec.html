@@ -531,7 +531,8 @@ footer{border-top:1px solid var(--g200);padding-top:22px;margin-top:64px;font-si
 
   <div class="note">
     <span class="note-t">Two icon scales</span>
-    <p><code>icon-size/xs...xl</code> (12/16/20/24/32) sizes every icon, inside a control or not. There were briefly two scales - <code>control/&lt;step&gt;/icon-size</code> held 16/20/24, aliasing the same primitives under a second set of names. It was deleted with the rest of the control group.</p>
+    <p><code>icon-size/2xs...xl</code> (12/14/16/20/24/32) sizes every icon, inside a control or not. There were briefly two scales - <code>control/&lt;step&gt;/icon-size</code> held 16/20/24, aliasing the same primitives under a second set of names. It was deleted with the rest of the control group.</p>
+    <p>The <code>14</code> rung was inserted on 2026-08-06 for the small Button. Because a ladder is indexed by value it could not be appended, so the old <code>xs</code> (12) was renamed <code>2xs</code> and <code>xs</code> became 14 - a breaking change that raises no type error. <code>spacing/14</code> was added at the same time, since the ladder aliases <code>spacing/*</code>.</p>
   </div>
 </section>
 

@@ -8,6 +8,66 @@ Newest first.
 
 ---
 
+## 2026-08-06 — a ladder indexed by value cannot be appended to
+
+**383 variables; names `4048145791`. Primitives 141 -> 142, Semantics 106 -> 107.**
+
+The small Button's icon was 16px against a 14px label, and it out-weighted the
+text it was meant to sit beside. The fix is a 14px icon. The cost is that 14 was
+on no ladder — and getting it onto one is not additive.
+
+### Why this could not just be appended
+
+`icon-size` is a ladder, and the rule for ladders — stated under "Semantics
+holds ladders, not recipes" in the 2026-08-03 entry below — is that they are
+**indexed by value**. 14 belongs between 12 and 16. Appending it
+under some seventh name — `xs-plus`, `sm-minus` — keeps every existing binding
+intact and destroys the one property that makes the ladder readable: that you
+can order the rungs without looking up their values.
+
+So the ladder shifted at the bottom instead:
+
+    2xs   12   <- was `xs`
+    xs    14   <- new
+    sm    16   unchanged
+    md    20   unchanged
+    lg    24   unchanged
+    xl    32   unchanged
+
+`2xs` is not a new convention. `radius/2xs` already existed, so the shape of the
+name was already in Semantics.
+
+### This is a silent breaking change, and that is the expensive part
+
+`<Icon size="xs" />` renders 14px where it rendered 12. **It raises no type
+error** — `xs` is still a valid rung, it just means something else — which puts
+it in the same class as the `md` 24 -> 20 rename of 2026-07: the kind that ships
+because nothing fails loudly. Callers who meant 12 now ask for `2xs`.
+
+Two consumers inside the system had to move with it: `avatar.css` (the mini
+avatar's 12px icon) and the Figma `Icon` component, whose variants are named by
+pixel value and gained a `Size=14`. Both were found by grep, not by a gate —
+there is no check that would have caught either.
+
+### Why `spacing/14` and not `scale/14`
+
+`scale/14` already existed, so aliasing it would have added no primitive at all.
+It is still wrong: `scale/*` is the dimensionless ramp radius and border-width
+draw from, and `spacing/*` is the family components bind directly. The whole
+`icon-size` ladder aliases `spacing/*`. Reaching into `scale/*` for one rung
+would have made the ladder's own provenance inconsistent to save one variable.
+
+### What did NOT change
+
+Medium (20) and Large (24) button icons. Their labels are 16 and 18, so those
+icons already run ahead of their text and read correctly. Only Small was wrong.
+
+`Icon Button` also still uses `icon-size/sm` at Small. An icon-only control has
+no label to out-weigh, so the 16px icon in its 32px box is a different question
+— left deliberately, not overlooked.
+
+---
+
 ## 2026-08-03 — a binding that is not a variable is a binding no gate can see
 
 The tier chain is enforced by `tokens:tier`, which walks the variable graph.
@@ -255,7 +315,7 @@ was built.
 
 **Semantics holds ladders, not recipes.**
 
-A _ladder_ is indexed by value — `radius/xs…6xl`, `icon-size/xs…xl`,
+A _ladder_ is indexed by value — `radius/none…full`, `icon-size/2xs…xl`,
 `border-width/default|thick|thicker`, the colour ramps. A component picks a
 rung. Ladders are flat in component count, because a new component picks from
 what exists.
@@ -335,6 +395,10 @@ rebound), leaving the control scale purely dimensional.
 (16/20/24). `icon-size/xs…xl` is standalone (12/16/20/24/32) for icons in text,
 tables and empty states. Conflating them would force every standalone icon to
 pretend it lives in a control.
+
+**Superseded.** The control scale was deleted on 2026-08-03 and the standalone
+ladder is now `2xs…xl` (12/14/16/20/24/32) — see the 2026-08-06 entry. Kept
+because the reasoning for why there were briefly two is still worth having.
 
 ### text/on-color flips; that was a correction, not a preference
 

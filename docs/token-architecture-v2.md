@@ -50,16 +50,16 @@ corrected: `radius/full` and `font/weight/regular` were roles wearing a
 primitive's clothes, and they collided with the Semantics tokens of the same
 name — twelve custom properties where two tokens claimed one `--var`.
 
-| Group                | Count | Tokens                                                        |
-| -------------------- | ----- | ------------------------------------------------------------- |
-| `color/<hue>/<step>` | 80    | blue, gray, green, orange, pink, purple, red, yellow × 50–900 |
-| `color/base/*`       | 2     | white, black                                                  |
-| `color/alpha/*`      | 7     | black-05/10/40/60, white-05/10/20                             |
-| `spacing/*`          | 16    | 0, 2, 4, 6, 8, 12, 16, 20, 24, 32, 40, 48, 64, 80, 96, 128    |
-| `scale/*`            | 14    | 0, 1, 2, 4, 6, 8, 10, 12, 14, 16, 20, 24, 32, full            |
-| `font/family/*`      | 4     | host-grotesk, merriweather, space-mono, stix-two-text         |
-| `font/size/*`        | 14    | 12–72                                                         |
-| `font/weight/*`      | 4     | 400, 500, 600, 700                                            |
+| Group                | Count | Tokens                                                         |
+| -------------------- | ----- | -------------------------------------------------------------- |
+| `color/<hue>/<step>` | 80    | blue, gray, green, orange, pink, purple, red, yellow × 50–900  |
+| `color/base/*`       | 2     | white, black                                                   |
+| `color/alpha/*`      | 7     | black-05/10/40/60, white-05/10/20                              |
+| `spacing/*`          | 17    | 0, 2, 4, 6, 8, 12, 14, 16, 20, 24, 32, 40, 48, 64, 80, 96, 128 |
+| `scale/*`            | 14    | 0, 1, 2, 4, 6, 8, 10, 12, 14, 16, 20, 24, 32, full             |
+| `font/family/*`      | 4     | host-grotesk, merriweather, space-mono, stix-two-text          |
+| `font/size/*`        | 14    | 12–72                                                          |
+| `font/weight/*`      | 4     | 400, 500, 600, 700                                             |
 
 `scale/*` is the dimensionless ramp that radius and border-width draw from. It
 carries the numbers; Semantics gives them names. `spacing/*` stays separate
@@ -82,7 +82,7 @@ Where a brand becomes itself. Every token aliases a primitive.
 | `border-width/*`    | 3     | `default` 1 · `thick` 2 · `thicker` 4                                  |
 | `font/family/*`     | 4     | sans, serif, mono, serif-display → the raw font identities             |
 | `font/weight/*`     | 4     | regular, medium, semibold, bold → 400/500/600/700                      |
-| `icon-size/*`       | 5     | `xs 12 · sm 16 · md 20 · lg 24 · xl 32`                                |
+| `icon-size/*`       | 6     | `2xs 12 · xs 14 · sm 16 · md 20 · lg 24 · xl 32`                       |
 
 ## Colour ramps
 
@@ -110,11 +110,18 @@ name.
 
 ## One icon scale
 
-`icon-size/xs…xl` — 12/16/20/24/32 — for every icon, inside a control or not.
+`icon-size/2xs…xl` — 12/14/16/20/24/32 — for every icon, inside a control or not.
 
 There were briefly two. `control/<step>/icon-size` held 16/20/24, aliasing the
 same spacing primitives as `icon-size/sm|md|lg` — the same three values under a
 second set of names. It went with the rest of the control group.
+
+**The 14 rung was inserted on 2026-08-06**, for the small Button — whose 16px
+icon out-weighted its 14px label. Because this ladder is indexed by value, it
+could not be appended: 14 belongs between 12 and 16 or the names stop meaning
+anything. So the old 12 was renamed `xs` → `2xs` and `xs` became 14. That is a
+silent breaking change for `<Icon size="xs" />`, and it is why `spacing/14`
+exists — the ladder aliases `spacing/*`, and 14 was not on it.
 
 ## Why there is no control group
 
@@ -135,7 +142,7 @@ re-scale controls per brand. Changing `control/md/padding-x` moved Button and
 Tabs and left everything else — a break, not a re-scale.
 
 The distinction that matters: **Semantics holds ladders, not recipes.** A ladder
-is indexed by value — `radius/xs…6xl`, `icon-size/xs…xl`, `border-width/*`, the
+is indexed by value — `radius/none…full`, `icon-size/2xs…xl`, `border-width/*`, the
 colour ramps — and a component picks a rung. A recipe is indexed by usage
 (_"a medium control shall have this padding"_) and needs a new entry for every
 usage pattern, which is precisely what stops it scaling to 1,000 components.

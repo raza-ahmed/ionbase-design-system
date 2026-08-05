@@ -75,19 +75,27 @@ const Cell = ({
 );
 
 /**
- * The five rungs are the `icon-size` ladder verbatim, so `md` here and
+ * The six rungs are the `icon-size` ladder verbatim, so `md` here and
  * `icon-size/md` in Figma are the same 20px.
  *
- * This is a breaking change: `md` used to be 24, which meant the word named
- * `icon-size/lg` in code and `icon-size/md` in Figma. Callers who want the old
- * `md` should ask for `lg`.
+ * Breaking, twice, and both are silent:
+ *
+ * - `xs` is now **14**, not 12. A 14px rung was inserted for the small Button,
+ *   and because the ladder is indexed by value the old 12 became `2xs`.
+ *   Callers who meant 12 should ask for `2xs`.
+ * - `md` used to be 24, which meant the word named `icon-size/lg` in code and
+ *   `icon-size/md` in Figma. Callers who want the old `md` should ask for `lg`.
+ *
+ * Neither raises a type error, because in both cases the old name survived
+ * with a new value.
  */
 export const Sizes: Story = {
   render: () => (
     <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
       {(
         [
-          ['xs', 12],
+          ['2xs', 12],
+          ['xs', 14],
           ['sm', 16],
           ['md', 20],
           ['lg', 24],

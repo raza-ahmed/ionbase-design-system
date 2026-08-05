@@ -154,9 +154,9 @@ Reasoning: [docs/naming-decisions.md](docs/naming-decisions.md).
 ### Four collections, one chain
 
 ```
-Primitives   141  Value                value-keyed scales only
+Primitives   142  Value                value-keyed scales only
    ↓
-Semantics    106  IonBase              brand identity — ramps, radius, border-width, icon-size
+Semantics    107  IonBase              brand identity — ramps, radius, border-width, icon-size
    ↓
 Interface    104  Light / Dark         text · icon · surface · border · ring
    ↓
@@ -165,7 +165,7 @@ components + CSS
 Breakpoint    30  Desktop/Tablet/Mobile   (parallel — type and grid only)
 ```
 
-Sync state: names `838923391`, 381 variables (re-exported 3 Aug 2026).
+Sync state: names `4048145791`, 383 variables (re-exported 6 Aug 2026).
 
 **Components bind Interface and Breakpoint for colour and type.** Interface may
 only alias Semantics; Semantics may only alias Primitives. `spacing/*` is the
@@ -189,8 +189,10 @@ on `spacing/*` or a ladder) and `figma/audit-geometry.js` (raw numbers in Figma,
 which no export can see — that is how a literal 10px padding and a whole
 component's unbound stroke weights both shipped).
 
-**381 variables, and that number does not grow with the component count.** A new
-brand adds a _mode_, not tokens. So does a new theme.
+**383 variables, and that number does not grow with the component count.** A new
+brand adds a _mode_, not tokens. So does a new theme. It grew by two on
+2026-08-06 — `spacing/14` and an `icon-size` rung — and that is the shape of
+growth to expect: a new _value_ the ladders did not carry, not a new component.
 
 **Primitives are value-keyed.** `scale/8`, not `radius/md`; `font/weight/400`,
 not `font/weight/regular`. A primitive carrying a role name collides with the

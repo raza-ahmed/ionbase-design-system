@@ -124,7 +124,16 @@
   --ion-button-size: var(--spacing-32);
   --ion-button-padding-x: var(--spacing-12);
   --ion-button-gap: var(--spacing-6);
-  --ion-button-icon-size: var(--icon-size-sm);
+
+  /*
+   * 14, not 16 — the one rung that is not simply "one step down".
+   *
+   * Small's label is 14px, and a 16px icon beside it out-weighted the text it
+   * was meant to sit with. Medium and Large are unchanged: their icons run
+   * ahead of their labels (20 vs 16, 24 vs 18) and read correctly that way,
+   * because at those sizes the icon has room to carry detail. Small does not.
+   */
+  --ion-button-icon-size: var(--icon-size-xs);
   --ion-button-font-size: var(--type-body-sm);
   --ion-button-line-height: var(--type-body-sm-line-height);
   --ion-button-raised: var(--ion-shadow-raised-lifted-xs);

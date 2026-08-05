@@ -94,6 +94,7 @@
     "spacing/6": {"type": "FLOAT", "scopes": ["WIDTH_HEIGHT", "GAP"], "codeSyntax": "var(--spacing-6)", "values": {"Value": 6}},
     "spacing/8": {"type": "FLOAT", "scopes": ["WIDTH_HEIGHT", "GAP"], "codeSyntax": "var(--spacing-8)", "values": {"Value": 8}},
     "spacing/12": {"type": "FLOAT", "scopes": ["WIDTH_HEIGHT", "GAP"], "codeSyntax": "var(--spacing-12)", "values": {"Value": 12}},
+    "spacing/14": {"type": "FLOAT", "scopes": ["WIDTH_HEIGHT", "GAP"], "codeSyntax": "var(--spacing-14)", "values": {"Value": 14}},
     "spacing/16": {"type": "FLOAT", "scopes": ["WIDTH_HEIGHT", "GAP"], "codeSyntax": "var(--spacing-16)", "values": {"Value": 16}},
     "spacing/20": {"type": "FLOAT", "scopes": ["WIDTH_HEIGHT", "GAP"], "codeSyntax": "var(--spacing-20)", "values": {"Value": 20}},
     "spacing/24": {"type": "FLOAT", "scopes": ["WIDTH_HEIGHT", "GAP"], "codeSyntax": "var(--spacing-24)", "values": {"Value": 24}},

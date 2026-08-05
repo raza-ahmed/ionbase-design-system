@@ -1,5 +1,69 @@
 # Changelog
 
+## 0.7.0 — 2026-08-06
+
+A 14px icon rung, for the small Button. Minor rather than patch: it is breaking,
+and pre-1.0 this repo carries breaking changes in the minor as 0.4.0 and 0.6.0
+did.
+
+### Breaking — `<Icon size="xs" />` is now 14px, was 12px
+
+**This raises no type error.** `xs` is still a valid rung; it means something
+else. Nothing in your build will fail — icons that asked for `xs` simply render
+2px larger. If you meant 12, ask for **`2xs`**.
+
+The `icon-size` ladder gained a rung and shifted at the bottom:
+
+| Rung  | Before | After  |
+| ----- | ------ | ------ |
+| `2xs` | —      | **12** |
+| `xs`  | 12     | **14** |
+| `sm`  | 16     | 16     |
+| `md`  | 20     | 20     |
+| `lg`  | 24     | 24     |
+| `xl`  | 32     | 32     |
+
+It could not simply be appended. A ladder in this system is **indexed by value**
+— that is what lets you order the rungs without looking up what they mean — and
+14 belongs between 12 and 16. A seventh out-of-order name (`xs-plus`) would have
+preserved every binding and destroyed the property that makes the ladder
+readable. `2xs` is not a new convention: `radius/2xs` already existed.
+
+### Changed — the small Button's icon is 14px, was 16px
+
+The reason for all of the above. Small's label is 14px, and a 16px icon
+out-weighted the text it was meant to sit beside. **Medium (20) and Large (24)
+are unchanged** — their icons run ahead of their labels (20 vs 16, 24 vs 18) and
+read correctly, because at those sizes an icon has room to carry detail.
+
+Button heights are untouched: 32 / 40 / 48.
+
+`Icon Button` Small moves to 14px too, so the two Button families agree at every
+size. Its box is unchanged at 32 / 40 / 48.
+
+### Tokens
+
+Two new variables, 381 → 383. `spacing/14` (Primitives) and the reshuffled
+`icon-size` rungs (Semantics). `spacing/14` rather than the existing `scale/14`
+because `scale/*` is the dimensionless ramp radius and border-width draw from,
+while the whole `icon-size` ladder aliases `spacing/*`.
+
+Figma sync state: names `4048145791`, 383 variables. The Figma `Icon` component
+gained a `Size=14` variant, and all 25 `Size=Small` Button variants were rebound.
+
+### Fixed — the mini Avatar stays at 12px
+
+`avatar.css` was the only other consumer of `--icon-size-xs` and moved to
+`--icon-size-2xs`. Left alone it would have silently grown to 14 inside a 24px
+avatar. Found by grep; no gate would have caught it.
+
+### Added — the first test that measures icon geometry
+
+`Button` gained a story asserting the rendered icon box is 14 / 20 / 24 across
+sm / md / lg, and that each still centres against its label to within 0.5px.
+Before this the suite asserted hover, focus, press and prop leakage, and not one
+pixel of icon geometry — so this change had no coverage in either direction.
+
 ## 0.6.1 — 2026-08-05
 
 ### Fixed — `.ion-icon` had no stylesheet

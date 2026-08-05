@@ -3,7 +3,7 @@
     "What the Figma components actually BIND, as opposed to what variables exist.",
     "Produced by figma/export-bindings.js. Checked by scripts/verify-bindings.mjs.",
     "",
-    "File: gaLbGd0QNb1fUl6BjSpfBA   Exported: 2026-08-03   Variables: 381",
+    "File: gaLbGd0QNb1fUl6BjSpfBA   Exported: 2026-08-06   Variables: 383",
     "",
     "The exporter MUST use all three traversal rules or this file is a lie:",
     "  1. setCurrentPageAsync before reading - instance overrides are unreliable otherwise",
@@ -15,7 +15,7 @@
     "would triple the file for one repeated fact."
   ],
   "file": "gaLbGd0QNb1fUl6BjSpfBA",
-  "exported": "2026-08-03",
+  "exported": "2026-08-06",
   "components": {
     "Avatar/Avatar": [
       {"collection": "Breakpoint", "token": "type/body"},
@@ -99,8 +99,6 @@
       {"collection": "Interface", "token": "text/disabled"},
       {"collection": "Interface", "token": "text/on-color"},
       {"collection": "Interface", "token": "text/secondary"},
-      {"collection": "Primitives", "token": "font/family/host-grotesk"},
-      {"collection": "Primitives", "token": "font/weight/500"},
       {"collection": "Primitives", "token": "spacing/12"},
       {"collection": "Primitives", "token": "spacing/16"},
       {"collection": "Primitives", "token": "spacing/20"},
@@ -110,9 +108,11 @@
       {"collection": "Primitives", "token": "spacing/6"},
       {"collection": "Primitives", "token": "spacing/8"},
       {"collection": "Semantics", "token": "border-width/default"},
+      {"collection": "Semantics", "token": "font/family/sans"},
+      {"collection": "Semantics", "token": "font/weight/medium"},
       {"collection": "Semantics", "token": "icon-size/lg"},
       {"collection": "Semantics", "token": "icon-size/md"},
-      {"collection": "Semantics", "token": "icon-size/sm"},
+      {"collection": "Semantics", "token": "icon-size/xs"},
       {"collection": "Semantics", "token": "radius/md"}
     ],
     "Buttons/Icon Button": [
@@ -138,7 +138,7 @@
       {"collection": "Semantics", "token": "border-width/default"},
       {"collection": "Semantics", "token": "icon-size/lg"},
       {"collection": "Semantics", "token": "icon-size/md"},
-      {"collection": "Semantics", "token": "icon-size/sm"},
+      {"collection": "Semantics", "token": "icon-size/xs"},
       {"collection": "Semantics", "token": "radius/full"},
       {"collection": "Semantics", "token": "radius/md"}
     ],
@@ -624,9 +624,9 @@
       {"collection": "Primitives", "token": "spacing/4"},
       {"collection": "Primitives", "token": "spacing/6"},
       {"collection": "Semantics", "token": "border-width/default"},
+      {"collection": "Semantics", "token": "icon-size/2xs"},
       {"collection": "Semantics", "token": "icon-size/md"},
       {"collection": "Semantics", "token": "icon-size/sm"},
-      {"collection": "Semantics", "token": "icon-size/xs"},
       {"collection": "Semantics", "token": "radius/full"},
       {"collection": "Semantics", "token": "radius/md"},
       {"collection": "Semantics", "token": "radius/sm"},
@@ -802,6 +802,7 @@
     ],
     "Icon/Icon": [
       {"collection": "Interface", "token": "icon/default"},
+      {"collection": "Semantics", "token": "icon-size/2xs"},
       {"collection": "Semantics", "token": "icon-size/lg"},
       {"collection": "Semantics", "token": "icon-size/md"},
       {"collection": "Semantics", "token": "icon-size/sm"},

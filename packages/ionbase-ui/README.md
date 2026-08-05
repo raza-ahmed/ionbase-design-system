@@ -170,9 +170,15 @@ import { Plus } from 'lucide-react';
 
 Omit `label` for decorative icons and they are hidden from assistive tech
 instead of announced twice. `size` picks a rung on the `icon-size` ladder —
-`xs` 12, `sm` 16, `md` 20, `lg` 24, `xl` 32 — or takes any CSS length. Omit it
-and the icon inherits the surrounding font size, which is what lets an icon sit
-correctly inside a Button.
+`2xs` 12, `xs` 14, `sm` 16, `md` 20, `lg` 24, `xl` 32 — or takes any CSS length.
+Omit it and the icon inherits the surrounding font size, which is what lets an
+icon sit correctly inside a Button.
+
+> **Changed in 0.7.0.** `xs` is now 14, not 12; the old 12 is `2xs`. A 14px rung
+> was inserted for the small Button and the ladder is indexed by value, so the
+> bottom shifted rather than gaining a seventh out-of-order name. `size="xs"`
+> still type-checks — it just renders 2px larger — so this will not fail loudly.
+> If you meant 12, ask for `2xs`.
 
 ## Entry points
 

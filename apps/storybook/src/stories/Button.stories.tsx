@@ -305,3 +305,55 @@ export const DisabledIsNotHoverable: Story = {
     await expect(button).not.toHaveAttribute('data-hovered');
   },
 };
+
+/**
+ * The icon ladder per size, asserted from the rendered box rather than the
+ * stylesheet.
+ *
+ * Small is 14, not 16 — its label is 14px, and a 16px icon out-weighted the
+ * text it sat beside. Medium and Large keep icons that run ahead of their
+ * labels (20 vs 16, 24 vs 18), which reads correctly at those sizes.
+ *
+ * This is measured because nothing else measures it. Before this story the
+ * suite asserted hover, focus, press and prop leakage, and not one pixel of
+ * icon geometry — so the 16 -> 14 change had no coverage in either direction.
+ * The centring assertion is here for the same reason: `.ion-icon` gained its
+ * first stylesheet in 0.6.1, and a regression there would be invisible to
+ * every other test.
+ */
+export const IconSizePerButtonSize: Story = {
+  render: () => (
+    <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
+      <Button size="sm" startIcon={<PlusIcon />}>
+        Small
+      </Button>
+      <Button size="md" startIcon={<PlusIcon />}>
+        Medium
+      </Button>
+      <Button size="lg" startIcon={<PlusIcon />}>
+        Large
+      </Button>
+    </div>
+  ),
+  play: async ({ canvas }) => {
+    const expected = { Small: 14, Medium: 20, Large: 24 };
+
+    for (const [label, px] of Object.entries(expected)) {
+      const button = canvas.getByRole('button', { name: label });
+      const svg = button.querySelector('svg');
+      await expect(svg).not.toBeNull();
+
+      const box = svg!.getBoundingClientRect();
+      await expect(Math.round(box.width)).toBe(px);
+      await expect(Math.round(box.height)).toBe(px);
+
+      // The icon must also still centre against its label. Geometry, not
+      // stylesheet: this is what actually reaches the eye.
+      const labelEl = button.querySelector('.ion-button__label')!;
+      const labelBox = labelEl.getBoundingClientRect();
+      const iconMid = box.top + box.height / 2;
+      const labelMid = labelBox.top + labelBox.height / 2;
+      await expect(Math.abs(iconMid - labelMid)).toBeLessThan(0.5);
+    }
+  },
+};
