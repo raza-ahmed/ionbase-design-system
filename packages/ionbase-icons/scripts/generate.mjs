@@ -61,9 +61,18 @@ const pascal = (id) =>
     .map((p) => p.charAt(0).toUpperCase() + p.slice(1))
     .join('');
 
-/** Attributes that describe the editor, not the drawing. */
+/**
+ * Attributes that describe the editor, not the drawing.
+ *
+ * `id` is deliberately NOT here. It looks like editor noise and mostly is, but
+ * an id that something references is load-bearing: a Figma export wraps clipped
+ * icons in `<g clip-path="url(#clip0_30_1280)">` with the `<clipPath id=...>` in
+ * `<defs>`. Strip the id and the reference dangles, the clip resolves to an
+ * empty region, and the icon renders BLANK — with no error anywhere. See
+ * `namespaceIds` for how referenced ids are kept and unreferenced ones dropped.
+ */
 const DROP_ATTR =
-  /\s(?:xmlns:[\w-]+|xml:space|id|class|data-[\w-]+|sketch:[\w-]+|figma:[\w-]+|inkscape:[\w-]+|sodipodi:[\w-]+|serif:[\w-]+)\s*=\s*["'][^"']*["']/gi;
+  /\s(?:xmlns:[\w-]+|xml:space|class|data-[\w-]+|sketch:[\w-]+|figma:[\w-]+|inkscape:[\w-]+|sodipodi:[\w-]+|serif:[\w-]+)\s*=\s*["'][^"']*["']/gi;
 
 /** kebab-case SVG attributes React wants camelCased. */
 const REACT_ATTR = {
@@ -127,6 +136,49 @@ function paintToCurrentColor(markup) {
 const ROOT_NON_PAINT =
   /^(?:xmlns|xmlns:[\w-]+|xml:space|version|baseProfile|width|height|viewBox|id|class|data-[\w-]+|sketch:[\w-]+|figma:[\w-]+|inkscape:[\w-]+|sodipodi:[\w-]+|serif:[\w-]+|aria-[\w-]+|role|focusable|style)$/i;
 
+/**
+ * Keep the ids something points at, drop the rest, and prefix the survivors
+ * with the icon's own name.
+ *
+ * Two separate problems, one pass:
+ *
+ *   1. A dangling reference renders nothing. `url(#clip0_30_1280)` with no
+ *      matching `id` clips the group to an empty region — a blank icon, no
+ *      warning, no error.
+ *   2. Ids are DOCUMENT-scoped, not component-scoped. Two icons exported from
+ *      the same Figma file can both carry `clip0_30_1280`; render both on one
+ *      page and every reference resolves to whichever mounted first. That is a
+ *      wrong-shape bug that only appears in combination, which is the worst
+ *      kind to find later.
+ *
+ * Prefixing with the icon id makes collisions impossible by construction rather
+ * than by luck — today's export happens to have unique ids, and nothing would
+ * tell us when a future one does not.
+ */
+function namespaceIds(markup, iconId) {
+  const referenced = new Set();
+  for (const m of markup.matchAll(/url\(#([^)"']+)\)/g)) referenced.add(m[1]);
+  for (const m of markup.matchAll(
+    /(?:href|xlink:href)\s*=\s*["']#([^"']+)["']/g,
+  ))
+    referenced.add(m[1]);
+
+  let out = markup.replace(/\sid\s*=\s*["']([^"']*)["']/g, (all, id) =>
+    referenced.has(id) ? ` id="${iconId}-${id}"` : '',
+  );
+
+  for (const id of referenced) {
+    const esc = id.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    out = out
+      .replace(new RegExp(`url\\(#${esc}\\)`, 'g'), `url(#${iconId}-${id})`)
+      .replace(
+        new RegExp(`((?:href|xlink:href)\\s*=\\s*["'])#${esc}(["'])`, 'g'),
+        `$1#${iconId}-${id}$2`,
+      );
+  }
+  return out;
+}
+
 function rootPaintAttrs(attrSource) {
   const out = [];
   for (const m of attrSource.matchAll(/([\w:-]+)\s*=\s*["']([^"']*)["']/g)) {
@@ -137,7 +189,7 @@ function rootPaintAttrs(attrSource) {
   return out;
 }
 
-function transform(raw, file) {
+function transform(raw, file, iconId) {
   const open = raw.match(/<svg\b([^>]*)>/i);
   if (!open) throw new Error(`${file}: no <svg> element`);
 
@@ -161,6 +213,8 @@ function transform(raw, file) {
     .replace(/<metadata\b[\s\S]*?<\/metadata>/gi, '')
     .replace(DROP_ATTR, '');
 
+  // Before toReactAttrs, so this still sees kebab-case `clip-path`/`xlink:href`.
+  inner = namespaceIds(inner, iconId);
   inner = paintToCurrentColor(inner);
   inner = toReactAttrs(inner);
 
@@ -180,17 +234,42 @@ function transform(raw, file) {
   return { viewBox: viewBox[1], inner, rootAttrs };
 }
 
-const template = (
-  id,
-  name,
-  viewBox,
-  inner,
-  rootAttrs,
-) => `import { forwardRef } from 'react';
+/**
+ * Icon names that are also global bindings.
+ *
+ * `File`, `Infinity` and `Map` are all real icon names and all real globals.
+ * `export const Infinity = ...` shadows the global for the whole module, which
+ * ESLint's `no-shadow-restricted-names` rejects outright, and `Map`/`File`
+ * shadow silently — harmless in a module that never uses them, and a trap the
+ * day a generated file does.
+ *
+ * The fix keeps the public name and moves only the local binding:
+ *
+ *     const MapIcon = forwardRef(...)
+ *     export { MapIcon as Map }
+ *
+ * Consumers still write `import { Map } from 'ionbase-icons'`. Nothing is
+ * shadowed, because the module-scope binding is `MapIcon`.
+ *
+ * Computed from the runtime rather than hardcoded, so a future icon called
+ * `Response` or `Proxy` is caught without anyone remembering to add it.
+ */
+const GLOBAL_NAMES = new Set([
+  ...Object.getOwnPropertyNames(globalThis),
+  'Infinity',
+  'NaN',
+  'undefined',
+]);
+
+const template = (id, name, viewBox, inner, rootAttrs) => {
+  const shadows = GLOBAL_NAMES.has(name);
+  const local = shadows ? `${name}Icon` : name;
+
+  return `import { forwardRef } from 'react';
 import type { SVGProps } from 'react';
 
 /** \`${id}\` — generated from svg/${id}.svg. Do not edit. */
-export const ${name} = forwardRef<SVGSVGElement, SVGProps<SVGSVGElement>>(
+${shadows ? 'const' : 'export const'} ${local} = forwardRef<SVGSVGElement, SVGProps<SVGSVGElement>>(
   (props, ref) => (
     <svg
       ref={ref}
@@ -205,10 +284,11 @@ export const ${name} = forwardRef<SVGSVGElement, SVGProps<SVGSVGElement>>(
   ),
 );
 
-${name}.displayName = '${name}';
-
-export default ${name};
+${local}.displayName = '${name}';
+${shadows ? `\n// \`${name}\` is a global; only the local binding is renamed.\nexport { ${local} as ${name} };\n` : ''}
+export default ${local};
 `;
+};
 
 function main() {
   if (!existsSync(SVG_DIR)) {
@@ -249,6 +329,7 @@ function main() {
       const { viewBox, inner, rootAttrs } = transform(
         readFileSync(join(SVG_DIR, file), 'utf8'),
         file,
+        id,
       );
       const name = pascal(id);
       writeFileSync(

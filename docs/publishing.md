@@ -2,9 +2,9 @@
 
 Log in once, bump the version, build, publish. No CI tokens required.
 
-## One package
+## Two published packages, and why that is not a re-split
 
-The whole design system ships as **`ionbase-ui`** — unscoped, same shape as
+The design system ships as **`ionbase-ui`** — unscoped, same shape as
 `beacon-ui`. Components, stylesheets and design tokens are all inside it.
 
 There used to be four packages (`tokens`, `styles`, `react`, `icons`). They were
@@ -12,6 +12,23 @@ consolidated before the first release: nothing had shipped to npm yet, and
 `sync-version` had always moved all four in lockstep, so the split was buying
 four manifests and a cross-package CSS import with no independent versioning to
 show for it.
+
+**`ionbase-icons` is the second published package, and it does not reopen that
+decision.** The test the old split failed was lockstep: four manifests that
+never moved independently. This one has no version relationship to `ionbase-ui`,
+nothing in `ionbase-ui` imports it, and a consumer who never installs it loses
+nothing — `Icon` still takes any SVG component as a prop. Release them in either
+order, at unrelated versions.
+
+It is separate rather than folded in for the reason in `Icon.tsx`: a barrel of a
+thousand-plus icons defeats tree-shaking in several bundlers, and pinning an
+icon set would force it on every consumer of the components. Hence per-icon
+subpaths (`ionbase-icons/icons/copy`) and `sideEffects: false`.
+
+Its artwork is derived from Lucide (ISC), so `packages/ionbase-icons/LICENSE`
+carries Lucide's notice and Feather's, and is listed in the manifest's `files`
+so it ships in the tarball. That is a condition of the ISC grant, not a
+courtesy.
 
 `packages/tokens` still exists and is **private**. It holds the Figma export,
 the generators and the five token gates; its output is copied into
@@ -78,14 +95,23 @@ import 'ionbase-ui/styles';
 import { Button } from 'ionbase-ui';
 ```
 
-Icons are not bundled — `Icon` takes the icon as a prop, so bring whichever
-library you like:
+Icons are not bundled into `ionbase-ui` — `Icon` takes the icon as a prop, so
+bring whichever library you like:
 
 ```tsx
 import { Icon } from 'ionbase-ui';
 import { Plus } from 'lucide-react';
 
 <Icon as={Plus} size="sm" />;
+```
+
+Or use `ionbase-icons`, which is optional and versioned independently. Import
+the per-icon subpath rather than the barrel:
+
+```tsx
+import { Copy } from 'ionbase-icons/icons/copy';
+
+<Icon as={Copy} size="sm" />;
 ```
 
 ## If publish fails

@@ -34,47 +34,12 @@ export function pascal(id) {
     .join('');
 }
 
-const RESERVED = new Set([
-  'break',
-  'case',
-  'catch',
-  'class',
-  'const',
-  'continue',
-  'debugger',
-  'default',
-  'delete',
-  'do',
-  'else',
-  'enum',
-  'export',
-  'extends',
-  'false',
-  'finally',
-  'for',
-  'function',
-  'if',
-  'import',
-  'in',
-  'instanceof',
-  'new',
-  'null',
-  'return',
-  'super',
-  'switch',
-  'this',
-  'throw',
-  'true',
-  'try',
-  'typeof',
-  'var',
-  'void',
-  'while',
-  'with',
-  'yield',
-  'let',
-  'static',
-  'await',
+/** Names that are also global bindings — read from the runtime, not hardcoded. */
+const GLOBAL_NAMES = new Set([
+  ...Object.getOwnPropertyNames(globalThis),
+  'Infinity',
+  'NaN',
+  'undefined',
 ]);
 
 const attr = (src, name) => {
@@ -103,6 +68,7 @@ function main() {
   const byId = new Map();
   const badNames = [];
   const reservedNames = [];
+  const shadowsGlobal = [];
   const hardcodedColour = [];
   const hasWidthHeight = [];
   const rootFillNone = [];
@@ -116,9 +82,14 @@ function main() {
     const id = basename(file, '.svg');
 
     if (!VALID_NAME.test(id)) badNames.push(file);
+    // A leading digit is invalid. Reserved WORDS are not a risk — they are
+    // lowercase and case-sensitive, so `Delete` and `Import` are ordinary
+    // identifiers — but PascalCase GLOBALS are: File, Infinity and Map are all
+    // icon names and all global bindings. Those are reported, not blocking; the
+    // generator renames the local binding and re-exports under the icon name.
     const pas = pascal(id);
-    if (RESERVED.has(pas.toLowerCase()) || /^\d/.test(pas))
-      reservedNames.push(file);
+    if (/^\d/.test(pas)) reservedNames.push(file);
+    if (GLOBAL_NAMES.has(pas)) shadowsGlobal.push(`${file} -> ${pas}`);
 
     if (!byId.has(id)) byId.set(id, []);
     byId.get(id).push(file);
@@ -219,9 +190,10 @@ function main() {
     collisions,
     ([id, fs]) => `${id}: ${fs.join(', ')}`,
   );
-  blocking += problem(
-    'NAMES THAT ARE RESERVED WORDS or start with a digit',
-    reservedNames,
+  blocking += problem('NAMES THAT START WITH A DIGIT', reservedNames);
+  problem(
+    'NAMES THAT SHADOW A GLOBAL (handled — local binding is renamed)',
+    shadowsGlobal,
   );
   problem(
     'HARDCODED COLOURS (rewritten, listed for review)',

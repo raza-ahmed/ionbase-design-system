@@ -22,11 +22,12 @@ here. This file is the map and the traps; the docs are the reasoning.
 
 ---
 
-## Two packages, one published
+## Three packages, two published
 
 ```
-packages/ionbase-ui   ionbase-ui   PUBLISHED — components + styles + tokens
-packages/tokens       (private)    the Figma pipeline and its five gates
+packages/ionbase-ui     ionbase-ui     PUBLISHED — components + styles + tokens
+packages/ionbase-icons  ionbase-icons  PUBLISHED — 1753 icons, optional
+packages/tokens         (private)      the Figma pipeline and its five gates
 ```
 
 `ionbase-ui` is the entire public surface. It is unscoped, mirroring `beacon-ui`.
@@ -43,6 +44,12 @@ anything reached npm. Do not re-split. The tell that the split was not earning
 its keep: `sync-version` moved all four in lockstep, so it bought four manifests
 and a cross-package CSS `@import` of a bare specifier, and no independent
 versioning at all.
+
+**`ionbase-icons` is not a re-split of that**, and the distinction is the whole
+rule. Lockstep is what made the old split worthless; this package has no version
+relationship to `ionbase-ui`, `ionbase-ui` does not import it, and a consumer
+who never installs it loses nothing. Apply the same test to any future package:
+if it would move in lockstep, it belongs inside `ionbase-ui`.
 
 **`tsc` can exit 0 having emitted nothing.** `composite: true` makes it trust
 `tsconfig.tsbuildinfo` over the filesystem, so deleting `dist/` without deleting

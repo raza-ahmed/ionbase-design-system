@@ -1,10 +1,9 @@
 {
   "name": "ionbase-icons",
-  "version": "0.0.0",
-  "description": "IonBase icon set — one React component per icon, tree-shakeable, optional",
+  "version": "0.1.0",
+  "description": "IonBase icon set — 1753 icons, one React component each, tree-shakeable. Derived from Lucide (ISC).",
   "license": "MIT",
   "type": "module",
-  "private": true,
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "//exports": "Per-icon subpaths are the point. `ionbase-icons/icons/copy` pulls one module; the barrel exists for discovery and DX and is safe only because sideEffects is false. See README - a barrel of 1700+ icons defeats tree-shaking in several bundlers, which is why ionbase-ui deliberately ships no icon set of its own.",
@@ -20,7 +19,8 @@
   },
   "sideEffects": false,
   "files": [
-    "dist"
+    "dist",
+    "LICENSE"
   ],
   "keywords": [
     "icons",

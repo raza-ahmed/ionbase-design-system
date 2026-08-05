@@ -61,15 +61,23 @@ a set this size and expensive to correct once they are components.
 
 ## Licensing
 
-If any icon is derived from another set, its licence travels with it. **Lucide
-is ISC**, which permits use, modification, renaming and redistribution
-(commercial included) on one condition: the copyright and permission notice must
-appear in all copies. Lucide's own `LICENSE` additionally carries an **MIT**
-notice from Feather (Cole Bemis) covering ~110 derived icons.
+The package is MIT. **The icon designs are derived from [Lucide](https://lucide.dev),
+which is ISC**, and that notice travels with them — see [`LICENSE`](LICENSE),
+which carries all three: this package's MIT, Lucide's ISC, and the MIT notice
+from [Feather](https://feathericons.com) (Cole Bemis) that Lucide itself carries
+for the subset derived from it.
 
-So a set that includes anything Lucide-derived must ship Lucide's `LICENSE`
-verbatim alongside this package's own, and credit it here. Copyright is not
-trademark: do not brand the package in a way that implies Lucide endorsement.
+This is not a formality. ISC permits use, modification, renaming and commercial
+redistribution on exactly one condition — _"the above copyright notice and this
+permission notice appear in all copies"_ — so shipping the notice is what makes
+the rest of it lawful. `LICENSE` is listed in the manifest's `files` so it goes
+out with the tarball rather than living only in the repo.
 
-If every icon here is original artwork, none of that applies and this section
-should be deleted rather than left standing as decoration.
+Provenance, measured rather than assumed: 1654 of these 1753 ids match Lucide's
+taxonomy exactly, and effectively all of the remaining 99 are the same icons
+under a different tokenisation (`arrow-down-a-z` for `ArrowDownAZ`, `clock-1`
+for `Clock1`). The artwork has been redrawn as filled outlines rather than
+strokes, which changes the rendering, not the authorship.
+
+Neither notice grants a trademark. This package is not affiliated with or
+endorsed by Lucide or Feather, and should not be branded as though it were.
