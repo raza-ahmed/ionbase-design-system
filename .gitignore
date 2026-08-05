@@ -34,6 +34,13 @@ packages/tokens/build/
 packages/ionbase-ui/src/tokens/
 packages/ionbase-ui/src/styles/tokens/
 
+# ---- Icons (generated output) ----
+# Committed source of truth is packages/ionbase-icons/svg/ — the raw SVGs.
+# Everything under src/ is emitted from them by scripts/generate.mjs. Same rule
+# as the tokens above: derived, never hand-edited. Committing ~1700 generated
+# .tsx files would also make every regeneration an unreviewable diff.
+packages/ionbase-icons/src/
+
 # ---- Tests / coverage ----
 coverage/
 .nyc_output/

@@ -102,6 +102,15 @@ importers:
 
   docs: {}
 
+  packages/ionbase-icons:
+    devDependencies:
+      '@types/react':
+        specifier: ^19.2.17
+        version: 19.2.17
+      react:
+        specifier: ^19.0.0
+        version: 19.2.8
+
   packages/ionbase-ui:
     dependencies:
       '@react-stately/collections':

@@ -1,0 +1,60 @@
+{
+  "name": "ionbase-icons",
+  "version": "0.0.0",
+  "description": "IonBase icon set — one React component per icon, tree-shakeable, optional",
+  "license": "MIT",
+  "type": "module",
+  "private": true,
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "//exports": "Per-icon subpaths are the point. `ionbase-icons/icons/copy` pulls one module; the barrel exists for discovery and DX and is safe only because sideEffects is false. See README - a barrel of 1700+ icons defeats tree-shaking in several bundlers, which is why ionbase-ui deliberately ships no icon set of its own.",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./icons/*": {
+      "types": "./dist/icons/*.d.ts",
+      "default": "./dist/icons/*.js"
+    }
+  },
+  "sideEffects": false,
+  "files": [
+    "dist"
+  ],
+  "keywords": [
+    "icons",
+    "svg",
+    "react",
+    "design-system",
+    "ionbase"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/raza-ahmed/ionbase-design-system.git",
+    "directory": "packages/ionbase-icons"
+  },
+  "homepage": "https://github.com/raza-ahmed/ionbase-design-system/tree/main/packages/ionbase-icons#readme",
+  "bugs": {
+    "url": "https://github.com/raza-ahmed/ionbase-design-system/issues"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "icons:audit": "node scripts/audit-svgs.mjs",
+    "icons:generate": "node scripts/generate.mjs",
+    "build": "node scripts/generate.mjs && tsc --build --force",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint .",
+    "format": "prettier --check ."
+  },
+  "peerDependencies": {
+    "react": "^18.0.0 || ^19.0.0"
+  },
+  "//devDependencies": "React is a peer dependency — consumers bring their own, and nothing here should pin one. It is also a devDependency because a peer is not installed for a workspace package, so without it `tsc` cannot resolve the JSX runtime and the generated icons do not typecheck.",
+  "devDependencies": {
+    "@types/react": "^19.2.17",
+    "react": "^19.0.0"
+  }
+}
