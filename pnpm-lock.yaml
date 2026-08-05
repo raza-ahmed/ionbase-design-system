@@ -44,6 +44,9 @@ importers:
 
   apps/storybook:
     dependencies:
+      ionbase-icons:
+        specifier: workspace:*
+        version: link:../../packages/ionbase-icons
       ionbase-ui:
         specifier: workspace:*
         version: link:../../packages/ionbase-ui

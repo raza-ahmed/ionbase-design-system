@@ -1,7 +1,9 @@
 import React from 'react';
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { expect, fn, waitFor } from 'storybook/test';
-import { Button } from 'ionbase-ui';
+import { Button, Icon } from 'ionbase-ui';
+import { Plus } from 'ionbase-icons/icons/plus';
+import { ArrowRight } from 'ionbase-icons/icons/arrow-right';
 
 const meta: Meta<typeof Button> = {
   title: 'Components/Button',
@@ -43,35 +45,23 @@ export const Default: Story = {
   },
 };
 
-const PlusIcon = () => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2.5"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <line x1="12" y1="5" x2="12" y2="19" />
-    <line x1="5" y1="12" x2="19" y2="12" />
-  </svg>
-);
-
-const ArrowRightIcon = () => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2.5"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <line x1="5" y1="12" x2="19" y2="12" />
-    <polyline points="12 5 19 12 12 19" />
-  </svg>
-);
+/*
+ * Real icons from `ionbase-icons`, through `Icon`, rather than the hand-rolled
+ * inline SVGs that used to live here.
+ *
+ * Two things the old ones could not show. They were drawn at `strokeWidth 2.5`
+ * where the shipped set is filled outlines, so the preview was demonstrating a
+ * weight no consumer would ever see. And bypassing `Icon` meant no `.ion-icon`
+ * class, so the alignment rule added in 0.6.1 never applied to anything in this
+ * file — the stories were exercising a path the documentation tells people not
+ * to take.
+ *
+ * Per-icon subpaths, not the barrel: it is what the README tells consumers to
+ * write, and a story that imports differently from the advice is a story that
+ * quietly contradicts it.
+ */
+const PlusIcon = () => <Icon as={Plus} />;
+const ArrowRightIcon = () => <Icon as={ArrowRight} />;
 
 // Template for rendering side-by-side components
 export const AllVariants: Story = {
