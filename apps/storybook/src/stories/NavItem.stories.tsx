@@ -155,6 +155,13 @@ export const HoverHasNoBackground: Story = {
     const item = canvas.getByRole('link');
 
     // 1. React Aria's contract: a real pointer produces the attribute.
+    //
+    // Read immediately and WITHOUT `waitFor`, for the reason given above: the
+    // attribute is a pulse, not a level. Polling for it cannot catch a value
+    // that has already been dropped, so a `waitFor` here would turn the same
+    // hazard into a slower failure. Button's `Hovered` story is the same
+    // contract made drop-proof with a MutationObserver; if this line ever
+    // flakes, take that approach rather than adding a wait.
     await userEvent.hover(item);
     await expect(item).toHaveAttribute('data-hovered', 'true');
 

@@ -154,6 +154,52 @@
 }
 
 /*
+ * XLarge — fully bound, and the only rung that needed a new token.
+ *
+ * Height reads `spacing/56`, a primitive that did not exist when this size was
+ * drawn: the scale ran 40, 48, 64, so the height was typed onto the frame as a
+ * raw 56 that no export could see. Added and bound, so `verify-geometry.mjs`
+ * now covers it like every other size.
+ *
+ * THE LABEL WAS A DETACHED TEXT STYLE, which is worth recognising because it
+ * does not look like one. Small, Medium and Large carry Body/Small, Body/Default
+ * and Body/Medium Emphasis; XLarge carried NO style at all — someone bumped 18
+ * to 20 by hand and Figma silently detached it. The tell was not the font size,
+ * which looked deliberate. It was that `type/body-md/line-height` was bound 70
+ * times where `type/body-md` was bound 35: a detached label still counted
+ * against the rung it had left, and no ramp step existed for the rung it should
+ * have joined. Every size ramp now binds 35/35 and the asymmetry is gone.
+ *
+ * So this size reads Body/Large Emphasis (20/32) and line height moved 28 -> 32.
+ * Nothing shifts visually — the button is a fixed 56 with one centred line — but
+ * the label is back on the ramp and responds to breakpoint like the other three.
+ *
+ * Icons need no override beyond the slot: Figma binds `icon-size/lg` on XLarge,
+ * the same rung as Large. That is a real decision, not an omission — XLarge is
+ * the one rung where the icon does NOT run ahead of its label (24 vs 20, where
+ * Large is 24 vs 18). Reproduced as measured.
+ *
+ * Elevation reuses the `lg` rungs, and this is where "there is no xl rung" would
+ * be the easy wrong answer. `Raised/Lifted/xl` and `Raised/Flush/xl` DO exist as
+ * effect styles — it is the *inset* families that stop at lg, so there is no
+ * complete xl rung to press into. Figma binds Raised/Lifted/lg, Inset/Lifted/lg
+ * and Inset/Flush/lg on XLarge exactly as on Large. These three lines restate
+ * the inherited defaults on purpose, so the next reader does not have to go and
+ * check which half of the family exists.
+ */
+.ion-button--xl {
+  --ion-button-size: var(--spacing-56);
+  --ion-button-padding-x: var(--spacing-24);
+  --ion-button-gap: var(--spacing-8);
+  --ion-button-icon-size: var(--icon-size-lg);
+  --ion-button-font-size: var(--type-body-lg);
+  --ion-button-line-height: var(--type-body-lg-line-height);
+  --ion-button-raised: var(--ion-shadow-raised-lifted-lg);
+  --ion-button-inset-lifted: var(--ion-shadow-inset-lifted-lg);
+  --ion-button-inset-flush: var(--ion-shadow-inset-flush-lg);
+}
+
+/*
  * Focus ring — one ring for every variant and size, from the Figma `Focus/md`
  * effect style.
  *
@@ -252,6 +298,51 @@
   background-color: var(--surface-inverse);
 }
 
+/*
+ * Primary Soft Variant
+ *
+ * The tinted counterpart to Primary Brand: brand colour carried by the label
+ * instead of by the surface. It is the only raised variant whose text is
+ * `text/primary` rather than `text/on-color`, which is the whole point of it —
+ * a brand-weighted action that does not compete with a solid Primary Brand
+ * beside it.
+ *
+ * Its press is a two-step it does not share with any other variant: the surface
+ * moves `primary-subtle` -> `primary-tint` AND the border jumps two steps,
+ * `border/primary-subtle` -> `border/primary`. Every other type either holds
+ * its border (brand, neutral, success, destructive) or steps it once
+ * (secondary). Measured on all four sizes.
+ *
+ * Elevation presses flush like Secondary, not lifted like Brand — a tinted
+ * surface has too little contrast for the lifted inset to register.
+ */
+.ion-button--primary-soft {
+  --ion-button-elevation: var(--ion-button-raised);
+  --ion-button-pressed: var(--ion-button-inset-flush);
+
+  background-color: var(--surface-primary-subtle);
+  color: var(--text-primary);
+  border-color: var(--border-primary-subtle);
+}
+
+@media (hover: hover) {
+  .ion-button--primary-soft:hover {
+    background-color: var(--surface-primary-subtle-hover);
+  }
+}
+
+.ion-button--primary-soft[data-hovered='true'] {
+  background-color: var(--surface-primary-subtle-hover);
+}
+
+.ion-button--primary-soft:active,
+.ion-button--primary-soft[data-pressed='true'] {
+  --ion-button-elevation: var(--ion-button-pressed);
+
+  background-color: var(--surface-primary-tint);
+  border-color: var(--border-primary);
+}
+
 /* Secondary Variant — presses flush, losing its lift; brand and destructive keep theirs. */
 .ion-button--secondary {
   --ion-button-elevation: var(--ion-button-raised);
@@ -332,6 +423,43 @@
   --ion-button-elevation: var(--ion-button-pressed);
 
   background-color: var(--surface-error-pressed);
+}
+
+/*
+ * Success Variant
+ *
+ * Structurally identical to Destructive — solid accent surface, `text/on-color`
+ * label, `*-strong` border held across every state, lifted press. It is the
+ * same shape with a different intent, which is exactly what the v2 ramps were
+ * for: `success/*` and `error/*` have identical slots, so the variant needed no
+ * new tokens at all.
+ *
+ * `--ion-button-pressed` is left at the inherited `inset-lifted`, so there is no
+ * override here. Figma binds Inset/Lifted at every size.
+ */
+.ion-button--success {
+  --ion-button-elevation: var(--ion-button-raised);
+
+  background-color: var(--surface-success);
+  color: var(--text-on-color);
+  border-color: var(--border-success-strong);
+}
+
+@media (hover: hover) {
+  .ion-button--success:hover {
+    background-color: var(--surface-success-hover);
+  }
+}
+
+.ion-button--success[data-hovered='true'] {
+  background-color: var(--surface-success-hover);
+}
+
+.ion-button--success:active,
+.ion-button--success[data-pressed='true'] {
+  --ion-button-elevation: var(--ion-button-pressed);
+
+  background-color: var(--surface-success-pressed);
 }
 
 /* Disabled State */
