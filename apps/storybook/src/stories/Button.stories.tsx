@@ -195,31 +195,74 @@ export const Disabled: Story = {
  */
 
 /*
- * `waitFor` here is load-bearing, and the reason is not "tests are flaky".
+ * TEMPORARY DIAGNOSTIC — remove once the CI hover failure is understood.
  *
- * React assigns every DOM event a priority. `focusin`, `click`, `keydown` and
- * `pointerdown` are DISCRETE — their state updates flush before the next line
- * runs. `pointerenter`, `pointerover`, `mouseenter` and `mousemove` are
- * CONTINUOUS: the update is *scheduled*, not flushed. (Verified against the
- * `getEventPriority` switch in the installed react-dom 19.2.8, not from
- * memory.)
+ * This story fails on GitHub Actions and passes locally on every run, and two
+ * plausible explanations have already been wrong:
  *
- * So `data-hovered` cannot be asserted on the line after `hover()`. Whether it
- * has landed depends on whether React's scheduler got a slot first — which it
- * usually does on a developer machine and sometimes does not on a loaded
- * two-core CI runner. That is exactly how this failed: green locally on every
- * run, red on GitHub Actions, blocking the Pages deploy.
+ *   1. "React batches the update" — `pointerenter` really is CONTINUOUS
+ *      priority in react-dom 19.2.8 while `focusin` is DISCRETE, so the
+ *      reasoning was sound, but wrapping in `waitFor` did not fix it. A
+ *      `waitFor` retries for a second; the attribute is still null at the end,
+ *      so nothing is merely late.
+ *   2. "The runner is slow" — same conclusion, same evidence against it.
  *
- * `Focused` below needs no such wrapper because `focusin` is discrete. The
- * asymmetry is the tell, not an inconsistency — do not "tidy" it by wrapping
- * both or unwrapping this one.
+ * So `useHover` is not reporting hover at all in that environment. The gap is
+ * that no local run reproduces it, so this captures the state CI actually sees
+ * and puts it in the failure message. Replace with a real fix and a real
+ * explanation once the output says what is happening.
  */
 export const Hovered: Story = {
   args: { children: 'Hover me' },
   play: async ({ canvas, userEvent }) => {
     const button = canvas.getByRole('button');
+
+    const seen: string[] = [];
+    const record = (e: Event) => {
+      const pe = e as PointerEvent;
+      const target = e.target as HTMLElement | null;
+      seen.push(
+        `${e.type}[pointerType=${pe.pointerType ?? '-'},isTrusted=${e.isTrusted},target=${target?.tagName}.${target?.className ?? ''}]`,
+      );
+    };
+    for (const type of [
+      'pointerover',
+      'pointerenter',
+      'pointermove',
+      'mouseover',
+      'mouseenter',
+    ]) {
+      button.addEventListener(type, record);
+    }
+
+    const rect = button.getBoundingClientRect();
+    const cx = rect.left + rect.width / 2;
+    const cy = rect.top + rect.height / 2;
+    const atCentre = document.elementFromPoint(cx, cy) as HTMLElement | null;
+
     await userEvent.hover(button);
-    await waitFor(() => expect(button).toHaveAttribute('data-hovered', 'true'));
+
+    try {
+      await waitFor(() =>
+        expect(button).toHaveAttribute('data-hovered', 'true'),
+      );
+    } catch {
+      throw new Error(
+        [
+          'DIAGNOSTIC — data-hovered never appeared.',
+          `viewport      ${window.innerWidth}x${window.innerHeight}`,
+          `devicePixel   ${window.devicePixelRatio}`,
+          `hover:hover   ${window.matchMedia('(hover: hover)').matches}`,
+          `pointer:fine  ${window.matchMedia('(pointer: fine)').matches}`,
+          `rect          x=${Math.round(rect.x)} y=${Math.round(rect.y)} w=${Math.round(rect.width)} h=${Math.round(rect.height)}`,
+          `centre        ${Math.round(cx)},${Math.round(cy)}`,
+          `elementAt     ${atCentre?.tagName}.${atCentre?.className ?? ''}`,
+          `buttonHasIt   ${atCentre ? button.contains(atCentre) : 'null'}`,
+          `attributes    ${button.getAttributeNames().join(',')}`,
+          `eventsOnButton ${seen.length ? seen.join(' | ') : 'NONE'}`,
+        ].join('\n'),
+      );
+    }
   },
 };
 
