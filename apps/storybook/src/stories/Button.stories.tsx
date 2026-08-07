@@ -195,73 +195,51 @@ export const Disabled: Story = {
  */
 
 /*
- * TEMPORARY DIAGNOSTIC — remove once the CI hover failure is understood.
+ * HOVER IS TRANSIENT IN HEADLESS CHROMIUM — observe the transition, never
+ * sample the state.
  *
- * This story fails on GitHub Actions and passes locally on every run, and two
- * plausible explanations have already been wrong:
+ * This story was red on CI and green locally. The cause is not a slow runner
+ * and not React batching: `NavItem.stories.tsx` already recorded it, from
+ * instrumenting the runner directly. A few ticks after `hover()`, headless
+ * Chromium drops `:hover` while the element is still attached, unmoved and
+ * unobstructed. React Aria's `isHovered` follows it false and React REMOVES
+ * `data-hovered`. Re-hovering cannot recover it either — the pointer is
+ * already at those coordinates, and Chromium fires no fresh `pointerenter`
+ * for a move to the same point.
  *
- *   1. "React batches the update" — `pointerenter` really is CONTINUOUS
- *      priority in react-dom 19.2.8 while `focusin` is DISCRETE, so the
- *      reasoning was sound, but wrapping in `waitFor` did not fix it. A
- *      `waitFor` retries for a second; the attribute is still null at the end,
- *      so nothing is merely late.
- *   2. "The runner is slow" — same conclusion, same evidence against it.
+ * So `data-hovered` is a pulse, not a level, and every way of *reading* it
+ * later is a coin flip on whether the drop beat the read. `waitFor` is the
+ * worst of them: polling for a second cannot catch a value that has already
+ * gone, and it converts a fast failure into a slow one. That was tried here
+ * and failed on CI exactly as NavItem's comment predicts.
  *
- * So `useHover` is not reporting hover at all in that environment. The gap is
- * that no local run reproduces it, so this captures the state CI actually sees
- * and puts it in the failure message. Replace with a real fix and a real
- * explanation once the output says what is happening.
+ * A MutationObserver asks the question the test actually means — "did a real
+ * pointer ever produce the attribute" — instead of "is the attribute present
+ * at this arbitrary instant". It still fails if `useHover` is unwired, which
+ * is the regression this story exists to catch.
  */
 export const Hovered: Story = {
   args: { children: 'Hover me' },
   play: async ({ canvas, userEvent }) => {
     const button = canvas.getByRole('button');
 
-    const seen: string[] = [];
-    const record = (e: Event) => {
-      const pe = e as PointerEvent;
-      const target = e.target as HTMLElement | null;
-      seen.push(
-        `${e.type}[pointerType=${pe.pointerType ?? '-'},isTrusted=${e.isTrusted},target=${target?.tagName}.${target?.className ?? ''}]`,
-      );
-    };
-    for (const type of [
-      'pointerover',
-      'pointerenter',
-      'pointermove',
-      'mouseover',
-      'mouseenter',
-    ]) {
-      button.addEventListener(type, record);
-    }
-
-    const rect = button.getBoundingClientRect();
-    const cx = rect.left + rect.width / 2;
-    const cy = rect.top + rect.height / 2;
-    const atCentre = document.elementFromPoint(cx, cy) as HTMLElement | null;
-
-    await userEvent.hover(button);
+    // Armed BEFORE the pointer moves, so a set-then-immediately-dropped
+    // attribute is still recorded. Seeded from the current value in case the
+    // element somehow arrives already hovered.
+    let everHovered = button.getAttribute('data-hovered') === 'true';
+    const observer = new MutationObserver(() => {
+      if (button.getAttribute('data-hovered') === 'true') everHovered = true;
+    });
+    observer.observe(button, {
+      attributes: true,
+      attributeFilter: ['data-hovered'],
+    });
 
     try {
-      await waitFor(() =>
-        expect(button).toHaveAttribute('data-hovered', 'true'),
-      );
-    } catch {
-      throw new Error(
-        [
-          'DIAGNOSTIC — data-hovered never appeared.',
-          `viewport      ${window.innerWidth}x${window.innerHeight}`,
-          `devicePixel   ${window.devicePixelRatio}`,
-          `hover:hover   ${window.matchMedia('(hover: hover)').matches}`,
-          `pointer:fine  ${window.matchMedia('(pointer: fine)').matches}`,
-          `rect          x=${Math.round(rect.x)} y=${Math.round(rect.y)} w=${Math.round(rect.width)} h=${Math.round(rect.height)}`,
-          `centre        ${Math.round(cx)},${Math.round(cy)}`,
-          `elementAt     ${atCentre?.tagName}.${atCentre?.className ?? ''}`,
-          `buttonHasIt   ${atCentre ? button.contains(atCentre) : 'null'}`,
-          `attributes    ${button.getAttributeNames().join(',')}`,
-          `eventsOnButton ${seen.length ? seen.join(' | ') : 'NONE'}`,
-        ].join('\n'),
-      );
+      await userEvent.hover(button);
+      await waitFor(() => expect(everHovered).toBe(true));
+    } finally {
+      observer.disconnect();
     }
   },
 };

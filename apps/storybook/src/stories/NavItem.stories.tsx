@@ -1,6 +1,6 @@
 import React from 'react';
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { expect, waitFor } from 'storybook/test';
+import { expect } from 'storybook/test';
 import { NavItem, Icon } from 'ionbase-ui';
 import { Settings } from 'lucide-react';
 
@@ -156,14 +156,14 @@ export const HoverHasNoBackground: Story = {
 
     // 1. React Aria's contract: a real pointer produces the attribute.
     //
-    // `waitFor`, because `pointerenter` is a CONTINUOUS-priority event in
-    // React: the state update is scheduled rather than flushed, so the
-    // attribute is not reliably present on the next line. This is the same
-    // race that turned Button's `Hovered` story red on CI while it stayed
-    // green locally. It does not weaken step 2 below — that block still runs
-    // synchronously, and it only starts once this has resolved.
+    // Read immediately and WITHOUT `waitFor`, for the reason given above: the
+    // attribute is a pulse, not a level. Polling for it cannot catch a value
+    // that has already been dropped, so a `waitFor` here would turn the same
+    // hazard into a slower failure. Button's `Hovered` story is the same
+    // contract made drop-proof with a MutationObserver; if this line ever
+    // flakes, take that approach rather than adding a wait.
     await userEvent.hover(item);
-    await waitFor(() => expect(item).toHaveAttribute('data-hovered', 'true'));
+    await expect(item).toHaveAttribute('data-hovered', 'true');
 
     // 2. The stylesheet's contract: the attribute produces the colour.
     //
