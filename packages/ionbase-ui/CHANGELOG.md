@@ -1,5 +1,77 @@
 # Changelog
 
+## 0.8.0 — 2026-08-07
+
+Two new Button variants and a fourth size. **Nothing existing changes** — every
+current `variant` and `size` renders exactly as it did in 0.7.0, so this is
+additive and the minor is not carrying a breaking change this time.
+
+### Added — `variant="primary-soft"` and `variant="success"`
+
+`primary-soft` is the tinted counterpart to `primary-brand`: brand colour on the
+label rather than the surface, for a brand-weighted action that should not
+compete with a solid primary beside it. It is the only raised variant whose text
+is `text/primary` rather than `text/on-color`.
+
+Its press is a two-step no other variant makes — the surface moves
+`primary-subtle` → `primary-tint` **and** the border jumps two rungs,
+`border/primary-subtle` → `border/primary`. Everything else either holds its
+border or steps it once. It presses flush like `secondary`, because a tinted
+surface has too little contrast for the lifted inset to register.
+
+`success` is structurally identical to `destructive` — solid accent surface,
+`text/on-color`, a `*-strong` border held across every state, lifted press. That
+is the v2 ramps working as intended rather than a coincidence: `success/*` and
+`error/*` carry identical slots, so the variant needed **zero new colour
+tokens**.
+
+### Added — `size="xl"`
+
+56 tall, 24 padding, `Body/Large Emphasis` (20/32), `icon-size/lg`.
+
+Two things worth knowing before you reach for it. Its icon is 24 — the same as
+`lg` — so `xl` is the one rung where the icon does **not** run ahead of its
+label (24 vs 20, where `lg` is 24 vs 18). And its elevation is the `lg` rung,
+not a new one: `Raised/Lifted/xl` exists as an effect style but the _inset_
+families stop at `lg`, so there is no complete `xl` rung to press into.
+
+### Tokens
+
+One new variable, 383 → 384 (net; see below). `spacing/56` (Primitives) — the
+scale ran 40, 48, 64, so the XLarge height had been typed onto the Figma frame
+as a raw number that no export could see. Now bound on all 35 XLarge variants
+and covered by `verify-geometry.mjs`.
+
+Figma sync state: names `944350191`, 384 variables.
+
+### Fixed — small `success` buttons rendered permanently pre-hovered
+
+`Success` at Small bound `surface/success-strong` on Default and Focus, where
+the other eighteen Success variants bound `surface/success`. It resolved to
+`success/700` — the same value as `surface/success/hover` — so the two states
+were indistinguishable and hovering a small success button did nothing.
+
+Only reachable in Figma, so no released version shipped it; recorded because the
+variant is new in this release and the fix is why `success` is uniform across
+all four sizes. `surface/success-strong` was the only `surface/*-strong` in the
+whole Interface collection and has been removed (385 → 384).
+
+### Fixed — the XLarge label was a detached text style
+
+Its font size had been typed in by hand, which drops the Figma text style
+silently. The label carried no style at all, so it sat outside the type ramp and
+did not respond to breakpoint. Reattached to `Body/Large Emphasis`; line height
+moves 28 → 32, which shifts nothing visually inside a fixed 56px button.
+
+Neither of these was reachable by any gate — text styles are not variables, and
+a one-off role token is a legal alias. Both surfaced from binding **counts**
+disagreeing, and that heuristic is now written down in `AGENTS.md`.
+
+### Added — a height test
+
+`Button` gained a story asserting the rendered box is 32 / 40 / 48 / 56 across
+all four sizes, and the icon-geometry story now covers `xl`.
+
 ## 0.7.0 — 2026-08-06
 
 A 14px icon rung, for the small Button. Minor rather than patch: it is breaking,

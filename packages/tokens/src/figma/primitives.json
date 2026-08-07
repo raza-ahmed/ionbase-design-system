@@ -101,6 +101,7 @@
     "spacing/32": {"type": "FLOAT", "scopes": ["WIDTH_HEIGHT", "GAP"], "codeSyntax": "var(--spacing-32)", "values": {"Value": 32}},
     "spacing/40": {"type": "FLOAT", "scopes": ["WIDTH_HEIGHT", "GAP"], "codeSyntax": "var(--spacing-40)", "values": {"Value": 40}},
     "spacing/48": {"type": "FLOAT", "scopes": ["WIDTH_HEIGHT", "GAP"], "codeSyntax": "var(--spacing-48)", "values": {"Value": 48}},
+    "spacing/56": {"type": "FLOAT", "scopes": ["WIDTH_HEIGHT", "GAP"], "codeSyntax": "var(--spacing-56)", "values": {"Value": 56}},
     "spacing/64": {"type": "FLOAT", "scopes": ["WIDTH_HEIGHT", "GAP"], "codeSyntax": "var(--spacing-64)", "values": {"Value": 64}},
     "spacing/80": {"type": "FLOAT", "scopes": ["WIDTH_HEIGHT", "GAP"], "codeSyntax": "var(--spacing-80)", "values": {"Value": 80}},
     "spacing/96": {"type": "FLOAT", "scopes": ["WIDTH_HEIGHT", "GAP"], "codeSyntax": "var(--spacing-96)", "values": {"Value": 96}},

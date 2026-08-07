@@ -16,11 +16,13 @@ export interface ButtonProps extends AriaButtonProps<'button'> {
   variant?:
     | 'primary-brand'
     | 'primary-neutral'
+    | 'primary-soft'
     | 'secondary'
     | 'tertiary'
-    | 'destructive';
+    | 'destructive'
+    | 'success';
   /** The size of the button. */
-  size?: 'sm' | 'md' | 'lg';
+  size?: 'sm' | 'md' | 'lg' | 'xl';
   /** Optional icon to render before the label. */
   startIcon?: React.ReactNode;
   /** Optional icon to render after the label. */

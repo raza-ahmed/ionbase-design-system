@@ -161,7 +161,7 @@ Reasoning: [docs/naming-decisions.md](docs/naming-decisions.md).
 ### Four collections, one chain
 
 ```
-Primitives   142  Value                value-keyed scales only
+Primitives   143  Value                value-keyed scales only
    ↓
 Semantics    107  IonBase              brand identity — ramps, radius, border-width, icon-size
    ↓
@@ -172,7 +172,7 @@ components + CSS
 Breakpoint    30  Desktop/Tablet/Mobile   (parallel — type and grid only)
 ```
 
-Sync state: names `4048145791`, 383 variables (re-exported 6 Aug 2026).
+Sync state: names `944350191`, 384 variables (re-exported 7 Aug 2026).
 
 **Components bind Interface and Breakpoint for colour and type.** Interface may
 only alias Semantics; Semantics may only alias Primitives. `spacing/*` is the
@@ -196,10 +196,46 @@ on `spacing/*` or a ladder) and `figma/audit-geometry.js` (raw numbers in Figma,
 which no export can see — that is how a literal 10px padding and a whole
 component's unbound stroke weights both shipped).
 
-**383 variables, and that number does not grow with the component count.** A new
+**384 variables, and that number does not grow with the component count.** A new
 brand adds a _mode_, not tokens. So does a new theme. It grew by two on
 2026-08-06 — `spacing/14` and an `icon-size` rung — and that is the shape of
 growth to expect: a new _value_ the ladders did not carry, not a new component.
+
+Button's two new types on 2026-08-07 are the rule working: **Primary Soft and
+Success added seventy variants and zero tokens**, because v2 gives every accent
+ramp identical slots and `surface/primary-subtle`, `surface/success` and the
+rest were already sitting there. The XLarge _size_ did cost one — `spacing/56`,
+a value the scale did not carry between 48 and 64. Value, not component.
+
+**A one-off role token is the failure mode to watch for, and it is nearly
+invisible.** Authoring those variants also produced `surface/success-strong` —
+the only `surface/*-strong` in the whole Interface collection, so it broke the
+identical-slots rule on its own. It was bound by exactly two nodes, Success
+Small at Default and Focus, while the other eighteen Success variants bound
+`surface/success`. It resolved to `success/700`, which is what
+`surface/success/hover` resolves to, so those two rendered permanently
+pre-hovered and their hover state did nothing.
+
+Nothing caught it. `tokens:tier` passed — it was a legal Interface→Semantics
+alias. `tokens:audit` passed — the name is valid v2 grammar. It surfaced only
+because a variable **count** disagreed: 385 in Figma against 383 in the repo.
+Diff the counts per collection after any Figma session, not just the checksum;
+the checksum tells you something moved, the counts tell you what.
+
+Resolved 2026-08-07: the two nodes were rebound to `surface/success`, then the
+variable was unbound-checked across every page and every alias and removed.
+
+**A detached text style is the same class of defect and hides even better.**
+Button's XLarge label carried no text style at all — someone bumped 18 to 20 by
+hand and Figma detached it silently. Nothing in the pipeline could see it: text
+styles are not variables, so `tokens:tier` and `tokens:verify` never look, and
+the font size looked like a deliberate choice. The tell was a **binding-count
+asymmetry** in `bindings.json`: `type/body-md/line-height` bound 70 times where
+`type/body-md` was bound 35. A detached label still counts against the rung it
+left, while the rung it should have joined has no binding at all. Every size ramp
+should bind its size and its line-height the same number of times — when two
+halves of one rung disagree, look for a detached style. Fixed by applying
+`Body/Large Emphasis`; all four rungs now bind 35/35.
 
 **Primitives are value-keyed.** `scale/8`, not `radius/md`; `font/weight/400`,
 not `font/weight/regular`. A primitive carrying a role name collides with the

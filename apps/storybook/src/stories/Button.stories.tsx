@@ -15,14 +15,16 @@ const meta: Meta<typeof Button> = {
       options: [
         'primary-brand',
         'primary-neutral',
+        'primary-soft',
         'secondary',
         'tertiary',
         'destructive',
+        'success',
       ],
     },
     size: {
       control: 'select',
-      options: ['sm', 'md', 'lg'],
+      options: ['sm', 'md', 'lg', 'xl'],
     },
     isDisabled: {
       control: 'boolean',
@@ -80,6 +82,9 @@ export const AllVariants: Story = {
       <Button {...args} variant="primary-neutral">
         Primary Neutral
       </Button>
+      <Button {...args} variant="primary-soft">
+        Primary Soft
+      </Button>
       <Button {...args} variant="secondary">
         Secondary
       </Button>
@@ -88,6 +93,9 @@ export const AllVariants: Story = {
       </Button>
       <Button {...args} variant="destructive">
         Destructive
+      </Button>
+      <Button {...args} variant="success">
+        Success
       </Button>
     </div>
   ),
@@ -104,6 +112,9 @@ export const AllSizes: Story = {
       </Button>
       <Button {...args} size="lg">
         Large
+      </Button>
+      <Button {...args} size="xl">
+        XLarge
       </Button>
     </div>
   ),
@@ -154,6 +165,9 @@ export const Disabled: Story = {
       <Button {...args} isDisabled variant="primary-neutral">
         Primary Neutral
       </Button>
+      <Button {...args} isDisabled variant="primary-soft">
+        Primary Soft
+      </Button>
       <Button {...args} isDisabled variant="secondary">
         Secondary
       </Button>
@@ -162,6 +176,9 @@ export const Disabled: Story = {
       </Button>
       <Button {...args} isDisabled variant="destructive">
         Destructive
+      </Button>
+      <Button {...args} isDisabled variant="success">
+        Success
       </Button>
     </div>
   ),
@@ -304,6 +321,13 @@ export const DisabledIsNotHoverable: Story = {
  * text it sat beside. Medium and Large keep icons that run ahead of their
  * labels (20 vs 16, 24 vs 18), which reads correctly at those sizes.
  *
+ * XLarge repeats Large's 24 rather than continuing the climb, so for the first
+ * time in the ladder the icon sits *behind* its label (24 vs 20). That is a
+ * deliberate binding to `icon-size/lg`, not a stray number — every one of the
+ * four rungs is bound, so this one is a choice rather than an oversight.
+ * Asserted anyway: if it is ever resolved upward, this story is what fails and
+ * asks to be updated.
+ *
  * This is measured because nothing else measures it. Before this story the
  * suite asserted hover, focus, press and prop leakage, and not one pixel of
  * icon geometry — so the 16 -> 14 change had no coverage in either direction.
@@ -323,10 +347,13 @@ export const IconSizePerButtonSize: Story = {
       <Button size="lg" startIcon={<PlusIcon />}>
         Large
       </Button>
+      <Button size="xl" startIcon={<PlusIcon />}>
+        XLarge
+      </Button>
     </div>
   ),
   play: async ({ canvas }) => {
-    const expected = { Small: 14, Medium: 20, Large: 24 };
+    const expected = { Small: 14, Medium: 20, Large: 24, XLarge: 24 };
 
     for (const [label, px] of Object.entries(expected)) {
       const button = canvas.getByRole('button', { name: label });
@@ -344,6 +371,39 @@ export const IconSizePerButtonSize: Story = {
       const iconMid = box.top + box.height / 2;
       const labelMid = labelBox.top + labelBox.height / 2;
       await expect(Math.abs(iconMid - labelMid)).toBeLessThan(0.5);
+    }
+  },
+};
+
+/**
+ * Height per size, measured.
+ *
+ * All four now read the spacing scale — `spacing/32`, `40`, `48`, `56` — so a
+ * change to any of them shows up in the token export and `verify-geometry.mjs`
+ * has something to check.
+ *
+ * XLarge's 56 was the exception until the primitive was added: the scale jumped
+ * 48 -> 64, so Figma held the height as a raw number that no export could see,
+ * and button.css carried it as a literal. This story was written as the only
+ * thing standing under it, and it is kept now that the binding exists — it
+ * asserts the rendered pixel, not the mechanism behind it, so it stays honest
+ * whichever way the value is supplied.
+ */
+export const HeightPerButtonSize: Story = {
+  render: () => (
+    <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
+      <Button size="sm">Small</Button>
+      <Button size="md">Medium</Button>
+      <Button size="lg">Large</Button>
+      <Button size="xl">XLarge</Button>
+    </div>
+  ),
+  play: async ({ canvas }) => {
+    const expected = { Small: 32, Medium: 40, Large: 48, XLarge: 56 };
+
+    for (const [label, px] of Object.entries(expected)) {
+      const button = canvas.getByRole('button', { name: label });
+      await expect(Math.round(button.getBoundingClientRect().height)).toBe(px);
     }
   },
 };
