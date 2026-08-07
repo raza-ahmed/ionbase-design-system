@@ -194,12 +194,32 @@ export const Disabled: Story = {
  * regression visible.
  */
 
+/*
+ * `waitFor` here is load-bearing, and the reason is not "tests are flaky".
+ *
+ * React assigns every DOM event a priority. `focusin`, `click`, `keydown` and
+ * `pointerdown` are DISCRETE — their state updates flush before the next line
+ * runs. `pointerenter`, `pointerover`, `mouseenter` and `mousemove` are
+ * CONTINUOUS: the update is *scheduled*, not flushed. (Verified against the
+ * `getEventPriority` switch in the installed react-dom 19.2.8, not from
+ * memory.)
+ *
+ * So `data-hovered` cannot be asserted on the line after `hover()`. Whether it
+ * has landed depends on whether React's scheduler got a slot first — which it
+ * usually does on a developer machine and sometimes does not on a loaded
+ * two-core CI runner. That is exactly how this failed: green locally on every
+ * run, red on GitHub Actions, blocking the Pages deploy.
+ *
+ * `Focused` below needs no such wrapper because `focusin` is discrete. The
+ * asymmetry is the tell, not an inconsistency — do not "tidy" it by wrapping
+ * both or unwrapping this one.
+ */
 export const Hovered: Story = {
   args: { children: 'Hover me' },
   play: async ({ canvas, userEvent }) => {
     const button = canvas.getByRole('button');
     await userEvent.hover(button);
-    await expect(button).toHaveAttribute('data-hovered', 'true');
+    await waitFor(() => expect(button).toHaveAttribute('data-hovered', 'true'));
   },
 };
 
