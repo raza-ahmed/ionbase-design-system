@@ -1,0 +1,181 @@
+/*
+ * Link
+ *
+ * Measured from Figma `Link` (774:1516). Two types x five states.
+ *
+ * NO SIZE LADDER, AND THAT IS THE POINT
+ *
+ * Every other control here pins its own type ramp because it owns a box. A
+ * link owns nothing: it sits inside a sentence and has to be the size of that
+ * sentence. So `font-size` and `line-height` inherit, and the icons are sized
+ * in `em` rather than from the `icon-size` ladder — a 14px link gets a 14px
+ * icon without being told.
+ *
+ * Figma draws its variants at 16/24 (`type/body`) because a Figma variant must
+ * have a concrete size. That is one sample of an inheriting element, not a
+ * specification, and the drawing should not be used to justify adding a size
+ * prop here.
+ */
+.ion-link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-4);
+
+  /*
+   * `baseline` rather than the flex default, so a link with an icon still sits
+   * on the same baseline as the prose around it. `inline-flex` alone would
+   * align the whole box to the text baseline and push the label off it.
+   */
+  vertical-align: baseline;
+  color: var(--text-link);
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+  font-weight: inherit;
+  cursor: pointer;
+
+  /* Reset for the <button> form — it is a link, not a control with a box. */
+  padding: 0;
+  background: none;
+  border: none;
+  transition: color var(--ion-duration-base) var(--ion-ease-out);
+}
+
+/*
+ * Inline is underlined in EVERY state.
+ *
+ * This is the accessibility half of the Type axis, not a stylistic preference:
+ * a link inside a paragraph that is distinguished only by colour fails WCAG
+ * 1.4.1. `text-underline-offset` keeps the rule off the descenders, which is
+ * what makes an always-on underline tolerable in body copy.
+ */
+.ion-link--inline {
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
+/*
+ * Standalone earns its lack of underline from context — a table cell, a list,
+ * a card footer — where position already says "interactive". It still
+ * underlines on hover, so the affordance is never absent, only deferred.
+ */
+.ion-link--standalone {
+  text-decoration: none;
+}
+
+/*
+ * Hover is declared twice, as it is on Button and Input. Native `:hover`
+ * latches on touch until you tap elsewhere; `[data-hovered]` comes from React
+ * Aria's useHover, which is pointer-aware. The media query keeps the
+ * stylesheet working without React.
+ */
+@media (hover: hover) {
+  .ion-link:hover {
+    color: var(--text-link-hover);
+  }
+
+  .ion-link--standalone:hover {
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+}
+
+.ion-link[data-hovered='true'] {
+  color: var(--text-link-hover);
+}
+
+.ion-link--standalone[data-hovered='true'] {
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
+/*
+ * Visited is colour-only, and it has to be.
+ *
+ * Browsers deliberately restrict `:visited` to a short list of properties to
+ * close a history-sniffing side channel — `getComputedStyle` lies about it,
+ * and layout-affecting properties are ignored outright. Colour is on the
+ * allowed list, which is exactly why `text/link/visited` is a colour and why
+ * this rule tries nothing else.
+ *
+ * Only anchors have history, so this is scoped to `a`. The `<button>` form has
+ * no visited state to express.
+ */
+a.ion-link:visited {
+  color: var(--text-link-visited);
+}
+
+/* Hover after visited, so a visited link still responds to the pointer. */
+@media (hover: hover) {
+  a.ion-link:visited:hover {
+    color: var(--text-link-hover);
+  }
+}
+
+a.ion-link:visited[data-hovered='true'] {
+  color: var(--text-link-hover);
+}
+
+/*
+ * Focus is a ring, not the `Focus/md` effect style every boxed control uses.
+ *
+ * That style is a drop shadow, which needs a filled box to cast from — a link
+ * has no surface, so it rendered as a faint glow off the glyph shapes instead
+ * of a ring. `ring/focus` is the token for this and had no consumer anywhere
+ * until this component.
+ *
+ * `outline-offset` is what Figma cannot express: there, the ring hugs the text
+ * because adding padding would change the box and knock an inline link out of
+ * alignment with its sentence. An outline is drawn outside the box and costs
+ * no layout, so the breathing room is free here.
+ */
+.ion-link:focus-visible,
+.ion-link[data-focused='true'] {
+  outline: var(--border-width-thick) solid var(--ring-focus);
+  outline-offset: 2px;
+  border-radius: var(--radius-xs);
+}
+
+.ion-link--disabled,
+.ion-link:disabled,
+.ion-link[data-disabled='true'] {
+  color: var(--text-disabled);
+  cursor: not-allowed;
+}
+
+/*
+ * Icons take the label's colour rather than an `icon/*` role.
+ *
+ * There is deliberately no `color` declaration here, and its absence is the
+ * mechanism rather than an omission. Colour inherits, so the icon picks up
+ * every state — hover, visited, disabled — without a rule of its own and
+ * cannot drift from the text it belongs to. A `color: currentColor` line would
+ * restate the default while reading as though something were being decided.
+ *
+ * This is deliberately not the usual v2 split between `text/*` and `icon/*`:
+ * the icon makes no colour decision at all. Figma binds the label's token onto
+ * the icon vectors to depict the same relationship, because Figma has no
+ * inheritance — which is why the icons sat at `icon/default` (near-black) on a
+ * blue link until it was caught in review.
+ */
+.ion-link__icon-start,
+.ion-link__icon-end {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  /* The underline belongs to the text, never to the icons. */
+  text-decoration: none;
+}
+
+/*
+ * `em`, not the `icon-size` ladder — the icon scales with whatever type the
+ * link inherited. `1em` against a 16px label is 16px, which is `icon-size/sm`,
+ * the rung Figma draws.
+ */
+.ion-link__icon-start svg,
+.ion-link__icon-end svg {
+  width: 1em;
+  height: 1em;
+}
