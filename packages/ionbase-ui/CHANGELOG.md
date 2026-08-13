@@ -1,5 +1,65 @@
 # Changelog
 
+## 0.11.0 — 2026-08-14
+
+`Modal`, designed in Figma first. **Nothing existing changes** — purely additive.
+
+### Added — `Modal`
+
+Measured from Figma `Modal` (792:1537). Four sizes x two alignments, with the
+sections as props rather than variants: `title`, `description`, `media`,
+`footer`, `showClose`, and the body as `children`.
+
+**Renders nothing when closed, and portals when open.** Both matter: a modal
+left in the tree while closed is still keyboard-focusable, and one rendered
+inline inherits any `overflow: hidden` or stacking context from wherever it was
+written.
+
+Focus trap, outside-click, Escape, scroll lock and `aria-hidden` on the rest of
+the page all come from React Aria's `useModalOverlay` and `useDialog`. None of
+it is reimplemented, and a story asserts Escape specifically — so if the modal
+is ever rebuilt on a plain div, something notices that the focus trap left with
+it.
+
+`media` is a featured slot above the title: a circular container that hugs
+whatever goes in it, so an icon and a spot illustration both sit correctly
+without a second variant.
+
+### Two things Figma cannot express, added here
+
+**The panel is capped to the viewport and the body scrolls.** Figma panels hug
+their content because a Figma frame has no viewport to overflow. A real one
+does, and a dialog taller than the screen is unreachable at both ends — so the
+header and actions stay put while long content moves underneath them.
+
+**The scrim is part of this component.** Figma models the panel alone so it can
+be dropped into any layout, and binds `surface/scrim` on a separate usage
+frame. In code that split is useless: nothing renders a modal without also
+rendering what sits behind it.
+
+A consequence worth knowing: `bindings.json` records the panel's tokens but not
+the scrim, because the export only walks components and the scrim sits on a
+frame. `surface/scrim` therefore still reads as unbound in any "which roles
+have no consumer" sweep. It has one — `modal.css`.
+
+### Fixed before shipping — centred content was 24px off centre
+
+`align="center"` centres the heading inside the header **minus** the close
+button, landing the title and media 24px left of the panel's true centre — half
+the close plus its gap.
+
+Caught in Figma by measuring rather than looking, then caught **again** in CSS
+by a story that asserted the same thing, because the assumption that flexbox
+would not have the problem was wrong. Both sides now carry a spacer of matching
+width, gated on the close button's presence so the pair appears and disappears
+together; a spacer that outlived the button would push content 24px the other
+way. There is a story for that case too.
+
+### Tokens
+
+None added — still 384. `bindings.json` gains `Modal/Modal` with 34 bindings,
+and `surface/overlay` gets its first consumer.
+
 ## 0.10.0 — 2026-08-07
 
 `Link`. **Nothing existing changes** — this is purely additive.
