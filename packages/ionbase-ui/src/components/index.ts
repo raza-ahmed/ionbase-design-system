@@ -6,6 +6,8 @@ export { Badge } from './Badge.js';
 export type { BadgeProps, BadgeIntent } from './Badge.js';
 export { Input } from './Input.js';
 export type { InputProps, InputSize } from './Input.js';
+export { PhoneInput } from './PhoneInput.js';
+export type { PhoneInputProps } from './PhoneInput.js';
 export { Select } from './Select.js';
 export type { SelectProps, SelectSize, SelectOption } from './Select.js';
 export { Checkbox } from './Checkbox.js';

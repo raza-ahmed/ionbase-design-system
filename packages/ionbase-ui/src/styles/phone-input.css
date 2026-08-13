@@ -1,0 +1,131 @@
+/*
+ * Phone Input
+ *
+ * Measured from Figma `Input/Phone` (80:372). Three sizes, no State axis —
+ * every state belongs to the Input it wraps.
+ *
+ * THE SEAM IS TWO BORDERS, NOT ONE
+ *
+ * Figma butts the two frames at x = 68 (Medium) with no gap, and both keep a
+ * full 1px stroke on all four sides. So the divider is 2px of `border/default`,
+ * and reproducing it needs no negative margin and no shared-edge trick — plain
+ * adjacency gives exactly the measured result. The corners facing the seam are
+ * square on both sides, which is what makes the pair read as one control:
+ * `Country Code` is [r,0,0,r] and the Input is [0,r,r,0], both bound.
+ *
+ * Radius tracks the size the same way the Input's does — `radius/sm` at Small,
+ * `radius/md` at Medium and Large — so the two halves round in step. Getting
+ * this wrong is invisible until Small, where an 8px block meets a 6px field.
+ */
+.ion-phone-input__country {
+  /*
+   * Slots, defaulting to Medium, same shape as `.ion-input`. Padding, icon and
+   * type deliberately match the Input's rungs at every size, because Figma
+   * composes this from that component and a divergence here would show as the
+   * dial code sitting off the value's baseline.
+   *
+   * GAP IS THE ONE THAT DOES NOT MATCH: 4 at every size, where the Input runs
+   * 6/8/8. Measured, not inferred — the block holds two tightly-related glyphs
+   * rather than an icon and a sentence.
+   */
+  --ion-phone-input-padding-x: var(--spacing-12);
+  --ion-phone-input-gap: var(--spacing-4);
+  --ion-phone-input-icon-size: var(--icon-size-md);
+  --ion-phone-input-radius: var(--radius-md);
+  --ion-phone-input-font-size: var(--type-body);
+  --ion-phone-input-line-height: var(--type-body-line-height);
+  --ion-phone-input-border-width: var(--border-width-default);
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--ion-phone-input-gap);
+  flex-shrink: 0;
+
+  /*
+   * No height of its own: the row stretches it to the control beside it, so the
+   * two halves cannot drift apart. Pinning a height here would duplicate the
+   * Input's size ladder and then disagree with it the first time one moved.
+   */
+  padding-block: 0;
+
+  /* Figma's stroke is inside the frame; a CSS border is outside the padding
+   * box. Subtracting it puts the dial code where the design has it — the same
+   * correction `.ion-input` documents at length. */
+  padding-inline: calc(
+    var(--ion-phone-input-padding-x) - var(--ion-phone-input-border-width)
+  );
+  background-color: var(--surface-page);
+  border-style: solid;
+  border-width: var(--ion-phone-input-border-width);
+  border-color: var(--border-default);
+  border-start-start-radius: var(--ion-phone-input-radius);
+  border-end-start-radius: var(--ion-phone-input-radius);
+  border-start-end-radius: 0;
+  border-end-end-radius: 0;
+  color: var(--text-secondary);
+  font-family: var(--font-family-sans);
+  font-size: var(--ion-phone-input-font-size);
+  line-height: var(--ion-phone-input-line-height);
+  font-weight: var(--font-weight-regular);
+  cursor: pointer;
+  transition:
+    border-color var(--ion-duration-base) var(--ion-ease-out),
+    background-color var(--ion-duration-base) var(--ion-ease-out);
+}
+
+.ion-phone-input__country--sm {
+  --ion-phone-input-icon-size: var(--icon-size-sm);
+  --ion-phone-input-radius: var(--radius-sm);
+  --ion-phone-input-font-size: var(--type-body-sm);
+  --ion-phone-input-line-height: var(--type-body-sm-line-height);
+}
+
+/* Large grows its padding only — icon, radius and type stay at Medium's rung,
+ * exactly as `.ion-input--lg` does. */
+.ion-phone-input__country--lg {
+  --ion-phone-input-padding-x: var(--spacing-16);
+}
+
+.ion-phone-input__chevron {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: var(--icon-tertiary);
+}
+
+.ion-phone-input__chevron svg {
+  width: var(--ion-phone-input-icon-size);
+  height: var(--ion-phone-input-icon-size);
+}
+
+@media (hover: hover) {
+  .ion-phone-input__country:hover:not(:disabled) {
+    border-color: var(--border-strong);
+  }
+}
+
+/*
+ * Raised above the control while focused so the ring is not clipped by the
+ * neighbour's border. Inset offset because Figma draws focus as an inside
+ * stroke — matching `.ion-input`, which thickens its border rather than
+ * painting an outline outside the box.
+ */
+.ion-phone-input__country:focus-visible {
+  outline: var(--border-width-thick) solid var(--border-focus);
+  outline-offset: calc(-1 * var(--border-width-thick));
+  position: relative;
+  z-index: 1;
+}
+
+.ion-phone-input__country:disabled {
+  background-color: var(--surface-disabled);
+  border-color: var(--border-disabled);
+  color: var(--text-disabled);
+  cursor: not-allowed;
+}
+
+.ion-phone-input__country:disabled .ion-phone-input__chevron {
+  color: var(--icon-disabled);
+}

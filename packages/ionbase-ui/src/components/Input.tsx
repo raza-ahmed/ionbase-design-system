@@ -38,6 +38,22 @@ export interface InputProps extends AriaTextFieldProps, InputDOMProps {
   /** Trailing icon. Figma's `Show Trailing Icon` + `Trailing Icon` swap. */
   trailingIcon?: React.ReactNode;
   /**
+   * A segment butted against the left of the control, sharing its outline —
+   * Figma's `Input/Phone` (80:372) country-code block.
+   *
+   * Distinct from `leadingIcon`, which sits *inside* the box: an addon has its
+   * own surface and border and is a sibling of the control, so the two cannot
+   * be the same slot. It lives here rather than in `PhoneInput` because the
+   * `.ion-field` wrapper has to enclose the addon and the control together —
+   * building it outside would put the label above only half the control and
+   * break the `aria-labelledby` wiring `useTextField` sets up.
+   *
+   * Phone is the only addon Figma specifies. This is a slot, not a system:
+   * resist growing a trailing counterpart or an addon variant ladder until a
+   * design actually calls for one.
+   */
+  leadingAddon?: React.ReactNode;
+  /**
    * @deprecated Use `isDisabled`. Accepted as an alias for one minor version.
    */
   disabled?: boolean;
@@ -73,6 +89,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
       size = 'md',
       leadingIcon,
       trailingIcon,
+      leadingAddon,
       className: customClassName,
       wrapperClassName,
       label,
@@ -154,13 +171,24 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
       </div>
     );
 
+    // The addon and the control share one outline, so they need a row of their
+    // own — `.ion-field` is a column and would stack them.
+    const control = leadingAddon ? (
+      <div className="ion-input-group">
+        {leadingAddon}
+        {box}
+      </div>
+    ) : (
+      box
+    );
+
     // Figma's Error variant recolours the helper text, so the error message
     // takes the helper's slot rather than stacking below it.
     const helper = isInvalid && errorMessage ? errorMessage : description;
     const helperProps =
       isInvalid && errorMessage ? errorMessageProps : descriptionProps;
 
-    if (!label && !helper) return box;
+    if (!label && !helper) return control;
 
     return (
       <div
@@ -177,7 +205,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
             {label}
           </label>
         )}
-        {box}
+        {control}
         {helper && (
           <span {...helperProps} className="ion-field__helper">
             {helper as React.ReactNode}

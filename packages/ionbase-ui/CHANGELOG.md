@@ -1,5 +1,59 @@
 # Changelog
 
+## 0.9.0 — 2026-08-07
+
+`PhoneInput`, the last unbuilt component on the Input page. **Nothing existing
+changes** — `Input` gains one optional prop and is otherwise untouched.
+
+### Added — `PhoneInput`
+
+Measured from Figma `Input/Phone` (80:372). A dial-code block butted against an
+`Input`, sharing one outline: the block carries the left radii and the control
+the right, so the seam is square on both sides and the pair reads as a single
+control.
+
+Three sizes and no State axis. Every interaction state is the `Input`'s, reached
+through the ordinary props, because Figma composes this from the same `Input`
+instance rather than redrawing it. `type` defaults to `tel`.
+
+**It does not pick countries, deliberately.** The chevron implies a menu and
+Figma specifies no open state for it — no list, no flags, no search, no selected
+state. Which territories, what to call them and what order to show them in are
+editorial decisions with real weight, and inventing them here would be designing
+rather than implementing. The trigger is a real `<button>` with an accessible
+name, and `countryButtonProps` is how you attach a `Menu`, a popover or your own
+listbox — including the `aria-haspopup` and `aria-expanded` that only the thing
+owning the popup can set honestly.
+
+Disabling the field disables the trigger too. A dial-code button that stays live
+beside a field you cannot edit offers an action that goes nowhere.
+
+### Added — `Input` accepts `leadingAddon`
+
+The mechanism `PhoneInput` is built on. Distinct from `leadingIcon`, which sits
+_inside_ the control box: an addon has its own surface and border and is a
+sibling of the box.
+
+It lives on `Input` rather than inside `PhoneInput` because the `.ion-field`
+wrapper has to enclose the addon and the control **together**. Building the block
+outside `Input` would put the label above only half the control and leave the
+addon outside the wrapper — visually almost right, and wrong in the
+accessibility tree. There is a story asserting exactly that, through
+`getByLabelText` rather than DOM shape.
+
+Phone is the only addon Figma specifies, so this is a slot, not a system. There
+is deliberately no trailing counterpart and no addon variant ladder.
+
+### Tokens
+
+None. `PhoneInput` binds `surface/page`, `border/default`, `text/secondary`,
+`icon/tertiary`, the `radius` and `spacing` rungs the Input already uses, and
+adds nothing — the component is a composition, not a new vocabulary.
+
+One measured divergence worth knowing: the block's internal gap is `spacing/4`
+at **every** size, where the Input's runs 6/8/8. Reproduced as measured; it holds
+two tightly-related glyphs rather than an icon and a sentence.
+
 ## 0.8.0 — 2026-08-07
 
 Two new Button variants and a fourth size. **Nothing existing changes** — every
