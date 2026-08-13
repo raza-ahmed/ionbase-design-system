@@ -1,5 +1,48 @@
 # Changelog
 
+## 0.10.0 — 2026-08-07
+
+`Link`. **Nothing existing changes** — this is purely additive.
+
+### Added — `Link`
+
+Designed in Figma first (`Link`, 774:1516), then built here. Two types, five
+states, and **no new tokens**: `text/link/hover`, `text/link/visited` and
+`ring/focus` were already defined and had no consumer anywhere.
+
+`variant="inline"` is underlined in **every** state — a link inside a paragraph
+distinguished only by colour fails WCAG 1.4.1. `variant="standalone"` earns its
+lack of underline from context (a table cell, a list, a card footer) and
+underlines on hover, so the affordance is deferred rather than absent.
+
+**There is no `size` prop, and that is the design.** A link is inline: it takes
+the type of the sentence around it. `font-size` and `line-height` inherit, and
+the icons are `1em`, so a 14px link gets a 14px icon without being told. Figma
+draws its variants at 16/24 because a Figma variant must have a concrete size —
+that is one sample of an inheriting element, not a specification.
+
+Renders an `<a>` with `href` and a `<button>` without one, the same judgment
+`NavItem` makes. A disabled link drops its `href` and leaves the tab order:
+`aria-disabled` alone announces the state and changes nothing else, leaving the
+link clickable, focusable and middle-clickable.
+
+### Icons inherit, and that is load-bearing
+
+Both slots are `currentColor` and `em` rather than an `icon/*` token and an
+`icon-size` rung. The icon cannot drift from the text it belongs to, in any
+state, without a single rule keeping them in step.
+
+This is deliberately **not** the usual v2 split between `text/*` and `icon/*`,
+because the icon here makes no colour decision of its own. The Figma component
+binds the label's colour token onto the icon vectors to depict the same
+relationship, since Figma has no inheritance — where the icons were
+`icon/default` (near-black) on a blue link until that was caught in review.
+
+### Tokens
+
+None added — still 384. `bindings.json` gains `Link/Link` with 15 bindings, and
+three Interface roles get their first consumer in the system.
+
 ## 0.9.0 — 2026-08-07
 
 `PhoneInput`, the last unbuilt component on the Input page. **Nothing existing

@@ -45,6 +45,8 @@ export type {
 } from './Logo.js';
 export { Divider } from './Divider.js';
 export type { DividerProps, DividerOrientation } from './Divider.js';
+export { Link } from './Link.js';
+export type { LinkProps, LinkVariant } from './Link.js';
 export { NavItem } from './NavItem.js';
 export type { NavItemProps } from './NavItem.js';
 export { Table, TableHead, TableBody, TableRow, TableCell } from './Table.js';

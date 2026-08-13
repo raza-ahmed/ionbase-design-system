@@ -839,6 +839,23 @@
       {"collection": "Semantics", "token": "icon-size/sm"},
       {"collection": "Semantics", "token": "icon-size/xl"},
       {"collection": "Semantics", "token": "icon-size/xs"}
+    ],
+    "Link/Link": [
+      {"collection": "Breakpoint", "token": "type/body"},
+      {"collection": "Breakpoint", "token": "type/body/line-height"},
+      {"collection": "Interface", "token": "border/strong"},
+      {"collection": "Interface", "token": "ring/focus"},
+      {"collection": "Interface", "token": "surface/default"},
+      {"collection": "Interface", "token": "text/disabled"},
+      {"collection": "Interface", "token": "text/link"},
+      {"collection": "Interface", "token": "text/link/hover"},
+      {"collection": "Interface", "token": "text/link/visited"},
+      {"collection": "Primitives", "token": "spacing/4"},
+      {"collection": "Semantics", "token": "border-width/thick"},
+      {"collection": "Semantics", "token": "font/family/sans"},
+      {"collection": "Semantics", "token": "font/weight/regular"},
+      {"collection": "Semantics", "token": "icon-size/sm"},
+      {"collection": "Semantics", "token": "radius/xs"}
     ]
   }
 }
