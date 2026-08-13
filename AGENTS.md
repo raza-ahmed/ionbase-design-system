@@ -79,6 +79,60 @@ modified. Turbo's cache is empty on a fresh runner, so CI genuinely executes
 every task — which matters, because a stale local cache once reported "lint
 successful" without running lint at all.
 
+**A PR does not deploy the Storybook site and is not meant to.**
+`deploy-storybook` is gated on `main` and on both test jobs, so a red suite
+leaves the previous deploy up rather than publishing a broken site. The cost is
+that a test failing only on the runner silently freezes the live site at an old
+commit — that happened for two days in August 2026 and nobody noticed, because
+every check people looked at was on a branch.
+
+---
+
+## Interaction tests — hover is a pulse, not a level
+
+Read this before asserting on `data-hovered` anywhere.
+
+**In headless Chromium the hover does not hold.** A few ticks after
+`userEvent.hover()`, the browser drops `:hover` while the element is still
+attached, unmoved and unobstructed. React Aria's `isHovered` follows it false,
+React re-renders, and `data-hovered` is **removed**. Re-hovering does not bring
+it back either: the pointer is already at those coordinates, and Chromium fires
+no fresh `pointerenter` for a move to the same point.
+
+So the attribute is a **pulse**. Every way of _reading_ it after the fact is a
+coin flip on whether the drop beat the read, which produces the worst kind of
+test — green locally, red on the runner, intermittently.
+
+**`waitFor` is the wrong tool and actively makes it worse.** Polling for a
+second cannot catch a value that has already gone; it converts a fast failure
+into a slow one. This has now been tried and reverted at least twice.
+
+Two shapes work, both in the tree:
+
+- **Observe the transition.** Arm a `MutationObserver` on the element _before_
+  moving the pointer, then assert it fired. Asks the question the test actually
+  means — did a real pointer ever produce the attribute — rather than "is it
+  present at this arbitrary instant". See `Hovered` in
+  [Button.stories.tsx](apps/storybook/src/stories/Button.stories.tsx).
+- **Split the contract.** Assert React Aria's half with a real pointer read
+  synchronously, then set the attribute by hand and read the CSS's half with no
+  `await` between the statements. See `HoverHasNoBackground` in
+  [NavItem.stories.tsx](apps/storybook/src/stories/NavItem.stories.tsx), which
+  documents the original instrumentation.
+
+This has bitten Tabs, ScrollProgress, NavItem and Button. The first three were
+each fixed locally without the reason being written down, so the fourth cost a
+full debugging cycle — including two confident, wrong diagnoses. **That is why
+this section exists: the fix is cheap and rediscovering it is not.**
+
+A related trap worth knowing while you are here: React assigns DOM events a
+priority, and `pointerenter` / `mouseenter` / `mousemove` are CONTINUOUS
+(scheduled) while `focusin` / `click` / `keydown` / `pointerdown` are DISCRETE
+(flushed before the next line). That is real — see `getEventPriority` in
+react-dom — and it is **not** the cause of the hover flake. It is recorded here
+because it looks like a satisfying explanation and led one debugging attempt
+straight past the actual bug.
+
 ---
 
 ## Tokens — read this section in full before editing anything under `packages/tokens`
