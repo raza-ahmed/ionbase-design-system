@@ -1,6 +1,6 @@
 import React from 'react';
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { expect } from 'storybook/test';
+import { expect, waitFor } from 'storybook/test';
 import { NavItem, Icon } from 'ionbase-ui';
 import { Settings } from 'lucide-react';
 
@@ -156,14 +156,32 @@ export const HoverHasNoBackground: Story = {
 
     // 1. React Aria's contract: a real pointer produces the attribute.
     //
-    // Read immediately and WITHOUT `waitFor`, for the reason given above: the
-    // attribute is a pulse, not a level. Polling for it cannot catch a value
-    // that has already been dropped, so a `waitFor` here would turn the same
-    // hazard into a slower failure. Button's `Hovered` story is the same
-    // contract made drop-proof with a MutationObserver; if this line ever
-    // flakes, take that approach rather than adding a wait.
-    await userEvent.hover(item);
-    await expect(item).toHaveAttribute('data-hovered', 'true');
+    // Observed, not sampled. `data-hovered` is a pulse for the reason given
+    // above, so reading it after the fact is a race — this line did exactly
+    // that, passed for weeks, and went red on CI. `waitFor` is not the fix and
+    // would make it worse: polling cannot catch a value that has already been
+    // dropped. Arming a MutationObserver BEFORE the pointer moves asks what
+    // the test actually means — did a real pointer ever produce the attribute
+    // — and is immune to how quickly the browser takes it away again.
+    //
+    // Same shape as Button's `Hovered`. See the interaction-tests section in
+    // AGENTS.md before changing this.
+    let everHovered = item.getAttribute('data-hovered') === 'true';
+    const observer = new MutationObserver(() => {
+      if (item.getAttribute('data-hovered') === 'true') everHovered = true;
+    });
+    observer.observe(item, {
+      attributes: true,
+      attributeFilter: ['data-hovered'],
+    });
+
+    try {
+      await userEvent.hover(item);
+      await waitFor(() => expect(everHovered).toBe(true));
+    } finally {
+      // Disconnected before step 2, which sets the attribute by hand.
+      observer.disconnect();
+    }
 
     // 2. The stylesheet's contract: the attribute produces the colour.
     //
