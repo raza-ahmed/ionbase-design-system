@@ -90,6 +90,25 @@
 }
 
 /*
+ * A leading addon and the control, sharing one outline — Figma `Input/Phone`
+ * (80:372).
+ *
+ * `align-items: stretch` rather than a height here on purpose: the addon takes
+ * its height from the control, so the size ladder stays in exactly one place
+ * and the two halves cannot drift. The addon supplies its own left radii; this
+ * rule only has to square off the edge they meet on.
+ */
+.ion-input-group {
+  display: flex;
+  align-items: stretch;
+}
+
+.ion-input-group > .ion-input {
+  border-start-start-radius: 0;
+  border-end-start-radius: 0;
+}
+
+/*
  * The field itself carries no box of its own — the wrapper owns the border,
  * background and padding so the icons sit inside it. Everything here is either
  * inherited or reset.
