@@ -1,0 +1,19 @@
+{
+  // Use the workspace TypeScript (5.9.3), not the one bundled with the editor.
+  //
+  // Not cosmetic. `tsconfig.base.json` sets `moduleResolution: NodeNext`, and
+  // both `@storybook/react-vite` and `storybook/test` publish their types behind
+  // `exports` maps that resolve ONLY under node16/nodenext/bundler. A checker
+  // running with anything else reports "Cannot find module ... There are types
+  // at <path>, but this result could not be resolved under your current
+  // 'moduleResolution' setting" — and the visible symptom is not that message.
+  // It is `Meta`/`StoryObj` going unresolved, which strips the contextual type
+  // from every `play` and `render` parameter and fills the stories with
+  // TS7031/TS7006 implicit-any errors on `canvas`, `userEvent` and `args`.
+  //
+  // `pnpm typecheck` stays green throughout, because it runs per package with
+  // the right config. So this failure appears only in the editor, which makes
+  // it read as a code problem rather than a resolution one.
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "typescript.enablePromptUseWorkspaceTsdk": true
+}
