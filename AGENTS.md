@@ -469,11 +469,31 @@ PR**. The vocabularies exist in two places that must stay in step: the spec's
 the old "danger has five steps, warning has two" asymmetry cannot recur. Full
 ramps live in Semantics; Interface picks the step.
 
-**`surface/warning` in dark has no passing text pairing** — `text/on-color` is
-2.64 and `text/default` is 2.48. Measured and recorded in
-[docs/token-architecture-v2.md](docs/token-architecture-v2.md) §6a, deliberately
-not "fixed": the values are a design decision. Resolve before a solid warning
-surface carries body text.
+**Contrast is not checked by the token pipeline.** `tokens:tier` proves an
+alias resolves; `tokens:verify` proves a name matches its `codeSyntax`. Neither
+knows whether the resulting pair can be read. Two AA failures reached
+production that way — `text/error` on `surface/error-subtle` at 3.38:1 in dark
+and `text/information` at 4.12:1 — fixed 2026-08-14 by moving those two roles
+to `error/300` and `information/300`.
+
+**Known and deliberately unfixed**, pending a decision on the accent ramps:
+
+| pairing                                 | mode  | ratio  | where                       |
+| --------------------------------------- | ----- | ------ | --------------------------- |
+| `surface/success` + `text/on-color`     | Light | 3.69:1 | Button `success`, all sizes |
+| `surface/information` + `text/on-color` | Dark  | 3.44:1 | not yet used                |
+
+Button's largest label is 20px/500 — 15pt, not bold — so the 3:1 large-text
+allowance never applies; all four sizes need 4.5:1. Icons on the same surfaces
+pass, since SC 1.4.11 asks 3:1.
+
+Neither is a one-step fix: every accent runs base/hover/pressed at 600/700/800
+(Light) and 500/400/300 (Dark), so moving a base onto 700 makes it identical to
+its own hover — the `surface/success-strong` bug again.
+
+The old note claiming `surface/warning` has no passing dark pairing was stale
+and is removed: `{warning.500}` → `#ea5600` against `{base.black}` measures
+5.83:1.
 
 **Text styles must bind Semantics, never a Primitive.** They carry `fontFamily`
 and `fontStyle` bindings but are not variables, so `tokens:tier` cannot see them;
