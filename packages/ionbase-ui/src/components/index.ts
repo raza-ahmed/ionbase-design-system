@@ -52,6 +52,15 @@ export type {
 } from './Logo.js';
 export { Divider } from './Divider.js';
 export type { DividerProps, DividerOrientation } from './Divider.js';
+export { Toast, ToastProvider, useToast } from './Toast.js';
+export type {
+  ToastProps,
+  ToastOptions,
+  ToastItem,
+  ToastIntent,
+  ToastPlacement,
+  ToastProviderProps,
+} from './Toast.js';
 export { Tooltip } from './Tooltip.js';
 export type { TooltipProps, TooltipPlacement } from './Tooltip.js';
 export { Modal } from './Modal.js';
