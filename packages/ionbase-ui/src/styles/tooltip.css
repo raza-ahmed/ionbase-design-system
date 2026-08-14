@@ -1,0 +1,118 @@
+/*
+ * Tooltip
+ *
+ * Measured from Figma `Tooltip` (801:1568). Four placements.
+ *
+ * THE INVERSE TRIO
+ *
+ * `surface/inverse` with `text/inverse` on it — the only pairing in the system
+ * that inverts as a unit, so the tooltip is dark on a light theme and light on
+ * a dark one with no second variant and no `@media` of its own. Both were
+ * defined long before anything used them; this is `text/inverse`'s first
+ * consumer anywhere.
+ */
+.ion-tooltip {
+  position: absolute;
+  z-index: 1100;
+
+  /*
+   * Above the modal's 1000. A tooltip on a control inside a dialog is the
+   * ordinary case — a trigger in a modal footer, say — and at a lower z-index
+   * it would render behind the panel it belongs to.
+   */
+  display: flex;
+  align-items: center;
+  pointer-events: none;
+}
+
+/*
+ * The bubble carries the surface; the arrow is a sibling.
+ *
+ * Drawing the arrow as a rotated pseudo-element ON the bubble is the usual
+ * shortcut and it fights the shadow: a rotated square inherits the box-shadow
+ * and casts a second, offset one. Keeping them separate means the arrow can
+ * take the same fill without the same shadow.
+ */
+.ion-tooltip__bubble {
+  /*
+   * A hint, not a container. Long enough for a sentence, short enough that it
+   * never becomes a paragraph — anything that needs more belongs in a popover.
+   */
+  max-width: 280px;
+  padding: var(--spacing-8) var(--spacing-12);
+  background-color: var(--surface-inverse);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--ion-shadow-shadow-md);
+  color: var(--text-inverse);
+  font-family: var(--font-family-sans);
+  font-size: var(--type-body-sm);
+  line-height: var(--type-body-sm-line-height);
+
+  /*
+   * Wrap long hints rather than forcing the overlay wider than the viewport.
+   * `overflow-wrap` catches the single-long-token case that `max-width` alone
+   * cannot.
+   */
+  overflow-wrap: anywhere;
+}
+
+.ion-tooltip__title {
+  margin-bottom: var(--spacing-4);
+  font-weight: var(--font-weight-medium);
+}
+
+.ion-tooltip__label {
+  font-weight: var(--font-weight-regular);
+}
+
+/*
+ * The arrow, as a triangle from borders rather than a rotated box.
+ *
+ * A rotated square would need its own shadow suppression and would round its
+ * corners with the bubble's radius. Border triangles have neither problem, and
+ * the transparent sides collapse to nothing.
+ *
+ * `--ion-tooltip-arrow` is the visible length; the base is twice that, which
+ * is what makes the caret 8 wide and 4 deep at the default.
+ */
+.ion-tooltip__arrow {
+  --ion-tooltip-arrow: var(--spacing-4);
+
+  position: absolute;
+  width: 0;
+  height: 0;
+  border: var(--ion-tooltip-arrow) solid transparent;
+}
+
+/*
+ * Placement names where the TOOLTIP sits, so the arrow is always on the
+ * opposite edge — `--top` puts the caret underneath, pointing down at the
+ * trigger below it.
+ *
+ * These follow react-aria's RESOLVED placement, not the requested one. It
+ * flips on collision, and an arrow left on the requested side would point away
+ * from the trigger entirely.
+ */
+.ion-tooltip--top .ion-tooltip__arrow {
+  bottom: calc(-2 * var(--ion-tooltip-arrow));
+  border-top-color: var(--surface-inverse);
+  border-bottom-width: 0;
+}
+
+.ion-tooltip--bottom .ion-tooltip__arrow {
+  top: calc(-2 * var(--ion-tooltip-arrow));
+  border-bottom-color: var(--surface-inverse);
+  border-top-width: 0;
+}
+
+.ion-tooltip--left .ion-tooltip__arrow {
+  right: calc(-2 * var(--ion-tooltip-arrow));
+  border-left-color: var(--surface-inverse);
+  border-right-width: 0;
+}
+
+.ion-tooltip--right .ion-tooltip__arrow {
+  left: calc(-2 * var(--ion-tooltip-arrow));
+  border-right-color: var(--surface-inverse);
+  border-left-width: 0;
+}

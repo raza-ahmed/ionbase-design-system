@@ -1,5 +1,47 @@
 # Changelog
 
+## 0.12.0 — 2026-08-14
+
+`Tooltip`, designed in Figma first. **Nothing existing changes** — purely additive.
+
+### Added — `Tooltip`
+
+Measured from Figma `Tooltip` (801:1568). Four placements, wrapping its trigger
+so the common case is one element deep:
+`<Tooltip label="..."><Button/></Tooltip>`.
+
+**`placement` names where the tooltip sits, not where the arrow points.** `top`
+is above the trigger, arrow on the bubble's bottom edge — the same convention
+react-aria uses, so the Figma variant and the code prop mean the same thing. It
+is a preference rather than a guarantee: react-aria flips to the opposite side
+when there is no room, and the arrow modifier follows the **resolved**
+placement, not the requested one. An arrow driven by the prop would keep
+pointing at a side the tooltip is no longer on.
+
+**Focus opens it, not just hover.** A hover-only tooltip is invisible to
+keyboard and switch users. Escape dismisses it while the trigger keeps focus,
+and only one tooltip is open at a time.
+
+A tooltip is a hint, not a container: text only, wrapping at 280px. Anything
+focusable or scrollable belongs in a popover.
+
+### `text/inverse` finally has a consumer
+
+`surface/inverse` with `text/inverse` is the only pairing in the system that
+inverts as a unit, so the tooltip is dark on a light theme and light on a dark
+one with no second variant and no media query of its own. Both tokens were
+defined long before anything used them; this is the first consumer of
+`text/inverse` anywhere.
+
+The arrow is a border triangle rather than a rotated box — a rotated square
+inherits the bubble's `box-shadow` and casts a second, offset one, and rounds
+its corners with the bubble's radius.
+
+### Tokens
+
+None added — still 384. `bindings.json` gains `Tooltip/Tooltip` with 11
+bindings.
+
 ## 0.11.0 — 2026-08-14
 
 `Modal`, designed in Figma first. **Nothing existing changes** — purely additive.

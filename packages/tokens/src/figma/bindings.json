@@ -892,6 +892,19 @@
       {"collection": "Semantics", "token": "radius/full"},
       {"collection": "Semantics", "token": "radius/md"},
       {"collection": "Semantics", "token": "radius/xl"}
+    ],
+    "Tooltip/Tooltip": [
+      {"collection": "Breakpoint", "token": "type/body-sm"},
+      {"collection": "Breakpoint", "token": "type/body-sm/line-height"},
+      {"collection": "Interface", "token": "surface/inverse"},
+      {"collection": "Interface", "token": "text/inverse"},
+      {"collection": "Primitives", "token": "spacing/12"},
+      {"collection": "Primitives", "token": "spacing/4"},
+      {"collection": "Primitives", "token": "spacing/8"},
+      {"collection": "Semantics", "token": "font/family/sans"},
+      {"collection": "Semantics", "token": "font/weight/medium"},
+      {"collection": "Semantics", "token": "font/weight/regular"},
+      {"collection": "Semantics", "token": "radius/sm"}
     ]
   }
 }
