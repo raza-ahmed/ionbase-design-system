@@ -45,6 +45,8 @@ export type {
 } from './Logo.js';
 export { Divider } from './Divider.js';
 export type { DividerProps, DividerOrientation } from './Divider.js';
+export { Tooltip } from './Tooltip.js';
+export type { TooltipProps, TooltipPlacement } from './Tooltip.js';
 export { Modal } from './Modal.js';
 export type { ModalProps, ModalSize, ModalAlign } from './Modal.js';
 export { Link } from './Link.js';

@@ -125,6 +125,24 @@ each fixed locally without the reason being written down, so the fourth cost a
 full debugging cycle — including two confident, wrong diagnoses. **That is why
 this section exists: the fix is cheap and rediscovering it is not.**
 
+### When the element IS the state, hover cannot be tested at all
+
+Both shapes above depend on there being a node to watch. A tooltip, popover or
+anything else that only exists _while_ hovered has none: the open and the close
+land in the same React batch, no node is ever committed, and a
+`MutationObserver` on the document sees nothing.
+
+Instrumented on the runner rather than inferred — `pointerover`,
+`pointerenter` and `mouseenter` all fire on the trigger, so the pointer
+genuinely arrives, and 50ms later the document still has no tooltip in it.
+
+**Do not write a hover-opens-it test for these.** It will be permanently red,
+or quietly weakened until it passes, which is worse. Assert the same contract
+through **focus**, which does hold: open, dismiss, and the `aria-describedby`
+relationship. Hover still works in a real browser. See the comment above
+`FocusOpensIt` in
+[Tooltip.stories.tsx](apps/storybook/src/stories/Tooltip.stories.tsx).
+
 A related trap worth knowing while you are here: React assigns DOM events a
 priority, and `pointerenter` / `mouseenter` / `mousemove` are CONTINUOUS
 (scheduled) while `focusin` / `click` / `keydown` / `pointerdown` are DISCRETE
