@@ -1,5 +1,52 @@
 # Changelog
 
+## 0.12.2 — 2026-08-14
+
+Two WCAG AA contrast failures in dark mode, both shipped. **Colour change** —
+`text/error` and `text/information` are one ramp step lighter in dark.
+
+### Fixed — two intent pairings failed AA in dark
+
+| pairing                                            | before     | after  |
+| -------------------------------------------------- | ---------- | ------ |
+| `text/error` on `surface/error-subtle`             | **3.38:1** | 5.56:1 |
+| `text/information` on `surface/information-subtle` | **4.12:1** | 7.65:1 |
+
+Badge ships both. Its label is `type/body-sm` (14px regular), which is normal
+text under WCAG 1.4.3, so the bar is 4.5:1 — the 3:1 large-text allowance does
+not apply.
+
+Fixed in Figma, not in CSS: `text/error` dark moves `error.400` → `error.300`
+and `text/information` dark moves `information.400` → `information.300`. Both
+are text roles rather than ramp steps with hover/pressed siblings, so nothing
+collides, and every other pairing they appear in improves — `text/error` on the
+page surface goes 6.04 → 9.94.
+
+### Added — a contrast gate, because nothing was checking
+
+`tokens:tier` proves an alias resolves and `tokens:verify` proves a name matches
+its `codeSyntax`. Neither knows whether the resulting pair can be read, which is
+how both failures shipped.
+
+`IntentsMeetContrastAA` now measures all six intents against their own surface
+in **both themes**, from the rendered element rather than the token JSON.
+Both-themes is the point: Storybook renders light by default and both failures
+were in dark, so a light-only version would have passed against the very bug it
+was written for. Negative-tested by restoring the old token and confirming it
+reports `dark/error 3.38:1`.
+
+### Known, unfixed — two solid pairings
+
+`surface/success` + `text/on-color` is 3.69:1 in Light (Button's `success`
+variant) and `surface/information` is 3.44:1 in Dark. Neither is a one-step
+fix: every accent runs base/hover/pressed at 600/700/800, so moving a base onto
+700 makes it identical to its own hover. Fixing them means shifting those two
+ramps, which is a design decision rather than a contrast patch. Recorded in
+`AGENTS.md`.
+
+Also corrected there: the long-standing note that `surface/warning` has no
+passing text pairing in dark. It measures **5.83:1** today — the values moved
+and the note did not.
 ## 0.12.1 — 2026-08-14
 
 Two interaction debts, both previously identified and neither started. No API

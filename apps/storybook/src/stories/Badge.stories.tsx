@@ -133,3 +133,100 @@ export const DotInheritsIntentColour: Story = {
     await expect(dot).toHaveAttribute('aria-hidden', 'true');
   },
 };
+
+/**
+ * Every intent meets WCAG AA against its own surface, in BOTH themes.
+ *
+ * This exists because two of them did not. `text/error` on
+ * `surface/error-subtle` measured 3.38:1 in dark and `text/information`
+ * 4.12:1 — both shipped, both invisible to every check the repo had, because
+ * the token pipeline verifies that names and aliases resolve and never that
+ * the resulting pair can be read.
+ *
+ * BOTH THEMES IS THE WHOLE POINT. Storybook renders light by default, and both
+ * failures were in dark — a light-only version of this story would have passed
+ * against the very bug it was written for. The dark half is rendered inside a
+ * `data-theme="dark"` wrapper rather than by toggling the toolbar, because the
+ * theme is applied by attribute selector and custom properties inherit, so a
+ * subtree gets the dark values without touching global state.
+ *
+ * Badge label type is `type/body-sm` (14px, regular), which is normal text
+ * under WCAG 1.4.3 — the 3:1 large-text allowance does not apply, so the bar
+ * is 4.5:1.
+ *
+ * Measured from the rendered element, not the token JSON: this is what a
+ * reader actually gets, after inheritance and any theme override.
+ */
+export const IntentsMeetContrastAA: Story = {
+  render: () => {
+    const intents = [
+      'neutral',
+      'primary',
+      'success',
+      'warning',
+      'error',
+      'information',
+    ] as const;
+    return (
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+        {(['light', 'dark'] as const).map((theme) => (
+          <div
+            key={theme}
+            data-theme={theme}
+            data-testid={`theme-${theme}`}
+            style={{
+              display: 'flex',
+              gap: '8px',
+              flexWrap: 'wrap',
+              padding: '12px',
+              background: 'var(--surface-page)',
+            }}
+          >
+            {intents.map((intent) => (
+              <Badge key={intent} intent={intent}>
+                {theme}-{intent}
+              </Badge>
+            ))}
+          </div>
+        ))}
+      </div>
+    );
+  },
+  play: async ({ canvas }) => {
+    const luminance = (rgb: string) => {
+      const [r, g, b] = rgb
+        .match(/\d+(\.\d+)?/g)!
+        .slice(0, 3)
+        .map(Number);
+      const lin = [r, g, b]
+        .map((v) => v / 255)
+        .map((v) => (v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4));
+      return 0.2126 * lin[0] + 0.7152 * lin[1] + 0.0722 * lin[2];
+    };
+    const ratio = (fg: string, bg: string) => {
+      const [a, b] = [luminance(fg), luminance(bg)].sort((x, y) => y - x);
+      return (a + 0.05) / (b + 0.05);
+    };
+
+    const failures: string[] = [];
+    for (const theme of ['light', 'dark']) {
+      for (const intent of [
+        'neutral',
+        'primary',
+        'success',
+        'warning',
+        'error',
+        'information',
+      ]) {
+        const badge = canvas.getByText(`${theme}-${intent}`);
+        const cs = getComputedStyle(badge);
+        const r = ratio(cs.color, cs.backgroundColor);
+        if (r < 4.5) failures.push(`${theme}/${intent} ${r.toFixed(2)}:1`);
+      }
+    }
+
+    // Collected rather than asserted one-by-one, so a regression names every
+    // broken pairing at once instead of stopping at the first.
+    await expect(failures).toEqual([]);
+  },
+};
