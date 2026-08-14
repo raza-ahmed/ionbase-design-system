@@ -1,5 +1,53 @@
 # Changelog
 
+## 0.13.1 — 2026-08-14
+
+`Alert`, designed in Figma first. **Nothing existing changes** — purely additive.
+
+> `0.13.0` was published to npm from a branch, before `0.12.1` and `0.12.2` had
+> merged, so it contains Alert but not the `Link` DOM-prop fix or the dark-mode
+> contrast fix. This release is that same Alert plus both. Nothing is missing
+> from `0.13.0`; it is simply incomplete, and `0.13.1` supersedes it.
+
+### Added — `Alert`
+
+Measured from Figma `Alert` (812:1902). `Intent` x `Emphasis` x `Layout`, with
+the parts as props: `title`, `icon`/`hideIcon`, `actions`, `onDismiss`.
+
+Intents match `Badge` exactly — `surface/<intent>-subtle`,
+`border/<intent>-subtle`, `text/<intent>`, `icon/<intent>`, neutral on
+`surface/muted` — so a status mapped to a Badge intent can be passed here.
+
+**The ARIA role is chosen by intent, not passed in.** `error` and `warning`
+render `role="alert"`, an assertive live region that interrupts a screen
+reader; the rest render `role="status"`, which waits for a pause. Both
+directions of getting this wrong are common: a page of assertive status
+messages talks over the user, and an error announced politely is missed. The
+icon is `aria-hidden` — it repeats what the colour and copy already say.
+
+**Each intent has its own glyph** — check for success, triangle for warning,
+x for error, info otherwise. In Figma these briefly collapsed to a single
+`info` because binding the icon to one instance-swap default discards the
+per-intent value; there is a story asserting they stay distinct.
+
+**Banner is not a width.** It meets its container edges, so the radius goes and
+the side borders go with it — a 1px rule at the viewport edge is invisible one
+side and a seam the other. The block edges keep theirs.
+
+### Tokens
+
+None added — still 384. First consumers of `surface/warning`,
+`surface/information`, `border/warning-strong` and `border/information-strong`.
+`bindings.json` gains `Alert/Alert` with 53 bindings.
+
+### Known — two solid intents fall short of AA
+
+`surface/success` + `text/on-color` is 3.69:1 in Light and
+`surface/information` is 3.44:1 in Dark, against 4.5:1 for normal text. Neither
+is a one-step fix: every accent runs base/hover/pressed at 600/700/800, so
+moving a base onto 700 makes it identical to its own hover. Recorded in
+`AGENTS.md` and in the component, pending an accent-ramp decision.
+
 ## 0.12.2 — 2026-08-14
 
 Two WCAG AA contrast failures in dark mode, both shipped. **Colour change** —
