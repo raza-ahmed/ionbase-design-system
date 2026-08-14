@@ -987,6 +987,32 @@
       {"collection": "Semantics", "token": "font/weight/regular"},
       {"collection": "Semantics", "token": "icon-size/md"},
       {"collection": "Semantics", "token": "radius/md"}
+    ],
+    "Popover/Popover": [
+      {"collection": "Breakpoint", "token": "type/body"},
+      {"collection": "Breakpoint", "token": "type/body-sm"},
+      {"collection": "Breakpoint", "token": "type/body-sm/line-height"},
+      {"collection": "Breakpoint", "token": "type/body/line-height"},
+      {"collection": "Interface", "token": "border/primary-strong"},
+      {"collection": "Interface", "token": "border/subtle"},
+      {"collection": "Interface", "token": "icon/secondary"},
+      {"collection": "Interface", "token": "surface/primary"},
+      {"collection": "Interface", "token": "surface/raised"},
+      {"collection": "Interface", "token": "text/default"},
+      {"collection": "Interface", "token": "text/on-color"},
+      {"collection": "Interface", "token": "text/secondary"},
+      {"collection": "Primitives", "token": "spacing/12"},
+      {"collection": "Primitives", "token": "spacing/16"},
+      {"collection": "Primitives", "token": "spacing/32"},
+      {"collection": "Primitives", "token": "spacing/40"},
+      {"collection": "Primitives", "token": "spacing/6"},
+      {"collection": "Primitives", "token": "spacing/8"},
+      {"collection": "Semantics", "token": "border-width/default"},
+      {"collection": "Semantics", "token": "font/family/sans"},
+      {"collection": "Semantics", "token": "font/weight/medium"},
+      {"collection": "Semantics", "token": "font/weight/regular"},
+      {"collection": "Semantics", "token": "icon-size/md"},
+      {"collection": "Semantics", "token": "radius/md"}
     ]
   }
 }

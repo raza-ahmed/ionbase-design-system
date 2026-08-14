@@ -1,5 +1,64 @@
 # Changelog
 
+## 0.15.0 — 2026-08-14
+
+`Popover`, designed in Figma first. **Nothing existing changes** — purely
+additive.
+
+### Added — `Popover`
+
+Measured from Figma `Popover` (825:1853). Four placements x three sizes —
+`sm` 280, `md` 320, `lg` 400. Sizes are **widths only**; height always hugs the
+content, and the body scrolls once it passes 60vh.
+
+**It sits between Tooltip and Modal.** A tooltip is a hint that cannot hold
+focusable content; a modal is a task that takes over the page. A popover holds
+interactive content but stays attached to the control that opened it. Focus is
+contained, Escape and outside clicks close it, and the rest of the page is
+hidden from assistive tech while it is open — the same guarantees Modal gives.
+What differs is the framing: no visible scrim, anchored to its trigger, and
+`surface/raised` rather than Modal's `surface/overlay`.
+
+`placement` names where the POPOVER sits, not where the arrow points — `top` is
+above the trigger, caret on the panel's bottom edge. It is a preference:
+react-aria flips to the opposite side when there is no room, and the side class
+is read back from the RESOLVED placement so the caret goes with it.
+
+### Two things that had to be got right
+
+**The panel is its own component, mounted only while open.** `useDialog`
+focuses the panel and resolves the title's id in effects that run when the
+component calling the hook mounts. Called next to `useOverlayTriggerState` in
+the parent, that moment is when the TRIGGER mounts and the panel does not exist
+yet — the dialog never takes focus (so Escape never reaches it) and
+`aria-labelledby` is silently dropped. Both were caught by stories before this
+shipped.
+
+**One positioning call, not two.** `usePopover` runs `useOverlayPosition`
+itself and returns the resolved placement and arrow offsets with it; calling
+`useOverlayPosition` separately produces a second set of transforms that fight
+the first.
+
+### Smaller decisions
+
+There is deliberately no `aria-haspopup` on the trigger. ARIA 1.1 allows
+`dialog`, but react-aria emits the attribute only for menus and listboxes
+because screen readers announce every other value as "menu". `aria-expanded`
+and `aria-controls` already say a container opens from here.
+
+The caret is a rotated square with two borders cleared, not a border triangle
+as in Tooltip — this panel has a 1px outline for dark mode, and only a rotated
+square keeps that outline continuous where the caret meets it.
+
+`z-index: 1150`, between Modal's 1000 and Toast's 1200: a popover opened from a
+control inside a dialog has to sit above the dialog, and a toast confirming
+what it did has to sit above both.
+
+### Tokens
+
+None added — still 384. `bindings.json` gains `Popover/Popover` with 24
+bindings, taking the snapshot to 40 components and 917 bindings.
+
 ## 0.14.0 — 2026-08-14
 
 `Toast`, designed in Figma first. **Nothing existing changes** — purely additive.
