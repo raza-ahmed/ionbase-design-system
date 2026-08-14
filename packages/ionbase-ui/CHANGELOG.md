@@ -22,19 +22,6 @@ are text roles rather than ramp steps with hover/pressed siblings, so nothing
 collides, and every other pairing they appear in improves — `text/error` on the
 page surface goes 6.04 → 9.94.
 
-### Added — a contrast gate, because nothing was checking
-
-`tokens:tier` proves an alias resolves and `tokens:verify` proves a name matches
-its `codeSyntax`. Neither knows whether the resulting pair can be read, which is
-how both failures shipped.
-
-`IntentsMeetContrastAA` now measures all six intents against their own surface
-in **both themes**, from the rendered element rather than the token JSON.
-Both-themes is the point: Storybook renders light by default and both failures
-were in dark, so a light-only version would have passed against the very bug it
-was written for. Negative-tested by restoring the old token and confirming it
-reports `dark/error 3.38:1`.
-
 ### Known, unfixed — two solid pairings
 
 `surface/success` + `text/on-color` is 3.69:1 in Light (Button's `success`
@@ -47,6 +34,7 @@ ramps, which is a design decision rather than a contrast patch. Recorded in
 Also corrected there: the long-standing note that `surface/warning` has no
 passing text pairing in dark. It measures **5.83:1** today — the values moved
 and the note did not.
+
 ## 0.12.1 — 2026-08-14
 
 Two interaction debts, both previously identified and neither started. No API

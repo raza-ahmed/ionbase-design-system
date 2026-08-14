@@ -469,36 +469,31 @@ PR**. The vocabularies exist in two places that must stay in step: the spec's
 the old "danger has five steps, warning has two" asymmetry cannot recur. Full
 ramps live in Semantics; Interface picks the step.
 
-**Contrast is not checked by the token pipeline, and that gap has shipped
-defects twice.** `tokens:tier` proves an alias resolves; `tokens:verify` proves
-a name matches its `codeSyntax`. Neither has any idea whether the resulting
-pair can be read. Two AA failures reached production that way —
-`text/error` on `surface/error-subtle` at **3.38:1** in dark, and
-`text/information` at **4.12:1** — both in Badge, both fixed 2026-08-14 by
-moving those two roles one step to `error/300` and `information/300`.
+**Contrast is not checked by the token pipeline.** `tokens:tier` proves an
+alias resolves; `tokens:verify` proves a name matches its `codeSyntax`. Neither
+knows whether the resulting pair can be read. Two AA failures reached
+production that way — `text/error` on `surface/error-subtle` at 3.38:1 in dark
+and `text/information` at 4.12:1 — fixed 2026-08-14 by moving those two roles
+to `error/300` and `information/300`.
 
-The gate now exists: `IntentsMeetContrastAA` in
-[Badge.stories.tsx](apps/storybook/src/stories/Badge.stories.tsx) measures every
-intent against its own surface **in both themes**. The both-themes part is
-load-bearing — Storybook renders light by default and both failures were in
-dark, so a light-only version would have passed against the exact bug it was
-written for. It renders the dark half inside a `data-theme="dark"` wrapper
-rather than toggling global state.
+**Known and deliberately unfixed**, pending a decision on the accent ramps:
 
-~~`surface/warning` in dark has no passing text pairing~~ — **this note was
-stale and is corrected.** It recorded `text/on-color` at 2.64; the chain today
-is `{warning.500}` → `{color.orange.500}` → `#ea5600` against `{base.black}`,
-which measures **5.83:1**. Warning passes in both modes. The values moved at
-some point and the note did not.
+| pairing                                 | mode  | ratio  | where                       |
+| --------------------------------------- | ----- | ------ | --------------------------- |
+| `surface/success` + `text/on-color`     | Light | 3.69:1 | Button `success`, all sizes |
+| `surface/information` + `text/on-color` | Dark  | 3.44:1 | not yet used                |
 
-**Two solid pairings still fail, and both need a ramp decision rather than a
-patch.** `surface/success` + `text/on-color` is 3.69:1 in Light — that is
-Button's shipped `success` variant — and `surface/information` is 3.44:1 in
-Dark. Neither can be fixed by nudging the surface one step, because every
-accent runs base/hover/pressed at 600/700/800 in Light and 500/400/300 in Dark:
-moving the base onto 700 makes it identical to its own hover, which is the
-`surface/success-strong` bug again. Fixing them means shifting the whole ramp
-for those two families.
+Button's largest label is 20px/500 — 15pt, not bold — so the 3:1 large-text
+allowance never applies; all four sizes need 4.5:1. Icons on the same surfaces
+pass, since SC 1.4.11 asks 3:1.
+
+Neither is a one-step fix: every accent runs base/hover/pressed at 600/700/800
+(Light) and 500/400/300 (Dark), so moving a base onto 700 makes it identical to
+its own hover — the `surface/success-strong` bug again.
+
+The old note claiming `surface/warning` has no passing dark pairing was stale
+and is removed: `{warning.500}` → `#ea5600` against `{base.black}` measures
+5.83:1.
 
 **Text styles must bind Semantics, never a Primitive.** They carry `fontFamily`
 and `fontStyle` bindings but are not variables, so `tokens:tier` cannot see them;
