@@ -1,0 +1,235 @@
+/*
+ * Modal
+ *
+ * Measured from Figma `Modal` (792:1537). Four sizes x two alignments.
+ *
+ * THE SCRIM IS IN THIS COMPONENT, AND IN FIGMA IT IS NOT
+ *
+ * Figma models the panel alone so it can be dropped into any layout, and binds
+ * `surface/scrim` on a separate `Overlay — usage` frame instead. In code that
+ * split would be useless: nothing can render a modal without also rendering
+ * what sits behind it, so the scrim lives here.
+ *
+ * The consequence is that `bindings.json` records the panel's tokens but not
+ * the scrim, because the export only walks components and the scrim is on a
+ * frame. `surface/scrim` therefore still reads as unbound in any "which roles
+ * have no consumer" sweep. It has one — this file.
+ */
+.ion-modal__scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-24);
+  background-color: var(--surface-scrim);
+}
+
+.ion-modal {
+  /*
+   * Size is a set of slots defaulting to Medium, the same shape Button and
+   * Input use — a size modifier reassigns the width rather than restating the
+   * whole box.
+   */
+  --ion-modal-width: 560px;
+
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-20);
+  width: var(--ion-modal-width);
+
+  /*
+   * Never taller than the viewport it sits in. Figma's panels hug their
+   * content because a Figma frame has no viewport to overflow; a real one
+   * does, and a dialog taller than the screen becomes unreachable at both
+   * ends. The scrim's padding is subtracted so the panel never touches the
+   * edges.
+   */
+  max-width: 100%;
+  max-height: 100%;
+  padding: var(--spacing-24);
+  background-color: var(--surface-overlay);
+  border: var(--border-width-default) solid var(--border-subtle);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--ion-shadow-shadow-xl);
+}
+
+.ion-modal--sm {
+  --ion-modal-width: 400px;
+}
+
+.ion-modal--lg {
+  --ion-modal-width: 720px;
+}
+
+/*
+ * Fullscreen is a different layout, not another width.
+ *
+ * It meets the viewport edges, so radius, border and shadow are removed rather
+ * than reduced — there is nothing for them to sit against. The scrim's padding
+ * goes too, or the "fullscreen" panel would float in a 24px frame.
+ */
+.ion-modal--fullscreen {
+  --ion-modal-width: 100%;
+
+  height: 100%;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.ion-modal__scrim:has(.ion-modal--fullscreen) {
+  padding: 0;
+}
+
+.ion-modal__header {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-16);
+}
+
+.ion-modal__heading {
+  display: flex;
+  flex: 1 1 auto;
+  min-width: 0;
+  flex-direction: column;
+  gap: var(--spacing-8);
+}
+
+.ion-modal__title {
+  margin: 0;
+  color: var(--text-default);
+  font-family: var(--font-family-sans);
+  font-size: var(--type-h5);
+  line-height: var(--type-h5-line-height);
+  font-weight: var(--font-weight-semibold);
+}
+
+.ion-modal__description {
+  margin: 0;
+  color: var(--text-secondary);
+  font-family: var(--font-family-sans);
+  font-size: var(--type-body);
+  line-height: var(--type-body-line-height);
+  font-weight: var(--font-weight-regular);
+}
+
+/*
+ * The featured slot. Circular, hugging whatever is put in it, so an icon and a
+ * spot illustration both sit correctly without a second variant.
+ */
+.ion-modal__media {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: var(--spacing-48);
+  height: var(--spacing-48);
+  background-color: var(--surface-primary-subtle);
+  border-radius: var(--radius-full);
+  color: var(--icon-primary);
+}
+
+.ion-modal__media svg {
+  width: var(--icon-size-lg);
+  height: var(--icon-size-lg);
+}
+
+/*
+ * 32px, not the 20px glyph it contains. WCAG 2.2 SC 2.5.8 asks for a 24x24
+ * minimum pointer target and the icon alone would fail it. Do not shrink this
+ * to fit the icon.
+ */
+.ion-modal__close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: var(--spacing-32);
+  height: var(--spacing-32);
+  padding: 0;
+  background: none;
+  border: none;
+  border-radius: var(--radius-sm);
+  color: var(--icon-secondary);
+  cursor: pointer;
+  transition: background-color var(--ion-duration-base) var(--ion-ease-out);
+}
+
+.ion-modal__close svg {
+  width: var(--icon-size-md);
+  height: var(--icon-size-md);
+}
+
+@media (hover: hover) {
+  .ion-modal__close:hover {
+    background-color: var(--surface-hover);
+  }
+}
+
+.ion-modal__close:focus-visible {
+  outline: var(--border-width-thick) solid var(--ring-focus);
+  outline-offset: 2px;
+}
+
+/*
+ * The body is the only part that scrolls. Capping the panel and letting this
+ * flex-shrink keeps the header and actions in place while long content moves
+ * underneath them — which is the whole reason a dialog has a header at all.
+ */
+.ion-modal__body {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  color: var(--text-secondary);
+  font-family: var(--font-family-sans);
+  font-size: var(--type-body);
+  line-height: var(--type-body-line-height);
+}
+
+.ion-modal__footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--spacing-12);
+  flex-shrink: 0;
+}
+
+/*
+ * Centred alignment.
+ *
+ * THE SPACER IS REQUIRED HERE TOO, and assuming otherwise was wrong.
+ *
+ * The heading is a flex item beside the close button, so it does not span the
+ * panel — centring inside it lands the title and media 24px left of the
+ * panel's true centre, which is half the close button plus its gap. Exactly
+ * the same 24px Figma showed, for exactly the same reason, and the story
+ * `CentredContentIsActuallyCentred` measured it.
+ *
+ * A `::before` rather than a real element, and gated on `:has()` so it exists
+ * only when the close button does — mirroring Figma, where the spacer is bound
+ * to the same `Show Close` property. A spacer that outlived the button would
+ * push the content 24px the other way: the same bug mirrored.
+ *
+ * The actions centre too. Right-aligned buttons under centred copy read as
+ * broken.
+ */
+.ion-modal--center .ion-modal__header:has(.ion-modal__close)::before {
+  content: '';
+  flex-shrink: 0;
+  width: var(--spacing-32);
+}
+
+.ion-modal--center .ion-modal__heading {
+  align-items: center;
+  text-align: center;
+}
+
+.ion-modal--center .ion-modal__body {
+  text-align: center;
+}
+
+.ion-modal--center .ion-modal__footer {
+  justify-content: center;
+}
