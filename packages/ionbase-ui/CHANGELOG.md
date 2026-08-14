@@ -1,5 +1,54 @@
 # Changelog
 
+## 0.14.0 — 2026-08-14
+
+`Toast`, designed in Figma first. **Nothing existing changes** — purely additive.
+
+### Added — `Toast`, `ToastProvider`, `useToast`
+
+Measured from Figma `Toast` (820:1655). Six intents on **neutral chrome** —
+`surface/raised` with `Shadow/lg`, intent carried by the icon alone. A tinted
+panel floating over unknown content competes with whatever is behind it, and
+makes Toast and Alert indistinguishable at a glance. First consumer of
+`surface/raised`.
+
+`ToastProvider` owns the queue, the placement and the limit; the toast itself
+knows none of it. `useToast()` returns `{ toast, dismiss }`.
+
+### Three behaviours worth knowing
+
+**Every intent is `role="status"`, including error.** Alert derives its role
+from intent, because an error there is content the user navigated to. A toast
+arrives unbidden and often several at once, so an assertive region would
+interrupt whatever is being read each time one lands — anything urgent enough
+to interrupt should not be transient.
+
+**The live region is the container and it always exists**, empty or not. A
+region announced into existence at the same moment as its content is not
+reliably read; assistive tech has to be watching the node before text lands in
+it.
+
+**Auto-dismiss pauses on hover and focus** (WCAG 2.2.1). A toast that keeps
+counting down while being read, or while its action has keyboard focus, takes
+the action away mid-reach. The timer restarts rather than resumes, which is the
+forgiving direction.
+
+### Smaller decisions
+
+One action, not a row — a toast is transient and a second choice belongs in a
+dialog that will still be there. The action is a quiet text button rather than
+a `Button` instance: the smallest Button is 32 tall with its own padding and
+border, which makes a 400px toast noticeably taller for one word.
+
+The region is `pointer-events: none` with `auto` on each toast, so a fixed box
+spanning a corner of the viewport does not swallow clicks where nothing is
+drawn. It sits at `z-index: 1200`, above Modal's 1000 and Tooltip's 1100 — a
+toast confirming what a dialog just did has to be visible over it.
+
+### Tokens
+
+None added — still 384. `bindings.json` gains `Toast/Toast` with 25 bindings.
+
 ## 0.13.1 — 2026-08-14
 
 `Alert`, designed in Figma first. **Nothing existing changes** — purely additive.
