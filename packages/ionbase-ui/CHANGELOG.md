@@ -1,5 +1,56 @@
 # Changelog
 
+## 0.12.1 — 2026-08-14
+
+Two interaction debts, both previously identified and neither started. No API
+changes.
+
+### Fixed — `Link` leaked React Aria props to the DOM
+
+`onPress` and friends survived into the rest-props spread and landed on the
+element, so every consuming app logged "Unknown event handler property
+`onPress`. It will be ignored." on every render. Harmless at runtime — the
+handler still fired, because `useLink`/`useButton` were handed the full props
+object — but it is exactly the noise `dom-props.ts` exists to prevent, and
+Button has been guarded against it since 0.7.x.
+
+Found in a CI log rather than by a test, which is why `Link` now has the same
+guard Button does — negative-tested by reverting the fix and confirming the
+story goes red.
+
+The button branch strips more than the anchor branch: `target`, `rel`,
+`download` and the rest are real anchor attributes and meaningless on a
+`<button>`. Two lists rather than one, because merging them would silently drop
+`target` and `rel` from real links — there is a story asserting they survive.
+
+### Fixed — `Tabs` polled a hover attribute instead of observing it
+
+`StateAttributes` used `waitFor` on `data-hovered`, which is a pulse in
+headless Chromium: the browser drops `:hover` a few ticks after the pointer
+arrives and the attribute is removed. Polling cannot catch a value that has
+already gone, so the story was green only because it kept winning the race —
+NavItem's identical line eventually lost it on CI. Now observed with a
+`MutationObserver`, matching Button and NavItem.
+
+The disabled half of that story deliberately keeps its plain assertion: it
+checks an ABSENCE, and a value that never appears cannot be missed.
+
+### Not changed — `ScrollProgress` and `Badge`
+
+Both were on the list and both turned out not to be defects.
+
+`ScrollProgress` looks like the same hover hazard and is not: it schedules its
+close on a 100ms timeout, so `isOpen` outlives the dropped hover and `waitFor`
+is the right tool there.
+
+`Badge` uses `text/link` for its primary variant, which is the wrong role name
+— but `text/link` is `primary.700` and `text/primary` is `primary.600`, while
+the sibling intents run `text/success` 700, `text/error` 700 and
+`text/information` 700. "Correcting" the role would make the primary badge
+visibly lighter than every badge beside it. The real gap is that `text/primary`
+sits a step off the other intent text roles, which is a decision for Figma, not
+a rename here.
+
 ## 0.12.0 — 2026-08-14
 
 `Tooltip`, designed in Figma first. **Nothing existing changes** — purely additive.

@@ -2,6 +2,7 @@ import type {
   AriaButtonProps,
   AriaTextFieldProps,
   AriaTabListProps,
+  AriaLinkOptions,
 } from 'react-aria';
 
 /**
@@ -148,6 +149,54 @@ export const ARIA_TAB_LIST_NON_DOM_PROPS = [
   'keyboardActivation',
   'orientation',
 ] as const satisfies readonly (keyof AriaTabListProps<object>)[];
+
+/**
+ * The same, for `AriaLinkOptions` — Link's prop type.
+ *
+ * Link shipped with this defect: `onPress` reached the DOM and every consuming
+ * app logged "Unknown event handler property `onPress`. It will be ignored." on
+ * every render. Harmless at runtime — `useLink`/`useButton` were handed the
+ * full props object, so the handler still fired — but it is exactly the noise
+ * this module exists to prevent, and Button had a story guarding against it
+ * while Link did not.
+ *
+ * Sources, as of react-aria 3.50:
+ *   PressEvents     onPress, onPressStart, onPressEnd, onPressChange, onPressUp
+ *   FocusEvents     onFocusChange
+ *   LinkDOMProps    routerOptions
+ *   AriaLinkOptions elementType
+ *
+ * `autoFocus`, `onFocus`, `onBlur`, `id` and `aria-*` are real DOM props and
+ * must keep flowing through.
+ */
+export const ARIA_LINK_NON_DOM_PROPS = [
+  'onPress',
+  'onPressStart',
+  'onPressEnd',
+  'onPressChange',
+  'onPressUp',
+  'onFocusChange',
+  'routerOptions',
+  'elementType',
+] as const satisfies readonly (keyof AriaLinkOptions)[];
+
+/**
+ * Valid on `<a>`, meaningless on `<button>`.
+ *
+ * Link renders whichever the caller's props imply, so these are legitimate
+ * attributes in the anchor branch and unknown ones in the button branch. They
+ * are a separate list rather than folded into the set above precisely because
+ * the answer differs by element — merging them would silently drop `target`
+ * and `rel` from real links.
+ */
+export const ANCHOR_ONLY_DOM_PROPS = [
+  'hrefLang',
+  'target',
+  'rel',
+  'download',
+  'ping',
+  'referrerPolicy',
+] as const satisfies readonly (keyof AriaLinkOptions)[];
 
 /**
  * Returns `props` without `keys`, leaving `props` untouched.
