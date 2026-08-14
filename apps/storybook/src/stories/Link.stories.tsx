@@ -266,3 +266,78 @@ export const DisabledRecoloursIconWithLabel: Story = {
     await expect(getComputedStyle(label).color).toBe(disabledColour);
   },
 };
+
+/**
+ * React Aria props must not reach the DOM node.
+ *
+ * `useLink`/`useButton` are handed the full props object, so `onPress` always
+ * worked — the defect was that it ALSO survived into the rest-props spread and
+ * landed on the element, logging "Unknown event handler property `onPress`. It
+ * will be ignored." in every consuming app on every render. Button has had this
+ * guard since 0.7.x; Link shipped in 0.10.0 without it, and the warning showed
+ * up in a CI log.
+ *
+ * The assertion leans on the half React makes observable. `onPress*` and
+ * `onFocusChange` are event-handler-shaped, so React warns and renders nothing
+ * — invisible to the DOM. `elementType` and the anchor-only attributes are
+ * lowercase-able, so they really are written onto the element, and those are
+ * what make this able to fail.
+ *
+ * The button branch is the one under test because it strips MORE: `target`,
+ * `rel` and `download` are valid on an `<a>` and meaningless on a `<button>`.
+ */
+export const AriaPropsDoNotReachTheDom: Story = {
+  args: {
+    href: undefined,
+    children: 'Acts',
+    onPress: fn(),
+    onFocusChange: fn(),
+    elementType: 'a',
+    target: '_blank',
+    rel: 'noopener',
+    download: true,
+  },
+  play: async ({ canvas, userEvent, args }) => {
+    const button = canvas.getByRole('button', { name: 'Acts' });
+
+    const leaked = button
+      .getAttributeNames()
+      .filter((name) =>
+        [
+          'elementtype',
+          'target',
+          'rel',
+          'download',
+          'ping',
+          'hreflang',
+        ].includes(name.toLowerCase()),
+      );
+    await expect(leaked).toEqual([]);
+
+    // ...and the handler still fires, which stops the fix being "drop the props".
+    await userEvent.click(button);
+    await waitFor(() => expect(args.onPress).toHaveBeenCalledTimes(1));
+  },
+};
+
+/**
+ * ...while a real link keeps its anchor attributes.
+ *
+ * The mirror of the above, and the reason the two strip lists are separate:
+ * folding `target`/`rel` into one set would silently break every external
+ * link in the system.
+ */
+export const AnchorAttributesSurvive: Story = {
+  args: {
+    href: 'https://example.com',
+    children: 'External',
+    target: '_blank',
+    rel: 'noopener noreferrer',
+  },
+  play: async ({ canvas }) => {
+    const link = canvas.getByRole('link', { name: 'External' });
+    await expect(link).toHaveAttribute('target', '_blank');
+    await expect(link).toHaveAttribute('rel', 'noopener noreferrer');
+    await expect(link).not.toHaveAttribute('elementtype');
+  },
+};

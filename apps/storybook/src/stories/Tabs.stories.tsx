@@ -144,7 +144,18 @@ export const ArrowKeyNavigation: Story = {
   },
 };
 
-/** The same data-attribute contract the CSS depends on, as on Button. */
+/**
+ * The same data-attribute contract the CSS depends on, as on Button.
+ *
+ * `data-hovered` is observed rather than polled. It is a pulse in headless
+ * Chromium — the browser drops `:hover` a few ticks after the pointer arrives,
+ * React Aria follows it false, and the attribute is removed. `waitFor` was the
+ * wrong tool and was here until now: polling cannot catch a value that has
+ * already gone, so this was green only because it happened to win the race.
+ * NavItem's identical line eventually lost it on CI.
+ *
+ * See the interaction-tests section in AGENTS.md before changing this.
+ */
 export const StateAttributes: Story = {
   render: (args) => (
     <Tabs {...args} disabledKeys={['activity']}>
@@ -154,12 +165,28 @@ export const StateAttributes: Story = {
   play: async ({ canvas, userEvent }) => {
     const tabs = canvas.getAllByRole('tab');
 
-    await userEvent.hover(tabs[2]);
-    await waitFor(() =>
-      expect(tabs[2]).toHaveAttribute('data-hovered', 'true'),
-    );
+    let everHovered = tabs[2].getAttribute('data-hovered') === 'true';
+    const observer = new MutationObserver(() => {
+      if (tabs[2].getAttribute('data-hovered') === 'true') everHovered = true;
+    });
+    observer.observe(tabs[2], {
+      attributes: true,
+      attributeFilter: ['data-hovered'],
+    });
 
-    // A disabled tab must never report hover — useHover is passed isDisabled.
+    try {
+      await userEvent.hover(tabs[2]);
+      await waitFor(() => expect(everHovered).toBe(true));
+    } finally {
+      observer.disconnect();
+    }
+
+    /*
+     * The disabled half needs no observer, and that asymmetry is the point: it
+     * asserts an ABSENCE. `useHover` is passed `isDisabled`, so the attribute
+     * is never set at any instant — there is no pulse to miss, and a value
+     * that never appears cannot be dropped before it is read.
+     */
     await expect(tabs[1]).toHaveAttribute('data-disabled', 'true');
     await userEvent.hover(tabs[1]);
     await expect(tabs[1]).not.toHaveAttribute('data-hovered');

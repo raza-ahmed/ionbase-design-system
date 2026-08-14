@@ -10,6 +10,11 @@ import {
 } from 'react-aria';
 import type { AriaLinkOptions, AriaButtonOptions } from 'react-aria';
 import { resolveDisabled } from './resolve-disabled.js';
+import {
+  ARIA_LINK_NON_DOM_PROPS,
+  ANCHOR_ONLY_DOM_PROPS,
+  omitProps,
+} from './dom-props.js';
 
 export type LinkVariant = 'inline' | 'standalone';
 
@@ -115,6 +120,19 @@ export const Link = forwardRef<
   const interactionProps = isNavigating ? link.linkProps : button.buttonProps;
   const isPressed = isNavigating ? link.isPressed : button.isPressed;
 
+  /*
+   * `useLink`/`useButton` above were handed the FULL props object, so they have
+   * already taken `onPress` and friends and wired them up. What is left in
+   * `restProps` is a duplicate set with no further use — and spreading it puts
+   * `onPress` on the DOM node, which React warns about on every render and
+   * then ignores. Button and Input strip theirs the same way.
+   *
+   * The button branch strips more: `target`, `rel`, `download` and the rest are
+   * real anchor attributes and meaningless on a `<button>`.
+   */
+  const anchorProps = omitProps(restProps, ARIA_LINK_NON_DOM_PROPS);
+  const buttonDomProps = omitProps(anchorProps, ANCHOR_ONLY_DOM_PROPS);
+
   const { hoverProps, isHovered } = useHover({ isDisabled });
   const { focusProps, isFocusVisible } = useFocusRing();
 
@@ -151,7 +169,7 @@ export const Link = forwardRef<
   if (!href) {
     return (
       <button
-        {...(restProps as React.ButtonHTMLAttributes<HTMLButtonElement>)}
+        {...(buttonDomProps as React.ButtonHTMLAttributes<HTMLButtonElement>)}
         {...mergeProps(interactionProps, hoverProps, focusProps)}
         {...stateAttributes}
         ref={domRef}
@@ -166,7 +184,7 @@ export const Link = forwardRef<
 
   return (
     <a
-      {...restProps}
+      {...anchorProps}
       {...mergeProps(interactionProps, hoverProps, focusProps)}
       {...stateAttributes}
       ref={domRef}
