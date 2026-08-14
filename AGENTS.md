@@ -151,6 +151,25 @@ react-dom — and it is **not** the cause of the hover flake. It is recorded her
 because it looks like a satisfying explanation and led one debugging attempt
 straight past the actual bug.
 
+## Overlay hooks belong in the component that mounts with the overlay
+
+`useDialog` focuses its panel and resolves the title's id in effects keyed on
+the ref — effects that run once, when the component **calling the hook** mounts.
+Call it beside `useOverlayTriggerState` in the trigger's component and that
+moment is when the TRIGGER mounts, with the panel and its title not yet in the
+DOM. The result is silent: no `aria-labelledby`, and the panel never takes
+focus, so Escape never reaches the overlay's key handler.
+
+So every overlay here splits in two — `Modal` / `ModalDialog`, `Popover` /
+`PopoverPanel` — with the panel component mounted only while open, and
+`usePopover` / `useDialog` called inside it. react-aria warns about this exact
+mistake in dev; the warning names the shape of it, not the fix.
+
+While you are in that file: `usePopover` already runs `useOverlayPosition`
+internally and returns the resolved placement and arrow offsets. Calling
+`useOverlayPosition` yourself as well produces a second set of transforms that
+fight the first.
+
 ---
 
 ## Tokens — read this section in full before editing anything under `packages/tokens`

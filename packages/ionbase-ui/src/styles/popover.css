@@ -1,0 +1,185 @@
+/*
+ * Popover
+ *
+ * Measured from Figma `Popover` (825:1853). Placement x Size.
+ *
+ * IT SITS BETWEEN TOOLTIP AND MODAL
+ *
+ * A tooltip is a hint that cannot hold focusable content; a modal is a task
+ * that takes over the page. A popover holds interactive content but stays
+ * attached to the control that opened it — no visible scrim, anchored to its
+ * trigger, and `surface/raised` rather than Modal's `surface/overlay`.
+ */
+.ion-popover {
+  --ion-popover-width: 320px;
+
+  position: absolute;
+  z-index: 1150;
+
+  /*
+   * Between Modal (1000) and Toast (1200). A popover opened from a control
+   * inside a dialog has to sit above the dialog, and a toast confirming what
+   * the popover did has to sit above both.
+   */
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-12);
+  width: var(--ion-popover-width);
+  max-width: calc(100vw - var(--spacing-16) * 2);
+  padding: var(--spacing-16);
+  background-color: var(--surface-raised);
+
+  /* For dark mode, where surface/raised is neutral.800 against a near-black
+   * page and the shadow alone does not separate them. Same as Toast. */
+  border: var(--border-width-default) solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  box-shadow: var(--ion-shadow-shadow-lg);
+  font-family: var(--font-family-sans);
+}
+
+.ion-popover--sm {
+  --ion-popover-width: 280px;
+}
+
+.ion-popover--lg {
+  --ion-popover-width: 400px;
+}
+
+/*
+ * The underlay listens, it does not paint.
+ *
+ * Modal's scrim is visible because a modal replaces the page. This one is
+ * transparent: it exists only so a click anywhere outside closes the popover,
+ * while everything behind stays legible.
+ */
+.ion-popover__underlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1140;
+}
+
+/*
+ * The arrow, as a rotated square rather than a border triangle.
+ *
+ * Tooltip uses borders because it has no outline to match. This panel has a
+ * 1px border, so the caret needs two of its edges drawn — a rotated square
+ * with a border on two sides is the only shape that produces a continuous
+ * outline where it meets the panel. React Aria positions it along the edge;
+ * these rules only decide which side it sits on and which edges are drawn.
+ */
+.ion-popover__arrow {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  background-color: var(--surface-raised);
+  border: var(--border-width-default) solid var(--border-subtle);
+  transform: rotate(45deg);
+}
+
+/*
+ * `--top` means the popover is ABOVE the trigger, so the caret hangs off the
+ * bottom edge. These follow the RESOLVED placement: react-aria flips on
+ * collision, and an arrow left on the requested side points away from the
+ * trigger entirely.
+ *
+ * The half-width negative offset centres the rotated square on the edge, and
+ * clearing two borders leaves the seam continuous with the panel.
+ */
+.ion-popover--top .ion-popover__arrow {
+  bottom: -7px;
+  border-top: none;
+  border-left: none;
+}
+
+.ion-popover--bottom .ion-popover__arrow {
+  top: -7px;
+  border-bottom: none;
+  border-right: none;
+}
+
+.ion-popover--left .ion-popover__arrow {
+  right: -7px;
+  border-bottom: none;
+  border-left: none;
+}
+
+.ion-popover--right .ion-popover__arrow {
+  left: -7px;
+  border-top: none;
+  border-right: none;
+}
+
+.ion-popover__header {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-12);
+}
+
+.ion-popover__title {
+  margin: 0;
+  flex: 1 1 auto;
+  min-width: 0;
+  color: var(--text-default);
+  font-size: var(--type-body);
+  line-height: var(--type-body-line-height);
+  font-weight: var(--font-weight-medium);
+}
+
+/*
+ * 32px around a 20px glyph — WCAG 2.2 SC 2.5.8 asks 24x24 minimum. Same
+ * reasoning as Modal's close, Alert's dismiss and Toast's.
+ */
+.ion-popover__close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: var(--spacing-32);
+  height: var(--spacing-32);
+  padding: 0;
+  background: none;
+  border: none;
+  border-radius: var(--radius-sm);
+  color: var(--icon-secondary);
+  cursor: pointer;
+  transition: background-color var(--ion-duration-base) var(--ion-ease-out);
+}
+
+.ion-popover__close svg {
+  width: var(--icon-size-md);
+  height: var(--icon-size-md);
+}
+
+@media (hover: hover) {
+  .ion-popover__close:hover {
+    background-color: var(--surface-hover);
+  }
+}
+
+.ion-popover__close:focus-visible {
+  outline: var(--border-width-thick) solid var(--ring-focus);
+  outline-offset: 2px;
+}
+
+/*
+ * The body is the only part that scrolls, capped against the viewport. A
+ * popover anchored near an edge would otherwise run off it — Figma panels hug
+ * because a Figma frame has no viewport to overflow.
+ */
+.ion-popover__body {
+  max-height: 60vh;
+  overflow-y: auto;
+  color: var(--text-secondary);
+  font-size: var(--type-body-sm);
+  line-height: var(--type-body-sm-line-height);
+  font-weight: var(--font-weight-regular);
+  overflow-wrap: anywhere;
+}
+
+.ion-popover__footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--spacing-8);
+  flex-shrink: 0;
+}
