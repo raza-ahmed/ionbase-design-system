@@ -1,0 +1,241 @@
+/*
+ * Alert
+ *
+ * Measured from Figma `Alert` (812:1902). Intent x Emphasis x Layout.
+ *
+ * INTENT IS A SET OF SLOTS, NOT A RULE PER PROPERTY
+ *
+ * Six intents times two emphases is twelve colour combinations. Reassigning
+ * four variables per combination keeps the structural rules — padding, gap,
+ * radius, the icon box — written once, and means adding an intent is four
+ * lines rather than a new copy of the whole component.
+ *
+ * The intents match Badge exactly: `surface/<intent>-subtle`,
+ * `border/<intent>-subtle`, `text/<intent>`, `icon/<intent>`, with neutral on
+ * `surface/muted`. A status mapped to a Badge intent can be passed here.
+ */
+.ion-alert {
+  --ion-alert-surface: var(--surface-information-subtle);
+  --ion-alert-border: var(--border-information-subtle);
+  --ion-alert-text: var(--text-information);
+  --ion-alert-icon: var(--icon-information);
+
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-12);
+  padding: var(--spacing-16);
+  background-color: var(--ion-alert-surface);
+  border: var(--border-width-default) solid var(--ion-alert-border);
+  border-radius: var(--radius-md);
+  color: var(--ion-alert-text);
+  font-family: var(--font-family-sans);
+  font-size: var(--type-body);
+  line-height: var(--type-body-line-height);
+}
+
+/* --- Intent, subtle tier --- */
+.ion-alert--neutral {
+  --ion-alert-surface: var(--surface-muted);
+  --ion-alert-border: var(--border-default);
+  --ion-alert-text: var(--text-secondary);
+  --ion-alert-icon: var(--icon-secondary);
+}
+
+.ion-alert--primary {
+  --ion-alert-surface: var(--surface-primary-subtle);
+  --ion-alert-border: var(--border-primary-subtle);
+  --ion-alert-text: var(--text-link);
+  --ion-alert-icon: var(--icon-primary);
+}
+
+.ion-alert--success {
+  --ion-alert-surface: var(--surface-success-subtle);
+  --ion-alert-border: var(--border-success-subtle);
+  --ion-alert-text: var(--text-success);
+  --ion-alert-icon: var(--icon-success);
+}
+
+.ion-alert--warning {
+  --ion-alert-surface: var(--surface-warning-subtle);
+  --ion-alert-border: var(--border-warning-subtle);
+  --ion-alert-text: var(--text-warning);
+  --ion-alert-icon: var(--icon-warning);
+}
+
+.ion-alert--error {
+  --ion-alert-surface: var(--surface-error-subtle);
+  --ion-alert-border: var(--border-error-subtle);
+  --ion-alert-text: var(--text-error);
+  --ion-alert-icon: var(--icon-error);
+}
+
+.ion-alert--information {
+  --ion-alert-surface: var(--surface-information-subtle);
+  --ion-alert-border: var(--border-information-subtle);
+  --ion-alert-text: var(--text-information);
+  --ion-alert-icon: var(--icon-information);
+}
+
+/*
+ * --- Solid tier ---
+ *
+ * The accent surface at full strength under `text/on-color`, the same pairing
+ * Button's solid variants use. Written after the intents so it wins on order
+ * at equal specificity, and only the surface and border differ per intent —
+ * the text and icon are the same two roles throughout.
+ *
+ * KNOWN, pending a decision on the accent ramps: solid `success` measures
+ * 3.69:1 in Light and solid `information` 3.44:1 in Dark against
+ * `text/on-color`, both short of WCAG AA's 4.5:1 for normal text. Neither is a
+ * one-step fix — every accent runs base/hover/pressed at 600/700/800, so
+ * moving a base onto 700 makes it identical to its own hover. See AGENTS.md.
+ */
+.ion-alert--solid {
+  --ion-alert-text: var(--text-on-color);
+  --ion-alert-icon: var(--icon-on-color);
+}
+
+.ion-alert--solid.ion-alert--neutral {
+  --ion-alert-surface: var(--surface-inverse);
+  --ion-alert-border: var(--border-inverse);
+}
+
+.ion-alert--solid.ion-alert--primary {
+  --ion-alert-surface: var(--surface-primary);
+  --ion-alert-border: var(--border-primary-strong);
+}
+
+.ion-alert--solid.ion-alert--success {
+  --ion-alert-surface: var(--surface-success);
+  --ion-alert-border: var(--border-success-strong);
+}
+
+.ion-alert--solid.ion-alert--warning {
+  --ion-alert-surface: var(--surface-warning);
+  --ion-alert-border: var(--border-warning-strong);
+}
+
+.ion-alert--solid.ion-alert--error {
+  --ion-alert-surface: var(--surface-error);
+  --ion-alert-border: var(--border-error-strong);
+}
+
+.ion-alert--solid.ion-alert--information {
+  --ion-alert-surface: var(--surface-information);
+  --ion-alert-border: var(--border-information-strong);
+}
+
+/*
+ * --- Banner ---
+ *
+ * A banner meets its container's edges, so the radius goes and the SIDE
+ * borders go with it: a 1px rule at the viewport edge is invisible on one side
+ * and reads as a seam on the other. The block edges keep theirs, which is what
+ * separates a subtle banner from the page behind it.
+ */
+.ion-alert--banner {
+  border-radius: 0;
+  border-inline: none;
+}
+
+/* --- Parts --- */
+.ion-alert__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: var(--ion-alert-icon);
+}
+
+/*
+ * Sized to the icon ladder rather than to `1em`, unlike Link's. A Link
+ * inherits its type from the sentence around it; an Alert sets its own, so the
+ * icon has a fixed rung to sit on.
+ *
+ * The line-height box is what it centres against: `--type-body-line-height` is
+ * 24 and the icon is 20, so the 2px above and below line the glyph up with the
+ * first line of text rather than with the top of the box.
+ */
+.ion-alert__icon svg {
+  width: var(--icon-size-md);
+  height: var(--icon-size-md);
+}
+
+.ion-alert__icon,
+.ion-alert__dismiss {
+  min-height: var(--type-body-line-height);
+}
+
+.ion-alert__content {
+  display: flex;
+  flex: 1 1 auto;
+  min-width: 0;
+  flex-direction: column;
+  gap: var(--spacing-8);
+}
+
+.ion-alert__title {
+  margin: 0;
+  font-weight: var(--font-weight-medium);
+}
+
+.ion-alert__message {
+  margin: 0;
+  font-weight: var(--font-weight-regular);
+
+  /* Long tokens — a URL, an id — must wrap rather than widen the alert. */
+  overflow-wrap: anywhere;
+}
+
+.ion-alert__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-8);
+  flex-wrap: wrap;
+}
+
+/*
+ * The dismiss target is 32px around a 20px glyph. WCAG 2.2 SC 2.5.8 asks for
+ * 24x24 minimum and the icon alone would fail it — the same reasoning as
+ * Modal's close. Do not shrink it to fit the icon.
+ */
+.ion-alert__dismiss {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: var(--spacing-32);
+  height: var(--spacing-32);
+  padding: 0;
+  background: none;
+  border: none;
+  border-radius: var(--radius-sm);
+  color: var(--ion-alert-icon);
+  cursor: pointer;
+  transition: background-color var(--ion-duration-base) var(--ion-ease-out);
+}
+
+.ion-alert__dismiss svg {
+  width: var(--icon-size-md);
+  height: var(--icon-size-md);
+}
+
+@media (hover: hover) {
+  .ion-alert__dismiss:hover {
+    background-color: var(--surface-hover);
+  }
+}
+
+.ion-alert__dismiss:focus-visible {
+  outline: var(--border-width-thick) solid var(--ring-focus);
+  outline-offset: 2px;
+}
+
+/*
+ * On a solid surface the focus ring has to come from the text colour, not the
+ * brand ring — `ring/focus` is a mid-blue that all but disappears against a
+ * solid primary or information surface.
+ */
+.ion-alert--solid .ion-alert__dismiss:focus-visible {
+  outline-color: var(--text-on-color);
+}
