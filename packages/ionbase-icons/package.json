@@ -1,6 +1,6 @@
 {
   "name": "ionbase-icons",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "IonBase icon set — 1753 icons, one React component each, tree-shakeable. Derived from Lucide (ISC).",
   "license": "MIT",
   "type": "module",
