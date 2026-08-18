@@ -234,6 +234,68 @@ yet. Once they do, turn that warning into an error.
 
 ---
 
+## The guardrails ship — `eslint-plugin/` and `stylelint-config.js`
+
+A rule that lives only in this repo protects only this repo. The premise of
+IonBase is that the app is written by an agent with no developer reviewing the
+output, and the app is where drift actually happens — so the rules are part of
+the package:
+
+```
+ionbase-ui/eslint-plugin      5 rules, all data-driven from dist/meta
+ionbase-ui/stylelint-config   the token rules for a consumer's own CSS
+```
+
+**Both are in `files`, and that is easy to get wrong.** `files` was `["dist"]`,
+so the first version of this work would have published neither. If you add
+anything outside `dist/` that consumers are meant to reach, add it to `files`
+and confirm with `pnpm pack` — the exports map will happily point at a path the
+tarball does not contain.
+
+### The repo's own configs extend the published ones
+
+`stylelint.config.js` and `eslint.config.js` import from
+`packages/ionbase-ui/` by relative path rather than re-declaring rules. One
+source, many pointers — the same rule as `CLAUDE.md`. **Edit rules in the
+package, not in the root config.** The relative import is deliberate: the
+workspace root has no dependency on `ionbase-ui`, and adding one to satisfy a
+lint config would be the tail wagging the dog.
+
+### No rule hardcodes anything
+
+Deprecations, contrast ratios, which components need an accessible name, the
+spacing scale and Button's default variant all come from
+`dist/meta/components.json`. So a defect fixed in Figma silently stops being
+linted, with nothing in the plugin touched. `eslint-plugin/meta-data.js` is the
+only file that reads it, and it degrades to no-ops on an unbuilt checkout rather
+than crashing a consumer's lint run.
+
+### Two rules from the plan were not built
+
+`destructive-needs-confirm` and `no-nested-interactive` both need to know what
+_wraps_ a component, which is usually in another file. Under ESLint's per-file
+model they would be false-positive generators. They belong in something with
+whole-tree visibility, or in the eval harness (phase 5).
+
+### What is NOT dogfooded here, and why it matters
+
+`apps/storybook` runs three of the five rules. The other two are off, and the
+reasons do not generalise:
+
+- `no-known-contrast-failure` — the stories exist to render every variant,
+  `primary-soft` included. A design system must be able to show a component
+  carrying a recorded defect.
+- `no-raw-style-values` — every hit is a story decorator (`padding: '120px'` to
+  give a Popover room to open). That is fixture scaffolding, and the off-scale
+  values are arbitrary on purpose.
+
+**This repo contains no consumer app code, so that second rule's real target is
+not exercised by `pnpm lint` at all.** Its coverage comes from the plugin's own
+fixtures. If you change it, test it there — a green `pnpm lint` says nothing
+about it.
+
+---
+
 ## Tokens — read this section in full before editing anything under `packages/tokens`
 
 Full operational guide: [`packages/tokens/README.md`](packages/tokens/README.md).

@@ -1,5 +1,82 @@
 # Changelog
 
+## 0.18.0 — 2026-08-18
+
+**The guardrails now travel with the package.** A stylelint config and an ESLint
+plugin ship alongside the components, so the rules that keep this repo honest
+also apply to the app built with it.
+
+### Added — `ionbase-ui/eslint-plugin`
+
+```js
+// eslint.config.js
+import ionbase from 'ionbase-ui/eslint-plugin';
+export default [ionbase.configs.recommended];
+```
+
+| rule                        | catches                                         |
+| --------------------------- | ----------------------------------------------- |
+| `no-deprecated-props`       | `<Button disabled>` — autofixes to `isDisabled` |
+| `no-known-contrast-failure` | prop combinations measured to fail WCAG AA      |
+| `no-raw-style-values`       | `style={{ color: '#1a73e8', padding: 16 }}`     |
+| `needs-accessible-name`     | icon-only controls announced as just "button"   |
+| `one-primary-action`        | more than one primary Button in a Modal         |
+
+**No rule data is written here.** Deprecations, contrast ratios, which
+components require an accessible name, the spacing scale, even Button's default
+variant all come from `dist/meta/components.json`, which is generated and gated.
+When a contrast defect is fixed in Figma the measurement changes, the contract
+loses the entry, and the rule stops firing — with nothing in this plugin edited.
+
+Messages name the fix rather than the principle: a raw `13px` reports _"not on
+the scale, nearest rungs are `var(--spacing-12)` and `var(--spacing-14)`"_.
+
+`configs.warn` runs the same rules as warnings, for adopting IonBase in an app
+that already exists.
+
+Two rules from the plan are deliberately absent. `destructive-needs-confirm` and
+`no-nested-interactive` both need to know what wraps a component, which is
+usually in another file; under ESLint's per-file model they would be
+false-positive generators.
+
+### Added — `ionbase-ui/stylelint-config`
+
+```js
+// stylelint.config.js
+export default { extends: ['ionbase-ui/stylelint-config'] };
+```
+
+No raw hex, no raw values for the 30-odd theming-critical properties, no raw
+colour inside a `box-shadow`. Forced-colors system keywords (`CanvasText` and
+friends) stay allowed — under Windows High Contrast they are the only values
+that survive, and a token there is silently discarded.
+
+Deliberately not a superset of `stylelint-config-standard`: that config is about
+CSS hygiene and is your choice, this one is about tokens.
+
+These rules used to live only in this repo's own config, which protected this
+repo and nothing built with it. The repo's config now extends the published file
+instead, so what ships and what we enforce cannot drift apart.
+
+Both require peer dependencies you may already have — `stylelint`,
+`stylelint-declaration-strict-value`, `eslint` — all marked optional, so nothing
+is installed for consumers who do not opt in.
+
+### Fixed — 0.17.0 shipped without its contrast data
+
+0.17.0 was published from a build that predated the contrast gate. Its contracts
+carried no `a11y.knownIssues` and the tarball had no `dist/meta/contrast.json`,
+so a consumer reading `Button.json` was not told about the measured failures.
+Both are present here. Nothing rendered differently; the data was simply missing.
+
+`packages/ionbase-ui/src/styles/alert.css` also still carried a comment claiming
+solid `success` fails at 3.69:1, which 0.17.0 itself fixed to 5.24:1. Corrected.
+
+### Note for anyone on 0.17.0
+
+Nothing about the components changed in this release. If you are not using the
+lint configs and not reading `ionbase-ui/meta`, there is no reason to upgrade.
+
 ## 0.17.0 — 2026-08-18
 
 Two things: the **success green now passes AA**, and every component now ships a

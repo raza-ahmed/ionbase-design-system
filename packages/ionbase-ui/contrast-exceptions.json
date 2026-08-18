@@ -3,7 +3,7 @@
     "Accepted results for scripts/verify-contrast.mjs.",
     "",
     "Two kinds, and the distinction is the point. `wcag-exempt` means the",
-    "success criterion does not apply — the pairing is correct and will never",
+    "success criterion does not apply \u2014 the pairing is correct and will never",
     "need fixing. `defect` means it genuinely fails and is not fixed yet; the",
     "gate keeps reporting those in its summary so they cannot be forgotten,",
     "and they are copied into every affected component's contract as",
@@ -28,7 +28,7 @@
       "mode": "Dark",
       "kind": "wcag-exempt",
       "ratio": 3.12,
-      "reason": "Same exemption as Light — SC 1.4.3 incidental text, inactive component.",
+      "reason": "Same exemption as Light \u2014 SC 1.4.3 incidental text, inactive component.",
       "affects": ["Button", "Input", "Select"]
     },
     {
@@ -40,7 +40,14 @@
       "reason": "Long-recorded. Fix is the same shape as the success green on 2026-08-18: move the PURPLE PRIMITIVES, not the role binding. Re-pointing surface/information at information/700 would make the base identical to its own hover.",
       "affects": ["Alert"],
       "surfacedBy": "Alert with emphasis=solid intent=information",
-      "note": "AGENTS.md described this role as 'not yet used'. That was wrong, and this gate is what proved it — Alert ships it today."
+      "note": "AGENTS.md described this role as 'not yet used'. That was wrong, and this gate is what proved it \u2014 Alert ships it today.",
+      "appliesTo": {
+        "component": "Alert",
+        "props": {
+          "emphasis": "solid",
+          "intent": "information"
+        }
+      }
     },
     {
       "fg": "--text-primary",
@@ -48,9 +55,15 @@
       "mode": "Dark",
       "kind": "defect",
       "ratio": 4.25,
-      "reason": "Found by this gate on 2026-08-18, not previously known. Button primary-soft on hover in dark mode. Marginal — 4.25 against 4.5 — but it is an interactive state, so it is the state a user is most likely to be reading when they act.",
+      "reason": "Found by this gate on 2026-08-18, not previously known. Button primary-soft on hover in dark mode. Marginal \u2014 4.25 against 4.5 \u2014 but it is an interactive state, so it is the state a user is most likely to be reading when they act.",
       "affects": ["Button"],
-      "surfacedBy": "Button variant=primary-soft, hover"
+      "surfacedBy": "Button variant=primary-soft, hover",
+      "appliesTo": {
+        "component": "Button",
+        "props": {
+          "variant": "primary-soft"
+        }
+      }
     },
     {
       "fg": "--text-primary",
@@ -58,9 +71,15 @@
       "mode": "Dark",
       "kind": "defect",
       "ratio": 4.25,
-      "reason": "Same pair of values as the hover case above — surface/primary-tint and surface/primary-subtle/hover both resolve to #0e2d8b in Dark. One fix addresses both.",
+      "reason": "Same pair of values as the hover case above \u2014 surface/primary-tint and surface/primary-subtle/hover both resolve to #0e2d8b in Dark. One fix addresses both.",
       "affects": ["Button"],
-      "surfacedBy": "Button variant=primary-soft, pressed"
+      "surfacedBy": "Button variant=primary-soft, pressed",
+      "appliesTo": {
+        "component": "Button",
+        "props": {
+          "variant": "primary-soft"
+        }
+      }
     }
   ]
 }

@@ -228,6 +228,9 @@ function knownIssuesFor(stylesheet) {
       states: new Set([p.state]),
       status: e ? 'known, not yet fixed' : 'unreviewed',
       ...(e?.surfacedBy ? { where: e.surfacedBy } : {}),
+      // Structured so the ESLint rule can match a JSX element against it.
+      // The prose in `where` is for a human; this is the same fact for a tool.
+      ...(e?.appliesTo ? { appliesTo: e.appliesTo } : {}),
     });
   }
   return [...out.values()].map((i) => ({ ...i, states: [...i.states].sort() }));

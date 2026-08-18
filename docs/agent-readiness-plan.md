@@ -251,27 +251,41 @@ one. Turn that into an error once they are written.
 The premise is that no developer reviews the output. Then the review has to be in
 the package.
 
-**2a. `ionbase-ui/stylelint-config`** — export the existing strict-value +
-`color-no-hex` rules, pre-pointed at the IonBase custom-property namespace. Two
-hours' work, and it means an agent writing app CSS is stopped at lint time for
-writing `#1a73e8`.
+**2a. `ionbase-ui/stylelint-config` — DONE, 18 Aug 2026.** The rules were
+_moved_ into the package rather than copied: the repo's own
+`stylelint.config.js` now extends the published file. Copying would have created
+the exact drift this plan warns about everywhere else.
 
-**2b. `ionbase-ui/eslint-plugin`** — new, and the higher-value half. Rules that
-encode what the meta files say:
+**2b. `ionbase-ui/eslint-plugin` — DONE, 18 Aug 2026.** Five rules:
+`no-deprecated-props` (with an autofix), `no-known-contrast-failure`,
+`no-raw-style-values`, `needs-accessible-name`, `one-primary-action`.
 
-| Rule                        | Catches                                                    |
-| --------------------------- | ---------------------------------------------------------- |
-| `no-deprecated-props`       | `<Button disabled>` → `isDisabled`                         |
-| `no-raw-color`              | inline `style={{ color: '#…' }}`                           |
-| `icon-needs-label`          | `<Button><Icon as={X} /></Button>` with no accessible name |
-| `one-primary-action`        | two `primary-brand` Buttons in one Modal                   |
-| `destructive-needs-confirm` | `variant="destructive"` with no Modal in the tree          |
-| `no-known-contrast-failure` | `variant="success"` where light mode is reachable          |
-| `use-token-spacing`         | raw `px` in `style` where a `spacing/*` rung exists        |
+Every rule's data comes from `dist/meta/components.json` — deprecations,
+measured contrast ratios, which components require an accessible name, the
+spacing scale, even Button's default variant. Nothing is hardcoded, so a defect
+fixed in Figma stops being linted without the plugin being touched. That is
+phase 1 and 2c paying for phase 2b: the contract and the measurements were the
+prerequisite for rules that maintain themselves.
 
-Generate the rule data from `meta/*.json` so there is one source. An agent that
-gets a lint error naming the fix will apply it; an agent that reads a guideline
-in a README will not.
+Messages name the fix rather than the principle. A raw `13px` reports that it is
+not on the scale and that the neighbouring rungs are `var(--spacing-12)` and
+`var(--spacing-14)`.
+
+**Two rules from this plan were not built.** `destructive-needs-confirm` and
+`no-nested-interactive` both need to know what _wraps_ a component, which is
+usually another file; under ESLint's per-file model they would be
+false-positive generators. They belong in the eval harness (phase 5).
+
+**The packaging nearly ate both.** `files` was `["dist"]`, so the first working
+version of all of this would have published an exports map pointing at paths the
+tarball did not contain — and `npm publish` would not have complained. Verified
+with `pnpm pack` instead.
+
+**Honest gap:** this repo has no consumer app code, so `no-raw-style-values` —
+the rule most aimed at generated UI — is not exercised by `pnpm lint`. Its
+coverage is the plugin's own fixtures. Storybook runs three of the five rules;
+the other two are off for reasons that do not generalise to an app, recorded in
+`eslint.config.js`.
 
 **2c. `verify-contrast.mjs` — DONE, 18 Aug 2026.** Shipped as
 `pnpm --filter ionbase-ui contrast`.
@@ -310,7 +324,7 @@ mode-agnostic coverage check saw it as covered. Coverage is per (role, mode) now
 and an unresolved token is an error rather than a quiet skip — otherwise a
 renamed token just shrinks the pairing count and still exits 0.
 
-> Expected effort: 2a ~2 hours. 2b ~3–4 days. 2c done.
+> Phase 2 complete.
 
 ### Phase 3 — Distribution: make IonBase findable by an agent that has never seen it
 
@@ -429,7 +443,7 @@ Phase 0  ▓  DONE                                  manifest live: 26 components
 Phase 1  ▓▓▓▓▓▓▓▓  DONE (core)                    ionbase-ui/meta, 6 of 35 with intent
 Phase 2c ▓▓  DONE                                 250 pairings; found 3 defects, 2 unknown
 Phase 5  ░░▓▓▓▓  (corpus starts during Phase 1)   evals
-Phase 2  ▓▓▓▓▓▓                                   shipped guardrails
+Phase 2  ▓▓▓▓▓▓  DONE                             5 lint rules + stylelint config, shipped
 Phase 3a ▓▓▓                                      llms.txt + mirrors
 Phase 3b ▓▓▓                                      Code Connect
 Phase 4a ▓▓▓▓▓▓▓▓                                 patterns

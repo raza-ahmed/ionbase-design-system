@@ -172,16 +172,53 @@ icon sit correctly inside a Button.
 
 ## Entry points
 
-| Import                  | What it is                                          |
-| ----------------------- | --------------------------------------------------- |
-| `ionbase-ui`            | Components, `Icon`, and the `tokens` object         |
-| `ionbase-ui/styles`     | Everything: tokens + typography + components        |
-| `ionbase-ui/styles/*`   | One component stylesheet, e.g. `button.css`         |
-| `ionbase-ui/tokens`     | Token custom properties only, no component CSS      |
-| `ionbase-ui/tokens/*`   | One token layer, e.g. `theme-dark.css`              |
-| `ionbase-ui/meta/index` | Component index — names, summaries, variants (12KB) |
-| `ionbase-ui/meta`       | Every component's full contract in one file (180KB) |
-| `ionbase-ui/meta/*`     | One component's contract, e.g. `Button.json`        |
+| Import                        | What it is                                          |
+| ----------------------------- | --------------------------------------------------- |
+| `ionbase-ui`                  | Components, `Icon`, and the `tokens` object         |
+| `ionbase-ui/styles`           | Everything: tokens + typography + components        |
+| `ionbase-ui/styles/*`         | One component stylesheet, e.g. `button.css`         |
+| `ionbase-ui/tokens`           | Token custom properties only, no component CSS      |
+| `ionbase-ui/tokens/*`         | One token layer, e.g. `theme-dark.css`              |
+| `ionbase-ui/meta/index`       | Component index — names, summaries, variants (12KB) |
+| `ionbase-ui/meta`             | Every component's full contract in one file (180KB) |
+| `ionbase-ui/meta/*`           | One component's contract, e.g. `Button.json`        |
+| `ionbase-ui/eslint-plugin`    | Lint rules generated from the contracts             |
+| `ionbase-ui/stylelint-config` | Token rules for your own CSS                        |
+
+## Lint rules that ship with the system
+
+```js
+// eslint.config.js
+import ionbase from 'ionbase-ui/eslint-plugin';
+export default [ionbase.configs.recommended];
+```
+
+```js
+// stylelint.config.js
+export default { extends: ['ionbase-ui/stylelint-config'] };
+```
+
+| rule                        | catches                                         |
+| --------------------------- | ----------------------------------------------- |
+| `no-deprecated-props`       | `<Button disabled>` — autofixes to `isDisabled` |
+| `no-known-contrast-failure` | prop combinations measured to fail WCAG AA      |
+| `no-raw-style-values`       | `style={{ color: '#1a73e8', padding: 16 }}`     |
+| `needs-accessible-name`     | icon-only controls announced as just "button"   |
+| `one-primary-action`        | more than one primary Button in a Modal         |
+
+The rules read their data from the component contracts, so they stay correct on
+their own: when a contrast defect is fixed the measurement changes, the contract
+loses the entry, and the rule stops firing.
+
+Messages name the fix, not the principle — a raw `13px` reports that it is not
+on the scale and that the neighbouring rungs are `var(--spacing-12)` and
+`var(--spacing-14)`.
+
+Use `ionbase.configs.warn` instead if you are adopting IonBase in an existing
+app and want the same rules without failing the build. Both configs need peer
+dependencies you may already have (`eslint`, `stylelint`,
+`stylelint-declaration-strict-value`); all are optional, so nothing is installed
+unless you opt in.
 
 ## Machine-readable component contracts
 
