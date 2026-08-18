@@ -84,11 +84,16 @@
  * at equal specificity, and only the surface and border differ per intent —
  * the text and icon are the same two roles throughout.
  *
- * KNOWN, pending a decision on the accent ramps: solid `success` measures
- * 3.69:1 in Light and solid `information` 3.44:1 in Dark against
- * `text/on-color`, both short of WCAG AA's 4.5:1 for normal text. Neither is a
- * one-step fix — every accent runs base/hover/pressed at 600/700/800, so
- * moving a base onto 700 makes it identical to its own hover. See AGENTS.md.
+ * KNOWN: solid `information` measures 3.44:1 in Dark against `text/on-color`,
+ * short of WCAG AA's 4.5:1. Tracked in contrast-exceptions.json and reported by
+ * `pnpm --filter ionbase-ui contrast` on every build.
+ *
+ * Solid `success` used to be listed here too, at 3.69:1 in Light. It is now
+ * 5.24:1 — fixed on 2026-08-18 by shifting the green PRIMITIVES a rung rather
+ * than re-pointing the role, which is also the fix `information` needs. Moving
+ * the role would have made the base identical to its own hover, since every
+ * accent runs base/hover/pressed at 600/700/800; moving the values underneath
+ * left every role on the rung it already had. See AGENTS.md.
  */
 .ion-alert--solid {
   --ion-alert-text: var(--text-on-color);

@@ -5,6 +5,37 @@
 Two things: the **success green now passes AA**, and every component now ships a
 **machine-readable contract** at `ionbase-ui/meta`.
 
+### Added — a contrast gate, and measured a11y data in the contracts
+
+`pnpm --filter ionbase-ui contrast` extracts every foreground/background pairing
+the components actually create — 250 across 17 stylesheets — resolves them
+against the token CSS in both themes, and fails the build on anything under
+WCAG AA that is not an accepted exception.
+
+It reads the shipped CSS rather than crossing every text role with every surface
+role, because that cross-product is mostly meaningless: nothing puts on-colour
+text on `surface/default`.
+
+**Three defects were outstanding when it first ran, and two were unknown:**
+
+| pairing                                          | mode | ratio  | where                                     |
+| ------------------------------------------------ | ---- | ------ | ----------------------------------------- |
+| `text/on-color` on `surface/information`         | Dark | 3.44:1 | Alert `emphasis=solid intent=information` |
+| `text/primary` on `surface/primary-subtle-hover` | Dark | 4.25:1 | Button `primary-soft`, hover              |
+| `text/primary` on `surface/primary-tint`         | Dark | 4.25:1 | Button `primary-soft`, pressed            |
+
+The first was recorded as "not yet used" and is not — Alert has shipped it since
+0.13.1. The other two had never been measured.
+
+None of these changed in this release; they are now **visible**, reported on
+every build, and carried in each affected component's contract under
+`a11y.knownIssues`, so anything reading the contract is told before it ships
+them. Disabled-control pairings are exempt under SC 1.4.3 and are deliberately
+not reported as issues.
+
+Solid `success` on Alert, previously listed alongside these at 3.69:1 Light, is
+fixed by the green change below and now measures 5.24:1.
+
 ### Added — component contracts at `ionbase-ui/meta`
 
 ```ts

@@ -550,18 +550,61 @@ PR**. The vocabularies exist in two places that must stay in step: the spec's
 the old "danger has five steps, warning has two" asymmetry cannot recur. Full
 ramps live in Semantics; Interface picks the step.
 
-**Contrast is not checked by the token pipeline.** `tokens:tier` proves an
-alias resolves; `tokens:verify` proves a name matches its `codeSyntax`. Neither
-knows whether the resulting pair can be read. Two AA failures reached
-production that way — `text/error` on `surface/error-subtle` at 3.38:1 in dark
-and `text/information` at 4.12:1 — fixed 2026-08-14 by moving those two roles
-to `error/300` and `information/300`.
+**Contrast is now checked — by `ionbase-ui`, not by the token pipeline.**
+`tokens:tier` proves an alias resolves; `tokens:verify` proves a name matches its
+`codeSyntax`. Neither knows whether the resulting pair can be read, and neither
+can: the question is not "do these two tokens contrast" but "which pairs do the
+components actually create", and only the shipped CSS answers that. A naive
+cross-product of every text role against every surface role returns 53 failures
+for `text/on-color` alone, nearly all meaningless, because nothing puts
+on-colour text on `surface/default`.
+
+So the gate lives in `packages/ionbase-ui`, which has both the component
+stylesheets and the resolved token CSS:
+
+```bash
+pnpm --filter ionbase-ui contrast        # runs in the build
+pnpm --filter ionbase-ui contrast:list   # every pairing, worst first
+```
+
+It extracts 250 real pairings from 17 stylesheets by resolving the cascade —
+BEM blocks, compound modifiers, state inheritance, component-local `--ion-*`
+indirection, and alpha compositing for translucent hover overlays. Accepted
+results live in `contrast-exceptions.json`, which distinguishes `wcag-exempt`
+(SC 1.4.3 exempts inactive controls — this will never need fixing) from
+`defect` (real, unfixed, reported on every build and copied into the affected
+components' `a11y.knownIssues`).
+
+Negative-tested on five deliberate breaks before being trusted, including one it
+initially MISSED: renaming a token in `base.css` alone left `theme-dark.css`
+still defining it, so a mode-agnostic coverage check saw it as covered. Coverage
+is per (role, mode) now, and an unresolved token is an error rather than a quiet
+skip — otherwise a renamed token just shrinks the pairing count and still
+exits 0.
+
+The history this replaces: two AA failures reached production unnoticed —
+`text/error` on `surface/error-subtle` at 3.38:1 in dark and `text/information`
+at 4.12:1 — and were fixed on 2026-08-14 by moving those two roles to
+`error/300` and `information/300`. The gate measures both of those exact
+pairings today, through `Alert` — at 5.56:1 and 7.65:1 in Dark — so at their old
+values it would have failed the build rather than letting them ship.
 
 **Known and deliberately unfixed**, pending a decision on the accent ramps:
 
-| pairing                                 | mode | ratio  | where        |
-| --------------------------------------- | ---- | ------ | ------------ |
-| `surface/information` + `text/on-color` | Dark | 3.44:1 | not yet used |
+| pairing                                         | mode | ratio  | where                                     |
+| ----------------------------------------------- | ---- | ------ | ----------------------------------------- |
+| `surface/information` + `text/on-color`         | Dark | 3.44:1 | Alert `emphasis=solid intent=information` |
+| `text/primary` + `surface/primary-subtle-hover` | Dark | 4.25:1 | Button `primary-soft`, hover              |
+| `text/primary` + `surface/primary-tint`         | Dark | 4.25:1 | Button `primary-soft`, pressed            |
+
+**This table said `surface/information` was "not yet used". It was wrong** —
+`Alert` has shipped it since 0.13.1, and the Alert stylesheet's own comment said
+so. Two documents disagreed and neither was checked. The bottom two rows were
+not known at all until the gate measured them.
+
+That is the argument for `verify-contrast.mjs` in one paragraph: the facts here
+were stale, contradicted elsewhere in the repo, and incomplete, because they
+were maintained by hand.
 
 Button's largest label is 20px/500 — 15pt, not bold — so the 3:1 large-text
 allowance never applies; all four sizes need 4.5:1. Icons on the same surfaces

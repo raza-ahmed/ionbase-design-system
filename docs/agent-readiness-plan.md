@@ -273,15 +273,44 @@ Generate the rule data from `meta/*.json` so there is one source. An agent that
 gets a lint error naming the fix will apply it; an agent that reads a guideline
 in a README will not.
 
-**2c. `verify-contrast.mjs`** — closes the open item `AGENTS.md` has been
-carrying. Walk `interface.json`, compute every text-role × surface-role pairing
-in both modes, and fail on anything under 4.5:1 that is not in
-`known-defects.json`. This turns "two AA failures reached production" into a
-class of bug that cannot recur, and — because it writes its results into the meta
-files' `knownIssues` — it teaches the consumer agent at the same time.
+**2c. `verify-contrast.mjs` — DONE, 18 Aug 2026.** Shipped as
+`pnpm --filter ionbase-ui contrast`.
 
-> Expected effort: 2a ~2 hours. 2b ~3–4 days. 2c ~1 day, and it is the one to do
-> first of the three.
+It does **not** walk `interface.json` as this plan proposed. That approach was
+tried and abandoned within the hour: crossing every text role with every surface
+role produces 53 failures for `text/on-color` alone, nearly all meaningless,
+because nothing puts on-colour text on `surface/default`. The question is not
+which tokens contrast, it is **which pairs the components actually create**, and
+only the shipped CSS answers that. So the gate lives in `packages/ionbase-ui`,
+which has the component stylesheets and the resolved token CSS side by side.
+
+It resolves the cascade properly — BEM blocks, compound modifiers
+(`.ion-alert--solid.ion-alert--information` is its own context), state
+inheritance (a hover rule overriding only the background still pairs against the
+base rule's text colour), component-local `--ion-*` indirection, and alpha
+compositing for translucent hover overlays. 250 pairings, 17 stylesheets, zero
+skipped.
+
+**It found three outstanding defects, two of them unknown**, and disproved a
+documented assumption: `surface/information` was recorded in AGENTS.md as "not
+yet used" while Alert's own stylesheet comment said it shipped. Two documents in
+this repo disagreed, neither was checked, and both were partly wrong.
+
+Accepted results carry a `kind`: `wcag-exempt` (SC 1.4.3 exempts inactive
+controls — correct, will never need fixing) or `defect` (real, unfixed, reported
+on every build). Collapsing those two would make the gate lie.
+
+Results are copied into each component's `a11y.knownIssues`, which is what
+finally populates the field designed in phase 1 — a contrast defect in a build
+log teaches nobody; one in the contract is read by whatever is about to ship it.
+
+Negative-tested on five deliberate breaks, **one of which it initially missed**:
+renaming a token in `base.css` left `theme-dark.css` still defining it, so a
+mode-agnostic coverage check saw it as covered. Coverage is per (role, mode) now,
+and an unresolved token is an error rather than a quiet skip — otherwise a
+renamed token just shrinks the pairing count and still exits 0.
+
+> Expected effort: 2a ~2 hours. 2b ~3–4 days. 2c done.
 
 ### Phase 3 — Distribution: make IonBase findable by an agent that has never seen it
 
@@ -398,7 +427,7 @@ Build `evals/` in the repo:
 ```
 Phase 0  ▓  DONE                                  manifest live: 26 components, 249 stories
 Phase 1  ▓▓▓▓▓▓▓▓  DONE (core)                    ionbase-ui/meta, 6 of 35 with intent
-Phase 2c ▓▓                                       contrast gate (do early, it's an open bug)
+Phase 2c ▓▓  DONE                                 250 pairings; found 3 defects, 2 unknown
 Phase 5  ░░▓▓▓▓  (corpus starts during Phase 1)   evals
 Phase 2  ▓▓▓▓▓▓                                   shipped guardrails
 Phase 3a ▓▓▓                                      llms.txt + mirrors

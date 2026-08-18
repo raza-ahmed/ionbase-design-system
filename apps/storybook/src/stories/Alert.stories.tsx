@@ -31,7 +31,7 @@ const meta: Meta<typeof Alert> = {
     docs: {
       description: {
         component:
-          'Measured from Figma `Alert` (812:1902). `Intent` x `Emphasis` x `Layout`, with the parts as props rather than variants.\n\nIntents match `Badge` exactly, so a status mapped to one can be passed to the other.\n\n**The ARIA role is chosen by intent, not passed in.** `error` and `warning` render `role="alert"`, which interrupts a screen reader; the rest render `role="status"`, which waits for a pause. A page of `role="alert"` status messages talks over the user, and an error announced as a status gets missed.\n\n**Known:** solid `success` (3.69:1 Light) and solid `information` (3.44:1 Dark) fall short of WCAG AA against `text/on-color`. Fixing them needs an accent-ramp decision — see AGENTS.md.',
+          'Measured from Figma `Alert` (812:1902). `Intent` x `Emphasis` x `Layout`, with the parts as props rather than variants.\n\nIntents match `Badge` exactly, so a status mapped to one can be passed to the other.\n\n**The ARIA role is chosen by intent, not passed in.** `error` and `warning` render `role="alert"`, which interrupts a screen reader; the rest render `role="status"`, which waits for a pause. A page of `role="alert"` status messages talks over the user, and an error announced as a status gets missed.\n\n**Known:** solid `information` measures 3.44:1 in Dark against `text/on-color`, short of WCAG AA. It is tracked in `contrast-exceptions.json` and reported on every build. Solid `success` was listed here too at 3.69:1 Light; it is now 5.24:1, fixed by shifting the green primitives rather than re-pointing the role.',
       },
     },
   },

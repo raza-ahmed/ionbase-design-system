@@ -1,0 +1,66 @@
+{
+  "$comment": [
+    "Accepted results for scripts/verify-contrast.mjs.",
+    "",
+    "Two kinds, and the distinction is the point. `wcag-exempt` means the",
+    "success criterion does not apply — the pairing is correct and will never",
+    "need fixing. `defect` means it genuinely fails and is not fixed yet; the",
+    "gate keeps reporting those in its summary so they cannot be forgotten,",
+    "and they are copied into every affected component's contract as",
+    "a11y.knownIssues so a consumer is told before they ship it.",
+    "",
+    "An exception that no longer fails is itself an error. Otherwise this file",
+    "becomes a graveyard nobody prunes."
+  ],
+  "accepted": [
+    {
+      "fg": "--text-disabled",
+      "bg": "--surface-disabled",
+      "mode": "Light",
+      "kind": "wcag-exempt",
+      "ratio": 4.31,
+      "reason": "WCAG 2.2 SC 1.4.3 exempts text that is part of an inactive user interface component: it has no contrast requirement. Disabled controls are required to look unavailable, and raising this would work against that.",
+      "affects": ["Button", "Input", "Select"]
+    },
+    {
+      "fg": "--text-disabled",
+      "bg": "--surface-disabled",
+      "mode": "Dark",
+      "kind": "wcag-exempt",
+      "ratio": 3.12,
+      "reason": "Same exemption as Light — SC 1.4.3 incidental text, inactive component.",
+      "affects": ["Button", "Input", "Select"]
+    },
+    {
+      "fg": "--text-on-color",
+      "bg": "--surface-information",
+      "mode": "Dark",
+      "kind": "defect",
+      "ratio": 3.44,
+      "reason": "Long-recorded. Fix is the same shape as the success green on 2026-08-18: move the PURPLE PRIMITIVES, not the role binding. Re-pointing surface/information at information/700 would make the base identical to its own hover.",
+      "affects": ["Alert"],
+      "surfacedBy": "Alert with emphasis=solid intent=information",
+      "note": "AGENTS.md described this role as 'not yet used'. That was wrong, and this gate is what proved it — Alert ships it today."
+    },
+    {
+      "fg": "--text-primary",
+      "bg": "--surface-primary-subtle-hover",
+      "mode": "Dark",
+      "kind": "defect",
+      "ratio": 4.25,
+      "reason": "Found by this gate on 2026-08-18, not previously known. Button primary-soft on hover in dark mode. Marginal — 4.25 against 4.5 — but it is an interactive state, so it is the state a user is most likely to be reading when they act.",
+      "affects": ["Button"],
+      "surfacedBy": "Button variant=primary-soft, hover"
+    },
+    {
+      "fg": "--text-primary",
+      "bg": "--surface-primary-tint",
+      "mode": "Dark",
+      "kind": "defect",
+      "ratio": 4.25,
+      "reason": "Same pair of values as the hover case above — surface/primary-tint and surface/primary-subtle/hover both resolve to #0e2d8b in Dark. One fix addresses both.",
+      "affects": ["Button"],
+      "surfacedBy": "Button variant=primary-soft, pressed"
+    }
+  ]
+}

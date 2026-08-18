@@ -53,13 +53,15 @@
   },
   "scripts": {
     "dev": "tsc --watch",
-    "build": "node scripts/sync-tokens.mjs && tsc --build --force && node scripts/copy-css.mjs && node scripts/verify-client-boundaries.mjs && node scripts/build-meta.mjs && node scripts/verify-meta.mjs",
+    "build": "node scripts/sync-tokens.mjs && tsc --build --force && node scripts/copy-css.mjs && node scripts/verify-client-boundaries.mjs && node scripts/verify-contrast.mjs && node scripts/build-meta.mjs && node scripts/verify-meta.mjs",
     "typecheck": "tsc --noEmit",
     "lint": "eslint . && stylelint \"src/styles/*.css\"",
     "format": "prettier --check .",
     "icons:verify": "node scripts/verify-icons.mjs",
     "meta:build": "node scripts/build-meta.mjs",
-    "meta:verify": "node scripts/build-meta.mjs && node scripts/verify-meta.mjs"
+    "meta:verify": "node scripts/build-meta.mjs && node scripts/verify-meta.mjs",
+    "contrast": "node scripts/verify-contrast.mjs",
+    "contrast:list": "node scripts/verify-contrast.mjs --list"
   },
   "peerDependencies": {
     "react": "^18.0.0 || ^19.0.0",

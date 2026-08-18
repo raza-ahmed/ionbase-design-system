@@ -180,6 +180,59 @@ function tokensFor(name) {
   return { stylesheet: `src/styles/${file}`, tokens };
 }
 
+/* ------------------------------------------- measured contrast, per component */
+
+/**
+ * verify-contrast.mjs runs first and writes dist/meta/contrast.json. Folding its
+ * failures into each component's `a11y.knownIssues` is the point of doing them
+ * in this order: a contrast defect that only exists in a build log teaches
+ * nobody, while one in the contract is read by whatever is about to ship it.
+ *
+ * WCAG-exempt results (disabled controls under SC 1.4.3) are deliberately NOT
+ * surfaced — they are correct, and listing them as issues would train a reader
+ * to ignore the field.
+ */
+const CONTRAST = join(PKG, 'dist', 'meta', 'contrast.json');
+const contrast = existsSync(CONTRAST)
+  ? JSON.parse(readFileSync(CONTRAST, 'utf8'))
+  : null;
+
+function knownIssuesFor(stylesheet) {
+  if (!contrast || !stylesheet) return [];
+  const sheet = stylesheet.replace(/^src\/styles\//, '').replace(/\.css$/, '');
+  const exempt = new Set(
+    (contrast.accepted ?? [])
+      .filter((e) => e.kind === 'wcag-exempt')
+      .map((e) => `${e.fg}|${e.bg}|${e.mode}`),
+  );
+  const reason = new Map(
+    (contrast.accepted ?? []).map((e) => [`${e.fg}|${e.bg}|${e.mode}`, e]),
+  );
+
+  const out = new Map();
+  for (const p of contrast.pairings ?? []) {
+    if (p.component !== sheet || p.ratio >= p.min) continue;
+    const k = `${p.fg}|${p.bg}|${p.mode}`;
+    if (exempt.has(k)) continue;
+    if (out.has(k)) {
+      out.get(k).states.add(p.state);
+      continue;
+    }
+    const e = reason.get(k);
+    out.set(k, {
+      pairing: `${p.fg} on ${p.bg}`,
+      mode: p.mode,
+      ratio: p.ratio,
+      required: p.min,
+      sc: p.kind === 'text' ? '1.4.3' : '1.4.11',
+      states: new Set([p.state]),
+      status: e ? 'known, not yet fixed' : 'unreviewed',
+      ...(e?.surfacedBy ? { where: e.surfacedBy } : {}),
+    });
+  }
+  return [...out.values()].map((i) => ({ ...i, states: [...i.states].sort() }));
+}
+
 /* ------------------------------------------- discover the exported surface */
 
 const entry = program.getSourceFile(join(PKG, 'src', 'index.ts'));
@@ -251,6 +304,9 @@ for (const [name, sym] of [...values].sort((a, b) =>
   if (!intent)
     warnings.push(`${name}: no meta/${name}.json — API only, no intent`);
 
+  const sheet = tokensFor(name);
+  const knownIssues = knownIssuesFor(sheet.stylesheet);
+
   components[name] = {
     name,
     source: rel,
@@ -258,7 +314,10 @@ for (const [name, sym] of [...values].sort((a, b) =>
     ...(description ? { description } : {}),
     import: `import { ${name} } from 'ionbase-ui';`,
     ...(intent ?? {}),
-    ...tokensFor(name),
+    ...sheet,
+    ...(knownIssues.length
+      ? { a11y: { ...(intent?.a11y ?? {}), knownIssues } }
+      : {}),
     props, // always last — generated wins, intent may never redefine it
     propCounts: counts,
   };
