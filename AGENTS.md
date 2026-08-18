@@ -497,18 +497,56 @@ to `error/300` and `information/300`.
 
 **Known and deliberately unfixed**, pending a decision on the accent ramps:
 
-| pairing                                 | mode  | ratio  | where                       |
-| --------------------------------------- | ----- | ------ | --------------------------- |
-| `surface/success` + `text/on-color`     | Light | 3.69:1 | Button `success`, all sizes |
-| `surface/information` + `text/on-color` | Dark  | 3.44:1 | not yet used                |
+| pairing                                 | mode | ratio  | where        |
+| --------------------------------------- | ---- | ------ | ------------ |
+| `surface/information` + `text/on-color` | Dark | 3.44:1 | not yet used |
 
 Button's largest label is 20px/500 — 15pt, not bold — so the 3:1 large-text
 allowance never applies; all four sizes need 4.5:1. Icons on the same surfaces
 pass, since SC 1.4.11 asks 3:1.
 
-Neither is a one-step fix: every accent runs base/hover/pressed at 600/700/800
-(Light) and 500/400/300 (Dark), so moving a base onto 700 makes it identical to
-its own hover — the `surface/success-strong` bug again.
+### The success failure was fixed in Primitives, not in Interface — copy this
+
+`surface/success` + `text/on-color` measured 3.69:1 in Light and is now
+**5.24:1**, fixed in Figma on 2026-08-18 by **shifting the green primitive
+ramp**: the old `green/600` became `green/500`, 700→600, 800→700, 900→800, a
+new darker `#023c13` was added at 900, and 50/300/400 were retinted. Eight of
+ten rungs changed; `green/100` and `green/200` did not.
+
+The important part is which tier moved. Every accent runs base/hover/pressed at
+600/700/800 (Light) and 500/400/300 (Dark), so re-pointing `surface/success`
+from `success/600` to `success/700` would have made the base identical to its
+own hover — the `surface/success-strong` bug again. Changing the **values
+underneath** left every Interface role on the rung it already had, so the
+base/hover/pressed relationship survived untouched and no Interface or
+Semantics variable changed at all: three of four collections re-exported
+byte-identical.
+
+Measured after the change — all four Button sizes, both modes:
+
+| pairing                   | Light   | Dark    |
+| ------------------------- | ------- | ------- |
+| `surface/success`         | 5.24:1  | 5.70:1  |
+| `surface/success/hover`   | 7.34:1  | 7.89:1  |
+| `surface/success/pressed` | 10.08:1 | 12.43:1 |
+
+**`surface/information` is the same shape of problem and takes the same fix** —
+move the purple primitives, not the role bindings.
+
+### Value drift needs its own checksum, and `verify-export.mjs` does not have one
+
+This section used to say "check both checksums". There is only one:
+`verify-export.mjs` hashes `name|codeSyntax`, so it is blind to an edited
+colour by construction — the green change above left it reading **944350191
+against 384 variables, unchanged and passing**, exactly as it would have if
+nothing had been touched.
+
+Until a real gate exists (`verify-contrast.mjs`, see
+[docs/agent-readiness-plan.md](docs/agent-readiness-plan.md) phase 2c), diff
+values by hand after a Figma session: hash `name|mode|value` per collection on
+both sides and compare. The green edit showed as Primitives `1214013219` →
+`1811607948` with Breakpoint, Interface and Semantics all identical, which is
+what told us the blast radius was one collection before anything was rebuilt.
 
 The old note claiming `surface/warning` has no passing dark pairing was stale
 and is removed: `{warning.500}` → `#ea5600` against `{base.black}` measures

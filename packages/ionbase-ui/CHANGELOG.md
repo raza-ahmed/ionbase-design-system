@@ -1,5 +1,41 @@
 # Changelog
 
+## 0.17.0 — 2026-08-18
+
+The **success green now passes AA**. Fixed in Figma by moving the primitive
+ramp, not the roles — which is why nothing else moved with it.
+
+### Fixed — `surface/success` + `text/on-color` was 3.69:1
+
+Long-standing and recorded as knowingly unfixed. It now measures **5.24:1** in
+Light and 5.70:1 in Dark; hover and pressed clear 7:1 in both modes.
+
+The fix shifted the green **primitives** one rung: the old `green/600` is the
+new `green/500`, 700→600, 800→700, 900→800, a darker `#023c13` was added at
+900, and 50/300/400 were retinted. Eight of ten rungs changed.
+
+Which tier moved is the whole point. Every accent runs base/hover/pressed at
+600/700/800 in Light and 500/400/300 in Dark, so re-pointing `surface/success`
+at `success/700` would have made the base identical to its own hover — the
+`surface/success-strong` defect again. Changing the values underneath left
+every Interface role on the rung it already had, so **no Interface or Semantics
+variable changed at all**; three of the four collections re-exported
+byte-identical.
+
+**What this means for you.** If you use `Button` with `variant="success"`,
+`Badge`/`Alert` with the success intent, or any `--surface-success*`,
+`--text-success`, `--icon-success` or `--border-success*` custom property, the
+rendered green is darker in Light and unchanged in name. No API, class or token
+name changed — this is a value change only, and nothing needs migrating.
+
+`surface/information` + `text/on-color` in Dark remains at 3.44:1 and is still
+unfixed. It is the same shape of problem and takes the same fix: move the
+purple primitives, not the role bindings.
+
+### Tokens
+
+None added or removed — still 384. Eight primitive values changed.
+
 ## 0.16.0 — 2026-08-17
 
 The serif is now **STIX Two Text**. One alias moved in Figma; nothing else

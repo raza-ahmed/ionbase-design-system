@@ -1,0 +1,538 @@
+# Making IonBase agent-first
+
+_Proposal, 18 Aug 2026. Not yet a decision — nothing here has been implemented._
+
+A design system used to be a contract between a design team and a development
+team. IonBase is now being authored on the assumption that **the thing consuming
+it is an agent**, and in some products there is no developer downstream at all.
+That changes what the system has to ship, and it changes what "done" means for a
+component.
+
+This document is the plan for that shift: where IonBase already stands, what is
+missing, and the order to close it in.
+
+---
+
+## 1. The reframe: three audiences, not one
+
+The single most useful move is to stop saying "agents" as one word. IonBase
+serves three different consumers with almost no overlap in what they need.
+
+| Audience                 | Who it is                                                                               | Reads                                                                | State today                                          |
+| ------------------------ | --------------------------------------------------------------------------------------- | -------------------------------------------------------------------- | ---------------------------------------------------- |
+| **A. Contributor agent** | works _inside_ this repo — changes tokens, adds components, edits Figma                 | [`AGENTS.md`](../AGENTS.md), the gates, `packages/tokens/figma/*.js` | **Strong.** Genuinely ahead of the field.            |
+| **B. Consumer agent**    | builds an enterprise SaaS app _with_ `ionbase-ui`, and may never see this repo          | the npm package, the README, the Storybook site                      | **Weak.** A prose README and a human-facing website. |
+| **C. Product agent**     | the agent that ships _inside_ the app IonBase builds — the copilot, the workflow runner | components that do not exist yet                                     | **Absent.**                                          |
+
+Everything below is organised by which of these it serves. The bulk of the work
+is **B**, because that is the audience the whole premise of "the agent builds the
+product" depends on, and it is currently served worst.
+
+---
+
+## 2. Honest scorecard — what IonBase already gets right
+
+Worth stating plainly, because several of these are things the published field
+guidance is still telling teams to go build, and they are already here:
+
+- **`AGENTS.md` as the canonical, vendor-neutral entry point**, with `CLAUDE.md`
+  as a pointer holding no content. This is exactly the convention that
+  consolidated across the industry in 2026, and the "one source, many pointers"
+  rule is the part most teams get wrong.
+- **Deterministic gates rather than prose rules.** `tokens:audit`, `tokens:tier`,
+  `tokens:verify`, `tokens:bindings`, `tokens:geometry`. An agent cannot be
+  trusted to _remember_ a constraint; it can be stopped by one. This is the
+  single most important structural property an agent-first system can have, and
+  IonBase has five of them.
+- **Stylelint `declaration-strict-value` + `color-no-hex`.** A compliance linter
+  that catches the exact failure mode agents have — inventing a plausible hex
+  instead of reaching for a token.
+- **A layered architecture that matches what Spotify rebuilt Encore into.**
+  react-aria supplies behaviour, tokens supply foundation, the CSS files supply
+  style. Spotify's stated reason was that "smaller, clearly separated context
+  units are significantly easier for language models to process than nested
+  component bundles" — IonBase arrived there for maintainability reasons and got
+  the agent benefit free.
+- **A single source of truth with drift detection.** Figma owns names and values;
+  checksums and per-collection counts catch divergence. The `surface/success-strong`
+  incident recorded in `AGENTS.md` is a case study in why count-diffing matters.
+- **Anti-patterns written down with their cost.** The hover-is-a-pulse section
+  saves an agent a full debugging cycle. Documentation of _failed_ approaches is
+  disproportionately valuable to an agent, which otherwise re-derives them.
+- **`@storybook/addon-mcp@0.7.0` is already installed.** It is not yet doing
+  anything (see 4.1) but the dependency is there.
+
+The gap is not competence. It is that all of this points inward, at audience A.
+
+---
+
+## 3. The gaps
+
+### For the consumer agent (B)
+
+1. **No component manifest.** `experimentalComponentsManifest` is not enabled in
+   [`.storybook/main.ts`](../apps/storybook/.storybook/main.ts), so the installed
+   MCP addon has nothing structured to serve. An agent building with IonBase must
+   read `.tsx` source or guess.
+2. **No intent metadata anywhere.** Prop types say `variant?: 'primary-brand' |
+'destructive' | …`. Nothing says _when_ `destructive` is correct, that
+   `primary-soft` and `secondary` are near-substitutes, that `Link` — not
+   `Button` — is what navigates, or that there must be one primary action per
+   view. Docgen gives an agent the API. It does not give it judgement.
+3. **No `llms.txt`, no markdown mirrors.** Cloudscape (AWS), Nord (Nordhealth),
+   and Ant Design all serve `/llms.txt` plus `<page>/index.html.md` and
+   `<page>/index.html.json`. The IonBase Storybook site serves neither, so an
+   agent pointed at the docs gets a JS-rendered app it cannot read.
+4. **Token values are not queryable.** `ionbase-ui/tokens-js` exports
+   `var(--…)` _references_ — perfect for code, useless for the decision that
+   precedes it. An agent choosing a surface for an error banner cannot ask what
+   `surface/error-subtle` resolves to in dark, or what text roles are legible on
+   it.
+5. **The guardrails do not travel.** `stylelint.config.js` and the five token
+   gates live in this repo. The consumer app — the one the agent is actually
+   writing — inherits none of them. **If there is no developer downstream, the
+   only thing standing between the agent and drift is a gate that shipped in the
+   package.**
+6. **Contrast is still unchecked**, and `AGENTS.md` says so. Two AA failures
+   reached production once. Two more pairings are knowingly unfixed
+   (`surface/success` + `text/on-color` at 3.69:1 Light; `surface/information` +
+   `text/on-color` at 3.44:1 Dark). An agent has no way to learn this and will
+   compose both — they are the obvious combinations.
+7. **No deprecation data.** `disabled` → `isDisabled` and the `xs` icon rung
+   moving 12 → 14 are both recorded in prose. An agent working from pre-0.7
+   training data will emit the old API, and `size="xs"` still type-checks.
+8. **No Code Connect.** Zero `.figma.ts` files, despite a mature Figma pipeline
+   and MCP access to the file. Figma's own position is that Code Connect is the
+   highest-leverage thing for design-to-code accuracy, because it lets the agent
+   pull the _real_ component instead of generating a lookalike.
+9. **26 components, zero patterns.** Enterprise SaaS agents do not fail at
+   "render a button". They fail at "build the users table with filters, bulk
+   select, empty state, loading skeleton, and a destructive confirm" — the screen
+   level. There is nothing above the component tier to compose from.
+
+### For the product agent (C)
+
+10. **No components for AI features.** Enterprise SaaS in 2026 ships agents
+    _inside_ the product, and those need UI: streaming output, tool-use
+    disclosure, citations, confidence, an approval gate for actions above a risk
+    threshold, a plain-language activity log, and a visible stop control. If
+    IonBase does not have these, every product built on it invents them, and they
+    will be inconsistent and — for the approval and stop controls — unsafe.
+
+---
+
+## 4. The plan
+
+Five phases. Phase 0 and 1 are where nearly all the return is; do not start at
+phase 3 because it is more interesting.
+
+### Phase 0 — DONE, 18 Aug 2026
+
+Enabled in [`.storybook/main.ts`](../apps/storybook/.storybook/main.ts):
+
+```ts
+features: {
+  componentsManifest: true,
+  experimentalCodeExamples: true,
+},
+```
+
+**The flag is `componentsManifest`, not `experimentalComponentsManifest`.** It
+graduated in the 10.5 line, which is what this repo has installed. `addon-mcp`
+still accepts the old spelling as a fallback, so getting it wrong fails silently
+— verify at `/manifests/components.html`, never by reading the config.
+
+Result: `/manifests/components.json`, 188KB, **26 components and 249 stories**,
+every one carrying an import statement and a real JSX snippet. It ships with the
+GitHub Pages build, so it is public at a stable URL, and `@storybook/addon-mcp`
+— which was already installed and inert — now has something to serve.
+
+#### What Phase 0 did not deliver, and why it changes Phase 1
+
+**Prop tables are empty for 19 of 26 components.** Docgen reads the file a
+component is _defined_ in; the stories import `ionbase-ui`, a workspace link to
+`dist`, so react-docgen gets handed compiled JavaScript with the types erased.
+It reports success and emits `props: []`.
+
+Three fixes were measured, and all three are worse:
+
+| attempt                                                        | result                                                                                                                                             |
+| -------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `features.experimentalReactComponentMeta` (TS LanguageService) | 0/26                                                                                                                                               |
+| `typescript.reactDocgen: 'react-docgen-typescript'`            | 0/26, and `reactDocgen` empties entirely — the vite docgen plugin only processes this project's own `.tsx`, never a linked package's `dist/*.d.ts` |
+| alias `ionbase-ui` → `../src`                                  | works, **rejected** — the interaction tests deliberately exercise the built package, and this would quietly stop testing what ships                |
+
+So the conclusion is structural, not a misconfiguration: **in a monorepo that
+ships a built package, the Storybook manifest is the wrong home for the prop
+table.** It is the right home for story snippets and import statements, which is
+what it now provides.
+
+Phase 1 absorbs the prop table: generate it in `packages/ionbase-ui` from its own
+source `.tsx`, where docgen is trivial, and merge it into the meta artifact. That
+was already the plan's rule — _props are generated, never authored_ — this just
+fixes where the generator runs. It also means the meta artifact ships **inside
+the npm package**, which is where the consumer agent can actually reach it,
+rather than only on a docs site.
+
+### Phase 1 — The IonBase component contract (the core of this plan)
+
+The manifest gives an agent the API. This gives it the judgement. Ship a
+hand-authored intent file per component, merged with generated docgen at build
+time into one artefact that ships **inside the npm package**.
+
+**Author:** `packages/ionbase-ui/meta/<component>.json`
+**Generate:** `dist/meta/components.json` + per-component `dist/meta/<name>.json`
+**Export:** `"./meta": "./dist/meta/components.json"`
+
+Proposed schema — the fields chosen because they are the ones an agent gets
+wrong without them:
+
+```jsonc
+{
+  "name": "Button",
+  "status": "stable", // stable | beta | deprecated
+  "since": "0.1.0",
+  "import": "import { Button } from 'ionbase-ui'",
+  "summary": "Triggers an action in place. Never navigates.",
+
+  "useWhen": [
+    "the interaction performs an action — submit, save, open a dialog, delete",
+  ],
+  "useInstead": [
+    {
+      "when": "it navigates to a URL",
+      "use": "Link",
+      "why": "renders <a>; keyboard, middle-click and copy-link all differ",
+    },
+    { "when": "it toggles a boolean setting", "use": "Toggle" },
+  ],
+
+  "props": {/* merged from reactDocgen — never hand-written */},
+
+  "variants": {
+    "variant": {
+      "primary-brand": {
+        "use": "the single most important action in a view",
+        "limit": "one per view",
+      },
+      "destructive": {
+        "use": "irreversible actions",
+        "requires": "a Modal confirmation",
+      },
+      "success": {
+        "use": "confirms a completed flow",
+        "warning": "see a11y.knownIssues",
+      },
+    },
+  },
+
+  "slots": {
+    "startIcon": {
+      "accepts": "Icon",
+      "note": "omit Icon's `label` — the Button's text names it",
+    },
+  },
+
+  "tokens": ["surface/primary", "text/on-color", "radius/md", "spacing/16"],
+
+  "a11y": {
+    "role": "button",
+    "guarantees": [
+      "focus ring is keyboard-only",
+      "hover does not latch on touch",
+    ],
+    "requires": [
+      "an accessible name — children, or aria-label on an icon-only button",
+    ],
+    "knownIssues": [
+      {
+        "combination": "variant=success",
+        "mode": "light",
+        "ratio": "3.69:1",
+        "sc": "1.4.3",
+        "status": "known, unfixed",
+        "guidance": "do not use for text-bearing buttons in light mode",
+      },
+    ],
+  },
+
+  "antiPatterns": [
+    {
+      "dont": "<Button onPress={() => router.push('/x')}>",
+      "do": "<Link href=\"/x\">",
+      "why": "…",
+    },
+    { "dont": "two primary-brand buttons in one dialog", "why": "…" },
+  ],
+
+  "deprecated": [
+    { "prop": "disabled", "since": "0.5.0", "replacement": "isDisabled" },
+  ],
+
+  "examples": [/* story snippets, from the manifest */],
+}
+```
+
+Rules for this file, which matter more than the schema:
+
+- **`props` is generated, never authored.** A hand-maintained prop table drifts,
+  and a drifted one is worse than none — the same argument `AGENTS.md` makes
+  about `CLAUDE.md`.
+- **JSON, not prose.** Indeed parsed 77 components to JSON, ran 1,056 prompts
+  across 8 MCP configurations, and measured ~80% fewer tokens _with better
+  accuracy_ than markdown — $300/yr against $1,500. Keep markdown for
+  instructions to the agent; use JSON for data the agent looks up.
+- **A gate, not a convention.** Add `verify-meta.mjs` to the build: every
+  exported component has a meta file, every `variants` key exists in the prop
+  union, every token named in `tokens` exists. Otherwise these rot in a quarter.
+- **`knownIssues` is the highest-value field in the schema.** It is the only
+  place an agent can learn something that is true, undesirable, and invisible to
+  every type check.
+
+> Expected effort: ~2 days for the generator and gate, ~1–2 hours per component
+> for the intent file. Do Button, Input, Select, Modal, Table, Alert first —
+> they cover most of what an agent composes.
+
+### Phase 2 — Ship the guardrails, do not just keep them
+
+The premise is that no developer reviews the output. Then the review has to be in
+the package.
+
+**2a. `ionbase-ui/stylelint-config`** — export the existing strict-value +
+`color-no-hex` rules, pre-pointed at the IonBase custom-property namespace. Two
+hours' work, and it means an agent writing app CSS is stopped at lint time for
+writing `#1a73e8`.
+
+**2b. `ionbase-ui/eslint-plugin`** — new, and the higher-value half. Rules that
+encode what the meta files say:
+
+| Rule                        | Catches                                                    |
+| --------------------------- | ---------------------------------------------------------- |
+| `no-deprecated-props`       | `<Button disabled>` → `isDisabled`                         |
+| `no-raw-color`              | inline `style={{ color: '#…' }}`                           |
+| `icon-needs-label`          | `<Button><Icon as={X} /></Button>` with no accessible name |
+| `one-primary-action`        | two `primary-brand` Buttons in one Modal                   |
+| `destructive-needs-confirm` | `variant="destructive"` with no Modal in the tree          |
+| `no-known-contrast-failure` | `variant="success"` where light mode is reachable          |
+| `use-token-spacing`         | raw `px` in `style` where a `spacing/*` rung exists        |
+
+Generate the rule data from `meta/*.json` so there is one source. An agent that
+gets a lint error naming the fix will apply it; an agent that reads a guideline
+in a README will not.
+
+**2c. `verify-contrast.mjs`** — closes the open item `AGENTS.md` has been
+carrying. Walk `interface.json`, compute every text-role × surface-role pairing
+in both modes, and fail on anything under 4.5:1 that is not in
+`known-defects.json`. This turns "two AA failures reached production" into a
+class of bug that cannot recur, and — because it writes its results into the meta
+files' `knownIssues` — it teaches the consumer agent at the same time.
+
+> Expected effort: 2a ~2 hours. 2b ~3–4 days. 2c ~1 day, and it is the one to do
+> first of the three.
+
+### Phase 3 — Distribution: make IonBase findable by an agent that has never seen it
+
+**3a. `llms.txt` + markdown mirrors.** Follow the Cloudscape shape exactly, since
+it is the most complete public implementation and agents are increasingly trained
+to expect it:
+
+```
+https://raza-ahmed.github.io/ionbase-design-system/llms.txt         index
+  …/components/button/index.html.md                                 guidance
+  …/components/button/index.html.json                               API + meta
+```
+
+Generate all three from `meta/*.json` and the Storybook manifest in the existing
+deploy workflow. Nothing new to maintain.
+
+Also ship a short `llms.txt` **inside the npm tarball**. An agent working offline
+in a repo that has `ionbase-ui` in `node_modules` should find the contract without
+a network call — that is the single most common real situation and the one the
+hosted-docs approach misses.
+
+**3b. Code Connect.** Add `.figma.ts` files mapping each Figma component to its
+React counterpart. The Figma pipeline and MCP bridge already exist; this is the
+missing link that makes design-to-code produce _your_ Button instead of a
+lookalike. Start with the ten components that appear most in real screens.
+
+**3c. A published MCP server — last, and only if 3a is not enough.**
+`@storybook/addon-mcp` is scoped to a running dev server, which serves audience A
+and not B. A real one would be `ionbase-ui-mcp` on npm, exposing:
+`search_components`, `get_component(name)`, `get_token(role, mode)`,
+`check_contrast(fg, bg, mode)`, `get_pattern(name)`.
+
+Deliberately deferred: for a system this size, static JSON at a stable URL plus a
+tarball copy gets most of the benefit at a fraction of the cost. Spotify's own
+advice to smaller teams was semantic naming, machine-readable specs and output
+review — **not** a custom MCP server. Build it when you can point at a specific
+thing static files cannot do.
+
+> Expected effort: 3a ~2 days. 3b ~2–3 days. 3c ~1 week, deferred.
+
+### Phase 4 — The two missing tiers
+
+**4a. Patterns.** The tier between components and screens, where enterprise SaaS
+agents actually fail. Ship as composed, documented recipes with their own meta
+entries:
+
+| Pattern              | Composes                                                                          |
+| -------------------- | --------------------------------------------------------------------------------- |
+| `DataTablePattern`   | Table + toolbar + filters + bulk-select + pagination + empty + loading + error    |
+| `FormPattern`        | Input/Select/Checkbox/Radio + validation + inline errors + error summary + submit |
+| `PageShell`          | Header + side nav + content region + breadcrumb                                   |
+| `WizardPattern`      | Tabs/stepper + per-step validation + save-and-exit                                |
+| `DestructiveConfirm` | Modal + destructive Button + typed confirmation                                   |
+| `SettingsPanel`      | grouped Toggles + dirty-state + save bar                                          |
+
+Note the recurring content of that table: **empty, loading and error states.**
+Those are what agents omit most reliably, because prop types do not mention them
+and no type check misses them.
+
+Follow Brad Frost's distinction — a pattern is a documented composition of
+components, not a new component. It must not acquire tokens of its own; the
+`control/<size>/*` deletion recorded in `AGENTS.md` is the precedent, and the
+same failure mode applies one tier up.
+
+**4b. AI-feature components** for audience C. The set the field has converged on:
+
+| Component             | Purpose                                                          |
+| --------------------- | ---------------------------------------------------------------- |
+| `StreamingText`       | token-by-token output, with a stable-height container            |
+| `AgentActivity`       | plain-language step log — planning, tool use, result             |
+| `Citation`            | source attribution, inline and as a footer list                  |
+| `ApprovalGate`        | blocks an action above a risk threshold; approve / reject / edit |
+| `ConfidenceIndicator` | calibrated, not a fake percentage                                |
+| `AgentStop`           | always-visible cancel. Not optional, not behind a menu.          |
+
+`ApprovalGate` and `AgentStop` are the two that matter. Human-in-the-loop
+controls and a visible kill switch are treated as non-negotiable in regulated
+enterprise contexts, and the EU AI Act's August 2026 enforcement makes
+demonstrable human oversight a compliance surface, not a UX preference. A design
+system that ships these as first-class components is doing risk work, not
+decoration.
+
+> Expected effort: 4a ~1–2 weeks. 4b ~2–3 weeks, and it is a product decision
+> about IonBase's positioning as much as an engineering one.
+
+### Phase 5 — Evals, once there is something to evaluate
+
+Everything above is unfalsifiable without this. Both Spotify and Indeed built
+evaluation harnesses and both reported it changed their decisions.
+
+Build `evals/` in the repo:
+
+- **A prompt corpus** — 30–50 realistic enterprise SaaS asks. "A user management
+  table with role filters and bulk deactivate." "A billing settings page with a
+  destructive plan-cancellation flow." Not "make a button".
+- **A scorer** that runs generated output through the real gates: does it
+  typecheck; does it pass the ESLint plugin from 2b; does it pass stylelint; does
+  axe find violations; does it use tokens rather than literals; does it import
+  IonBase components rather than hand-rolling them.
+- **A/B on context shape.** Run the corpus with (a) README only, (b) README +
+  manifest, (c) full meta JSON, (d) meta + patterns. Report accuracy _and_ token
+  cost. This is the measurement that tells you whether Phase 1 earned its keep,
+  and it is the reason to build Phase 1 before Phase 3.
+- **A component-compliance score** per run, checked into CI. Regressions in
+  agent-usability then become as visible as a failing test.
+
+> Expected effort: ~1 week for the harness, ongoing for the corpus. Start the
+> corpus during Phase 1 — writing the prompts surfaces the missing metadata.
+
+---
+
+## 5. Sequencing
+
+```
+Phase 0  ▓  DONE                                  manifest live: 26 components, 249 stories
+Phase 1  ▓▓▓▓▓▓▓▓                                 the contract — the core
+Phase 2c ▓▓                                       contrast gate (do early, it's an open bug)
+Phase 5  ░░▓▓▓▓  (corpus starts during Phase 1)   evals
+Phase 2  ▓▓▓▓▓▓                                   shipped guardrails
+Phase 3a ▓▓▓                                      llms.txt + mirrors
+Phase 3b ▓▓▓                                      Code Connect
+Phase 4a ▓▓▓▓▓▓▓▓                                 patterns
+Phase 4b ▓▓▓▓▓▓▓▓▓▓                               AI-feature components
+Phase 3c ░░░░                                     MCP server — only if measured need
+```
+
+---
+
+## 6. What not to do
+
+- **Do not hand-write prop tables.** Generate them. `AGENTS.md`'s argument about
+  vendor files applies unchanged: a second copy is worse than none, because the
+  two drift and neither announces it.
+- **Do not convert `AGENTS.md` to JSON.** It is instructions to an agent, and
+  markdown is right for that. JSON is for data the agent _looks up_. The
+  distinction is the whole point of the token-efficiency finding, and getting it
+  backwards loses the reasoning that makes that file valuable.
+- **Do not let patterns grow their own tokens.** See the `control/<size>/*`
+  deletion. Semantics holds ladders, not recipes — one tier up, the same rule.
+- **Do not build the MCP server first.** It is the most visible item and the
+  least load-bearing. Static JSON at a stable URL, plus the copy in the tarball,
+  covers the common case.
+- **Do not weaken a gate to let an agent through.** The gates are the reason an
+  agent can be trusted here at all. If a gate blocks something legitimate, the
+  gate is wrong and gets fixed deliberately — it does not get relaxed in passing.
+- **Do not skip Phase 5 because the earlier phases feel obviously right.** Indeed
+  found the format choice worth 5× in cost; that is not a thing intuition
+  returns.
+
+---
+
+## 7. What the field is doing
+
+Gathered 18 Aug 2026. Weighted toward large enterprise systems over blog posts
+about landing pages.
+
+| Who                           | What they built                                                                                                                                                                                                                                                                                                                            | Takeaway for IonBase                                                                                                                                                                                              |
+| ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Spotify (Encore)**          | Split components into foundation / style / behaviour layers to create "smaller context bubbles"; headless behaviour via React ARIA and Base UI; custom MCP server; a bespoke eval framework comparing generated components to real ones on lint errors, similarity and visual output. 220k+ shared style uses, 93% developer satisfaction. | IonBase already has this architecture. Copy the **eval framework**, not the layering — you have that. Their advice to smaller teams: semantic naming, machine-readable specs, output review; skip the custom MCP. |
+| **Indeed**                    | 77 components parsed to JSON; 8 MCP configurations benchmarked over 1,056 prompts. JSON beat markdown on accuracy with ~80% fewer tokens — $300/yr vs $1,500.                                                                                                                                                                              | The strongest published evidence for Phase 1's format choice, and for Phase 5 existing at all.                                                                                                                    |
+| **GitHub (Primer)**           | Public MCP plus instruction files. Workflow runs Storybook → preview environment → sub-agent review, with a dedicated accessibility reviewer kept in its own context. Daily QA agents have "safe outputs" — restricted to opening issues, nothing else.                                                                                    | The **trust boundary** pattern: an agent's blast radius is a design decision. Relevant to Phase 2 and to how you let agents touch this repo.                                                                      |
+| **AWS (Cloudscape)**          | The most complete public docs-for-agents implementation. `/llms.txt` index, plus `index.html.md` (guidance, testing specs, a11y) and `index.html.json` (types, props, events, functions) appended to _every_ docs URL.                                                                                                                     | Copy this shape wholesale in Phase 3a. It is a solved problem; do not design a new one.                                                                                                                           |
+| **Nordhealth (Nord)**         | Two-tier `llms.txt` (~5k tokens, an index) and `llms-full.txt` (1M+).                                                                                                                                                                                                                                                                      | The two-tier split matters: agents need a cheap index before an expensive fetch.                                                                                                                                  |
+| **Ant Design, Nuxt UI**       | `llms.txt` shipped as standard.                                                                                                                                                                                                                                                                                                            | This is now table stakes for a published component library, not a differentiator.                                                                                                                                 |
+| **Figma**                     | Position: Code Connect is the highest-leverage MCP-readiness work, because it makes the agent pull the real component rather than generate a lookalike. Plus auto-generated rules files from a codebase scan.                                                                                                                              | Direct support for Phase 3b, and it is cheap for you — the pipeline and the bridge already exist.                                                                                                                 |
+| **Storybook**                 | `componentsManifest` + `@storybook/addon-mcp`. Manifest carries id, import, JSDoc tags, prop table and a JSX snippet per story. Pre-stable and React-only as of 10.5.                                                                                                                                                                      | Phase 0, now done. Note the prop table does not survive a monorepo that ships a built package — see Phase 0's findings.                                                                                           |
+| **New York State**            | Lit + TypeScript components documented in JSDoc; generated a full multi-step form from a PDF in 13 minutes.                                                                                                                                                                                                                                | Public-sector, accessibility-constrained, and it worked because the JSDoc was thorough. Cheap metadata beats no metadata.                                                                                         |
+| **Brad Frost / Southleft**    | FigmaLint scores component hygiene (their demo: 26/100 → 100/100); a design-systems MCP covering Carbon, Polaris and Atlassian.                                                                                                                                                                                                            | **Scoring** as a mechanism — a number that moves is what gets a design system's agent-readiness maintained. Feeds Phase 5.                                                                                        |
+| **Enterprise agent-UX field** | Convergent pattern set for agents inside products: live run view, approval queue above a risk threshold, plain-language activity log, confidence indicators, one-tap correction, always-visible kill switch. AG-UI / A2UI emerging as protocols.                                                                                           | Phase 4b. Note how much of it is about **stopping and reviewing**, not about output.                                                                                                                              |
+| **Regulatory**                | EU AI Act enforcement from August 2026: lineage-backed auditability and demonstrable human oversight for high-risk systems.                                                                                                                                                                                                                | `ApprovalGate` and `AgentStop` are compliance surfaces. That is the argument for shipping them in the design system rather than leaving them to each product.                                                     |
+
+### The pattern across all of them
+
+Three things recur in every serious implementation, and none of them is "we built
+an MCP server":
+
+1. **Structured data beats prose**, measurably, for anything the agent looks up.
+2. **Deterministic gates beat instructions.** Every team that succeeded made the
+   rule enforceable rather than documented.
+3. **Nobody trusts the output.** Every one of them built a review mechanism —
+   evals, visual diffing, sub-agent review, scoring, trust levels.
+
+IonBase is already strong on (2) for its own repo. The work is extending (2) to
+the apps built with it, and adding (1) and (3) from scratch.
+
+---
+
+## Sources
+
+- [Agentic Design Systems: The Complete Guide — Into Design Systems](https://www.intodesignsystems.com/agentic-design-systems)
+- [Your Design System Is Not Ready for AI Agents — Into Design Systems](https://www.intodesignsystems.com/blog/design-system-not-ready-for-ai-agents)
+- [How Spotify Is Redesigning Its Design System for AI Agents](https://www.layreight.de/en-us/posts/spotify-design-system-ai-agents)
+- [How Spotify is Making Their Design System AI-Ready](https://www.intodesignsystems.com/blog/how-spotify-design-system-ai-ready)
+- [AI Metadata: Powering a Design System MCP — Diana Wolosin, Indeed](https://www.designsystemscollective.com/ai-metadata-powering-a-design-system-mcp-b5deafcae8f5)
+- [Your Design System Needs to Be Machine-Readable First — Brent Haskins](https://brenthaskins.com/blog/design-system-machine-readable)
+- [Supercharge Your Design System with LLMs and Storybook MCP — Codrops](https://tympanus.net/codrops/2025/12/09/supercharge-your-design-system-with-llms-and-storybook-mcp/)
+- [Manifests — Storybook docs](https://storybook.js.org/docs/ai/manifests)
+- [LLMs.txt files — Cloudscape Design System](https://cloudscape.design/gen-ai/ai-tools/llms-txt-files/)
+- [LLMs.txt — Nord Design System](https://nordhealth.design/ai/llms-txt)
+- [LLMs.txt — Ant Design](https://ant.design/docs/react/llms/)
+- [Design Systems And AI: Why MCP Servers Are The Unlock — Figma](https://www.figma.com/blog/design-systems-ai-mcp/)
+- [design-systems-mcp — Southleft](https://github.com/southleft/design-systems-mcp)
+- [Design system components, recipes, and snowflakes — Brad Frost](https://bradfrost.com/blog/post/design-system-components-recipes-and-snowflakes/)
+- [Best User Interfaces for Enterprise AI Agents: 9 Design Patterns](https://www.entrans.ai/blog/best-user-interfaces-enterprise-ai-agent-development)
+- [Agentic AI Design Patterns — Enterprise Guide](https://www.aufaitux.com/blog/agentic-ai-design-patterns-enterprise-guide/)
+- [Enterprise AI Agent Guardrails: A Compliance Checklist for 2026 — Atlan](https://atlan.com/know/ai-agent/enterprise-ai-agent-guardrails-checklist/)
+- [Is Enterprise SaaS Shifting From UX to Agentic Infrastructure? — Flexera](https://www.flexera.com/blog/perspectives/enterprise-saas-strategy-data-gravity-agentic-ai/)
