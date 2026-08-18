@@ -99,7 +99,7 @@
     "border-width/default": {"type": "FLOAT", "scopes": ["STROKE_FLOAT"], "codeSyntax": "var(--border-width-default)", "values": {"IonBase": "{scale.1}"}},
     "border-width/thick": {"type": "FLOAT", "scopes": ["STROKE_FLOAT"], "codeSyntax": "var(--border-width-thick)", "values": {"IonBase": "{scale.2}"}},
     "font/family/sans": {"type": "STRING", "scopes": ["FONT_FAMILY"], "codeSyntax": "var(--font-family-sans)", "values": {"IonBase": "{font.family.host-grotesk}"}},
-    "font/family/serif": {"type": "STRING", "scopes": ["FONT_FAMILY"], "codeSyntax": "var(--font-family-serif)", "values": {"IonBase": "{font.family.merriweather}"}},
+    "font/family/serif": {"type": "STRING", "scopes": ["FONT_FAMILY"], "codeSyntax": "var(--font-family-serif)", "values": {"IonBase": "{font.family.stix-two-text}"}},
     "font/family/mono": {"type": "STRING", "scopes": ["FONT_FAMILY"], "codeSyntax": "var(--font-family-mono)", "values": {"IonBase": "{font.family.space-mono}"}},
     "font/weight/regular": {"type": "STRING", "scopes": ["FONT_STYLE"], "codeSyntax": "var(--font-weight-regular)", "values": {"IonBase": "{font.weight.400}"}},
     "font/weight/medium": {"type": "STRING", "scopes": ["FONT_STYLE"], "codeSyntax": "var(--font-weight-medium)", "values": {"IonBase": "{font.weight.500}"}},

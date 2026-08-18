@@ -1,5 +1,42 @@
 # Changelog
 
+## 0.16.0 — 2026-08-17
+
+The serif is now **STIX Two Text**. One alias moved in Figma; nothing else
+changed.
+
+### Changed — `--font-family-serif`
+
+`font/family/serif` was aliased to `font.family.merriweather` and now aliases
+`font.family.stix-two-text`. The four `.ion-text-editorial-*` classes render in
+STIX Two Text as a result. No class, token name or component changed, and no
+text style was rebound — every one of them binds the Semantics alias, which is
+exactly what that tier is for.
+
+**If you load webfonts, swap Merriweather for STIX Two Text.** An app that
+keeps loading Merriweather gets the Georgia fallback on editorial text, which
+degrades quietly rather than breaking. STIX Two Text is variable across
+400–700, so a single face covers the ramp where Merriweather needed a static 700.
+
+### Why not a mode
+
+A `Semantics` mode per font pairing is the general answer and it is deliberately
+deferred — modes buy two brands resolving _at the same time_, and there is one
+brand. `font/family/merriweather` stays in Primitives, bound by nothing, as the
+first value a second mode will reach for. `--font-family-merriweather` is still
+emitted, so an app can use it today.
+
+### Still unresolved
+
+`font/family/serif-display` now aliases the same primitive as `font/family/serif`
+and is referenced by nothing in this package — two names for one family. It is
+left in place rather than deleted, because deletion in Figma is the destructive
+half of the decision and the display/text serif split may yet be wanted.
+
+### Tokens
+
+None added or removed — still 384. One alias target changed.
+
 ## 0.15.0 — 2026-08-14
 
 `Popover`, designed in Figma first. **Nothing existing changes** — purely

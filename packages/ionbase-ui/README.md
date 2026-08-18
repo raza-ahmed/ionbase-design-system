@@ -38,19 +38,30 @@ tokens but never fetches them: your framework knows its own font strategy
 design system reaching out to a third-party host at CSS parse time is not a
 decision it should make for you.
 
-Three families are used by the shipped components and type scale:
+Two families are used by the shipped components and type scale:
 
-| Family            | Token                         | Weights       | Used by                                       |
-| ----------------- | ----------------------------- | ------------- | --------------------------------------------- |
-| **Host Grotesk**  | `--font-family-sans`          | 400, 500, 600 | Body, every component, most of the type scale |
-| **STIX Two Text** | `--font-family-serif-display` | 600           | `.ion-text-h1`, `.ion-text-h2`                |
-| **Merriweather**  | `--font-family-serif`         | 700           | `.ion-text-editorial-*`                       |
+| Family            | Token                 | Weights       | Used by                                       |
+| ----------------- | --------------------- | ------------- | --------------------------------------------- |
+| **Host Grotesk**  | `--font-family-sans`  | 400, 500, 600 | Body, every component, most of the type scale |
+| **STIX Two Text** | `--font-family-serif` | 700           | `.ion-text-editorial-*`                       |
 
-All three are also used in italic where your content uses italic; none of the
+Both are also used in italic where your content uses italic; none of the
 components require it.
 
-`--font-family-mono` (Space Mono, 400/700) also exists as a token, but nothing
-in this package references it. Load it only if you use that variable yourself.
+Three more families exist as tokens but are referenced by nothing in this
+package — load them only if you use the variable yourself:
+
+| Token                         | Family        | Note                                    |
+| ----------------------------- | ------------- | --------------------------------------- |
+| `--font-family-mono`          | Space Mono    | 400/700                                 |
+| `--font-family-serif-display` | STIX Two Text | resolves to the same family as `-serif` |
+| `--font-family-merriweather`  | Merriweather  | primitive only, held for a future brand |
+
+**These two swap points are supported API.** `--font-family-sans` and
+`--font-family-serif` are the intended place to put your own typefaces —
+re-declare them after importing the stylesheet and the whole type scale
+follows, because every text class references the token rather than a family
+name. See [next/font](#nextfont) below for the shape of that override.
 
 ### If you skip this
 
@@ -59,8 +70,7 @@ Text degrades, it does not break. Every font token carries a generic fallback:
 ```css
 --font-family-sans:
   'Host Grotesk', system-ui, -apple-system, 'Segoe UI', sans-serif;
---font-family-serif: Merriweather, Georgia, 'Times New Roman', serif;
---font-family-serif-display: 'STIX Two Text', Georgia, 'Times New Roman', serif;
+--font-family-serif: 'STIX Two Text', Georgia, 'Times New Roman', serif;
 ```
 
 So an app that loads nothing renders in the platform UI font with serif
@@ -70,20 +80,12 @@ headings — wrong, but deliberately wrong in the right category, and legible.
 
 ```tsx
 // app/layout.tsx
-import { Host_Grotesk, Merriweather, STIX_Two_Text } from 'next/font/google';
+import { Host_Grotesk, STIX_Two_Text } from 'next/font/google';
 import 'ionbase-ui/styles';
 import './ionbase-fonts.css';
 
 const sans = Host_Grotesk({ subsets: ['latin'], variable: '--app-sans' });
-const display = STIX_Two_Text({
-  subsets: ['latin'],
-  variable: '--app-display',
-});
-const serif = Merriweather({
-  subsets: ['latin'],
-  weight: ['700'],
-  variable: '--app-serif',
-});
+const serif = STIX_Two_Text({ subsets: ['latin'], variable: '--app-serif' });
 
 export default function RootLayout({
   children,
@@ -91,19 +93,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html
-      lang="en"
-      className={`${sans.variable} ${display.variable} ${serif.variable}`}
-    >
+    <html lang="en" className={`${sans.variable} ${serif.variable}`}>
       <body>{children}</body>
     </html>
   );
 }
 ```
 
-Host Grotesk and STIX Two Text are variable fonts, so `next/font` covers their
-whole weight range without a `weight` list. Merriweather is requested static
-here because only 700 is used.
+Both are variable fonts, so `next/font` covers their whole weight range without
+a `weight` list.
 
 Then point the IonBase tokens at them:
 
@@ -111,7 +109,6 @@ Then point the IonBase tokens at them:
 /* ionbase-fonts.css — imported AFTER 'ionbase-ui/styles' so it wins */
 :root {
   --font-family-sans: var(--app-sans), system-ui, sans-serif;
-  --font-family-serif-display: var(--app-display), Georgia, serif;
   --font-family-serif: var(--app-serif), Georgia, serif;
 }
 ```
@@ -134,15 +131,8 @@ alone, because they already name these families:
 
 @font-face {
   font-family: 'STIX Two Text';
-  src: url('/fonts/stix-two-text-600.woff2') format('woff2');
-  font-weight: 600;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'Merriweather';
-  src: url('/fonts/merriweather-700.woff2') format('woff2');
-  font-weight: 700;
+  src: url('/fonts/stix-two-text.woff2') format('woff2-variations');
+  font-weight: 400 700;
   font-display: swap;
 }
 ```
