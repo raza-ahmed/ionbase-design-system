@@ -172,6 +172,68 @@ fight the first.
 
 ---
 
+## The component contract — `meta/*.json`
+
+Every component ships a machine-readable contract at `ionbase-ui/meta`, because
+the consumer of this system is increasingly an agent that never opens this repo.
+Full reasoning: [docs/agent-readiness-plan.md](docs/agent-readiness-plan.md).
+
+```
+meta/<Name>.json          hand-authored INTENT   committed, reviewed
+   + src/components/*.tsx via the TS checker     props, generated
+   + src/styles/<name>.css                       tokens, generated
+   = dist/meta/<Name>.json + components.json + index.json
+```
+
+**Intent files carry judgement; they never carry API.** `props`, `tokens`,
+`stylesheet`, `source`, `import`, `name` and `propsType` are generated, and
+`verify-meta.mjs` rejects an intent file that sets any of them. A hand-kept prop
+table drifts, and a drifted one is worse than none — the same argument this file
+makes about `CLAUDE.md`.
+
+What an intent file is for is the things no type can express: when to reach for
+this component, what to reach for instead, which variant combinations are wrong,
+and what an agent will otherwise get confidently wrong. `Button`'s
+`antiPatterns` entry for `onPress` over `onClick`, and `Alert`'s note that the
+ARIA role is chosen by intent rather than passed in, are the shape of it.
+
+### Why the TypeScript checker and not react-docgen
+
+These interfaces extend `Omit<>`, `AriaButtonProps<'button'>`, `InputDOMProps`.
+Only real type resolution sees through that, and it is also the only way to learn
+_where_ a prop was declared — which is what lets the generator keep `onPress` and
+drop the 277 inherited HTML attributes on `Badge` that would otherwise bury it.
+
+This is also why the prop table is generated **here** and not from the Storybook
+manifest: the stories import the built package, so docgen there gets
+type-erased JavaScript. See the comment in
+[.storybook/main.ts](apps/storybook/.storybook/main.ts).
+
+### Three tiers, on purpose
+
+`index.json` is 12KB and answers "which component do I need". `<Name>.json` is
+the full contract for one component. `components.json` is all of them at 180KB
+and is **not** the file an agent should load — it exists for tooling that wants
+one fetch. Pick from the index, then read exactly one component.
+
+### The gate is negative-tested, keep it that way
+
+`pnpm --filter ionbase-ui meta:verify` checks that every documented variant value
+exists in the real union, that every union member is documented, that slots and
+deprecations name real props, that a prop marked `@deprecated` in the source is
+declared in meta **and the reverse**, and that every custom property a stylesheet
+consumes is defined by a token layer.
+
+All nine of those were confirmed to fail on a deliberate break before being
+trusted. If you add a check, break it on purpose first — `audit-names.mjs` once
+reported a clean 0/0/0 while validating nothing.
+
+**Adding a component means adding `meta/<Name>.json`.** The gate warns rather
+than errors for a missing intent file today, because 29 of 35 do not have one
+yet. Once they do, turn that warning into an error.
+
+---
+
 ## Tokens — read this section in full before editing anything under `packages/tokens`
 
 Full operational guide: [`packages/tokens/README.md`](packages/tokens/README.md).

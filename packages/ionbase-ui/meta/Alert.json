@@ -1,0 +1,82 @@
+{
+  "status": "stable",
+  "since": "0.13.1",
+  "summary": "A persistent, in-page status message. Intent picks the ARIA role for you.",
+  "useWhen": [
+    "the message belongs to the page and should stay until the condition clears",
+    "form-level validation summaries, permission notices, degraded-state banners"
+  ],
+  "useInstead": [
+    {
+      "when": "the message is transient and self-dismissing",
+      "use": "Toast",
+      "why": "an Alert stays in the layout; a Toast does not"
+    },
+    {
+      "when": "it labels a value inline rather than telling the user something",
+      "use": "Badge",
+      "why": "Badge shares Alert's intent vocabulary exactly, so a status mapped to one passes to the other"
+    }
+  ],
+  "variants": {
+    "intent": {
+      "error": {
+        "use": "something failed and the user must act",
+        "aria": "role=alert — interrupts the screen reader"
+      },
+      "warning": {
+        "use": "something may fail or has degraded",
+        "aria": "role=alert — interrupts the screen reader"
+      },
+      "success": { "use": "an operation completed", "aria": "role=status" },
+      "information": {
+        "use": "neutral context the user did not ask for",
+        "aria": "role=status"
+      },
+      "primary": {
+        "use": "product announcements and promotions",
+        "aria": "role=status"
+      },
+      "neutral": { "use": "low-emphasis context", "aria": "role=status" }
+    },
+    "emphasis": {
+      "subtle": {
+        "use": "the default — tinted surface, readable in long pages"
+      },
+      "solid": {
+        "use": "reserve for a single high-stakes banner; it dominates the layout"
+      }
+    },
+    "layout": {
+      "inline": { "use": "inside a form or card, in the flow of content" },
+      "banner": { "use": "full-bleed at the top of a page or region" }
+    }
+  },
+  "a11y": {
+    "guarantees": [
+      "the role follows the intent — error and warning are role=alert, everything else role=status",
+      "the icon is aria-hidden, so the live region announces the text once and not the glyph"
+    ],
+    "requires": [
+      "`dismissLabel` when `onDismiss` is set and the surrounding copy does not name the action"
+    ],
+    "notes": [
+      "role=alert interrupts whatever the screen reader is saying; role=status waits for a pause. This is why the role is not a prop."
+    ]
+  },
+  "antiPatterns": [
+    {
+      "dont": "using intent=\"error\" for a message that is merely informational",
+      "why": "error renders role=alert, which interrupts the screen reader. A page of interrupting status messages talks over the user."
+    },
+    {
+      "dont": "using intent=\"information\" for a genuine failure",
+      "why": "role=status waits for a pause, so a real error can be missed entirely"
+    },
+    {
+      "dont": "rendering an Alert conditionally for a transient confirmation",
+      "do": "useToast",
+      "why": "an Alert that appears and disappears shifts the layout under the user"
+    }
+  ]
+}

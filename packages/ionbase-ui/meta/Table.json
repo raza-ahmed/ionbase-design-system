@@ -1,0 +1,66 @@
+{
+  "status": "stable",
+  "summary": "A data table. Table owns the scroll container and density; rows and cells are composed.",
+  "useWhen": [
+    "showing records with more than one attribute worth comparing across rows"
+  ],
+  "useInstead": [
+    {
+      "when": "each item is a self-contained summary rather than a row of fields",
+      "use": "FullCard"
+    },
+    {
+      "when": "it is a layout grid rather than data",
+      "use": "CSS grid",
+      "why": "a <table> announces row and column semantics that a layout does not have"
+    }
+  ],
+  "composition": {
+    "order": ["Table", "TableHead", "TableRow", "TableCell"],
+    "note": "Table > TableHead/TableBody > TableRow > TableCell, matching how Figma layers Table Row > Table Cell > Cell Text. TableHead and TableBody take no props of their own; they place the rows and give TableCell its head-or-body context.",
+    "example": "<Table aria-label=\"Users\"><TableHead><TableRow><TableCell scope=\"col\">Name</TableCell></TableRow></TableHead><TableBody><TableRow><TableCell>Ada</TableCell></TableRow></TableBody></Table>"
+  },
+  "variants": {
+    "density": {
+      "compact": {
+        "use": "dense operational tables where row count matters more than comfort"
+      },
+      "default": { "use": "the default" },
+      "relaxed": { "use": "short tables where each row deserves attention" }
+    }
+  },
+  "a11y": {
+    "guarantees": [
+      "the scroll container is keyboard reachable, which overflow alone does not provide (WCAG 2.1.1)"
+    ],
+    "requires": [
+      "`aria-label` or `aria-labelledby` on Table — it names the scroll region, and the container takes no props of its own, so this is the only place the name can live",
+      "`scope=\"col\"` on header cells",
+      "an accessible name on every row-selection Checkbox — those have no visible label by design"
+    ],
+    "notes": [
+      "Prefer a visible <caption> referenced by aria-labelledby when the table's name should also be seen."
+    ]
+  },
+  "antiPatterns": [
+    {
+      "dont": "<Table> with no aria-label",
+      "why": "the scroll region is announced with no name, and a keyboard user reaching it is told nothing about what they have entered"
+    },
+    {
+      "dont": "header cells without scope",
+      "why": "screen readers cannot associate data cells with their column"
+    },
+    {
+      "dont": "wrapping Table in your own overflow container",
+      "why": "Table already owns the scroll container and makes it focusable; a second one is unreachable by keyboard"
+    },
+    {
+      "dont": "row-selection checkboxes with no aria-label",
+      "why": "every row announces an unnamed checkbox"
+    }
+  ],
+  "missingStates": {
+    "note": "Table has no empty, loading or error state of its own — those are the caller's, and they are the states most often forgotten. Pattern coverage is planned; see docs/agent-readiness-plan.md phase 4a."
+  }
+}

@@ -2,10 +2,35 @@
 
 ## 0.17.0 — 2026-08-18
 
-The **success green now passes AA**. Fixed in Figma by moving the primitive
-ramp, not the roles — which is why nothing else moved with it.
+Two things: the **success green now passes AA**, and every component now ships a
+**machine-readable contract** at `ionbase-ui/meta`.
 
-### Fixed — `surface/success` + `text/on-color` was 3.69:1
+### Added — component contracts at `ionbase-ui/meta`
+
+```ts
+import index from 'ionbase-ui/meta/index' with { type: 'json' };
+import button from 'ionbase-ui/meta/Button.json' with { type: 'json' };
+```
+
+Each contract carries `summary`, `useWhen`, `useInstead`, per-value `variants`
+guidance, `slots`, `a11y`, `antiPatterns`, `deprecated`, a generated `props`
+table and the tokens its stylesheet consumes.
+
+Three tiers, and the tiering is the point. `meta/index` is 12KB and answers
+"which component do I need"; `meta/<Name>.json` is one full contract;
+`meta` is all 35 at 180KB and is not what you should load. Pick from the index,
+then read one component.
+
+Six carry full hand-written intent — `Button`, `Input`, `Select`, `Modal`,
+`Table`, `Alert`. The other 29 ship the generated API and their source
+documentation, and are being filled in.
+
+Nothing about the runtime changed. This is additive: new export paths, no new
+dependencies, no behaviour difference.
+
+### Fixed — the success green
+
+#### `surface/success` + `text/on-color` was 3.69:1
 
 Long-standing and recorded as knowingly unfixed. It now measures **5.24:1** in
 Light and 5.70:1 in Dark; hover and pressed clear 7:1 in both modes.

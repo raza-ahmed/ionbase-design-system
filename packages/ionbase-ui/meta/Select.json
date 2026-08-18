@@ -1,0 +1,50 @@
+{
+  "status": "stable",
+  "summary": "A dropdown over a native <select>, with the same label and error wiring as Input.",
+  "useWhen": [
+    "the user picks exactly one value from a known, modest list",
+    "the native platform picker is acceptable — and on mobile it usually is the best option"
+  ],
+  "useInstead": [
+    {
+      "when": "the list is long enough to need search or type-ahead beyond the native behaviour",
+      "use": "a combobox — not yet in this system"
+    },
+    {
+      "when": "the rows need icons, avatars or two lines of text",
+      "use": "Menu",
+      "why": "Select wraps a native <select>, whose options can only be text"
+    },
+    {
+      "when": "there are two or three mutually exclusive choices worth showing at once",
+      "use": "RadioGroup"
+    },
+    { "when": "the user may pick more than one", "use": "Checkbox" }
+  ],
+  "variants": {
+    "size": {
+      "sm": { "use": "dense forms, table filters" },
+      "md": { "use": "the default" },
+      "lg": { "use": "prominent single-field forms" }
+    }
+  },
+  "a11y": {
+    "guarantees": [
+      "keyboard handling, type-ahead and the mobile platform picker come from the native <select> rather than being reimplemented",
+      "label, helper and error wiring match Input"
+    ],
+    "requires": ["`label`, or `aria-label` when no visible label is rendered"]
+  },
+  "antiPatterns": [
+    {
+      "dont": "passing rich React nodes as option content",
+      "why": "this renders a native <select>; options are text only"
+    },
+    {
+      "dont": "using a Select with two options for an on/off setting",
+      "do": "Toggle",
+      "why": "a two-item dropdown costs two interactions to do what one control does in one"
+    }
+  ],
+  "deprecated": [{ "prop": "disabled", "replacement": "isDisabled" }]
+}

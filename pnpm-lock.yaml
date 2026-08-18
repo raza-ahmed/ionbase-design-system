@@ -135,6 +135,9 @@ importers:
       lucide-react:
         specifier: ^1.27.0
         version: 1.27.0(react@19.2.8)
+      typescript:
+        specifier: ^5.5.2
+        version: 5.9.3
 
   packages/tokens:
     devDependencies:

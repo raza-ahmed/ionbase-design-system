@@ -172,13 +172,40 @@ icon sit correctly inside a Button.
 
 ## Entry points
 
-| Import                | What it is                                     |
-| --------------------- | ---------------------------------------------- |
-| `ionbase-ui`          | Components, `Icon`, and the `tokens` object    |
-| `ionbase-ui/styles`   | Everything: tokens + typography + components   |
-| `ionbase-ui/styles/*` | One component stylesheet, e.g. `button.css`    |
-| `ionbase-ui/tokens`   | Token custom properties only, no component CSS |
-| `ionbase-ui/tokens/*` | One token layer, e.g. `theme-dark.css`         |
+| Import                  | What it is                                          |
+| ----------------------- | --------------------------------------------------- |
+| `ionbase-ui`            | Components, `Icon`, and the `tokens` object         |
+| `ionbase-ui/styles`     | Everything: tokens + typography + components        |
+| `ionbase-ui/styles/*`   | One component stylesheet, e.g. `button.css`         |
+| `ionbase-ui/tokens`     | Token custom properties only, no component CSS      |
+| `ionbase-ui/tokens/*`   | One token layer, e.g. `theme-dark.css`              |
+| `ionbase-ui/meta/index` | Component index — names, summaries, variants (12KB) |
+| `ionbase-ui/meta`       | Every component's full contract in one file (180KB) |
+| `ionbase-ui/meta/*`     | One component's contract, e.g. `Button.json`        |
+
+## Machine-readable component contracts
+
+Every component ships a JSON contract describing not just its API but when to
+use it, what to use instead, and what tends to go wrong:
+
+```ts
+import index from 'ionbase-ui/meta/index' with { type: 'json' };
+import button from 'ionbase-ui/meta/Button.json' with { type: 'json' };
+```
+
+Each contract carries `summary`, `useWhen`, `useInstead`, `variants` with
+per-value guidance, `slots`, `a11y`, `antiPatterns`, `deprecated`, the generated
+`props` table, and the tokens its stylesheet consumes.
+
+This exists because the thing consuming a design system is increasingly a coding
+agent rather than a person reading documentation. **Start from
+`ionbase-ui/meta/index`** — 12KB, every component with its variants — then load
+the single contract you need. Loading all of them costs 180KB to answer a
+question the index already answered.
+
+Six components carry full intent today (`Button`, `Input`, `Select`, `Modal`,
+`Table`, `Alert`). The rest ship the generated API plus their source
+documentation, and are being filled in.
 
 Token values are also available as JavaScript, as `var(--…)` references:
 

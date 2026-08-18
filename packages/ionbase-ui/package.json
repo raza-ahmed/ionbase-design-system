@@ -1,7 +1,7 @@
 {
   "name": "ionbase-ui",
   "version": "0.17.0",
-  "description": "IonBase Design System — accessible React components, styles and design tokens in one package",
+  "description": "IonBase Design System \u2014 accessible React components, styles and design tokens in one package",
   "license": "MIT",
   "type": "module",
   "main": "./dist/index.js",
@@ -11,6 +11,9 @@
       "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
     },
+    "./meta": "./dist/meta/components.json",
+    "./meta/index": "./dist/meta/index.json",
+    "./meta/*": "./dist/meta/*",
     "./styles": "./dist/styles/index.css",
     "./styles/*": "./dist/styles/*",
     "./tokens": "./dist/styles/tokens/index.css",
@@ -50,11 +53,13 @@
   },
   "scripts": {
     "dev": "tsc --watch",
-    "build": "node scripts/sync-tokens.mjs && tsc --build --force && node scripts/copy-css.mjs && node scripts/verify-client-boundaries.mjs",
+    "build": "node scripts/sync-tokens.mjs && tsc --build --force && node scripts/copy-css.mjs && node scripts/verify-client-boundaries.mjs && node scripts/build-meta.mjs && node scripts/verify-meta.mjs",
     "typecheck": "tsc --noEmit",
     "lint": "eslint . && stylelint \"src/styles/*.css\"",
     "format": "prettier --check .",
-    "icons:verify": "node scripts/verify-icons.mjs"
+    "icons:verify": "node scripts/verify-icons.mjs",
+    "meta:build": "node scripts/build-meta.mjs",
+    "meta:verify": "node scripts/build-meta.mjs && node scripts/verify-meta.mjs"
   },
   "peerDependencies": {
     "react": "^18.0.0 || ^19.0.0",
@@ -66,8 +71,9 @@
     "react-aria": "^3.34.0",
     "react-stately": "^3.48.0"
   },
-  "//devDependencies": "lucide-react is a devDependency, not a dependency: nothing in src/ imports it. It is here only so scripts/verify-icons.mjs can compare the installed icon set against the Figma page. Consumers pick their own icon library. There is deliberately NO dependency on @ionbase-ui/tokens — it is private and would publish as a version that does not exist on npm. Build ordering is expressed in turbo.json instead.",
+  "//devDependencies": "lucide-react is a devDependency, not a dependency: nothing in src/ imports it. It is here only so scripts/verify-icons.mjs can compare the installed icon set against the Figma page. Consumers pick their own icon library. There is deliberately NO dependency on @ionbase-ui/tokens \u2014 it is private and would publish as a version that does not exist on npm. Build ordering is expressed in turbo.json instead.",
   "devDependencies": {
-    "lucide-react": "^1.27.0"
+    "lucide-react": "^1.27.0",
+    "typescript": "^5.5.2"
   }
 }

@@ -1,0 +1,104 @@
+{
+  "status": "stable",
+  "summary": "Triggers an action in place. Never navigates.",
+  "useWhen": [
+    "the interaction performs an action — submit, save, delete, open a dialog",
+    "the result stays on the current page"
+  ],
+  "useInstead": [
+    {
+      "when": "it navigates to a URL or changes route",
+      "use": "Link",
+      "why": "Link renders an <a>. Middle-click, cmd-click, copy-link-address and 'open in new tab' all work on an anchor and none of them work on a button."
+    },
+    {
+      "when": "it toggles a persistent boolean setting",
+      "use": "Toggle",
+      "why": "a toggle announces its on/off state; a button announces only its name"
+    }
+  ],
+  "variants": {
+    "variant": {
+      "primary-brand": {
+        "use": "the single most important action in a view",
+        "limit": "one per view or dialog"
+      },
+      "primary-neutral": {
+        "use": "a primary action that should not carry brand colour"
+      },
+      "primary-soft": {
+        "use": "a primary action on a dense or already-colourful surface"
+      },
+      "secondary": {
+        "use": "supporting actions shown alongside a primary one"
+      },
+      "tertiary": {
+        "use": "low-emphasis actions — Cancel, Back, inline row actions"
+      },
+      "destructive": {
+        "use": "irreversible actions",
+        "requires": "a Modal confirmation before the action runs"
+      },
+      "success": {
+        "use": "confirms the end of a flow. Rarely the right answer — prefer primary-brand."
+      }
+    },
+    "size": {
+      "sm": { "use": "table rows, toolbars, dense layouts" },
+      "md": { "use": "the default; forms and page-level actions" },
+      "lg": { "use": "prominent standalone actions" },
+      "xl": { "use": "marketing and empty-state calls to action" }
+    }
+  },
+  "slots": {
+    "startIcon": {
+      "accepts": "Icon",
+      "note": "omit Icon's `label` — the Button's own text already names it, and a labelled icon is announced twice"
+    },
+    "endIcon": { "accepts": "Icon", "note": "same as startIcon" }
+  },
+  "a11y": {
+    "role": "button",
+    "guarantees": [
+      "the focus ring appears for keyboard focus and not for a mouse click",
+      "hover does not latch on touch devices"
+    ],
+    "requires": [
+      "an accessible name — `children`, or `aria-label` when the button is icon-only"
+    ]
+  },
+  "antiPatterns": [
+    {
+      "dont": "<Button onPress={() => router.push('/settings')}>Settings</Button>",
+      "do": "<Link href=\"/settings\">Settings</Link>",
+      "why": "a button that navigates breaks middle-click, cmd-click and copy-link, and is announced as a button rather than a link"
+    },
+    {
+      "dont": "two variant=\"primary-brand\" buttons in the same dialog",
+      "do": "one primary-brand, the rest secondary or tertiary",
+      "why": "two primaries is the same as none — nothing indicates the expected action"
+    },
+    {
+      "dont": "<Button variant=\"destructive\" onPress={deleteAccount}>",
+      "do": "open a Modal first and put the destructive Button in its footer",
+      "why": "irreversible actions need a confirmation step"
+    },
+    {
+      "dont": "<Button><Icon as={Trash} /></Button>",
+      "do": "<Button aria-label=\"Delete\"><Icon as={Trash} /></Button>",
+      "why": "an icon-only button with no aria-label is announced as just 'button'"
+    },
+    {
+      "dont": "<Button onClick={...}>",
+      "do": "<Button onPress={...}>",
+      "why": "onPress is React Aria's unified pointer/keyboard/touch handler. onClick works but skips the touch and keyboard normalisation the rest of the system relies on."
+    }
+  ],
+  "deprecated": [
+    {
+      "prop": "disabled",
+      "replacement": "isDisabled",
+      "note": "still type-checks, so this will not fail loudly"
+    }
+  ]
+}

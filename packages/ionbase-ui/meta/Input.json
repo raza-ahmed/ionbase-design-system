@@ -1,0 +1,68 @@
+{
+  "status": "stable",
+  "summary": "A single-line text field, together with its label, helper text and error message.",
+  "useWhen": [
+    "collecting one line of free text",
+    "the field needs a label, helper text, or validation messaging"
+  ],
+  "useInstead": [
+    { "when": "the user picks from a fixed set of options", "use": "Select" },
+    {
+      "when": "it is a phone number",
+      "use": "PhoneInput",
+      "why": "country code and formatting are handled for you"
+    },
+    { "when": "it is a single boolean", "use": "Checkbox or Toggle" }
+  ],
+  "variants": {
+    "size": {
+      "sm": { "use": "dense forms, table filters, toolbars" },
+      "md": { "use": "the default" },
+      "lg": { "use": "prominent single-field forms — search, sign-in" }
+    }
+  },
+  "slots": {
+    "leadingIcon": {
+      "accepts": "Icon",
+      "note": "decorative; omit Icon's `label`"
+    },
+    "trailingIcon": {
+      "accepts": "Icon",
+      "note": "decorative unless it is interactive, in which case it needs its own button and name"
+    },
+    "leadingAddon": {
+      "note": "a static prefix such as a protocol or currency; not focusable"
+    }
+  },
+  "a11y": {
+    "guarantees": [
+      "ids are generated and wired — the label points at the input via aria-labelledby",
+      "aria-describedby points at whichever of the helper text or error message is actually showing",
+      "aria-invalid is set from isInvalid"
+    ],
+    "requires": [
+      "`label`, or `aria-label` when the field is visually self-evident and no label is rendered"
+    ],
+    "notes": [
+      "The label/helper/error wrapper is only rendered when there is something to put in it — Figma models it as a separate `Form Field` component, this does not."
+    ]
+  },
+  "antiPatterns": [
+    {
+      "dont": "using `placeholder` as the label",
+      "do": "pass `label`",
+      "why": "the placeholder disappears on focus, so the user loses the field's name exactly when typing"
+    },
+    {
+      "dont": "rendering your own <label htmlFor>",
+      "do": "pass `label`",
+      "why": "the component generates the id; an external htmlFor will not match it"
+    },
+    {
+      "dont": "showing an error by putting the message in `description`",
+      "do": "set `isInvalid` and pass `errorMessage`",
+      "why": "only errorMessage drives aria-invalid and the described-by wiring"
+    }
+  ],
+  "deprecated": [{ "prop": "disabled", "replacement": "isDisabled" }]
+}

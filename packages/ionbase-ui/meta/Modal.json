@@ -1,0 +1,67 @@
+{
+  "status": "stable",
+  "since": "0.11.0",
+  "summary": "A focus-trapping dialog. Renders nothing when closed and portals when open.",
+  "useWhen": [
+    "the task must be completed or abandoned before anything else",
+    "confirming a destructive action",
+    "a short focused form that would otherwise need its own page"
+  ],
+  "useInstead": [
+    {
+      "when": "the content is supplementary and the page stays usable",
+      "use": "Popover",
+      "why": "a Popover does not trap focus or block the page"
+    },
+    {
+      "when": "it is a short label for a control",
+      "use": "Tooltip"
+    }
+  ],
+  "variants": {
+    "size": {
+      "sm": { "use": "confirmations and single-question prompts" },
+      "md": { "use": "the default; short forms" },
+      "lg": { "use": "multi-section forms" },
+      "fullscreen": {
+        "use": "immersive tasks; fills the viewport and pins the actions to the bottom edge"
+      }
+    },
+    "align": {
+      "left": { "use": "the default; forms and anything the user reads" },
+      "center": { "use": "single-message confirmations only" }
+    }
+  },
+  "slots": {
+    "footer": {
+      "accepts": "Button",
+      "note": "the primary action goes last, at the trailing edge"
+    },
+    "media": { "note": "rendered above the title" }
+  },
+  "a11y": {
+    "role": "dialog",
+    "guarantees": [
+      "focus moves into the panel on open and returns to the trigger on close",
+      "Escape and a scrim click both close it",
+      "focus is trapped while open",
+      "nothing is rendered at all while closed, so no closed-modal content is keyboard reachable"
+    ],
+    "requires": ["`title`, which provides the dialog's accessible name"]
+  },
+  "antiPatterns": [
+    {
+      "dont": "rendering <Modal> only when a state flag is true",
+      "do": "render it always and drive `isOpen`",
+      "why": "Modal already renders nothing when closed. Wrapping it in a conditional discards the open/close transition and the focus-return behaviour."
+    },
+    {
+      "dont": "opening a Modal from inside another Modal",
+      "why": "two focus traps compete and Escape becomes ambiguous"
+    },
+    {
+      "dont": "a destructive action as the only button, with no cancel",
+      "why": "a confirmation with no way out is not a confirmation"
+    }
+  ]
+}
