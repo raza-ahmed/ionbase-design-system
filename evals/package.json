@@ -1,0 +1,12 @@
+{
+  "name": "@ionbase-ui/evals",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "packs": "node context/build-packs.mjs",
+    "score": "node score/score.mjs",
+    "lint": "eslint .",
+    "format": "prettier --check ."
+  }
+}

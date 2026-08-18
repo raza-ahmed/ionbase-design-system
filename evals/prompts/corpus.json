@@ -1,0 +1,349 @@
+{
+  "$comment": [
+    "Tasks for the IonBase eval. Enterprise SaaS shapes, not 'make a button'.",
+    "",
+    "Each task names the traps it is really testing. That is the point: a corpus",
+    "of vague asks measures nothing, because every grader disagrees about what",
+    "good looks like. `expects` is machine-checkable; `traps` is what we expect",
+    "an unhelped model to get wrong, and is what makes a failure diagnostic",
+    "rather than just a low score.",
+    "",
+    "Coverage is deliberately skewed to the states agents omit — empty, loading,",
+    "error — and to the choices that type-check either way."
+  ],
+  "tasks": [
+    {
+      "id": "users-table",
+      "prompt": "Build a user management table: columns for name, email, role and status. Support filtering by role, selecting rows in bulk, and a bulk deactivate action. Include empty, loading and error states.",
+      "expects": {
+        "components": ["Table", "Select", "Checkbox", "Button"],
+        "states": ["empty", "loading", "error"]
+      },
+      "traps": [
+        "omits empty/loading/error",
+        "hand-rolls a <table>",
+        "no aria-label on Table",
+        "selection checkboxes with no accessible name",
+        "no scope on header cells"
+      ]
+    },
+    {
+      "id": "billing-cancel",
+      "prompt": "Build a billing settings page with a plan summary and a 'Cancel subscription' flow. Cancelling is irreversible.",
+      "expects": {
+        "components": ["Button", "Modal"],
+        "variants": { "Button": ["destructive"] }
+      },
+      "traps": [
+        "destructive action with no confirmation",
+        "two primary buttons in the modal",
+        "no cancel path out of the dialog"
+      ]
+    },
+    {
+      "id": "invite-form",
+      "prompt": "Build an 'Invite teammate' form: email address, role dropdown, optional message. Validate the email and show a field-level error.",
+      "expects": { "components": ["Input", "Select", "Button"] },
+      "traps": [
+        "placeholder used as the label",
+        "own <label htmlFor> instead of the label prop",
+        "error text in description instead of errorMessage"
+      ]
+    },
+    {
+      "id": "api-keys",
+      "prompt": "Build an API keys page: a table of keys with created date and last used, a 'Create key' button, and per-row revoke. Show the new key exactly once after creation.",
+      "expects": { "components": ["Table", "Button", "Modal", "Alert"] },
+      "traps": [
+        "revoke without confirmation",
+        "icon-only row actions with no aria-label",
+        "no empty state for zero keys"
+      ]
+    },
+    {
+      "id": "notification-settings",
+      "prompt": "Build a notification preferences panel: several on/off settings grouped into sections, with a save bar that appears when something changes.",
+      "expects": { "components": ["Toggle", "Button"] },
+      "traps": [
+        "Select with two options instead of Toggle",
+        "no dirty state",
+        "save enabled with nothing changed"
+      ]
+    },
+    {
+      "id": "audit-log",
+      "prompt": "Build an audit log view: a dense table of events with timestamp, actor, action and target, filterable by date range and actor. Thousands of rows.",
+      "expects": {
+        "components": ["Table", "Input", "Select"],
+        "props": { "Table": { "density": "compact" } }
+      },
+      "traps": [
+        "default density for a dense log",
+        "no empty state when filters match nothing",
+        "no aria-label on the scroll region"
+      ]
+    },
+    {
+      "id": "onboarding-wizard",
+      "prompt": "Build a three-step onboarding wizard: workspace details, invite teammates, pick a plan. The user can go back, and can save and exit.",
+      "expects": { "components": ["Button", "Input"] },
+      "traps": [
+        "two primary actions per step",
+        "no back affordance",
+        "validation deferred to the final step"
+      ]
+    },
+    {
+      "id": "integration-card-grid",
+      "prompt": "Build an integrations page: a grid of available integrations, each showing name, description, and a connect/disconnect action. Some are already connected.",
+      "expects": { "components": ["Button", "Badge"] },
+      "traps": [
+        "disconnect without confirmation",
+        "status conveyed by colour alone",
+        "no empty state"
+      ]
+    },
+    {
+      "id": "error-banner",
+      "prompt": "A background export job has failed. Show the user a persistent message on the page explaining it and offering a retry.",
+      "expects": {
+        "components": ["Alert", "Button"],
+        "props": { "Alert": { "intent": "error" } }
+      },
+      "traps": [
+        "Toast for a persistent failure",
+        "intent=information for a real error",
+        "no retry action"
+      ]
+    },
+    {
+      "id": "save-confirmation",
+      "prompt": "The user just saved their profile successfully. Confirm it without disrupting the page.",
+      "expects": { "components": ["Toast"] },
+      "traps": [
+        "Alert for a transient confirmation",
+        "layout shift",
+        "message that stays forever"
+      ]
+    },
+    {
+      "id": "member-role-change",
+      "prompt": "In a team members table, let an admin change another member's role inline. Downgrading the last admin must be prevented.",
+      "expects": { "components": ["Table", "Select", "Alert"] },
+      "traps": [
+        "no feedback when the change is blocked",
+        "disabled control with no explanation"
+      ]
+    },
+    {
+      "id": "search-empty",
+      "prompt": "Build a search results page for documents. Handle the case where the query matches nothing, and the case where the search itself fails.",
+      "expects": { "components": ["Input"], "states": ["empty", "error"] },
+      "traps": [
+        "conflates no-results with an error",
+        "no way to clear the query"
+      ]
+    },
+    {
+      "id": "danger-zone",
+      "prompt": "Build the 'Danger zone' section of workspace settings: transfer ownership, and delete the workspace. Deleting is permanent.",
+      "expects": {
+        "components": ["Button", "Modal"],
+        "variants": { "Button": ["destructive"] }
+      },
+      "traps": [
+        "no typed confirmation for deletion",
+        "destructive styling on transfer",
+        "no cancel"
+      ]
+    },
+    {
+      "id": "usage-quota",
+      "prompt": "Show a workspace's seat usage against its plan limit, and warn when it is close to the limit.",
+      "expects": {
+        "components": ["Alert", "Badge"],
+        "props": { "Alert": { "intent": "warning" } }
+      },
+      "traps": ["intent=error for a warning", "status by colour alone"]
+    },
+    {
+      "id": "bulk-import",
+      "prompt": "Build a CSV import flow: upload, preview the parsed rows, show per-row validation problems, then confirm the import.",
+      "expects": {
+        "components": ["Table", "Alert", "Button", "Modal"],
+        "states": ["loading", "error"]
+      },
+      "traps": [
+        "no per-row error detail",
+        "no progress during import",
+        "no way to abandon"
+      ]
+    },
+    {
+      "id": "session-list",
+      "prompt": "Build an active sessions list in security settings: device, location, last active, and a 'Sign out' action per session plus 'Sign out everywhere'.",
+      "expects": { "components": ["Table", "Button", "Modal"] },
+      "traps": [
+        "sign-out-everywhere without confirmation",
+        "icon-only actions with no name",
+        "current session not distinguished"
+      ]
+    },
+    {
+      "id": "form-error-summary",
+      "prompt": "A long settings form failed validation in four places, some of them scrolled out of view. Show the user what went wrong.",
+      "expects": {
+        "components": ["Alert", "Input"],
+        "props": { "Alert": { "intent": "error" } }
+      },
+      "traps": [
+        "field errors only, no summary",
+        "summary that does not link to the fields",
+        "role=status for an error"
+      ]
+    },
+    {
+      "id": "readonly-view",
+      "prompt": "Show a project settings page to a user who has view-only permission. Everything is visible but nothing is editable.",
+      "expects": { "components": ["Input", "Button"] },
+      "traps": [
+        "hides controls instead of disabling",
+        "disabled with no explanation of why",
+        "isDisabled omitted on some controls"
+      ]
+    },
+    {
+      "id": "filter-toolbar",
+      "prompt": "Build a filter toolbar above a records table: a text search, two dropdown filters, and a 'Clear filters' action. It should sit in a dense layout.",
+      "expects": {
+        "components": ["Input", "Select", "Button"],
+        "props": { "Input": { "size": "sm" } }
+      },
+      "traps": [
+        "default size in a toolbar",
+        "clear-filters as a primary button",
+        "no indication filters are active"
+      ]
+    },
+    {
+      "id": "nav-shell",
+      "prompt": "Build the application shell: a top header with the product logo and a user menu, and a left sidebar with primary navigation.",
+      "expects": {
+        "components": ["Header", "NavItem", "Menu", "Avatar", "Logo"]
+      },
+      "traps": [
+        "Button used for navigation instead of Link",
+        "no current-page indication",
+        "hand-rolled nav markup"
+      ]
+    },
+    {
+      "id": "confirm-destructive-inline",
+      "prompt": "In a list of saved reports, add a delete action to each row.",
+      "expects": { "components": ["Button", "Modal"] },
+      "traps": [
+        "deletes on first click",
+        "icon-only delete with no aria-label",
+        "destructive variant on a non-destructive action"
+      ]
+    },
+    {
+      "id": "loading-skeleton",
+      "prompt": "A dashboard page loads its data asynchronously. Show the user what is happening before the data arrives.",
+      "expects": { "states": ["loading"] },
+      "traps": [
+        "no loading state at all",
+        "spinner that shifts layout when replaced",
+        "loading state not announced"
+      ]
+    },
+    {
+      "id": "plan-comparison",
+      "prompt": "Build a plan comparison for an upgrade page: three tiers, features per tier, and a call to action on each. Mark the recommended plan.",
+      "expects": { "components": ["Button", "Badge"] },
+      "traps": ["three primary buttons", "recommended shown by colour alone"]
+    },
+    {
+      "id": "webhook-detail",
+      "prompt": "Build a webhook detail panel: endpoint URL, the events it subscribes to, recent delivery attempts with status, and a 'Send test' action.",
+      "expects": { "components": ["Table", "Badge", "Button", "Input"] },
+      "traps": [
+        "delivery status by colour alone",
+        "no empty state for no deliveries"
+      ]
+    },
+    {
+      "id": "two-factor-setup",
+      "prompt": "Build two-factor authentication setup: show a QR code, take a six-digit verification code, and display one-time recovery codes afterwards.",
+      "expects": { "components": ["Input", "Button", "Alert"] },
+      "traps": [
+        "recovery codes with no copy or download",
+        "no warning that codes are shown once",
+        "no error state for a wrong code"
+      ]
+    },
+    {
+      "id": "comment-thread",
+      "prompt": "Build a comment thread on a record: existing comments with author and timestamp, and a composer to add one. Handle the empty case.",
+      "expects": {
+        "components": ["Avatar", "Button", "Input"],
+        "states": ["empty"]
+      },
+      "traps": ["no empty state", "submit enabled on an empty composer"]
+    },
+    {
+      "id": "sso-config",
+      "prompt": "Build an SSO configuration form for an enterprise admin: IdP metadata URL, a certificate paste field, domain, and a test-connection action that can fail.",
+      "expects": {
+        "components": ["Input", "Button", "Alert"],
+        "states": ["error", "loading"]
+      },
+      "traps": [
+        "no pending state on test",
+        "failure shown as a status not an error",
+        "no field-level validation"
+      ]
+    },
+    {
+      "id": "table-row-expand",
+      "prompt": "In an orders table, let a row expand to reveal line items without leaving the page.",
+      "expects": { "components": ["Table", "Button"] },
+      "traps": [
+        "expander with no accessible name",
+        "no aria-expanded",
+        "Modal used where inline detail was asked for"
+      ]
+    },
+    {
+      "id": "rate-limit-notice",
+      "prompt": "The API has started rate-limiting this workspace. Tell the user, inside the developer settings area, and link to the docs.",
+      "expects": { "components": ["Alert", "Link"] },
+      "traps": ["Button used for the docs link", "intent=error for a warning"]
+    },
+    {
+      "id": "profile-avatar-upload",
+      "prompt": "Let a user replace their profile picture: show the current one, allow choosing a new file, and handle an upload that fails.",
+      "expects": {
+        "components": ["Avatar", "Button", "Alert"],
+        "states": ["error", "loading"]
+      },
+      "traps": ["no failure handling", "icon-only upload trigger with no name"]
+    },
+    {
+      "id": "dark-mode-check",
+      "prompt": "Build a status summary panel showing counts of healthy, degraded and failed services. It must be legible in both light and dark themes.",
+      "expects": { "components": ["Badge", "Alert"] },
+      "traps": [
+        "hardcoded colours",
+        "a variant with a known dark-mode contrast failure",
+        "status by colour alone"
+      ]
+    },
+    {
+      "id": "long-select",
+      "prompt": "Let a user pick a timezone from the full IANA list in an account settings form.",
+      "expects": { "components": ["Select"] },
+      "traps": ["rich content in native select options", "no label"]
+    }
+  ]
+}

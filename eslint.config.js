@@ -22,7 +22,7 @@ export default tseslint.config(
   },
   {
     // Build scripts run under Node, not in a browser.
-    files: ['**/scripts/**/*.mjs', '**/*.config.{js,mjs}'],
+    files: ['**/scripts/**/*.mjs', '**/*.config.{js,mjs}', 'evals/**/*.mjs'],
     languageOptions: {
       globals: { console: 'readonly', process: 'readonly' },
     },

@@ -410,31 +410,61 @@ decoration.
 > Expected effort: 4a ~1–2 weeks. 4b ~2–3 weeks, and it is a product decision
 > about IonBase's positioning as much as an engineering one.
 
-### Phase 5 — Evals, once there is something to evaluate
+### Phase 5 — HARNESS DONE, 18 Aug 2026. The A/B itself is unrun.
 
-Everything above is unfalsifiable without this. Both Spotify and Indeed built
-evaluation harnesses and both reported it changed their decisions.
+Built in [`evals/`](../evals/). Three parts, and it matters which are verified:
 
-Build `evals/` in the repo:
+**Context packs** (`context/build-packs.mjs`) — the cheap half of the answer,
+measured exactly, no model involved:
 
-- **A prompt corpus** — 30–50 realistic enterprise SaaS asks. "A user management
-  table with role filters and bulk deactivate." "A billing settings page with a
-  destructive plan-cancellation flow." Not "make a button".
-- **A scorer** that runs generated output through the real gates: does it
-  typecheck; does it pass the ESLint plugin from 2b; does it pass stylelint; does
-  axe find violations; does it use tokens rather than literals; does it import
-  IonBase components rather than hand-rolling them.
-- **A/B on context shape.** Run the corpus with (a) README only, (b) README +
-  manifest, (c) full meta JSON, (d) meta + patterns. Report accuracy _and_ token
-  cost. This is the measurement that tells you whether Phase 1 earned its keep,
-  and it is the reason to build Phase 1 before Phase 3.
-- **A component-compliance score** per run, checked into CI. Regressions in
-  agent-usability then become as visible as a failing test.
+| pack                     | chars   | vs contract-all |
+| ------------------------ | ------- | --------------- |
+| `readme`                 | 10,073  | 7%              |
+| `manifest` (phase 0)     | 180,369 | **125%**        |
+| `contract-all`           | 144,613 | 100%            |
+| `contract-indexed`       | 79,331  | 55%             |
+| `contract-indexed-rules` | 80,135  | 55%             |
 
-> Expected effort: ~1 week for the harness, ongoing for the corpus. Start the
-> corpus during Phase 1 — writing the prompts surfaces the missing metadata.
+Two findings before any model ran. **The phase-0 Storybook manifest is larger
+than all 35 contracts combined** — it carries 249 story snippets and prop tables
+that are mostly empty, and costs more than the artifact that replaced it. And
+the index tier earns its keep: loading only what a task touches is 45% smaller
+than loading everything, with the rules brief adding 1%.
 
----
+**Corpus** (`prompts/corpus.json`) — 32 enterprise SaaS tasks with 89 named
+traps. Each task carries machine-checkable `expects` and the specific mistakes
+an unhelped model is expected to make. A corpus of vague asks measures nothing.
+
+**Scorer** (`score/score.mjs`) — nine checks, all running the tooling a consumer
+would run rather than a bespoke rubric: `tsc` against the real types, the
+shipped ESLint plugin, the contracts for invented components and known contrast
+failures. Verified in both directions on hand-written fixtures: 1/7 checks and 5
+lint errors for a bad implementation, 7/7 and 0 for a good one.
+
+Note the bad fixture **compiles**. Plain HTML type-checks fine, which is exactly
+why the other eight checks exist.
+
+#### What is NOT done
+
+**No model has generated anything.** The only candidates so far are two
+fixtures, which measure the scorer and nothing else. The headline question —
+does the contract pack beat the README — is still open, and the fixture run
+must not be quoted as if it answered it.
+
+Running it needs `--provider api`, `@anthropic-ai/sdk` (deliberately not a
+dependency of this repo), and money. The wiring, prompt, caching and reporting
+are in place; `--provider files` grades output from any tool with no model at
+all.
+
+#### What a real run should settle
+
+1. Does the contract pack beat the README? If not, phases 1 and 2 did not earn
+   their keep and should be reconsidered rather than defended.
+2. Does the rules brief add anything over the contracts alone? It costs 1%.
+3. Do the inherited ARIA props help or hurt? 86% of Button's props block is 39
+   inherited props and a lean contract would be 42% smaller — the harness exists
+   precisely so that is tested rather than guessed.
+4. Which check fails most? That list is more useful than the aggregate score.
 
 ## 5. Sequencing
 
@@ -442,7 +472,7 @@ Build `evals/` in the repo:
 Phase 0  ▓  DONE                                  manifest live: 26 components, 249 stories
 Phase 1  ▓▓▓▓▓▓▓▓  DONE (core)                    ionbase-ui/meta, 6 of 35 with intent
 Phase 2c ▓▓  DONE                                 250 pairings; found 3 defects, 2 unknown
-Phase 5  ░░▓▓▓▓  (corpus starts during Phase 1)   evals
+Phase 5  ▓▓▓▓▓▓  HARNESS DONE, A/B UNRUN          32 tasks, 9 checks, 5 context packs
 Phase 2  ▓▓▓▓▓▓  DONE                             5 lint rules + stylelint config, shipped
 Phase 3a ▓▓▓                                      llms.txt + mirrors
 Phase 3b ▓▓▓                                      Code Connect

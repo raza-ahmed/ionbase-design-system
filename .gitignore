@@ -82,3 +82,9 @@ Thumbs.db
 # ---- internal files ----
 IONBASE-BUILD.md
 *storybook.log
+
+# Eval working directories. Packs are generated from dist/meta, candidates are
+# model output, results are a run log — all reproducible, none reviewable.
+evals/context/packs/
+evals/candidates/
+evals/results/
