@@ -154,6 +154,9 @@ export const DerivedMarkMatchesFigma: Story = {
 export const DisabledBeatsChecked: Story = {
   render: (args) => (
     // `disabled` is the deprecated alias — still must resolve the same way.
+    // The lint rule is right to flag it everywhere else; this story exists to
+    // prove the alias keeps working, so it is the one place it must stay.
+    // eslint-disable-next-line ionbase-ui/no-deprecated-props
     <Checkbox {...args} disabled defaultChecked aria-label="field" />
   ),
   play: async ({ canvas }) => {
