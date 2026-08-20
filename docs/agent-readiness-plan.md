@@ -305,7 +305,7 @@ base rule's text colour), component-local `--ion-*` indirection, and alpha
 compositing for translucent hover overlays. 250 pairings, 17 stylesheets, zero
 skipped.
 
-**It found three outstanding defects, two of them unknown**, and disproved a
+**It found three outstanding defects, two of them unknown** — all three in Dark, which is now deferred until the theme is settled in Figma (see AGENTS.md); Light has zero — and disproved a
 documented assumption: `surface/information` was recorded in AGENTS.md as "not
 yet used" while Alert's own stylesheet comment said it shipped. Two documents in
 this repo disagreed, neither was checked, and both were partly wrong.

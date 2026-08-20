@@ -46,6 +46,108 @@ const HAND_ROLLED = {
   a: 'Link',
 };
 
+/* ------------------------------------------- sharper, trap-specific checks */
+
+/**
+ * The nine generic checks above are the floor — a capable model clears them
+ * whatever context it is given, which the first pilot demonstrated: README-only
+ * output scored 7/7 on the task with the most traps.
+ *
+ * These are the specific mistakes the corpus names. They are what actually
+ * discriminates, because each one type-checks, renders, and looks right.
+ */
+function trapChecks(sf, src) {
+  const out = {};
+  const attrs = (node) =>
+    Object.fromEntries(
+      node.attributes.properties
+        .filter((a) => ts.isJsxAttribute(a) && a.name)
+        .map((a) => [
+          a.name.getText(),
+          a.initializer ? a.initializer.getText() : 'true',
+        ]),
+    );
+
+  const elements = [];
+  const walk = (node) => {
+    if (ts.isJsxOpeningElement(node) || ts.isJsxSelfClosingElement(node)) {
+      elements.push({ name: node.tagName.getText(), attrs: attrs(node), node });
+    }
+    ts.forEachChild(node, walk);
+  };
+  walk(sf);
+
+  /* A placeholder is not a label — it vanishes on focus, exactly when needed. */
+  const fields = elements.filter((e) =>
+    ['Input', 'Select', 'PhoneInput'].includes(e.name),
+  );
+  const unlabelled = fields.filter(
+    (e) =>
+      e.attrs.placeholder &&
+      !e.attrs.label &&
+      !e.attrs['aria-label'] &&
+      !e.attrs['aria-labelledby'],
+  );
+  if (fields.length) {
+    out.fieldsLabelled = {
+      pass: unlabelled.length === 0,
+      detail: unlabelled.length
+        ? `${unlabelled.length} field(s) with placeholder and no label`
+        : '',
+    };
+  }
+
+  /* Header cells need scope, or no data cell can be associated with a column. */
+  const headerCells = elements.filter(
+    (e) => e.name === 'TableCell' && (e.attrs.header || e.attrs.scope),
+  );
+  const inHead = /<TableHead>[\s\S]*?<\/TableHead>/.exec(src)?.[0] ?? '';
+  const headCellCount = (inHead.match(/<TableCell/g) ?? []).length;
+  const scopedCount = (inHead.match(/scope=/g) ?? []).length;
+  if (headCellCount) {
+    out.headerCellsScoped = {
+      pass: scopedCount >= headCellCount,
+      detail:
+        scopedCount >= headCellCount
+          ? ''
+          : `${headCellCount - scopedCount} header cell(s) without scope`,
+    };
+  }
+  void headerCells;
+
+  /* An irreversible action needs a confirmation step in the same file. */
+  const destructive = elements.filter(
+    (e) => e.name === 'Button' && /destructive/.test(e.attrs.variant ?? ''),
+  );
+  if (destructive.length) {
+    out.destructiveConfirmed = {
+      pass: /\bModal\b/.test(src),
+      detail: /\bModal\b/.test(src)
+        ? ''
+        : 'destructive Button with no Modal anywhere in the file',
+    };
+  }
+
+  /* A Button that navigates breaks middle-click, cmd-click and copy-link. */
+  const navigating = elements.filter(
+    (e) =>
+      e.name === 'Button' &&
+      /router\.(push|replace)|navigate\(|window\.location|href\s*=/.test(
+        e.attrs.onPress ?? '',
+      ),
+  );
+  if (elements.some((e) => e.name === 'Button')) {
+    out.buttonsDoNotNavigate = {
+      pass: navigating.length === 0,
+      detail: navigating.length
+        ? `${navigating.length} Button(s) performing navigation`
+        : '',
+    };
+  }
+
+  return out;
+}
+
 export function score(file, taskId) {
   const src = readFileSync(file, 'utf8');
   const task = corpus.tasks.find((t) => t.id === taskId) ?? null;
@@ -175,6 +277,9 @@ export function score(file, taskId) {
         pass: contrastHits.length === 0,
         detail: contrastHits,
       },
+      // Only the checks whose pattern actually appears in the file — scoring a
+      // Toast task on header-cell scope would just dilute the signal.
+      ...trapChecks(sf, src),
     },
   };
 }

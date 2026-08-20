@@ -209,9 +209,15 @@ function knownIssuesFor(stylesheet) {
     (contrast.accepted ?? []).map((e) => [`${e.fg}|${e.bg}|${e.mode}`, e]),
   );
 
+  // A deferred mode is a theme still being designed. Its measurements are real
+  // but they are not decisions yet, and shipping them as knownIssues told
+  // consumers not to use components that are fine in the themes that ARE final.
+  const deferred = new Set(contrast.deferredModes ?? []);
+
   const out = new Map();
   for (const p of contrast.pairings ?? []) {
     if (p.component !== sheet || p.ratio >= p.min) continue;
+    if (deferred.has(p.mode)) continue;
     const k = `${p.fg}|${p.bg}|${p.mode}`;
     if (exempt.has(k)) continue;
     if (out.has(k)) {

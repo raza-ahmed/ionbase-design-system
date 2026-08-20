@@ -12,6 +12,26 @@
     "An exception that no longer fails is itself an error. Otherwise this file",
     "becomes a graveyard nobody prunes."
   ],
+  "deferredModes": ["Dark"],
+  "$deferredModesComment": [
+    "Dark is DEFERRED, not exempt and not passing.",
+    "",
+    "The dark theme has not been finalised in Figma yet. Measuring a theme that is",
+    "still being designed produces findings that are true of today's values and",
+    "meaningless as decisions \u2014 and worse, they were being shipped: all three",
+    "outstanding defects were Dark, they were written into Button and Alert's",
+    "a11y.knownIssues on npm, and ionbase-ui/eslint-plugin was telling consumers",
+    "not to use `variant=\"primary-soft\"` on the strength of them. A light-only app",
+    "was being warned off a component that is fine.",
+    "",
+    "While a mode is deferred the gate still MEASURES it and still prints the",
+    "results, so nothing is lost or hidden. It just does not fail the build, does",
+    "not enter any component contract, and is not linted.",
+    "",
+    "Remove 'Dark' from this list once the dark theme is settled in Figma. Every",
+    "deferred result becomes a real finding again the moment you do \u2014 and on",
+    "today's values that is 3 defects, listed under deferred below."
+  ],
   "accepted": [
     {
       "fg": "--text-disabled",
@@ -21,7 +41,9 @@
       "ratio": 4.31,
       "reason": "WCAG 2.2 SC 1.4.3 exempts text that is part of an inactive user interface component: it has no contrast requirement. Disabled controls are required to look unavailable, and raising this would work against that.",
       "affects": ["Button", "Input", "Select"]
-    },
+    }
+  ],
+  "deferred": [
     {
       "fg": "--text-disabled",
       "bg": "--surface-disabled",

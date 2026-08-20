@@ -1,5 +1,27 @@
 # Changelog
 
+## Unreleased
+
+### Changed — dark-mode contrast findings are deferred, not shipped
+
+The dark theme is not settled in Figma yet. `contrast-exceptions.json` now
+carries `deferredModes: ["Dark"]`: the gate still measures Dark and prints
+every result, but does not fail on it, does not write it into any component's
+`a11y.knownIssues`, and does not lint it.
+
+**This changes what 0.18.0 shipped.** All three outstanding defects were Dark,
+so `Button.json` and `Alert.json` carried `a11y.knownIssues` entries, and
+`ionbase-ui/eslint-plugin`'s `no-known-contrast-failure` rule fired on
+`<Button variant="primary-soft">` and `<Alert emphasis="solid"
+intent="information">`. An app that only ships a light theme was being warned
+off components that are fine in it.
+
+Light is unaffected and has **zero** outstanding defects — 125 enforced
+pairings, all passing.
+
+Nothing rendered differently in either release. Restoring the Dark findings is
+one line in `contrast-exceptions.json` once the theme is final.
+
 ## 0.18.0 — 2026-08-18
 
 **The guardrails now travel with the package.** A stylelint config and an ESLint

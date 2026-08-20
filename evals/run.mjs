@@ -30,6 +30,7 @@ import {
   mkdirSync,
   readdirSync,
 } from 'node:fs';
+import { execFileSync } from 'node:child_process';
 import { join, dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { score, lint, typecheck } from './score/score.mjs';
@@ -46,6 +47,7 @@ const arg = (name, fallback) => {
 };
 
 const providerName = arg('provider', 'files');
+const concurrency = Number(arg('concurrency', '4'));
 const packNames = arg('packs', 'readme,contract-indexed-rules').split(',');
 const taskFilter = arg('tasks', null)?.split(',') ?? null;
 const outDir = resolve(arg('out', join(HERE, 'results')));
@@ -92,7 +94,76 @@ const providers = {
     return { file: p };
   },
 
-  /** Generate with Claude. Lazily imported so the SDK stays optional. */
+  /**
+   * Generate with the `claude` CLI in headless mode.
+   *
+   * Uses whatever credentials Claude Code already has, so it needs no API key —
+   * which is why it exists: this machine has no ANTHROPIC_API_KEY and no `ant`
+   * profile, and an eval that cannot be run is not an eval.
+   *
+   * The tradeoff is real and worth stating: every invocation is a FRESH session,
+   * so the pack is re-read from scratch each time and there is no prompt cache
+   * across tasks. A run costs roughly (pack size x tasks) input tokens. The `api`
+   * provider caches the pack and is much cheaper per task at scale.
+   *
+   * Tools are disabled. The task is pure generation, and a model that goes off
+   * to read files would be scored on something other than what it was given.
+   */
+  async claudeCli(task, pack) {
+    const dir = join(outDir, 'generated', pack);
+    const file = join(dir, `${task.id}.tsx`);
+    // Resume. A generation that already succeeded is not re-run — a usage limit
+    // or a network blip part-way through a run should cost the remaining work,
+    // not all of it. Pass --force to regenerate.
+    if (existsSync(file) && !process.argv.includes('--force')) {
+      return { file, resumed: true };
+    }
+
+    const prompt = [
+      SYSTEM,
+      '',
+      'Reference material about the design system:',
+      '',
+      packContext(pack),
+      '',
+      `TASK: ${task.prompt}`,
+      '',
+      'Return a single .tsx file implementing this.',
+    ].join('\n');
+
+    let raw;
+    try {
+      raw = execFileSync(
+        'claude',
+        ['-p', '--model', model, '--allowedTools', ''],
+        {
+          input: prompt,
+          encoding: 'utf8',
+          maxBuffer: 32 * 1024 * 1024,
+          stdio: ['pipe', 'pipe', 'pipe'],
+        },
+      );
+    } catch (e) {
+      // execFileSync's message is just the command line. The reason — a usage
+      // limit, a rate limit, an auth failure — is on stderr, and without it a
+      // failed run is undiagnosable.
+      const why = String(e.stderr || e.stdout || e.message)
+        .trim()
+        .slice(0, 400);
+      throw new Error(why || 'claude exited non-zero with no output');
+    }
+
+    const code = raw
+      .replace(/^```(?:tsx?|typescript|jsx?)?\n/, '')
+      .replace(/\n```\s*$/, '')
+      .trim();
+
+    mkdirSync(dir, { recursive: true });
+    writeFileSync(file, `${code}\n`);
+    return { file, promptChars: prompt.length };
+  },
+
+  /** Generate with the Anthropic SDK. Lazily imported so the SDK stays optional. */
   async api(task, pack) {
     let Anthropic;
     try {
@@ -145,7 +216,8 @@ const providers = {
 
 /* --------------------------------------------------------------------- main */
 
-const provider = providers[providerName];
+const provider =
+  providers[providerName === 'claude-cli' ? 'claudeCli' : providerName];
 if (!provider) {
   console.error(
     `Unknown provider "${providerName}". Use: ${Object.keys(providers).join(', ')}`,
@@ -156,46 +228,62 @@ if (!provider) {
 mkdirSync(outDir, { recursive: true });
 const results = [];
 
-for (const pack of packNames) {
-  for (const task of tasks) {
-    let produced;
-    try {
-      produced = await provider(task, pack);
-    } catch (e) {
-      console.error(`  ${pack}/${task.id}: ${e.message}`);
-      process.exit(1);
-    }
-    if (produced.skipped) {
-      results.push({ pack, task: task.id, skipped: produced.skipped });
-      continue;
-    }
+const jobs = [];
+for (const pack of packNames)
+  for (const task of tasks) jobs.push({ pack, task });
 
-    const s = score(produced.file, task.id);
-    const messages = lint(produced.file);
-    const tc = typecheck(produced.file);
-    const checks = Object.values(s.checks);
-    const passed = checks.filter((c) => c.pass).length;
-
-    results.push({
-      pack,
-      task: task.id,
-      checksPassed: passed,
-      checksTotal: checks.length,
-      lintErrors: messages.filter((m) => m.severity === 2).length,
-      compiles: tc.pass,
-      failed: Object.entries(s.checks)
-        .filter(([, c]) => !c.pass)
-        .map(([n]) => n),
-      ...(produced.usage ? { usage: produced.usage } : {}),
-    });
-    process.stdout.write('.');
+/** Generation dominates the wall clock; scoring is local and fast. */
+async function runJob({ pack, task }) {
+  let produced;
+  try {
+    produced = await provider(task, pack);
+  } catch (e) {
+    process.stdout.write('x');
+    return { pack, task: task.id, error: String(e.message).slice(0, 300) };
   }
+  if (produced.skipped)
+    return { pack, task: task.id, skipped: produced.skipped };
+
+  const s = score(produced.file, task.id);
+  const messages = lint(produced.file);
+  const tc = typecheck(produced.file);
+  const checks = Object.values(s.checks);
+  process.stdout.write('.');
+
+  return {
+    pack,
+    task: task.id,
+    checksPassed: checks.filter((c) => c.pass).length,
+    checksTotal: checks.length,
+    lintErrors: messages.filter((m) => m.severity === 2).length,
+    lintByRule: messages.reduce((a, m) => {
+      if (m.ruleId) a[m.ruleId] = (a[m.ruleId] ?? 0) + 1;
+      return a;
+    }, {}),
+    compiles: tc.pass,
+    failed: Object.entries(s.checks)
+      .filter(([, c]) => !c.pass)
+      .map(([n]) => n),
+    componentsUsed: s.componentsUsed,
+    ...(produced.promptChars ? { promptChars: produced.promptChars } : {}),
+    ...(produced.usage ? { usage: produced.usage } : {}),
+  };
 }
+
+let cursor = 0;
+await Promise.all(
+  Array.from({ length: Math.min(concurrency, jobs.length) }, async () => {
+    while (cursor < jobs.length) {
+      const job = jobs[cursor++];
+      results.push(await runJob(job));
+    }
+  }),
+);
 process.stdout.write('\n\n');
 
 /* ------------------------------------------------------------------- report */
 
-const live = results.filter((r) => !r.skipped);
+const live = results.filter((r) => !r.skipped && !r.error);
 const byPack = {};
 for (const r of live) (byPack[r.pack] ??= []).push(r);
 

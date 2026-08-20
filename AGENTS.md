@@ -629,6 +629,24 @@ pnpm --filter ionbase-ui contrast        # runs in the build
 pnpm --filter ionbase-ui contrast:list   # every pairing, worst first
 ```
 
+### Dark is DEFERRED — read this before acting on a dark-mode finding
+
+`contrast-exceptions.json` carries `deferredModes: ["Dark"]`. The dark theme is
+not settled in Figma yet, so the gate **measures** Dark and prints the results
+but does not fail on them, does not write them into any component's
+`a11y.knownIssues`, and does not lint them.
+
+This was not a tidy-up. All three outstanding defects were Dark, they had
+shipped into `Button` and `Alert`'s contracts on npm, and
+`ionbase-ui/eslint-plugin` was telling consumers not to use
+`variant="primary-soft"` — warning a light-only app off a component that is
+fine. Measuring a theme while it is still being designed produces findings that
+are true of today's values and worthless as decisions.
+
+**Remove `"Dark"` from `deferredModes` once the dark theme is final.** Every
+deferred result becomes a real finding again immediately; on today's values that
+is 3 defects, listed under `deferred` in the same file so nothing is lost.
+
 It extracts 250 real pairings from 17 stylesheets by resolving the cascade —
 BEM blocks, compound modifiers, state inheritance, component-local `--ion-*`
 indirection, and alpha compositing for translucent hover overlays. Accepted

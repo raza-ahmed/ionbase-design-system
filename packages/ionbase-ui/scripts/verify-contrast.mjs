@@ -61,6 +61,18 @@ const dark = {
 };
 const MODES = { Light: light, Dark: dark };
 
+const exFile = existsSync(EXCEPTIONS)
+  ? JSON.parse(readFileSync(EXCEPTIONS, 'utf8'))
+  : {};
+
+/*
+ * Modes still being designed. Measured and reported, but never a build failure
+ * and never written into a component contract — a theme that is not finished
+ * produces findings that are true of today's values and worthless as decisions.
+ * See the comment in contrast-exceptions.json.
+ */
+const deferredModes = new Set(exFile.deferredModes ?? []);
+
 /* --------------------------------------------------------------- contrast */
 
 /** #rrggbb, #rrggbbaa, rgb() and rgba() — the four forms the token CSS emits. */
@@ -387,13 +399,14 @@ const unique = results.filter((r) => {
   return true;
 });
 
-const failures = unique.filter((r) => r.ratio < r.min);
+const measured = unique.filter((r) => !deferredModes.has(r.mode));
+const deferredResults = unique.filter((r) => deferredModes.has(r.mode));
+const failures = measured.filter((r) => r.ratio < r.min);
+const deferredFailures = deferredResults.filter((r) => r.ratio < r.min);
 
 /* ------------------------------------------------------------- exceptions */
 
-const exceptions = existsSync(EXCEPTIONS)
-  ? (JSON.parse(readFileSync(EXCEPTIONS, 'utf8')).accepted ?? [])
-  : [];
+const exceptions = exFile.accepted ?? [];
 const exKey = (e) => `${e.fg}|${e.bg}|${e.mode}`;
 const accepted = new Map(exceptions.map((e) => [exKey(e), e]));
 
@@ -425,8 +438,10 @@ writeFileSync(
     {
       generated: 'by scripts/verify-contrast.mjs',
       thresholds: { text: TEXT_MIN, nonText: NONTEXT_MIN },
+      deferredModes: [...deferredModes],
       pairings: unique.sort((a, b) => a.ratio - b.ratio),
       accepted: exceptions,
+      deferred: exFile.deferred ?? [],
       skipped,
     },
     null,
@@ -477,7 +492,7 @@ if (missing.length) {
     `  COVERAGE  text roles used in CSS but measured in no pairing: ${missing.join(', ')}`,
   );
 }
-for (const u of unresolved) {
+for (const u of unresolved.filter((u) => !deferredModes.has(u.mode))) {
   console.error(
     `  UNRESOLVED  ${u.missing} has no value in ${u.mode} — used by ${u.component} ${u.context}`,
   );
@@ -495,9 +510,27 @@ if (outstanding.length) {
   }
 }
 
+if (deferredModes.size) {
+  console.log(
+    `\n  Deferred (${[...deferredModes].join(', ')}) — measured, not enforced, not shipped in any contract:`,
+  );
+  const seenPair = new Set();
+  for (const r of deferredFailures.sort((a, b) => a.ratio - b.ratio)) {
+    const k = `${r.fg}|${r.bg}|${r.mode}`;
+    if (seenPair.has(k)) continue;
+    seenPair.add(k);
+    console.log(
+      `    ${r.ratio}:1  ${r.mode.padEnd(5)} ${r.fg} on ${r.bg}  (${r.component})`,
+    );
+  }
+  if (!deferredFailures.length)
+    console.log('    none failing on current values');
+}
+
 const exempt = exceptions.filter((e) => e.kind === 'wcag-exempt').length;
 console.log(
-  `\nContrast: ${unique.length} pairings across ${new Set(unique.map((p) => p.component)).size} stylesheets — ` +
+  `\nContrast: ${measured.length} enforced pairings (+${deferredResults.length} deferred) across ` +
+    `${new Set(unique.map((p) => p.component)).size} stylesheets — ` +
     `${unexpected.length} unexpected, ${outstanding.length} outstanding defects, ` +
     `${exempt} WCAG-exempt, ${skipped.length} skipped, ${unresolved.length} unresolved`,
 );
