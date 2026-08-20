@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.18.1 — 2026-08-20
 
 ### Changed — dark-mode contrast findings are deferred, not shipped
 
