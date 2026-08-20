@@ -1,6 +1,6 @@
 {
   "name": "ionbase-ui",
-  "version": "0.19.0",
+  "version": "0.20.0",
   "description": "IonBase Design System — accessible React components, styles and design tokens in one package",
   "license": "MIT",
   "type": "module",
@@ -22,6 +22,7 @@
       "types": "./dist/tokens-js.d.ts",
       "default": "./dist/tokens-js.js"
     },
+    "./llms.txt": "./llms.txt",
     "./stylelint-config": "./stylelint-config.js",
     "./eslint-plugin": "./eslint-plugin/index.js"
   },
@@ -38,7 +39,8 @@
   "files": [
     "dist",
     "eslint-plugin",
-    "stylelint-config.js"
+    "stylelint-config.js",
+    "llms.txt"
   ],
   "sideEffects": [
     "**/*.css"
@@ -57,7 +59,7 @@
   },
   "scripts": {
     "dev": "tsc --watch",
-    "build": "node scripts/sync-tokens.mjs && tsc --build --force && node scripts/copy-css.mjs && node scripts/verify-client-boundaries.mjs && node scripts/verify-contrast.mjs && node scripts/build-meta.mjs && node scripts/verify-meta.mjs",
+    "build": "node scripts/sync-tokens.mjs && tsc --build --force && node scripts/copy-css.mjs && node scripts/verify-client-boundaries.mjs && node scripts/verify-contrast.mjs && node scripts/build-meta.mjs && node scripts/verify-meta.mjs && node scripts/build-llms.mjs",
     "typecheck": "tsc --noEmit",
     "lint": "eslint . && stylelint \"src/styles/*.css\"",
     "format": "prettier --check .",
@@ -65,7 +67,8 @@
     "meta:build": "node scripts/build-meta.mjs",
     "meta:verify": "node scripts/build-meta.mjs && node scripts/verify-meta.mjs",
     "contrast": "node scripts/verify-contrast.mjs",
-    "contrast:list": "node scripts/verify-contrast.mjs --list"
+    "contrast:list": "node scripts/verify-contrast.mjs --list",
+    "llms": "node scripts/build-llms.mjs"
   },
   "peerDependencies": {
     "react": "^18.0.0 || ^19.0.0",

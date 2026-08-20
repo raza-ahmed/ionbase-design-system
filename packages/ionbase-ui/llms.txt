@@ -1,0 +1,27 @@
+# ionbase-ui
+
+> IonBase is a React design system for enterprise SaaS, built to be consumed by an agent rather than read by a developer. Every component ships a machine-readable contract carrying the judgement a type signature cannot: when to use it, what to use instead, the anti-patterns, and what it guarantees for accessibility versus what it requires of you.
+
+Version 0.20.0. 35 components.
+
+## Read these, in this order
+
+1. `dist/meta/index.json` — every component with its summary and variant axes. Pick one from here.
+2. `dist/meta/<Name>.json` — the full contract for that one component: props with their origins and defaults, variant guidance, slots, accessibility guarantees and requirements, anti-patterns, tokens.
+
+Both are importable: `ionbase-ui/meta/index` and `ionbase-ui/meta/<Name>.json`. Do NOT load `ionbase-ui/meta` (`components.json`) — it is all 35 contracts in one file, for tooling that wants a single fetch, and it will bury the component you need.
+
+## Components
+
+`Alert`, `Avatar`, `AvatarGroup`, `Badge`, `Button`, `Checkbox`, `Divider`, `FullCard`, `Header`, `Icon`, `Input`, `Link`, `Logo`, `LogoMark`, `Menu`, `MenuItem`, `Modal`, `NavItem`, `PhoneInput`, `Popover`, `Radio`, `RadioGroup`, `ScrollProgress`, `Select`, `TabItem`, `Table`, `TableBody`, `TableCell`, `TableHead`, `TableRow`, `Tabs`, `Toast`, `ToastProvider`, `Toggle`, `Tooltip`
+
+## Rules that ship with this package
+
+- `ionbase-ui/eslint-plugin` — five rules driven from the contracts: deprecated props, missing accessible names, raw style values, measured contrast failures, competing primary actions.
+- `ionbase-ui/stylelint-config` — bans raw colour and spacing values in favour of tokens.
+
+Turn both on. They encode the same judgement as the contracts, enforced.
+
+## Hosted
+
+https://raza-ahmed.github.io/ionbase-design-system/llms.txt — the same index with per-component markdown pages.

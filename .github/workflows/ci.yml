@@ -202,6 +202,20 @@ jobs:
         env:
           STORYBOOK_BASE_PATH: ${{ steps.pages.outputs.base_path }}/
 
+      # Phase 3a. llms.txt plus a markdown mirror and a JSON twin per component,
+      # rendered from dist/meta INTO the built site so they land at the Pages
+      # root beside Storybook. Runs after the site build and before the upload,
+      # because it writes into the directory being uploaded.
+      #
+      # base_url rather than a hardcoded domain: the links inside llms.txt are
+      # absolute (agents fetch them out of context), and renaming the repo must
+      # not leave 35 pages pointing at a dead host.
+      - name: Generate llms.txt and component mirrors
+        run: >
+          node packages/ionbase-ui/scripts/build-llms.mjs
+          --site apps/storybook/storybook-static
+          --base-url ${{ steps.pages.outputs.base_url }}
+
       - uses: actions/upload-pages-artifact@v3
         with:
           path: apps/storybook/storybook-static

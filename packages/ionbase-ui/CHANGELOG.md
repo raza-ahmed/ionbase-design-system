@@ -1,5 +1,25 @@
 # Changelog
 
+## 0.20.0 — 2026-08-21
+
+### Added — `llms.txt` ships in the tarball
+
+An agent working offline, with `ionbase-ui` in `node_modules` and no network,
+now finds a 2KB index at the package root telling it what this package is, which
+two files to read and in what order, and to turn the lint rules on. That is the
+most common real situation and the one hosted docs miss entirely.
+
+Also exported as `ionbase-ui/llms.txt`.
+
+The hosted half — `llms.txt` at the Pages root plus a markdown page and a JSON
+twin for all 35 components — is generated into the site at deploy time and needs
+no release.
+
+Both are rendered from `dist/meta` by `scripts/build-llms.mjs`; neither is
+authored. Shape copied from AWS Cloudscape rather than invented.
+
+**Minor, not patch**: a new file and a new export path, no behaviour change.
+
 ## 0.19.0 — 2026-08-21
 
 ### Added — every component now ships intent, not just an API

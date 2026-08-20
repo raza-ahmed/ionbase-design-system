@@ -368,6 +368,42 @@ in a repo that has `ionbase-ui` in `node_modules` should find the contract witho
 a network call — that is the single most common real situation and the one the
 hosted-docs approach misses.
 
+#### 3a — DONE, 21 Aug 2026
+
+`packages/ionbase-ui/scripts/build-llms.mjs`, one generator with two outputs:
+
+| artefact                                   | where           | committed |
+| ------------------------------------------ | --------------- | --------- |
+| `llms.txt`                                 | package root    | yes       |
+| `llms.txt`                                 | Pages root      | at deploy |
+| `components/<slug>/index.html.md`          | Pages, 35 pages | at deploy |
+| `components/<slug>/index.html.json`        | Pages, 35 files | at deploy |
+| `meta/index.json` + `meta/components.json` | Pages           | at deploy |
+
+The markdown is a **rendering** of `dist/meta`, never a second source. Nothing
+in it is authored: change `meta/<Name>.json` and the page changes. A hand-kept
+mirror drifts, and a drifted mirror is worse than none.
+
+**The two llms.txt files are deliberately different.** The hosted one links
+absolute URLs, because an agent fetches it out of context. The tarball one names
+local paths — `dist/meta/index.json` — because an agent that finds it already has
+the package on disk and does not need the network. Shipping the hosted copy in
+the tarball would send an offline agent to a URL it cannot reach, for a file
+sitting two directories away.
+
+Both say the same thing about `components.json`: do not load it. It is 242KB and
+will bury the one component you need.
+
+The generator fails the build if any link in the hosted `llms.txt` does not
+resolve to a file it just wrote. That is the one failure nobody would notice —
+a 404 in a file no human opens, found by an agent that cannot tell a broken link
+from a component that does not exist. Negative-tested by making the emitted
+directory names disagree with the linked ones: 35 broken links, exit 1.
+
+Not done, and deliberately: a tokens page, a patterns page, and `llms-full.txt`.
+The first two have nothing to render yet (phase 4a), and the third is the
+"one big file" this whole tier argues against.
+
 **3b. Code Connect.** Add `.figma.ts` files mapping each Figma component to its
 React counterpart. The Figma pipeline and MCP bridge already exist; this is the
 missing link that makes design-to-code produce _your_ Button instead of a
@@ -496,7 +532,7 @@ Phase 1  ▓▓▓▓▓▓▓▓▓▓  DONE                          ionbase-u
 Phase 2c ▓▓  DONE                                 250 pairings; found 3 defects, 2 unknown
 Phase 5  ▓▓▓▓▓▓  HARNESS DONE, A/B UNRUN          32 tasks, 9 checks, 5 context packs
 Phase 2  ▓▓▓▓▓▓  DONE                             5 lint rules + stylelint config, shipped
-Phase 3a ▓▓▓                                      llms.txt + mirrors
+Phase 3a ▓▓▓▓  DONE                                llms.txt + 35 mirrors, hosted + in-tarball
 Phase 3b ▓▓▓                                      Code Connect
 Phase 4a ▓▓▓▓▓▓▓▓                                 patterns
 Phase 4b ▓▓▓▓▓▓▓▓▓▓                               AI-feature components
