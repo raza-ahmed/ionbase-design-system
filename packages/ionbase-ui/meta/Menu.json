@@ -1,0 +1,51 @@
+{
+  "status": "stable",
+  "summary": "The list surface only — no trigger, no anchor, no open state. Positioning it is the caller's job.",
+  "useWhen": [
+    "rendering a list of actions or options as a surface you have already positioned",
+    "the rows need icons, a selected check, or two lines — more than a native <select> can hold"
+  ],
+  "useInstead": [
+    {
+      "when": "you want a self-contained dropdown with a trigger and open state",
+      "use": "Popover",
+      "why": "Menu is the surface alone; Popover owns the trigger, positioning, focus containment and Escape"
+    },
+    {
+      "when": "one value is picked from a modest list of plain text options",
+      "use": "Select",
+      "why": "the native picker brings keyboard handling, type-ahead and the mobile platform picker for free"
+    },
+    {
+      "when": "it is primary navigation rather than a dropdown",
+      "use": "NavItem"
+    }
+  ],
+  "composition": {
+    "order": ["Menu", "MenuItem"],
+    "example": "<Menu><MenuItem icon={<Icon as={Copy} />}>Duplicate</MenuItem><MenuItem isSelected>Archive</MenuItem></Menu>"
+  },
+  "slots": {
+    "children": { "accepts": "MenuItem" }
+  },
+  "a11y": {
+    "role": "none — it is a plain <ul>",
+    "guarantees": [
+      "no `role=\"menu\"`, deliberately: a real ARIA menu owes the user roving tabindex, arrow-key navigation and typeahead, and claiming the role without them promises interactions that are not there"
+    ],
+    "notes": [
+      "Each MenuItem is a real <button>, so Tab reaches every row. That is honest, and it is not the same as arrow-key menu navigation.",
+      "The role arrives when the popover that owns it does."
+    ]
+  },
+  "antiPatterns": [
+    {
+      "dont": "adding `role=\"menu\"` yourself",
+      "why": "the keyboard behaviour that role promises is not implemented; an honest list is better for a screen-reader user than a lying menu"
+    },
+    {
+      "dont": "using Menu as a dropdown without positioning it",
+      "why": "it renders in flow — it has no anchor logic of its own"
+    }
+  ]
+}

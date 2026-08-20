@@ -1,0 +1,72 @@
+{
+  "status": "stable",
+  "summary": "A full-bleed row: a text column beside a framed media panel, mirrored by `alignment`.",
+  "useWhen": [
+    "a marketing or overview section presents one thing with a screenshot beside it",
+    "a case-study or feature row on a landing or product page"
+  ],
+  "useInstead": [
+    {
+      "when": "you are listing records with comparable fields",
+      "use": "Table"
+    },
+    {
+      "when": "it is a short status message rather than a content section",
+      "use": "Alert"
+    }
+  ],
+  "slots": {
+    "eyebrow": { "accepts": "Badge", "note": "any node works" },
+    "headline": {
+      "accepts": "text",
+      "note": "required — the heading is what makes this a section rather than a decorated div"
+    },
+    "description": { "accepts": "text" },
+    "actions": {
+      "accepts": "Button",
+      "note": "a secondary Button in the design"
+    },
+    "media": {
+      "accepts": "img or video",
+      "note": "rendered inside the framed screen holder — pass the screenshot or embed itself, not the frame"
+    },
+    "children": {
+      "accepts": "any",
+      "note": "extra content below the description"
+    }
+  },
+  "variants": {
+    "alignment": {
+      "left": { "use": "media on the left, text on the right" },
+      "right": {
+        "use": "media on the right — the variant names the media, not the text"
+      }
+    }
+  },
+  "a11y": {
+    "guarantees": [
+      "the headline renders as a real heading, so the card appears in the document outline"
+    ],
+    "requires": [
+      "`headingLevel` matching the surrounding outline — `h3` is the default because Figma applies Type/H3, but only the page knows the real level",
+      "`alt` on whatever you pass as `media`"
+    ],
+    "notes": [
+      "`h1` is deliberately not available: a full card is a section within a page, never the page's own title."
+    ]
+  },
+  "antiPatterns": [
+    {
+      "dont": "looking for `showEyebrow` / `showDescription` / `showActions`",
+      "why": "an absent prop is the switch — Figma needs the boolean because an instance always holds every layer; React does not"
+    },
+    {
+      "dont": "leaving `headingLevel` at the default inside a section that is already at h3",
+      "why": "it produces a skipped or duplicated outline level"
+    },
+    {
+      "dont": "passing your own frame or border around `media`",
+      "why": "the component already draws the screen holder"
+    }
+  ]
+}

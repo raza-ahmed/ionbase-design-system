@@ -1,0 +1,55 @@
+{
+  "status": "stable",
+  "summary": "A primary navigation destination. Renders an <a> when given `href`, a <button> otherwise.",
+  "useWhen": [
+    "building a header nav bar, a sidebar or a section switcher",
+    "an item opens a menu rather than navigating — pass `showChevron` and no `href`"
+  ],
+  "useInstead": [
+    {
+      "when": "the link sits inside body copy or a content block",
+      "use": "Link"
+    },
+    {
+      "when": "it is a row in a dropdown list rather than a top-level destination",
+      "use": "MenuItem"
+    }
+  ],
+  "slots": {
+    "icon": {
+      "accepts": "Icon",
+      "note": "leading icon; omit its `label` — the item's text names it"
+    }
+  },
+  "a11y": {
+    "role": "link when `href` is set, button when it is not",
+    "guarantees": [
+      "hover state comes from React Aria's pointer-aware `useHover`, so a tap does not stay hovered until the next tap elsewhere",
+      "the focus ring shows for keyboard navigation only",
+      "the CSS keeps its own `:hover` / `:focus-visible` rules, so the styling survives without React"
+    ],
+    "requires": [
+      "an accessible name — `children`, or `aria-label` on an icon-only item"
+    ],
+    "notes": [
+      "NavItem is one item, not the landmark. Wrap the set in a <nav> with its own accessible name."
+    ]
+  },
+  "antiPatterns": [
+    {
+      "dont": "`showChevron` on a plain link that navigates",
+      "why": "the chevron promises a menu; nothing opens"
+    },
+    {
+      "dont": "marking the current page with colour only",
+      "do": "`aria-current=\"page\"`",
+      "why": "a screen-reader user is otherwise never told where they are"
+    }
+  ],
+  "deprecated": [
+    {
+      "prop": "disabled",
+      "replacement": "isDisabled"
+    }
+  ]
+}

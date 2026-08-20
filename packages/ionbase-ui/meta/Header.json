@@ -1,0 +1,61 @@
+{
+  "status": "stable",
+  "summary": "The page header bar. Renders Figma's Desktop, Tablet, Mobile-Closed and Mobile-Open from one DOM tree.",
+  "useWhen": [
+    "the app needs a top bar with a brand, navigation and actions",
+    "that bar must collapse to a mobile menu below 896px"
+  ],
+  "useInstead": [
+    {
+      "when": "it is a sidebar rather than a top bar",
+      "use": "NavItem",
+      "why": "Header owns a horizontal bar and its own breakpoint behaviour"
+    }
+  ],
+  "slots": {
+    "brand": {
+      "accepts": "LogoMark or Logo",
+      "note": "rendered at the start; never shrinks"
+    },
+    "center": {
+      "accepts": "NavItem",
+      "note": "inline on Desktop and Tablet; moves into the mobile menu below 896px. Rendered once, so slot state survives crossing the breakpoint"
+    },
+    "end": {
+      "accepts": "Button, Avatar",
+      "note": "actions; same placement rules as `center`"
+    },
+    "children": {
+      "accepts": "any",
+      "note": "escape hatch — rendered in the bar after the menu wrapper and before the mobile toggle. Prefer the named slots"
+    }
+  },
+  "a11y": {
+    "role": "banner, from the <header> element when it is a direct child of body",
+    "guarantees": [
+      "the mobile toggle carries `aria-expanded` and `aria-controls` pointing at the menu container",
+      "Escape closes the open mobile menu — and the listener sits on the header, so a header that never opens never listens",
+      "the slots are rendered once, so no nav link exists twice in the accessibility tree"
+    ],
+    "requires": [
+      "`menuLabel` — the mobile toggle is icon-only and has no other name"
+    ],
+    "notes": [
+      "This is a disclosure, not a modal: no focus trap and no scroll lock, so Escape is the whole dismissal contract."
+    ]
+  },
+  "antiPatterns": [
+    {
+      "dont": "rendering a second copy of the nav for mobile",
+      "why": "Header already moves the one copy; two copies duplicate every link in the accessibility tree"
+    },
+    {
+      "dont": "driving the mobile layout from JS state",
+      "why": "the breakpoint is a media query — the browser already knows the answer, and duplicating that judgement is how the two drift"
+    },
+    {
+      "dont": "passing `open` without `onOpenChange`",
+      "why": "controlled with no handler means the toggle can never change it"
+    }
+  ]
+}

@@ -1,0 +1,49 @@
+{
+  "status": "stable",
+  "summary": "Applies the system's icon sizing and accessibility defaults to any SVG component you hand it. The package ships no icon set.",
+  "useWhen": [
+    "rendering any icon inside this design system, from any library — lucide, heroicons, react-icons, your own SVG"
+  ],
+  "useInstead": [
+    {
+      "when": "the graphic is a brand mark",
+      "use": "Logo or LogoMark"
+    },
+    {
+      "when": "you need a coloured status marker with text",
+      "use": "Badge"
+    }
+  ],
+  "a11y": {
+    "guarantees": [
+      "with `label`, the icon gets `role=\"img\"` and that name",
+      "without `label`, it is `aria-hidden` and `focusable=\"false\"` — decoration, never read twice"
+    ],
+    "requires": [
+      "`label` when the icon carries meaning on its own — an icon-only button, a standalone status marker"
+    ],
+    "notes": [
+      "Omit `label` for an icon beside a visible text label. The text already names it."
+    ]
+  },
+  "antiPatterns": [
+    {
+      "dont": "`<Button startIcon={<Icon as={Plus} label=\"Add\" />}>Add</Button>`",
+      "do": "drop the `label`",
+      "why": "the button's own text names it; the labelled icon makes it announce twice"
+    },
+    {
+      "dont": "hardcoding `width`/`height` in px",
+      "do": "a `size` rung, or omit `size` to inherit the surrounding font size",
+      "why": "inheriting is what lets an icon sit correctly inside a Button without the Button knowing about it"
+    },
+    {
+      "dont": "assuming `size=\"xs\"` is 12px",
+      "why": "the ladder shifted in 2026-08: `xs` is 14, and `2xs` is the old 12. This raises no type error"
+    }
+  ],
+  "sizes": {
+    "note": "The rungs map one-to-one onto the Semantics `icon-size/*` tokens. Any CSS length is also accepted for a one-off.",
+    "ladder": { "2xs": 12, "xs": 14, "sm": 16, "md": 20, "lg": 24, "xl": 32 }
+  }
+}

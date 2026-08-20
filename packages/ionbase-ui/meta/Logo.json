@@ -1,0 +1,51 @@
+{
+  "status": "stable",
+  "summary": "The full IonBase lockup — mark plus wordmark.",
+  "useWhen": [
+    "the product needs to identify itself: header, sign-in page, empty state, marketing surface"
+  ],
+  "useInstead": [
+    {
+      "when": "space is tight, or a wordmark already appears nearby",
+      "use": "LogoMark"
+    },
+    {
+      "when": "you need any graphic that is not the brand",
+      "use": "Icon"
+    }
+  ],
+  "variants": {
+    "size": {
+      "sm": {
+        "use": "the default — a 24px mark, which is what a header bar wants"
+      },
+      "lg": {
+        "use": "a 32px mark — sign-in, splash, or anywhere the brand is the subject"
+      }
+    },
+    "wordmark": {
+      "vector": {
+        "use": "the default and the safe choice — Figma's serif logotype as frozen artwork, immune to font substitution and visually distinct from the UI type"
+      },
+      "text": {
+        "use": "live, selectable Host Grotesk at `text/tertiary` — for surfaces where the name should behave like text (copyable, searchable) rather than like a mark"
+      }
+    }
+  },
+  "a11y": {
+    "guarantees": [
+      "the wordmark carries the accessible name, so the mark beside it is not announced twice",
+      "artwork uses `currentColor` rather than Figma's baked hex, so it themes with the rest of the icon layer"
+    ]
+  },
+  "antiPatterns": [
+    {
+      "dont": "recolouring the lockup with your own fill",
+      "why": "it inherits `icon/default`; overriding it is how a brand mark ends up failing contrast in one theme"
+    },
+    {
+      "dont": "putting the Logo inside a Link with its own text \"IonBase\"",
+      "why": "the name is announced twice; label the link, not both"
+    }
+  ]
+}

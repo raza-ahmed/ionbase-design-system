@@ -75,7 +75,11 @@ for (const f of readdirSync(join(PKG, 'meta')).filter((f) =>
 for (const [name, c] of Object.entries(components)) {
   const hasIntent = Boolean(c.summary);
   if (!hasIntent) {
-    warn(name, 'no intent file — API only');
+    /* An error, not a warning, since 0.19.0: every exported component has an
+     * intent file, so a missing one is a new component that shipped without
+     * the judgement an agent needs. The generated API alone tells an agent
+     * what it MAY pass, never what it SHOULD. */
+    err(name, `no meta/${name}.json — every exported component needs one`);
     continue;
   }
 

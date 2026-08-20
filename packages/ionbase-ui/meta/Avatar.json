@@ -1,0 +1,58 @@
+{
+  "status": "stable",
+  "summary": "A person or entity marker. Content is chosen by precedence — image, then initials, then icon — not by a type prop.",
+  "useWhen": [
+    "identifying who owns, authored or is assigned to something",
+    "a table cell, menu row or header needs a compact identity marker beside a name"
+  ],
+  "useInstead": [
+    {
+      "when": "the thing being marked is a status, count or category rather than a person",
+      "use": "Badge"
+    },
+    {
+      "when": "you only need a decorative graphic with no identity behind it",
+      "use": "Icon"
+    }
+  ],
+  "variants": {
+    "size": {
+      "mini": { "use": "24px — inline beside body text, dense table rows" },
+      "sm": { "use": "32px — menu rows, compact lists" },
+      "md": { "use": "the default, 40px" },
+      "lg": { "use": "48px — profile headers and detail pages" }
+    },
+    "shape": {
+      "circle": { "use": "the default — people" },
+      "square": {
+        "use": "organisations, projects, workspaces and other non-human entities"
+      }
+    }
+  },
+  "slots": {
+    "icon": {
+      "accepts": "Icon",
+      "note": "the last fallback — rendered only when there is neither `src` nor `initials`"
+    }
+  },
+  "a11y": {
+    "guarantees": [
+      "`alt` falls back to `initials`, so the avatar is never announced as an unlabelled image",
+      "a `src` that fails to load falls through to initials, then icon — never the browser's broken-image glyph"
+    ],
+    "requires": [
+      "`alt` describing the person, not the picture — \"Ada Lovelace\", not \"profile photo\""
+    ]
+  },
+  "antiPatterns": [
+    {
+      "dont": "passing `src` without `initials`",
+      "why": "a 404 leaves the fallback empty; initials are what make the failure invisible"
+    },
+    {
+      "dont": "using Avatar as a button",
+      "do": "put the Avatar inside a Button or Link",
+      "why": "Avatar renders a <span> with no role and takes no focus"
+    }
+  ]
+}

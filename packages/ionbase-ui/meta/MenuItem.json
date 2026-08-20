@@ -1,0 +1,41 @@
+{
+  "status": "stable",
+  "summary": "One row in a Menu. A real <button> inside an <li>, with an optional leading icon and a trailing selected check.",
+  "useWhen": ["a row in a Menu surface"],
+  "useInstead": [
+    {
+      "when": "it is a top-level navigation destination",
+      "use": "NavItem"
+    },
+    {
+      "when": "it is a standalone action outside a list",
+      "use": "Button"
+    }
+  ],
+  "slots": {
+    "icon": {
+      "accepts": "Icon",
+      "note": "leading icon; omit its `label` — the row's text names it"
+    },
+    "children": { "accepts": "text", "note": "the row label" }
+  },
+  "a11y": {
+    "role": "button",
+    "guarantees": [
+      "`isSelected` sets `aria-pressed`, so the selected state is announced and not only drawn",
+      "the check glyph always occupies its slot, so rows never reflow as the selection moves"
+    ],
+    "requires": ["a text label in `children`"]
+  },
+  "antiPatterns": [
+    {
+      "dont": "using MenuItem outside a Menu",
+      "why": "it renders an <li>, which is only valid inside a list"
+    },
+    {
+      "dont": "an icon-only MenuItem with no children",
+      "why": "the row announces nothing"
+    }
+  ],
+  "deprecated": [{ "prop": "disabled", "replacement": "isDisabled" }]
+}

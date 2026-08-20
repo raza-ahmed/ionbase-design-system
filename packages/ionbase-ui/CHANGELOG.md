@@ -1,5 +1,49 @@
 # Changelog
 
+## 0.19.0 — 2026-08-21
+
+### Added — every component now ships intent, not just an API
+
+The 29 components that had only a generated prop table now have a hand-authored
+`meta/<Name>.json`: `Avatar`, `AvatarGroup`, `Badge`, `Checkbox`, `Divider`,
+`FullCard`, `Header`, `Icon`, `Link`, `Logo`, `LogoMark`, `Menu`, `MenuItem`,
+`NavItem`, `PhoneInput`, `Popover`, `Radio`, `RadioGroup`, `ScrollProgress`,
+`TabItem`, `TableBody`, `TableCell`, `TableHead`, `TableRow`, `Tabs`, `Toast`,
+`ToastProvider`, `Toggle`, `Tooltip`.
+
+Each carries what no type can express: when to use it, what to use instead,
+per-value variant guidance, what the component guarantees for accessibility and
+what it requires of you, and the anti-patterns. The content is drawn from the
+rationale already written in each component's source — it was there, it just was
+not machine readable.
+
+### Changed — the guardrails got wider without a new rule being written
+
+Two of the five ESLint rules read their data out of these files, so writing
+intent is what turns them on:
+
+| rule                    | 0.18.1 | 0.19.0 |
+| ----------------------- | ------ | ------ |
+| `no-deprecated-props`   | 4      | 11     |
+| `needs-accessible-name` | 5      | 12     |
+
+`disabled` is now flagged on `Checkbox`, `Link`, `MenuItem`, `NavItem`,
+`PhoneInput`, `Radio`, `RadioGroup` and `Toggle` as well as the four it already
+covered — all of them props the source has marked `@deprecated` since 0.15.0,
+which nothing outside this repo was told about.
+
+**Minor, not patch**: no API changed and nothing renders differently, but lint
+rules that were silent now fire, and that can fail a consumer's build.
+
+### Changed — a missing intent file is an error
+
+`verify-meta.mjs` failed the build on nine things and warned on a tenth: a
+component with no intent file. All 35 have one now, so it is an error. A new
+component that ships an API with no judgement attached does not build.
+
+Every check was confirmed to fail on a deliberate break before being trusted,
+including this one.
+
 ## 0.18.1 — 2026-08-20
 
 ### Changed — dark-mode contrast findings are deferred, not shipped

@@ -1,0 +1,76 @@
+{
+  "status": "stable",
+  "summary": "A tab list and its panels, built on react-aria's tab collection. Children are TabItem.",
+  "useWhen": [
+    "one region of the page shows one of several peer views, and only one at a time",
+    "the views are peers — no ordering, no progression between them"
+  ],
+  "useInstead": [
+    {
+      "when": "the steps must be completed in order",
+      "use": "Button",
+      "why": "tabs imply peers you may visit in any order; a wizard is a sequence"
+    },
+    {
+      "when": "the sections should all be readable at once, or printable",
+      "use": "Divider",
+      "why": "tabs hide everything but the active panel, including from Ctrl-F"
+    },
+    {
+      "when": "it is navigation between pages rather than panels within one",
+      "use": "NavItem"
+    }
+  ],
+  "composition": {
+    "order": ["Tabs", "TabItem"],
+    "note": "TabItem comes from react-stately's collection Item — it takes no props of its own beyond `title` (the tab label) and `key`; its children are the panel.",
+    "example": "<Tabs aria-label=\"Account\"><TabItem key=\"profile\" title=\"Profile\">…</TabItem><TabItem key=\"billing\" title=\"Billing\">…</TabItem></Tabs>"
+  },
+  "variants": {
+    "type": {
+      "pill": {
+        "use": "the default — a filled track, for switching views inside a panel or card"
+      },
+      "underline": {
+        "use": "a rule under the active tab, for page-level sections"
+      }
+    },
+    "size": {
+      "sm": { "use": "dense panels and toolbars" },
+      "md": { "use": "the default" },
+      "lg": { "use": "page-level section switching" }
+    },
+    "orientation": {
+      "horizontal": { "use": "the default" },
+      "vertical": {
+        "use": "a stacked track with up/down arrow keys",
+        "caveat": "keyboard and ARIA are complete, but the decoration is not — the underline rule and the pill track's padding are still written for the horizontal axis. Figma has not specified the vertical drawing"
+      }
+    }
+  },
+  "a11y": {
+    "role": "tablist / tab / tabpanel",
+    "guarantees": [
+      "roving tabindex, arrow-key navigation and the aria-controls/aria-labelledby pairing between each tab and its panel come from react-aria",
+      "the focus ring shows for keyboard focus only, and hover does not latch on touch"
+    ],
+    "requires": [
+      "`aria-label` or `aria-labelledby` on Tabs — the tab list is a named region",
+      "a stable `key` on every TabItem"
+    ]
+  },
+  "antiPatterns": [
+    {
+      "dont": "tabs whose panels the user must read in order",
+      "why": "the role announces peers, and nothing stops a user landing on the last one first"
+    },
+    {
+      "dont": "hiding required form fields behind a tab",
+      "why": "a validation error in an inactive panel is invisible; the user is told the form is invalid with nothing on screen to fix"
+    },
+    {
+      "dont": "one tab",
+      "why": "a tablist with a single tab is chrome with no choice in it"
+    }
+  ]
+}

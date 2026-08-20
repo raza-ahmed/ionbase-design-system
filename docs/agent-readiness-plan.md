@@ -174,7 +174,7 @@ fixes where the generator runs. It also means the meta artifact ships **inside
 the npm package**, which is where the consumer agent can actually reach it,
 rather than only on a docs site.
 
-### Phase 1 — DONE (core), 18 Aug 2026
+### Phase 1 — DONE. Core 18 Aug 2026, intent completed 21 Aug 2026
 
 Shipped as `ionbase-ui/meta`. Three files per build:
 
@@ -182,7 +182,7 @@ Shipped as `ionbase-ui/meta`. Three files per build:
 | --------------------------- | ------- | --------------------------------------------------- |
 | `dist/meta/index.json`      | 12KB    | every component, its summary and its variant unions |
 | `dist/meta/<Name>.json`     | ~5–20KB | one component's full contract                       |
-| `dist/meta/components.json` | 180KB   | all of them; for tooling, not for agents            |
+| `dist/meta/components.json` | 242KB   | all of them; for tooling, not for agents            |
 
 The index tier was not in the original plan and turned out to matter most: it is
 15x smaller than the full document and answers the question an agent actually
@@ -192,8 +192,12 @@ asks first. Same two-tier split Nord and Cloudscape use for `llms.txt`.
 **Generated** by `scripts/build-meta.mjs` — props, tokens, source, import,
 and the component's own JSDoc.
 
-Six components carry full intent: `Button`, `Input`, `Select`, `Modal`, `Table`,
-`Alert`. The other 29 ship the generated API plus their source documentation.
+**All 35 carry full intent as of 0.19.0.** The first six — `Button`, `Input`,
+`Select`, `Modal`, `Table`, `Alert` — shipped in 0.16.0; the remaining 29 landed
+together, written from each component's own source rationale rather than
+invented, which is why they took an afternoon rather than the 1–2 hours each the
+plan budgeted. The rationale was already in the files; it was not machine
+readable.
 
 #### What changed from the plan
 
@@ -217,7 +221,7 @@ correctly reports `avatar.css`.
 
 #### The gate
 
-`pnpm --filter ionbase-ui meta:verify`. Nine checks, and **all nine were
+`pnpm --filter ionbase-ui meta:verify`. Ten checks, and **every one was
 confirmed to fail on a deliberate break before being trusted** — per this repo's
 own rule that a gate which cannot fail is worse than no gate:
 
@@ -232,13 +236,31 @@ own rule that a gate which cannot fail is worse than no gate:
 | replacement prop exists           | pointing at a prop that was itself removed      |
 | generated fields not overridden   | an intent file quietly setting `props`          |
 | stylesheet tokens are defined     | a custom property no token layer provides       |
+| missing intent file               | a component shipped with API and no judgement   |
 
-It **warns** rather than errors on a missing intent file, because 29 of 35 lack
-one. Turn that into an error once they are written.
+The last one was a warning until 0.19.0 and is now an **error**, since every
+exported component has an intent file.
+
+#### What the intent files turned on
+
+Two of the five lint rules read their data straight out of these files, so
+writing intent is what switches the guardrails on for a component:
+
+| rule                    | 0.18.1 | 0.19.0 |
+| ----------------------- | ------ | ------ |
+| `no-deprecated-props`   | 4      | 11     |
+| `needs-accessible-name` | 5      | 12     |
+
+That is the argument for the format over a docs site: prose cannot enforce.
+
+It also produced one false positive worth recording. `needsAccessibleName` is
+extracted by matching `/aria-label|accessible name/` against `a11y.requires`, so
+`TableRow` documenting "every row-selection Checkbox needs a name" made the rule
+demand a name on the `<tr>`. The heuristic is blunt by design; the fix is to
+write each requirement on the component that actually carries it.
 
 #### Still open
 
-- 29 intent files. Each is 1–2 hours and does not need an agent to write it.
 - `since` is omitted where it could not be established from the CHANGELOG. It
   was not invented.
 - The a11y `knownIssues` field designed in this plan has no entries, because the
@@ -470,7 +492,7 @@ all.
 
 ```
 Phase 0  ▓  DONE                                  manifest live: 26 components, 249 stories
-Phase 1  ▓▓▓▓▓▓▓▓  DONE (core)                    ionbase-ui/meta, 6 of 35 with intent
+Phase 1  ▓▓▓▓▓▓▓▓▓▓  DONE                          ionbase-ui/meta, 35 of 35 with intent
 Phase 2c ▓▓  DONE                                 250 pairings; found 3 defects, 2 unknown
 Phase 5  ▓▓▓▓▓▓  HARNESS DONE, A/B UNRUN          32 tasks, 9 checks, 5 context packs
 Phase 2  ▓▓▓▓▓▓  DONE                             5 lint rules + stylelint config, shipped

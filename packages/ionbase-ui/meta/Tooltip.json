@@ -1,0 +1,76 @@
+{
+  "status": "stable",
+  "summary": "A text-only hint attached to a trigger. Opens on hover and on focus.",
+  "useWhen": [
+    "naming an icon-only control",
+    "adding a short clarification that is genuinely optional to read"
+  ],
+  "useInstead": [
+    {
+      "when": "the content has anything focusable in it — a link, a button, a field",
+      "use": "Popover",
+      "why": "a tooltip cannot be focused, cannot be scrolled, and closes the moment the pointer leaves"
+    },
+    {
+      "when": "the information is required to complete the field",
+      "use": "Input",
+      "why": "Input's helper text is always visible; a tooltip is not discoverable on touch"
+    }
+  ],
+  "variants": {
+    "placement": {
+      "top": {
+        "use": "above the trigger — the default reading position"
+      },
+      "bottom": {
+        "use": "below the trigger, for something near the top of the viewport"
+      },
+      "left": {
+        "use": "to the left of the trigger"
+      },
+      "right": {
+        "use": "to the right of the trigger"
+      }
+    }
+  },
+  "slots": {
+    "label": {
+      "accepts": "text",
+      "note": "the hint. Text only"
+    },
+    "title": {
+      "accepts": "text",
+      "note": "optional heading above the label"
+    },
+    "children": {
+      "accepts": "Button",
+      "note": "the trigger. Must forward both a ref and DOM props"
+    }
+  },
+  "a11y": {
+    "role": "tooltip",
+    "guarantees": [
+      "focus opens it, not only hover — a hover-only tooltip is invisible to keyboard and switch users",
+      "Escape dismisses it",
+      "one tooltip open at a time with a shared warmup, so moving along a row of icon buttons does not flash one per button",
+      "`placement` flips to the opposite side when there is no room"
+    ],
+    "requires": [
+      "a trigger that is already labelled for icon-only controls — Tooltip supplies the hint, not the trigger's name"
+    ]
+  },
+  "antiPatterns": [
+    {
+      "dont": "putting a link or button inside `label`",
+      "why": "it cannot be reached — the tooltip closes when the pointer leaves the trigger"
+    },
+    {
+      "dont": "a tooltip as the only place information appears",
+      "why": "it is undiscoverable on touch, where there is no hover"
+    },
+    {
+      "dont": "a tooltip on a disabled Button",
+      "why": "a disabled button takes no focus and often no pointer events, so the hint never appears for a keyboard user"
+    }
+  ]
+}

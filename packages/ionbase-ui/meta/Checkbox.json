@@ -1,0 +1,69 @@
+{
+  "status": "stable",
+  "summary": "A native checkbox with the system's styling, supporting an indeterminate state.",
+  "useWhen": [
+    "a single on/off choice inside a form that is submitted",
+    "selecting rows in a Table",
+    "several independent options where more than one may be picked"
+  ],
+  "useInstead": [
+    {
+      "when": "the change takes effect immediately rather than on submit",
+      "use": "Toggle",
+      "why": "a switch reads as a setting taking effect now; a checkbox reads as a value being collected"
+    },
+    {
+      "when": "the options are mutually exclusive",
+      "use": "RadioGroup"
+    },
+    {
+      "when": "there are many options and space is tight",
+      "use": "Select"
+    }
+  ],
+  "variants": {
+    "size": {
+      "sm": { "use": "dense forms and table rows" },
+      "md": { "use": "the default" },
+      "lg": { "use": "touch targets and prominent single choices" }
+    },
+    "intent": {
+      "brand": { "use": "the default" },
+      "neutral": {
+        "use": "where the checked state is a fact rather than an approval — bulk-selection columns"
+      },
+      "danger": { "use": "consenting to something destructive or irreversible" }
+    }
+  },
+  "slots": {
+    "children": {
+      "accepts": "text",
+      "note": "the visible label; omit for a bare box and supply `aria-label` instead"
+    }
+  },
+  "a11y": {
+    "role": "checkbox",
+    "guarantees": [
+      "a real <input type=\"checkbox\">, so form association, label clicking, and correct announcement come from the platform",
+      "`isIndeterminate` is written to the DOM property after every render — HTML has no such attribute, so React cannot set it declaratively"
+    ],
+    "requires": [
+      "`children`, or `aria-label` when the box has no visible label — a row-selection checkbox always needs one"
+    ]
+  },
+  "antiPatterns": [
+    {
+      "dont": "a bare checkbox with no `children` and no `aria-label`",
+      "why": "every row announces an unnamed checkbox"
+    },
+    {
+      "dont": "`isIndeterminate` on a leaf checkbox",
+      "why": "indeterminate means \"some of my children are checked\"; on a leaf it is a state the user can never reach"
+    },
+    {
+      "dont": "a div with `role=\"checkbox\"`",
+      "why": "form association, the indeterminate property and label clicking are not free to reimplement"
+    }
+  ],
+  "deprecated": [{ "prop": "disabled", "replacement": "isDisabled" }]
+}

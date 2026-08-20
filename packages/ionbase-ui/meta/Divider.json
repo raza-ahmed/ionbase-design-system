@@ -1,0 +1,39 @@
+{
+  "status": "stable",
+  "summary": "A semantic thematic break, rendered as a real <hr>.",
+  "useWhen": [
+    "separating groups of content or controls that are related but distinct",
+    "a menu, toolbar or form needs a visible section break"
+  ],
+  "useInstead": [
+    {
+      "when": "you only want space between two things",
+      "use": "CSS gap or margin",
+      "why": "a rule announces a break to a screen reader; whitespace does not, and usually shouldn't"
+    }
+  ],
+  "variants": {
+    "orientation": {
+      "horizontal": { "use": "the default — between stacked sections" },
+      "vertical": {
+        "use": "inside a horizontal row: toolbars, button groups, header bars"
+      }
+    }
+  },
+  "a11y": {
+    "guarantees": [
+      "`<hr>` is a thematic break to assistive tech without needing a role",
+      "`aria-orientation=\"vertical\"` is set for the vertical case — the one thing a screen reader cannot infer from the element"
+    ]
+  },
+  "antiPatterns": [
+    {
+      "dont": "a styled <div> for a rule",
+      "why": "that is what this component exists to replace"
+    },
+    {
+      "dont": "a Divider between every row of a list",
+      "why": "a break announced on every row is noise; use the list's own row borders"
+    }
+  ]
+}

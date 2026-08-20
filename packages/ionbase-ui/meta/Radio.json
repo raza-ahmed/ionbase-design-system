@@ -1,0 +1,59 @@
+{
+  "status": "stable",
+  "summary": "One option inside a RadioGroup. Meaningless on its own — the group owns the name and the selected value.",
+  "useWhen": ["a child of RadioGroup"],
+  "useInstead": [
+    {
+      "when": "the user may pick more than one",
+      "use": "Checkbox"
+    },
+    {
+      "when": "there are more than about five options",
+      "use": "Select",
+      "why": "a long radio list costs vertical space no one reads"
+    }
+  ],
+  "variants": {
+    "size": {
+      "sm": { "use": "dense forms" },
+      "md": { "use": "the default" },
+      "lg": { "use": "touch targets and prominent choices" }
+    },
+    "intent": {
+      "brand": { "use": "the default" },
+      "neutral": {
+        "use": "a choice with no positive reading — sort order, display mode"
+      },
+      "danger": { "use": "selecting a destructive option" }
+    }
+  },
+  "slots": {
+    "children": { "accepts": "text", "note": "the option's visible label" }
+  },
+  "a11y": {
+    "role": "radio",
+    "guarantees": [
+      "`name` and the selected value come from the group's context, so no Radio has to repeat them",
+      "`isDisabled` falls back to the group's"
+    ],
+    "requires": [
+      "a `value` unique within the group",
+      "a text label in `children`"
+    ]
+  },
+  "antiPatterns": [
+    {
+      "dont": "a Radio outside a RadioGroup",
+      "why": "it has no name and no siblings, so it can be selected but never unselected"
+    },
+    {
+      "dont": "wiring `checked`/`onChange` on each Radio",
+      "why": "the group owns selection; per-option wiring is what the context exists to remove"
+    },
+    {
+      "dont": "a group of one radio",
+      "why": "a single radio cannot be cleared once chosen — that is a Checkbox"
+    }
+  ],
+  "deprecated": [{ "prop": "disabled", "replacement": "isDisabled" }]
+}

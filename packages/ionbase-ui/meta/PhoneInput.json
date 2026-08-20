@@ -1,0 +1,51 @@
+{
+  "status": "stable",
+  "summary": "A dial-code block butted against an Input, sharing one outline. It does not pick countries.",
+  "useWhen": [
+    "collecting a phone number where the country calling code matters"
+  ],
+  "useInstead": [
+    {
+      "when": "the number is free-form and the code does not matter",
+      "use": "Input"
+    }
+  ],
+  "variants": {
+    "size": {
+      "sm": { "use": "dense forms" },
+      "md": { "use": "the default" },
+      "lg": { "use": "prominent single-field forms" }
+    }
+  },
+  "slots": {
+    "trailingIcon": {
+      "accepts": "Icon",
+      "note": "passed through to the Input"
+    },
+    "countryButtonProps": {
+      "accepts": "button props",
+      "note": "how a country picker is attached — spread your trigger's props here, including the `aria-haspopup` and `aria-expanded` only the thing owning the popup can set honestly"
+    }
+  },
+  "a11y": {
+    "guarantees": [
+      "the dial-code trigger is a real <button> with an accessible name",
+      "every interaction state is the Input's, reached through the ordinary Input props"
+    ],
+    "requires": [
+      "`label`, or `aria-label` when no visible label is rendered",
+      "`countryLabel` if you change the default — the trigger shows only `+1`, which names a value rather than an action"
+    ]
+  },
+  "antiPatterns": [
+    {
+      "dont": "expecting the chevron to open a country list",
+      "why": "the picker is deliberately not implemented — country data and ordering are editorial application decisions, and Figma specifies no open state. Wire your own through `countryButtonProps`"
+    },
+    {
+      "dont": "wrapping it in your own bordered container",
+      "why": "the block and the control already share one outline; a second border reads as two controls"
+    }
+  ],
+  "deprecated": [{ "prop": "disabled", "replacement": "isDisabled" }]
+}

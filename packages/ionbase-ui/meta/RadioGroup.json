@@ -1,0 +1,69 @@
+{
+  "status": "stable",
+  "summary": "A <fieldset>/<legend> group of mutually exclusive options. Owns the shared name and the selected value.",
+  "useWhen": [
+    "exactly one choice from a small set, all worth showing at once",
+    "the options need explaining — each one can carry its own label text"
+  ],
+  "useInstead": [
+    {
+      "when": "the list is long, or space is tight",
+      "use": "Select"
+    },
+    {
+      "when": "more than one may be picked",
+      "use": "Checkbox"
+    },
+    {
+      "when": "there are exactly two states and the change is immediate",
+      "use": "Toggle"
+    }
+  ],
+  "variants": {
+    "size": {
+      "sm": { "use": "dense forms" },
+      "md": { "use": "the default" },
+      "lg": { "use": "touch targets and prominent choices" }
+    },
+    "intent": {
+      "brand": { "use": "the default" },
+      "neutral": {
+        "use": "a choice with no positive reading — sort order, display mode"
+      },
+      "danger": { "use": "a set where the options are destructive" }
+    }
+  },
+  "slots": {
+    "label": {
+      "accepts": "text",
+      "note": "renders as the <legend> — the question the options answer"
+    },
+    "children": { "accepts": "Radio" }
+  },
+  "a11y": {
+    "role": "group, from <fieldset> and <legend>",
+    "guarantees": [
+      "a real fieldset rather than `role=\"radiogroup\"`: both announce correctly, but the fieldset also groups the inputs for form submission and native validation",
+      "`name` is generated when omitted, so two groups on one page never collide",
+      "`isDisabled` cascades to every Radio that has not set its own"
+    ],
+    "requires": [
+      "`label`, or `aria-label` when the question is already visible elsewhere"
+    ]
+  },
+  "antiPatterns": [
+    {
+      "dont": "an unlabelled group",
+      "why": "the options are announced with no question attached"
+    },
+    {
+      "dont": "passing both `value` and `defaultValue`",
+      "why": "controlled and uncontrolled at once; the controlled value wins and `defaultValue` silently does nothing"
+    },
+    {
+      "dont": "no option selected by default with no \"none\" option",
+      "why": "a radio group cannot be returned to empty once touched"
+    }
+  ],
+  "deprecated": [{ "prop": "disabled", "replacement": "isDisabled" }]
+}

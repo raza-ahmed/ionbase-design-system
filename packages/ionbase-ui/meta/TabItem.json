@@ -1,0 +1,33 @@
+{
+  "status": "stable",
+  "summary": "One tab and its panel. Re-exported from react-stately's collection Item — `title` is the tab label, children are the panel.",
+  "useWhen": ["a child of Tabs — it is not usable anywhere else"],
+  "useInstead": [
+    { "when": "it is a row in a dropdown list", "use": "MenuItem" },
+    { "when": "it is a navigation destination", "use": "NavItem" }
+  ],
+  "composition": {
+    "order": ["Tabs", "TabItem"],
+    "note": "A collection item, not a rendered component: Tabs reads it to build the collection, so it never appears in the DOM itself. That is why it exposes no props of its own here — `key` and `title` are the collection's API.",
+    "example": "<TabItem key=\"billing\" title=\"Billing\">Billing panel content</TabItem>"
+  },
+  "a11y": {
+    "guarantees": [
+      "the tab/panel roles, ids and aria-controls pairing are supplied by Tabs, not by this element"
+    ],
+    "requires": [
+      "a stable `key` — it identifies the tab across renders and is what selection is expressed in",
+      "a `title` that reads as a label on its own"
+    ]
+  },
+  "antiPatterns": [
+    {
+      "dont": "wrapping TabItem in a <div> or a fragment inside Tabs",
+      "why": "Tabs reads the collection from its direct children; a wrapper makes the item invisible to it"
+    },
+    {
+      "dont": "conditionally rendering TabItems with array indexes as keys",
+      "why": "selection is tracked by key, so the selected tab silently becomes a different tab"
+    }
+  ]
+}

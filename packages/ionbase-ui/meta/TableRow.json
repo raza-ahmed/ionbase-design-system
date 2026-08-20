@@ -1,0 +1,45 @@
+{
+  "status": "stable",
+  "summary": "A plain <tr>. Hover is CSS-only; a row is not itself interactive.",
+  "useWhen": ["every row, in either TableHead or TableBody"],
+  "useInstead": [
+    {
+      "when": "the whole row should be clickable",
+      "use": "Link",
+      "why": "put the link or Button in a cell — nesting an interactive role on <tr> is not valid HTML"
+    }
+  ],
+  "slots": {
+    "selection": {
+      "accepts": "Checkbox props",
+      "note": "renders a leading Checkbox cell — a <th scope=\"col\"> select-all inside TableHead, a <td> inside TableBody. Takes the checkbox's own props rather than a boolean, since a selectable row needs `checked`/`onChange` wiring"
+    }
+  },
+  "a11y": {
+    "guarantees": [
+      "hover comes from CSS `:hover` plus a `data-hovered` escape hatch, not React Aria — a row takes no focus and fires no click, so there is no keyboard-versus-pointer distinction to track",
+      "the selection cell's element follows the section it sits in"
+    ],
+    "requires": [
+      "every row-selection Checkbox to be labelled — those boxes have no visible label by design, so see Checkbox's own contract",
+      "`isSelected` alongside a checked selection checkbox, so the row's state is not carried by colour alone"
+    ],
+    "notes": [
+      "TableRow itself is never named — a <tr> is not an interactive element and takes no accessible name. The naming requirement above belongs to the Checkbox inside it."
+    ]
+  },
+  "antiPatterns": [
+    {
+      "dont": "`onClick` on TableRow",
+      "why": "it takes no focus, so a keyboard user can never fire it"
+    },
+    {
+      "dont": "`selection={{ checked }}` with no `onChange`",
+      "why": "a checkbox that cannot be changed reads as broken rather than as disabled"
+    },
+    {
+      "dont": "`isSelected` without a selection checkbox",
+      "why": "the row is tinted with nothing announcing why"
+    }
+  ]
+}

@@ -1,0 +1,43 @@
+{
+  "status": "stable",
+  "summary": "A compact progress rail that expands into a section list. A disclosure, not a menu — and it computes nothing itself.",
+  "useWhen": [
+    "a long document or page needs an in-page section index with reading progress",
+    "the caller already knows the scroll fraction and the active section"
+  ],
+  "useInstead": [
+    {
+      "when": "the sections are peer views rather than positions in one document",
+      "use": "Tabs"
+    },
+    {
+      "when": "it is site navigation rather than in-page position",
+      "use": "NavItem"
+    }
+  ],
+  "a11y": {
+    "role": "disclosure — a real <button> with aria-expanded and aria-controls",
+    "guarantees": [
+      "the rail is reachable by Tab and opens with Enter or Space, not just hover",
+      "closes on outside pointerdown and on Escape"
+    ],
+    "requires": [
+      "`progress` as 0–100 and `activeId` — the component has no opinion on where they come from",
+      "handling `onSelect` yourself: it reports the choice and does not scroll anywhere"
+    ],
+    "notes": [
+      "Deliberately not `role=\"menu\"` — see the stylesheet header. It is a disclosure with a list inside it, not a menu with roving focus.",
+      "Not a focus trap: it is the minimum a disclosure needs to not trap the page once opened."
+    ]
+  },
+  "antiPatterns": [
+    {
+      "dont": "expecting it to scroll the page when a section is chosen",
+      "why": "it reports the choice, matching Menu — what \"select this section\" means is the page's decision"
+    },
+    {
+      "dont": "deriving `progress` from a scroll listener without throttling",
+      "why": "this re-renders the rail on every scroll frame"
+    }
+  ]
+}

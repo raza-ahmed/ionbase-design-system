@@ -1,0 +1,26 @@
+{
+  "status": "stable",
+  "summary": "The <tbody> section. Takes no props — it places the data rows and gives their cells body context.",
+  "useWhen": ["every Table — the data rows go here"],
+  "useInstead": [{ "when": "the row names the columns", "use": "TableHead" }],
+  "composition": {
+    "order": ["Table", "TableBody", "TableRow", "TableCell"],
+    "note": "Zebra striping is read from each row's position inside this section rather than a prop repeated on every TableRow.",
+    "example": "<TableBody><TableRow><TableCell>Ada</TableCell></TableRow></TableBody>"
+  },
+  "a11y": {
+    "guarantees": [
+      "cells inside it default to <td>, and `scope` is inferred as `row` when a cell is marked `header`"
+    ]
+  },
+  "antiPatterns": [
+    {
+      "dont": "rendering rows directly under Table with no TableBody",
+      "why": "the browser inserts a tbody anyway, but the head-or-body context does not exist, so cells cannot infer their scope"
+    },
+    {
+      "dont": "an empty TableBody with no empty state",
+      "why": "an empty table looks like a broken one — Table has no empty state of its own, so it is the caller's"
+    }
+  ]
+}

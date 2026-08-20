@@ -1,0 +1,63 @@
+{
+  "status": "stable",
+  "summary": "One cell, covering Figma's Table Cell and Cell Text together. `header` decides <th> versus <td>.",
+  "useWhen": ["every cell in a Table, header or data"],
+  "useInstead": [
+    {
+      "when": "the content is a status label",
+      "use": "Badge",
+      "why": "put it inside the cell — the cell is the container, not the label"
+    }
+  ],
+  "variants": {
+    "scope": {
+      "col": { "use": "a column header — inferred inside TableHead" },
+      "row": {
+        "use": "a row header, e.g. the name column — inferred for a `header` cell in TableBody"
+      },
+      "colgroup": { "use": "a header spanning several columns, with colspan" },
+      "rowgroup": { "use": "a header spanning several rows, with rowspan" }
+    },
+    "align": {
+      "leading": { "use": "the default — text, names, identifiers" },
+      "trailing": {
+        "use": "numbers, currency and dates, so digits line up column-wise"
+      },
+      "center": { "use": "icons, short status marks, checkboxes" }
+    },
+    "variant": {
+      "default": { "use": "the default — body text and icon colours" },
+      "link": {
+        "use": "recolours the content to `text/link` / `icon/primary` for a cell whose content navigates"
+      }
+    }
+  },
+  "slots": {
+    "icon": { "accepts": "Icon", "note": "leading icon; omit its `label`" },
+    "trailingIcon": { "accepts": "Icon", "note": "trailing icon; same rule" },
+    "children": { "accepts": "any" }
+  },
+  "a11y": {
+    "guarantees": [
+      "`scope` is inferred when omitted — `col` in TableHead, `row` in TableBody — and can be set explicitly when the inference is wrong",
+      "`header` decides the element directly rather than a `type` prop that could disagree with where the cell sits"
+    ],
+    "requires": [
+      "`scope=\"col\"` on header cells — inferred inside TableHead, but explicit for a header rendered outside it"
+    ]
+  },
+  "antiPatterns": [
+    {
+      "dont": "`variant=\"link\"` on a cell with no link in it",
+      "why": "link-coloured text that does nothing is the clearest possible false affordance"
+    },
+    {
+      "dont": "leading-aligning a numeric column",
+      "why": "digits stop lining up, so the column can no longer be scanned for magnitude"
+    },
+    {
+      "dont": "`showDivider` on every cell",
+      "why": "it is a column rule, not a row rule — on every cell it becomes a grid"
+    }
+  ]
+}

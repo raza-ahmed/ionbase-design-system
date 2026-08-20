@@ -1,0 +1,67 @@
+{
+  "status": "stable",
+  "summary": "A transient notification on neutral chrome. Intent is carried by the icon, not by a tinted panel.",
+  "useWhen": [
+    "confirming that something the user just did succeeded or failed",
+    "the message is short, transient, and not required to complete a task"
+  ],
+  "useInstead": [
+    {
+      "when": "the message must stay until the condition is resolved",
+      "use": "Alert",
+      "why": "a toast disappears, and anything the user must act on should not"
+    },
+    {
+      "when": "the message belongs to one field",
+      "use": "Input",
+      "why": "Input's error text sits with the field it is about"
+    },
+    {
+      "when": "you need a decision from the user",
+      "use": "Modal",
+      "why": "a toast offers one action and takes it away on a timer"
+    }
+  ],
+  "variants": {
+    "intent": {
+      "neutral": { "use": "a plain fact with no status attached" },
+      "primary": { "use": "brand-flavoured confirmations" },
+      "success": { "use": "the action completed" },
+      "warning": { "use": "it completed with a caveat worth knowing" },
+      "error": { "use": "it failed — pair with a way to retry" },
+      "information": { "use": "the default — a neutral update" }
+    }
+  },
+  "slots": {
+    "title": { "accepts": "text" },
+    "message": { "accepts": "text" },
+    "action": {
+      "accepts": "{ label, onPress }",
+      "note": "exactly one action. A second choice belongs in a Modal, which will still be there"
+    }
+  },
+  "a11y": {
+    "guarantees": [
+      "auto-dismiss pauses on hover and on focus, and restarts rather than resumes — WCAG 2.2.1, and the forgiving direction",
+      "announcement comes from ToastProvider's live region, which is always present rather than appearing with its content"
+    ],
+    "requires": [
+      "rendering inside a ToastProvider — a Toast on its own is not in a live region",
+      "`duration={null}` when the message carries an action the user genuinely needs"
+    ]
+  },
+  "antiPatterns": [
+    {
+      "dont": "a toast for an error the user must fix",
+      "why": "it vanishes; the fix does not"
+    },
+    {
+      "dont": "two actions in one toast",
+      "why": "a timed choice is not a choice"
+    },
+    {
+      "dont": "stacking several toasts for one operation",
+      "why": "the stack covers the page and the last one is the only one read"
+    }
+  ]
+}

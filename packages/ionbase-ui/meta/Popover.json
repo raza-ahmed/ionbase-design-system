@@ -1,0 +1,77 @@
+{
+  "status": "stable",
+  "summary": "An anchored panel that holds interactive content. Sits between Tooltip and Modal.",
+  "useWhen": [
+    "the content is interactive — a form, a filter, a list of actions — but should stay attached to the control that opened it",
+    "the surrounding page should stay visible and in context"
+  ],
+  "useInstead": [
+    {
+      "when": "the content is a short hint with nothing focusable in it",
+      "use": "Tooltip",
+      "why": "a tooltip cannot be focused or scrolled and closes when the pointer leaves"
+    },
+    {
+      "when": "the task takes over the page or must be completed before anything else",
+      "use": "Modal"
+    },
+    {
+      "when": "you only need the list surface and will position it yourself",
+      "use": "Menu"
+    }
+  ],
+  "variants": {
+    "placement": {
+      "top": { "use": "above the trigger" },
+      "bottom": {
+        "use": "below the trigger — the usual choice for a control in a header"
+      },
+      "left": { "use": "to the left of the trigger" },
+      "right": { "use": "to the right of the trigger" }
+    },
+    "size": {
+      "sm": { "use": "a couple of actions or one short field" },
+      "md": { "use": "the default" },
+      "lg": { "use": "a small form or a filter panel" }
+    }
+  },
+  "slots": {
+    "children": {
+      "accepts": "Button",
+      "note": "the trigger. Must forward both a ref and DOM props — every component in this library does"
+    },
+    "content": { "accepts": "any" },
+    "title": {
+      "accepts": "text",
+      "note": "also gives the dialog its accessible name"
+    },
+    "footer": { "accepts": "Button", "note": "action row, right-aligned" }
+  },
+  "a11y": {
+    "role": "dialog",
+    "guarantees": [
+      "focus is contained while open, Escape and outside clicks close it, and the rest of the page is hidden from assistive tech",
+      "`placement` is a preference, not a guarantee — it flips when there is no room, and the arrow follows"
+    ],
+    "requires": [
+      "`title`, or `aria-label` on the popover — a dialog with no name announces nothing about what opened"
+    ],
+    "notes": [
+      "`placement` names where the POPOVER sits, not where the arrow points."
+    ]
+  },
+  "antiPatterns": [
+    {
+      "dont": "a function-component trigger that drops its ref",
+      "why": "it renders, but the popover has nothing to position against"
+    },
+    {
+      "dont": "using a Popover where a Modal belongs",
+      "why": "a popover closes on an outside click; a task that must be finished should not be dismissible by a stray click"
+    },
+    {
+      "dont": "nesting a Popover inside another Popover",
+      "why": "two overlapping focus containments, and dismissing the outer one takes the inner one with it"
+    }
+  ]
+}

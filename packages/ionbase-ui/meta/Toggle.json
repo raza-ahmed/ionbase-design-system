@@ -1,0 +1,61 @@
+{
+  "status": "stable",
+  "summary": "A switch — a checkbox with role=\"switch\", announced as on/off.",
+  "useWhen": [
+    "the change takes effect immediately: a setting, a feature flag, a preference"
+  ],
+  "useInstead": [
+    {
+      "when": "the value is collected and submitted with a form",
+      "use": "Checkbox",
+      "why": "a switch reads as taking effect now; a checkbox reads as a value being gathered"
+    },
+    {
+      "when": "there are more than two states",
+      "use": "RadioGroup"
+    }
+  ],
+  "variants": {
+    "size": {
+      "sm": { "use": "dense settings rows and table filters" },
+      "md": { "use": "the default" },
+      "lg": { "use": "touch targets and prominent single settings" }
+    },
+    "intent": {
+      "brand": { "use": "the default" },
+      "neutral": {
+        "use": "a setting with no positive or negative reading — display and layout preferences"
+      },
+      "danger": { "use": "turning on something destructive or hard to undo" }
+    }
+  },
+  "slots": {
+    "children": {
+      "accepts": "text",
+      "note": "the visible label; omit for a bare switch and supply `aria-label`"
+    }
+  },
+  "a11y": {
+    "role": "switch",
+    "guarantees": [
+      "a real <input type=\"checkbox\"> underneath, so form association, label clicking and `:checked` come from the platform",
+      "`role=\"switch\"` changes only the announcement — \"on/off\" rather than \"checked/unchecked\""
+    ],
+    "requires": ["`children`, or `aria-label` when there is no visible label"]
+  },
+  "antiPatterns": [
+    {
+      "dont": "a Toggle with a Save button beside it",
+      "why": "a switch says the change is already applied; if it needs saving it is a Checkbox"
+    },
+    {
+      "dont": "labelling a Toggle \"Enable dark mode?\" as a question",
+      "why": "a switch label names the thing being switched, not a question about it"
+    },
+    {
+      "dont": "a button with `aria-pressed` for a setting",
+      "why": "a switch is a form value; the checkbox gives form association and `:checked` for free"
+    }
+  ],
+  "deprecated": [{ "prop": "disabled", "replacement": "isDisabled" }]
+}

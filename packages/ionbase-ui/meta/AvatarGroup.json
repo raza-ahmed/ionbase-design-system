@@ -1,0 +1,47 @@
+{
+  "status": "stable",
+  "summary": "Overlapping Avatars with a `+N` overflow, for showing several people in one row's width.",
+  "useWhen": [
+    "several people share one thing — assignees, participants, collaborators",
+    "the exact list matters less than the fact that there are several"
+  ],
+  "useInstead": [
+    {
+      "when": "each person needs their own name, role or action visible",
+      "use": "Table",
+      "why": "an overlapping stack hides everything but the picture"
+    }
+  ],
+  "variants": {
+    "size": {
+      "mini": { "use": "24px — inline beside body text, dense table rows" },
+      "sm": { "use": "32px — menu rows, compact lists" },
+      "md": { "use": "the default, 40px" },
+      "lg": { "use": "48px — profile headers and detail pages" }
+    },
+    "shape": {
+      "circle": { "use": "the default — people" },
+      "square": { "use": "organisations, projects, workspaces" }
+    }
+  },
+  "slots": {
+    "children": {
+      "accepts": "Avatar",
+      "note": "group `size`/`shape` fill in only where a child has not set its own; a child's explicit prop wins. Non-Avatar children are left untouched."
+    }
+  },
+  "a11y": {
+    "requires": [
+      "`alt` on every child Avatar — the overflow avatar is the only one the group names for you"
+    ],
+    "notes": [
+      "Children paint in source order, so the `+N` overflow lands on top without any z-index."
+    ]
+  },
+  "antiPatterns": [
+    {
+      "dont": "omitting `max` on an unbounded list",
+      "why": "twenty overlapping avatars is not a summary; it is a smear"
+    }
+  ]
+}

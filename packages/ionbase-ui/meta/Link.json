@@ -1,0 +1,64 @@
+{
+  "status": "stable",
+  "summary": "Navigation to somewhere else. Renders an <a> when given `href`, a <button> otherwise.",
+  "useWhen": [
+    "the interaction takes the user to a different page, view or resource",
+    "the destination should support middle-click, open-in-new-tab and copy-link"
+  ],
+  "useInstead": [
+    {
+      "when": "the interaction changes something rather than going somewhere",
+      "use": "Button",
+      "why": "a link that does not navigate breaks middle-click, open-in-new-tab and the screen-reader announcement all at once"
+    },
+    {
+      "when": "it is a primary navigation destination in a header or sidebar",
+      "use": "NavItem"
+    }
+  ],
+  "variants": {
+    "variant": {
+      "inline": {
+        "use": "the default — a link inside a paragraph. Underlined in every state, because a link in body copy must not rely on colour alone (WCAG 1.4.1)"
+      },
+      "standalone": {
+        "use": "a link that already reads as interactive from its position — a card footer, an action row. Underlines on hover only"
+      }
+    }
+  },
+  "slots": {
+    "startIcon": {
+      "accepts": "Icon",
+      "note": "omit Icon's `label` — the link text already names it"
+    },
+    "endIcon": {
+      "accepts": "Icon",
+      "note": "the external-link or arrow affordance; same rule about `label`"
+    }
+  },
+  "a11y": {
+    "role": "link when `href` is set, button when it is not",
+    "guarantees": [
+      "the rendered element follows what the caller is actually building, so the announcement is always honest",
+      "`inline` stays underlined in every state, so it never depends on colour alone"
+    ],
+    "requires": [
+      "link text that makes sense read on its own — screen-reader users navigate by a list of links"
+    ]
+  },
+  "antiPatterns": [
+    {
+      "dont": "\"click here\" or \"read more\" as the whole link text",
+      "why": "out of context in a links list it names nothing"
+    },
+    {
+      "dont": "adding a size prop or wrapper to scale it",
+      "why": "a link is inline and inherits its type from the text around it, by design — icons are sized in `em` to follow"
+    },
+    {
+      "dont": "`target=\"_blank\"` with no warning in the text or endIcon",
+      "why": "an unannounced new tab disorients screen-reader and low-vision users"
+    }
+  ],
+  "deprecated": [{ "prop": "disabled", "replacement": "isDisabled" }]
+}

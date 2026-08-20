@@ -1,0 +1,61 @@
+{
+  "status": "stable",
+  "summary": "A small, non-interactive label that classifies the thing next to it. Presentational — no role, no live region.",
+  "useWhen": [
+    "labelling a record's status, type, count or category",
+    "the label belongs to something else on the page and is read as part of it"
+  ],
+  "useInstead": [
+    {
+      "when": "the message is a standalone statement the user must read",
+      "use": "Alert",
+      "why": "Badge carries no role and is not announced on its own"
+    },
+    {
+      "when": "the label should be clickable — a filter chip, a removable tag",
+      "use": "Button",
+      "why": "Badge takes no focus and fires nothing"
+    }
+  ],
+  "variants": {
+    "intent": {
+      "neutral": {
+        "use": "the default — a category with no judgement attached"
+      },
+      "primary": { "use": "brand emphasis: Beta, New, Pro" },
+      "success": { "use": "a terminal good state: Active, Paid, Passed" },
+      "warning": {
+        "use": "needs attention but is not broken: Pending, Expiring"
+      },
+      "error": {
+        "use": "a failed or blocked state: Failed, Overdue, Rejected"
+      },
+      "information": { "use": "a neutral fact worth marking: Draft, Scheduled" }
+    }
+  },
+  "slots": {
+    "icon": {
+      "accepts": "Icon",
+      "note": "mutually exclusive with `dot` — `dot` wins and `icon` is dropped when both are set"
+    }
+  },
+  "a11y": {
+    "guarantees": [
+      "the dot marker is `aria-hidden`, so the badge announces its text only",
+      "no `status` or `alert` role, so a re-render never interrupts a screen reader"
+    ],
+    "notes": [
+      "If the value genuinely changes and the change matters, wrap the Badge in your own live region — the component will not do it for you."
+    ]
+  },
+  "antiPatterns": [
+    {
+      "dont": "relying on intent colour alone to carry the meaning",
+      "why": "colour is not a label (WCAG 1.4.1); the text has to say Failed, not just be red"
+    },
+    {
+      "dont": "putting a Button or Link inside a Badge",
+      "why": "it renders a plain <span>; interactive content there has no affordance and no focus style"
+    }
+  ]
+}

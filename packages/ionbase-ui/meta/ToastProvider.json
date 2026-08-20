@@ -1,0 +1,54 @@
+{
+  "status": "stable",
+  "summary": "Renders the toast queue and supplies the `useToast` hook. Mount once, near the app root.",
+  "useWhen": [
+    "the app shows toasts anywhere — this is the only way to get `useToast`"
+  ],
+  "useInstead": [
+    {
+      "when": "you only need one persistent in-page message",
+      "use": "Alert",
+      "why": "no provider, no queue, and it stays put"
+    }
+  ],
+  "variants": {
+    "placement": {
+      "top-left": {
+        "use": "rare — for RTL layouts or where the top-right is occupied"
+      },
+      "top-right": {
+        "use": "the common desktop choice, out of the way of primary content"
+      },
+      "bottom-left": { "use": "keeps toasts clear of a right-hand panel" },
+      "bottom-right": {
+        "use": "close to where a save or submit action usually sits"
+      }
+    }
+  },
+  "slots": {
+    "children": { "accepts": "any", "note": "your app — the provider wraps it" }
+  },
+  "a11y": {
+    "guarantees": [
+      "the live region is the container, declared once and always present — a region that appears at the same moment as its content is not reliably announced",
+      "`limit` drops the oldest toasts, so the stack can never cover the page"
+    ],
+    "requires": [
+      "mounting exactly one ToastProvider — a second live region competes with the first"
+    ]
+  },
+  "antiPatterns": [
+    {
+      "dont": "mounting a ToastProvider per route or per page",
+      "why": "toasts queued before the switch are unmounted mid-announcement, and two live regions announce over each other"
+    },
+    {
+      "dont": "placing it inside a Modal",
+      "why": "the toasts are removed from the tree when the modal closes, and hidden from assistive tech while it is open"
+    },
+    {
+      "dont": "raising `limit` to keep everything",
+      "why": "an unbounded stack covers the content the toasts are about"
+    }
+  ]
+}

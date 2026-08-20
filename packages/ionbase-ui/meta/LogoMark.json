@@ -1,0 +1,36 @@
+{
+  "status": "stable",
+  "summary": "The bare mark, no wordmark — what Header uses.",
+  "useWhen": [
+    "a wordmark is already visible nearby, or the bar is too narrow for the lockup",
+    "a favicon-scale identity marker inside the product"
+  ],
+  "useInstead": [
+    {
+      "when": "this is the only place the product names itself",
+      "use": "Logo",
+      "why": "a mark alone identifies nothing to someone who has not learned it yet"
+    }
+  ],
+  "variants": {
+    "size": {
+      "sm": { "use": "the default, 24px — header bars" },
+      "lg": { "use": "32px — sign-in and other brand-forward surfaces" }
+    }
+  },
+  "a11y": {
+    "requires": [
+      "`label` when the mark stands alone — it is the only thing naming it"
+    ],
+    "notes": [
+      "Omit `label` when a visible wordmark sits beside it; that text already carries the name."
+    ]
+  },
+  "antiPatterns": [
+    {
+      "dont": "`label=\"logo\"`",
+      "do": "`label=\"IonBase\"`",
+      "why": "the name of the brand is the useful announcement; the word \"logo\" is not"
+    }
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "status": "stable",
+  "summary": "The <thead> section. Takes no props — it places the header row and gives its cells their head-or-body context.",
+  "useWhen": ["every Table with column headers, which is every data table"],
+  "useInstead": [{ "when": "the rows are data", "use": "TableBody" }],
+  "composition": {
+    "order": ["Table", "TableHead", "TableRow", "TableCell"],
+    "note": "Exists so TableRow and TableCell can tell head from body through context, rather than the caller repeating a prop that has to stay in sync with where the row actually sits.",
+    "example": "<TableHead><TableRow><TableCell scope=\"col\">Name</TableCell></TableRow></TableHead>"
+  },
+  "a11y": {
+    "guarantees": [
+      "cells inside it default to <th scope=\"col\">, and a row-selection cell becomes the select-all header"
+    ],
+    "requires": [
+      "a header row for every data table — without one, no data cell has a column to be associated with"
+    ]
+  },
+  "antiPatterns": [
+    {
+      "dont": "a data table with no TableHead",
+      "why": "a screen-reader user hears values with no field names"
+    },
+    {
+      "dont": "styling a first TableBody row to look like a header",
+      "why": "it looks like a header and announces as data"
+    }
+  ]
+}

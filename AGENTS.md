@@ -197,6 +197,12 @@ and what an agent will otherwise get confidently wrong. `Button`'s
 `antiPatterns` entry for `onPress` over `onClick`, and `Alert`'s note that the
 ARIA role is chosen by intent rather than passed in, are the shape of it.
 
+**All 35 have one, as of 0.19.0.** Two of the five lint rules are driven straight
+out of these files, so writing intent is also what turns the guardrails on: the
+deprecation rule went from 4 components to 11 and the accessible-name rule from 5
+to 12 the moment the remaining 29 landed. That is the argument for the format —
+prose in a docs site could not have done it.
+
 ### Why the TypeScript checker and not react-docgen
 
 These interfaces extend `Omit<>`, `AriaButtonProps<'button'>`, `InputDOMProps`.
@@ -211,8 +217,8 @@ type-erased JavaScript. See the comment in
 
 ### Three tiers, on purpose
 
-`index.json` is 12KB and answers "which component do I need". `<Name>.json` is
-the full contract for one component. `components.json` is all of them at 180KB
+`index.json` is 13KB and answers "which component do I need". `<Name>.json` is
+the full contract for one component. `components.json` is all of them at 242KB
 and is **not** the file an agent should load — it exists for tooling that wants
 one fetch. Pick from the index, then read exactly one component.
 
@@ -224,13 +230,21 @@ deprecations name real props, that a prop marked `@deprecated` in the source is
 declared in meta **and the reverse**, and that every custom property a stylesheet
 consumes is defined by a token layer.
 
-All nine of those were confirmed to fail on a deliberate break before being
+Every one of those was confirmed to fail on a deliberate break before being
 trusted. If you add a check, break it on purpose first — `audit-names.mjs` once
 reported a clean 0/0/0 while validating nothing.
 
-**Adding a component means adding `meta/<Name>.json`.** The gate warns rather
-than errors for a missing intent file today, because 29 of 35 do not have one
-yet. Once they do, turn that warning into an error.
+**Adding a component means adding `meta/<Name>.json`.** A missing intent file is
+an **error** as of 0.19.0, not a warning: all 35 have one, so the next component
+without one is a new component that shipped without the judgement an agent needs.
+The generated API tells an agent what it MAY pass; it never says what it SHOULD.
+
+One thing the intent files must not do is name an accessible-name requirement
+that belongs to a child. `needsAccessibleName` in the lint plugin is extracted by
+matching `/aria-label|accessible name/` against `a11y.requires`, so `TableRow`
+saying "every row-selection Checkbox needs a name" made the rule demand a name on
+the `<tr>` itself. Write the requirement on the component that actually carries
+it.
 
 ---
 
