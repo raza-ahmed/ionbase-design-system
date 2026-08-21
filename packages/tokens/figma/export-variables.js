@@ -6,14 +6,22 @@
  * file; save the output over that file verbatim.
  *
  * Run it once per collection: set COLLECTION below to each of
- * Primitives · Semantic · Breakpoint · Component.
+ * Primitives · Semantics · Interface · Breakpoint, saving each over the
+ * matching `src/figma/<lowercase name>.json`.
  *
  * One collection at a time because the combined payload is large enough to be
  * truncated in transit — a silently half-written token file is worse than four
  * deliberate runs.
+ *
+ * THESE NAMES ARE v2 AND THEY CHANGED. This header used to read
+ * "Primitives · Semantic · Breakpoint · Component", naming two collections
+ * that no longer exist and defaulting to one of them, so the script threw on
+ * every run until someone edited it. If the token architecture moves again,
+ * fix this line in the same commit — the failure below now names what it
+ * actually found, but a wrong default still costs the next person a run.
  */
 
-const COLLECTION = 'Semantic'; // <- Primitives | Semantic | Breakpoint | Component
+const COLLECTION = 'Primitives'; // <- Primitives | Semantics | Interface | Breakpoint
 
 const cols = await figma.variables.getLocalVariableCollectionsAsync();
 const all = await figma.variables.getLocalVariablesAsync();
@@ -21,7 +29,11 @@ const idToName = {};
 for (const v of all) idToName[v.id] = v.name;
 
 const col = cols.find((c) => c.name === COLLECTION);
-if (!col) throw new Error(`No collection named "${COLLECTION}"`);
+if (!col)
+  throw new Error(
+    `No collection named "${COLLECTION}". This file has: ` +
+      cols.map((c) => c.name).join(', '),
+  );
 
 const modeName = {};
 for (const m of col.modes) modeName[m.modeId] = m.name;
