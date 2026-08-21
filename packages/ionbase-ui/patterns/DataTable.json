@@ -1,0 +1,96 @@
+{
+  "summary": "A table of records with a toolbar, selection, and the three states everyone forgets.",
+  "useWhen": [
+    "showing a list of records the user filters, sorts, selects or acts on in bulk",
+    "the row count is unknown at design time — which is what makes the empty and loading states mandatory rather than optional"
+  ],
+  "composes": [
+    "Table",
+    "TableHead",
+    "TableBody",
+    "TableRow",
+    "TableCell",
+    "Checkbox",
+    "Button",
+    "Badge",
+    "Alert",
+    "Input"
+  ],
+  "structure": [
+    "A toolbar above the table: a search Input, filter controls, and the bulk-action Buttons that appear once something is selected.",
+    "Table with a TableHead whose first cell carries the select-all Checkbox, and a TableBody whose rows each carry their own.",
+    "One region below the table for pagination or a load-more Button.",
+    "The table region is replaced — not overlaid — by the empty, loading and error states."
+  ],
+  "states": {
+    "loading": {
+      "must": "Render the table's header row and a fixed number of skeleton rows, keeping the column widths.",
+      "why": "swapping the whole region for a spinner collapses the layout and moves every control on the page when the data lands",
+      "a11y": "put `aria-busy=\"true\"` on the container and announce the result count in a live region once it resolves"
+    },
+    "empty": {
+      "must": "Say which of the two empties this is: no records exist yet, or the current filters match nothing. Offer the action that resolves it — create the first record, or clear the filters.",
+      "why": "\"No results\" with no way forward is the single most common dead end in enterprise SaaS, and the two cases need opposite actions",
+      "a11y": "the empty state carries the heading; do not leave the region unnamed"
+    },
+    "error": {
+      "must": "Keep the toolbar usable, show an `Alert` with `intent=\"error\"` naming what failed, and offer a retry.",
+      "why": "replacing the whole screen with an error throws away the user's filters and selection, so retrying means rebuilding the query by hand",
+      "a11y": "Alert picks `role=\"alert\"` from the intent — do not add your own"
+    },
+    "partial": {
+      "must": "When some rows load and others fail, show the rows you have and an Alert above them for the rest.",
+      "why": "hiding successful rows because a sibling request failed is data loss the user cannot see"
+    }
+  },
+  "propsUsed": {
+    "Table": ["density", "isStriped"],
+    "TableRow": ["selection", "isSelected"],
+    "TableCell": ["scope", "align", "variant"],
+    "Checkbox": ["isIndeterminate", "isDisabled"],
+    "Button": ["variant", "size"],
+    "Alert": ["intent", "title", "actions"],
+    "Input": ["leadingIcon"]
+  },
+  "variantsUsed": {
+    "Alert": { "intent": ["error"] },
+    "Button": { "variant": ["primary-brand", "secondary", "destructive"] },
+    "TableCell": { "align": ["trailing"] }
+  },
+  "a11y": {
+    "requires": [
+      "`aria-label` on Table — it names the scroll region, which is keyboard reachable",
+      "`scope=\"col\"` on every header cell",
+      "an `aria-label` on every row-selection Checkbox, and `isIndeterminate` on the select-all when the selection is partial",
+      "a live region announcing the row count after a filter or search changes it — otherwise a screen-reader user has no idea the table changed"
+    ],
+    "notes": [
+      "Bulk-action Buttons appearing on selection is a change of available actions, not just of styling. Announce it."
+    ]
+  },
+  "antiPatterns": [
+    {
+      "dont": "a spinner replacing the whole table region",
+      "do": "skeleton rows under the real header",
+      "why": "the layout collapses and every control below the table jumps when data arrives"
+    },
+    {
+      "dont": "one empty state for both \"nothing exists\" and \"nothing matches\"",
+      "why": "the resolving action is opposite in each case — create something, or clear the filter"
+    },
+    {
+      "dont": "a clickable <tr>",
+      "do": "a Link or Button inside a cell",
+      "why": "a row takes no focus, so a keyboard user can never fire it, and an interactive role on <tr> is not valid HTML"
+    },
+    {
+      "dont": "destructive bulk actions with no confirmation",
+      "do": "the DestructiveConfirm pattern",
+      "why": "select-all plus delete is one click away from removing everything the filter matched"
+    },
+    {
+      "dont": "wrapping Table in your own scroll container",
+      "why": "Table already owns one and makes it keyboard reachable; a second is unreachable"
+    }
+  ]
+}

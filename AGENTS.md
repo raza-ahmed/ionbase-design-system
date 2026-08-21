@@ -248,6 +248,36 @@ it.
 
 ---
 
+## Patterns — the tier that owns the states nothing else does
+
+`patterns/*.json` describes compositions: `DataTable`, `Form`, `PageShell`,
+`DestructiveConfirm`, `SettingsPanel`, `Wizard`. They are built and verified into
+`dist/meta/patterns/` by `scripts/build-patterns.mjs` and published beside the
+component pages.
+
+**A pattern is a documented composition, not a component.** Nothing in
+`patterns/` ships React code, and nothing in it may define a token. That is Brad
+Frost's distinction, and the `control/<size>/*` deletion recorded further down
+this file is the precedent for why it matters: a tier that grows its own tokens
+has stopped composing the tier below it and started forking it.
+
+What patterns carry that a component contract cannot is **empty, loading and
+error** — and `partial`, for the bulk operation that half-succeeds. Those states
+belong to no single component. `Table` has no empty state, correctly; that is the
+caller's. Which is exactly why an agent leaves them out: no prop type mentions
+them and no type check misses them.
+
+The generator is the gate. A recipe that names a component, a prop, or a variant
+value that does not exist fails the build, as does one missing any of the three
+states, or one whose state has no `why`. Seven checks, all broken on purpose
+before being trusted. This is what keeps `patterns/` from becoming the docs page
+that quietly went stale.
+
+Adding a pattern means adding all three states. If you cannot say what the empty
+state is, the pattern is not understood well enough to write down yet.
+
+---
+
 ## Two llms.txt files, and they are not copies
 
 `scripts/build-llms.mjs` renders `dist/meta` into the format agents are trained

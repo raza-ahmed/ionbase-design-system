@@ -1,0 +1,97 @@
+{
+  "summary": "A form that validates, reports errors where the user can act on them, and survives a failed submit.",
+  "useWhen": [
+    "collecting more than one field from the user before an action takes effect",
+    "the submit can fail server-side — which is every real form"
+  ],
+  "composes": [
+    "Input",
+    "Select",
+    "Checkbox",
+    "Radio",
+    "RadioGroup",
+    "Toggle",
+    "PhoneInput",
+    "Button",
+    "Alert",
+    "Divider"
+  ],
+  "structure": [
+    "Fields in a single column. Two columns only for genuinely paired values, and they stack below the mobile breakpoint.",
+    "Each field carries its own label and, when invalid, its own errorMessage — the message sits with the control it is about.",
+    "An error summary Alert above the form after a failed submit, listing each invalid field as a link to it.",
+    "A submit Button and a cancel Link or Button, in that reading order, at the end."
+  ],
+  "states": {
+    "loading": {
+      "must": "Disable the submit Button and say what is happening on it — \"Saving…\" — rather than swapping the form for a spinner.",
+      "why": "the user needs to see what they typed while it is being saved, and a disabled control with unchanged text reads as broken",
+      "a11y": "announce the outcome in a live region; a disabled button cannot hold focus to be read"
+    },
+    "empty": {
+      "must": "A form's empty state is its initial state: no field shows an error before the user has touched it.",
+      "why": "validating on mount marks a form the user has not filled in as wrong, which teaches them to ignore the errors"
+    },
+    "error": {
+      "must": "Two levels, both required. Per-field `errorMessage` with `isInvalid`, plus an error summary Alert naming every failed field. Never clear what the user typed.",
+      "why": "the summary is how a screen-reader or zoomed user finds the failures without hunting the whole form; the per-field message is how they fix each one",
+      "a11y": "move focus to the summary after a failed submit — Alert's error intent already carries role=\"alert\""
+    },
+    "partial": {
+      "must": "When the server accepts some fields and rejects others, keep every value and mark only what failed.",
+      "why": "re-entering accepted data is the fastest way to lose a user mid-form"
+    }
+  },
+  "propsUsed": {
+    "Input": [
+      "label",
+      "description",
+      "errorMessage",
+      "isInvalid",
+      "isRequired"
+    ],
+    "Select": ["label", "description", "errorMessage", "isInvalid"],
+    "RadioGroup": ["label", "name", "value", "onChange"],
+    "Checkbox": ["isDisabled"],
+    "Button": ["variant", "size", "isDisabled"],
+    "Alert": ["intent", "title", "actions"]
+  },
+  "variantsUsed": {
+    "Alert": { "intent": ["error"] },
+    "Button": { "variant": ["primary-brand", "tertiary"] }
+  },
+  "a11y": {
+    "requires": [
+      "a visible `label` on every field, or `aria-label` where the label is genuinely elsewhere",
+      "`isInvalid` alongside `errorMessage` — the message alone styles the field without announcing it as invalid",
+      "focus moved to the error summary after a failed submit",
+      "`isRequired` on required fields rather than an asterisk in the label text"
+    ],
+    "notes": [
+      "Validate on blur and on submit, not on every keystroke: an error that appears while the user is still typing the value is wrong more often than right."
+    ]
+  },
+  "antiPatterns": [
+    {
+      "dont": "clearing fields after a failed submit",
+      "why": "it punishes the user for the server's answer"
+    },
+    {
+      "dont": "an error summary with no per-field messages, or per-field with no summary",
+      "why": "each solves a different problem — finding the failures, and fixing one"
+    },
+    {
+      "dont": "a disabled submit Button as the only validation feedback",
+      "why": "the user is told no and never told why; a disabled button also takes no focus, so it cannot explain itself"
+    },
+    {
+      "dont": "placeholder text in place of a label",
+      "why": "it disappears on focus, which is exactly when it is needed, and it is not reliably announced"
+    },
+    {
+      "dont": "a Toggle inside a form that is submitted",
+      "do": "Checkbox",
+      "why": "a switch says the change already took effect"
+    }
+  ]
+}

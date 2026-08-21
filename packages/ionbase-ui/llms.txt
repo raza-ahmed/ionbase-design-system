@@ -2,7 +2,7 @@
 
 > IonBase is a React design system for enterprise SaaS, built to be consumed by an agent rather than read by a developer. Every component ships a machine-readable contract carrying the judgement a type signature cannot: when to use it, what to use instead, the anti-patterns, and what it guarantees for accessibility versus what it requires of you.
 
-Version 0.20.0. 35 components.
+Version 0.21.0. 35 components.
 
 ## Read these, in this order
 
@@ -14,6 +14,12 @@ Both are importable: `ionbase-ui/meta/index` and `ionbase-ui/meta/<Name>.json`. 
 ## Components
 
 `Alert`, `Avatar`, `AvatarGroup`, `Badge`, `Button`, `Checkbox`, `Divider`, `FullCard`, `Header`, `Icon`, `Input`, `Link`, `Logo`, `LogoMark`, `Menu`, `MenuItem`, `Modal`, `NavItem`, `PhoneInput`, `Popover`, `Radio`, `RadioGroup`, `ScrollProgress`, `Select`, `TabItem`, `Table`, `TableBody`, `TableCell`, `TableHead`, `TableRow`, `Tabs`, `Toast`, `ToastProvider`, `Toggle`, `Tooltip`
+
+## Patterns
+
+Compositions of the components above, in `dist/meta/patterns/`. Read `dist/meta/patterns/index.json`, then one recipe. They are the only place the empty, loading and error states are specified — no component owns those, which is why they are the part that gets left out.
+
+`DataTable`, `DestructiveConfirm`, `Form`, `PageShell`, `SettingsPanel`, `Wizard`
 
 ## Rules that ship with this package
 

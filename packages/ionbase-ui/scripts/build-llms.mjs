@@ -55,6 +55,16 @@ const index = JSON.parse(readFileSync(join(META, 'index.json'), 'utf8'));
 const names = Object.keys(index.components);
 const read = (n) => JSON.parse(readFileSync(join(META, `${n}.json`), 'utf8'));
 
+/* Patterns are a separate tier with a separate index, and are optional: an
+ * older dist/ predating phase 4a still renders. */
+const PATTERNS = join(META, 'patterns');
+const patternIndex = existsSync(join(PATTERNS, 'index.json'))
+  ? JSON.parse(readFileSync(join(PATTERNS, 'index.json'), 'utf8'))
+  : { patterns: {} };
+const patternNames = Object.keys(patternIndex.patterns);
+const readPattern = (n) =>
+  JSON.parse(readFileSync(join(PATTERNS, `${n}.json`), 'utf8'));
+
 /* Button -> button, AvatarGroup -> avatar-group, LogoMark -> logo-mark. */
 const slug = (n) =>
   n
@@ -372,6 +382,122 @@ function renderComponent(name) {
   return out.join('\n');
 }
 
+function renderPattern(name) {
+  const c = readPattern(name);
+  const out = [];
+  const p = (s = '') => out.push(s);
+
+  p(`# ${name} pattern`);
+  p();
+  p(`> ${c.summary}`);
+  p();
+  p(
+    'A pattern is a documented composition of components, not a component. ' +
+      'Nothing here ships as code — build it from the pieces below.',
+  );
+  p();
+  p(
+    `**Composes:** ${c.composes
+      .map((n) => `[${n}](../../components/${slug(n)}/index.html.md)`)
+      .join(', ')}`,
+  );
+  p();
+  p(`[Machine-readable version](./index.html.json)`);
+  p();
+
+  if (c.useWhen?.length) {
+    p('## Use it when');
+    p();
+    p(list(c.useWhen));
+    p();
+  }
+
+  if (c.structure?.length) {
+    p('## Structure');
+    p();
+    p(list(c.structure));
+    p();
+  }
+
+  if (c.states) {
+    p('## States');
+    p();
+    p(
+      'These are the reason this tier exists. They belong to no single ' +
+        'component, no prop type mentions them, and no type check misses ' +
+        'them — which is why they are the part that gets left out.',
+    );
+    p();
+    for (const [key, st] of Object.entries(c.states)) {
+      p(`### ${key}`);
+      p();
+      p(st.must);
+      p();
+      p(`**Why:** ${st.why}`);
+      if (st.a11y) {
+        p();
+        p(`**Accessibility:** ${st.a11y}`);
+      }
+      p();
+    }
+  }
+
+  if (c.propsUsed && Object.keys(c.propsUsed).length) {
+    p('## Props this pattern relies on');
+    p();
+    p(
+      table(
+        ['component', 'props'],
+        Object.entries(c.propsUsed).map(([comp, props]) => [
+          `[${comp}](../../components/${slug(comp)}/index.html.md)`,
+          props.map((x) => `\`${x}\``).join(', '),
+        ]),
+      ),
+    );
+    p();
+    p('Every name above is checked against the real API at build time.');
+    p();
+  }
+
+  if (c.a11y?.requires?.length) {
+    p('## Accessibility');
+    p();
+    p('**It requires of you:**');
+    p();
+    p(list(c.a11y.requires));
+    p();
+    if (c.a11y.notes?.length) {
+      p('**Notes:**');
+      p();
+      p(list(c.a11y.notes));
+      p();
+    }
+  }
+
+  if (c.antiPatterns?.length) {
+    p('## Anti-patterns');
+    p();
+    p(
+      table(
+        ["don't", 'do instead', 'why'],
+        c.antiPatterns.map((a) => [a.dont ?? '', a.do ?? '', a.why ?? '']),
+      ),
+    );
+    p();
+  }
+
+  p('---');
+  p();
+  p(
+    `Generated from \`${index.package}@${index.version}\` — do not edit. ` +
+      `The recipe lives in \`patterns/${name}.json\`, and every component, ` +
+      `prop and variant value it names is verified against the real API.`,
+  );
+  p();
+
+  return out.join('\n');
+}
+
 /* -------------------------------------------------------------- llms.txt */
 
 const PITCH =
@@ -420,6 +546,24 @@ function hostedIndex() {
     );
   }
   p();
+
+  if (patternNames.length) {
+    p('## Patterns');
+    p();
+    p(
+      'Compositions, not components — and the only place the empty, loading ' +
+        'and error states are written down. Read the pattern before building ' +
+        'a screen out of the components it names.',
+    );
+    p();
+    for (const n of patternNames) {
+      p(
+        `- [${n}](${baseUrl}/patterns/${slug(n)}/index.html.md): ` +
+          `${patternIndex.patterns[n].summary}`,
+      );
+    }
+    p();
+  }
 
   if (index.hooks?.length) {
     p('## Hooks');
@@ -483,6 +627,21 @@ function tarballIndex() {
   p();
   p(names.map((n) => `\`${n}\``).join(', '));
   p();
+  if (patternNames.length) {
+    p('## Patterns');
+    p();
+    p(
+      'Compositions of the components above, in `dist/meta/patterns/`. Read ' +
+        '`dist/meta/patterns/index.json`, then one recipe. They are the only ' +
+        'place the empty, loading and error states are specified — no ' +
+        'component owns those, which is why they are the part that gets ' +
+        'left out.',
+    );
+    p();
+    p(patternNames.map((n) => `\`${n}\``).join(', '));
+    p();
+  }
+
   p('## Rules that ship with this package');
   p();
   p(
@@ -535,6 +694,11 @@ if (siteDir) {
    * page's index.html.json twin. */
   for (const f of ['index.json', 'components.json'])
     write(join(root, 'meta', f), readFileSync(join(META, f), 'utf8'));
+  if (patternNames.length)
+    write(
+      join(root, 'meta', 'patterns', 'index.json'),
+      readFileSync(join(PATTERNS, 'index.json'), 'utf8'),
+    );
 
   for (const n of names) {
     const dir = join(root, 'components', slug(n));
@@ -544,6 +708,16 @@ if (siteDir) {
       readFileSync(join(META, `${n}.json`), 'utf8'),
     );
   }
+  rmSync(join(root, 'patterns'), { recursive: true, force: true });
+  for (const n of patternNames) {
+    const dir = join(root, 'patterns', slug(n));
+    write(join(dir, 'index.html.md'), renderPattern(n));
+    write(
+      join(dir, 'index.html.json'),
+      readFileSync(join(PATTERNS, `${n}.json`), 'utf8'),
+    );
+  }
+
   /*
    * Every link in llms.txt must resolve to a file that was just written.
    *
@@ -558,19 +732,32 @@ if (siteDir) {
     .map((m) => m[1])
     .filter((href) => href && !href.startsWith('/?'));
 
-  const broken = linked.filter(
-    (href) => !existsSync(join(root, decodeURIComponent(href))),
-  );
+  /* Pattern pages link sideways into the component pages by relative path.
+   * Same failure, same check: resolve them from the page that holds them. */
+  const relative = [];
+  for (const n of patternNames) {
+    const dir = join(root, 'patterns', slug(n));
+    for (const m of renderPattern(n).matchAll(/\]\((\.[^)]+)\)/g))
+      relative.push([join(dir, m[1]), `patterns/${slug(n)} -> ${m[1]}`]);
+  }
+
+  const broken = [
+    ...linked.filter(
+      (href) => !existsSync(join(root, decodeURIComponent(href))),
+    ),
+    ...relative.filter(([abs]) => !existsSync(abs)).map(([, label]) => label),
+  ];
   if (broken.length) {
     console.error(
       `llms.txt links to ${broken.length} path(s) that were not written:`,
     );
-    for (const b of broken) console.error(`  ${baseUrl}${b}`);
+    for (const b of broken) console.error(`  ${b}`);
     process.exit(1);
   }
 
   console.log(
     `site     -> ${root}/llms.txt + components/*/index.html.{md,json} ` +
-      `(${names.length} pages, ${linked.length} links checked, base ${baseUrl})`,
+      `+ patterns/*/ (${names.length} components, ${patternNames.length} patterns, ` +
+      `${linked.length + relative.length} links checked, base ${baseUrl})`,
   );
 }

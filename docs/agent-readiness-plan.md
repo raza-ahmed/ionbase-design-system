@@ -404,7 +404,24 @@ Not done, and deliberately: a tokens page, a patterns page, and `llms-full.txt`.
 The first two have nothing to render yet (phase 4a), and the third is the
 "one big file" this whole tier argues against.
 
-**3b. Code Connect.** Add `.figma.ts` files mapping each Figma component to its
+**3b. Code Connect — BLOCKED, not deferred. Checked 21 Aug 2026.**
+
+> `You need a Dev or Full seat on an Organization or Enterprise plan to use Code
+Connect.`
+
+That is the answer from `list_file_components_for_code_connect` against the real
+file key. It is a plan gate, not a configuration problem, and it is the same
+boundary that keeps the Variables REST API out of reach — which is why
+`packages/tokens/figma/export-variables.js` is a plugin script rather than an
+API client.
+
+Nothing about the design below is wrong; it simply cannot be executed on this
+plan. Do not re-attempt it without an Organization or Enterprise seat. When one
+exists, note that the MCP bridge writes **parserless `.figma.ts` templates**
+using `figma.code` — not the `.figma.tsx` / `figma.connect()` format most
+examples online show.
+
+Add `.figma.ts` files mapping each Figma component to its
 React counterpart. The Figma pipeline and MCP bridge already exist; this is the
 missing link that makes design-to-code produce _your_ Button instead of a
 lookalike. Start with the ten components that appear most in real screens.
@@ -441,6 +458,40 @@ entries:
 Note the recurring content of that table: **empty, loading and error states.**
 Those are what agents omit most reliably, because prop types do not mention them
 and no type check misses them.
+
+#### 4a — the contract tier is DONE, 21 Aug 2026
+
+Six recipes in `packages/ionbase-ui/patterns/`, built and verified into
+`dist/meta/patterns/` and published as markdown pages beside the components:
+`DataTable`, `Form`, `PageShell`, `DestructiveConfirm`, `SettingsPanel`,
+`Wizard`.
+
+**No React code, and that is the point.** A pattern is a documented composition,
+so nothing here ships a component or a token of its own. The `control/<size>/*`
+deletion in `AGENTS.md` is the precedent — a tier that grows its own tokens has
+stopped composing the tier below it and started forking it.
+
+Every recipe answers `loading`, `empty` and `error`, each with a `must` and a
+`why`, and most also answer `partial` — the state that appears when a bulk
+operation half-succeeds and which nothing else in the system names.
+
+`scripts/build-patterns.mjs` is the gate, and it is what stops this being prose.
+Seven checks, all negative-tested on a deliberate break:
+
+| check                                  | catches                                              |
+| -------------------------------------- | ---------------------------------------------------- |
+| `composes` names real components       | a recipe for a component that does not exist         |
+| `propsUsed` names real props           | a prop renamed out from under the recipe             |
+| ...on a component it actually composes | a recipe quietly depending on something undocumented |
+| `variantsUsed` values are in the union | `intent="critical"` — plausible, and not real        |
+| the three states are present           | the omission this whole tier exists to prevent       |
+| every state has a `why`                | a rule with no reason, which gets ignored            |
+| pattern cross-references resolve       | "use the Undo pattern" when there is no Undo pattern |
+
+Still open in 4a: no worked TSX example per pattern. The composition is
+described and every name in it is verified, but an agent still writes the JSX.
+Whether a full example earns its maintenance cost is a question for the eval
+harness, not an assumption to build on.
 
 Follow Brad Frost's distinction — a pattern is a documented composition of
 components, not a new component. It must not acquire tokens of its own; the
@@ -533,8 +584,8 @@ Phase 2c ▓▓  DONE                                 250 pairings; found 3 defe
 Phase 5  ▓▓▓▓▓▓  HARNESS DONE, A/B UNRUN          32 tasks, 9 checks, 5 context packs
 Phase 2  ▓▓▓▓▓▓  DONE                             5 lint rules + stylelint config, shipped
 Phase 3a ▓▓▓▓  DONE                                llms.txt + 35 mirrors, hosted + in-tarball
-Phase 3b ▓▓▓                                      Code Connect
-Phase 4a ▓▓▓▓▓▓▓▓                                 patterns
+Phase 3b ░░░  BLOCKED                             Code Connect — needs an Org/Enterprise seat
+Phase 4a ▓▓▓▓▓  CONTRACTS DONE                     6 recipes, 7-check gate; no TSX examples yet
 Phase 4b ▓▓▓▓▓▓▓▓▓▓                               AI-feature components
 Phase 3c ░░░░                                     MCP server — only if measured need
 ```
@@ -577,7 +628,7 @@ about landing pages.
 | **AWS (Cloudscape)**          | The most complete public docs-for-agents implementation. `/llms.txt` index, plus `index.html.md` (guidance, testing specs, a11y) and `index.html.json` (types, props, events, functions) appended to _every_ docs URL.                                                                                                                     | Copy this shape wholesale in Phase 3a. It is a solved problem; do not design a new one.                                                                                                                           |
 | **Nordhealth (Nord)**         | Two-tier `llms.txt` (~5k tokens, an index) and `llms-full.txt` (1M+).                                                                                                                                                                                                                                                                      | The two-tier split matters: agents need a cheap index before an expensive fetch.                                                                                                                                  |
 | **Ant Design, Nuxt UI**       | `llms.txt` shipped as standard.                                                                                                                                                                                                                                                                                                            | This is now table stakes for a published component library, not a differentiator.                                                                                                                                 |
-| **Figma**                     | Position: Code Connect is the highest-leverage MCP-readiness work, because it makes the agent pull the real component rather than generate a lookalike. Plus auto-generated rules files from a codebase scan.                                                                                                                              | Direct support for Phase 3b, and it is cheap for you — the pipeline and the bridge already exist.                                                                                                                 |
+| **Figma**                     | Position: Code Connect is the highest-leverage MCP-readiness work, because it makes the agent pull the real component rather than generate a lookalike. Plus auto-generated rules files from a codebase scan.                                                                                                                              | Was read as direct support for Phase 3b. It is — but only on an Organization or Enterprise seat, which this account does not have. See the block note above.                                                      |
 | **Storybook**                 | `componentsManifest` + `@storybook/addon-mcp`. Manifest carries id, import, JSDoc tags, prop table and a JSX snippet per story. Pre-stable and React-only as of 10.5.                                                                                                                                                                      | Phase 0, now done. Note the prop table does not survive a monorepo that ships a built package — see Phase 0's findings.                                                                                           |
 | **New York State**            | Lit + TypeScript components documented in JSDoc; generated a full multi-step form from a PDF in 13 minutes.                                                                                                                                                                                                                                | Public-sector, accessibility-constrained, and it worked because the JSDoc was thorough. Cheap metadata beats no metadata.                                                                                         |
 | **Brad Frost / Southleft**    | FigmaLint scores component hygiene (their demo: 26/100 → 100/100); a design-systems MCP covering Carbon, Polaris and Atlassian.                                                                                                                                                                                                            | **Scoring** as a mechanism — a number that moves is what gets a design system's agent-readiness maintained. Feeds Phase 5.                                                                                        |

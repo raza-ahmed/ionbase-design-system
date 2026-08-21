@@ -1,5 +1,39 @@
 # Changelog
 
+## 0.21.0 — 2026-08-21
+
+### Added — patterns, the tier that owns empty, loading and error
+
+Six recipes at `ionbase-ui/patterns`: `DataTable`, `Form`, `PageShell`,
+`DestructiveConfirm`, `SettingsPanel`, `Wizard`.
+
+**No React code ships with them.** A pattern is a documented composition of
+components, not a component, so nothing here defines a component or a token of
+its own.
+
+What they carry is the part no component contract can. `Table` has no empty
+state — correctly, it is the caller's — and the same is true of loading and
+error across the system. So no prop type mentions them, no type check misses
+them, and they are the first thing left out of generated code. Every recipe
+answers all three with a `must` and a `why`, and most also answer `partial`, for
+the bulk operation that half-succeeds.
+
+Each is verified against the real API at build time: a recipe naming a component,
+prop or variant value that does not exist fails the build, as does one missing a
+state or giving a state no reason. Seven checks, each broken on purpose first.
+
+Available as `ionbase-ui/patterns` (the index) and `ionbase-ui/patterns/<Name>.json`,
+and published as markdown at `/patterns/<name>/index.html.md` alongside the
+component pages.
+
+### Changed — llms.txt indexes the patterns
+
+Both the hosted and in-tarball indexes now list them, and the hosted pattern
+pages link sideways into the component pages they compose. The generator's link
+check covers those relative links too — 141 links verified per build, up from 38.
+
+**Minor, not patch**: new export paths, no behaviour change.
+
 ## 0.20.0 — 2026-08-21
 
 ### Added — `llms.txt` ships in the tarball

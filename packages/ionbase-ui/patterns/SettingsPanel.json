@@ -1,0 +1,89 @@
+{
+  "summary": "Grouped settings that either apply immediately or are saved together — never both in one panel.",
+  "useWhen": [
+    "the user configures preferences, feature flags or account options",
+    "the settings are grouped and the groups are worth naming"
+  ],
+  "composes": [
+    "Toggle",
+    "Checkbox",
+    "RadioGroup",
+    "Radio",
+    "Select",
+    "Input",
+    "Button",
+    "Alert",
+    "Divider",
+    "Badge",
+    "Tabs",
+    "TabItem"
+  ],
+  "structure": [
+    "Named groups, separated by Divider, each with a heading.",
+    "One row per setting: label and description on the left, control on the right.",
+    "For save-on-submit panels, a save bar that appears only when something is dirty, with save and discard.",
+    "Tabs for panels large enough that a single scroll is unreasonable — but never with unsaved changes hidden behind an inactive tab."
+  ],
+  "states": {
+    "loading": {
+      "must": "Show the groups and their labels with the controls disabled, rather than an empty panel.",
+      "why": "the shape of the settings is known before their values are; showing it makes the wait legible"
+    },
+    "empty": {
+      "must": "A group with nothing in it for this account states why — a plan limit, a permission — rather than being hidden.",
+      "why": "a silently absent setting reads as a missing feature, and generates support tickets"
+    },
+    "error": {
+      "must": "Revert the control to its previous value, show an Alert naming the setting that failed, and keep the rest of the panel usable.",
+      "why": "a Toggle left in the new position after a failed save is a lie about the server's state"
+    },
+    "partial": {
+      "must": "When a batched save partially fails, keep the successful values and mark only the failed rows dirty again.",
+      "why": "reverting everything discards changes the server accepted"
+    }
+  },
+  "propsUsed": {
+    "Toggle": ["size", "intent", "isDisabled"],
+    "Checkbox": ["isDisabled", "isIndeterminate"],
+    "RadioGroup": ["label", "value", "onChange", "isDisabled"],
+    "Select": ["label", "description", "isInvalid", "errorMessage"],
+    "Button": ["variant", "isDisabled"],
+    "Alert": ["intent", "title", "actions"],
+    "Tabs": ["type", "size"]
+  },
+  "variantsUsed": {
+    "Toggle": { "intent": ["brand", "danger"] },
+    "Alert": { "intent": ["error", "warning"] },
+    "Button": { "variant": ["primary-brand", "tertiary"] },
+    "Tabs": { "type": ["underline"] }
+  },
+  "a11y": {
+    "requires": [
+      "a label on every control — the row's visible text, wired up, not just placed beside it",
+      "the description associated with the control rather than floating next to it, so it is announced with the setting",
+      "an announcement when an immediate-apply setting saves; the visual state change is not enough"
+    ],
+    "notes": [
+      "Toggle for immediate effect, Checkbox for values saved with a submit. Mixing both in one panel means the user cannot tell which is which."
+    ]
+  },
+  "antiPatterns": [
+    {
+      "dont": "Toggles that apply immediately alongside a Save button",
+      "why": "the switch says the change already happened; the button says it has not"
+    },
+    {
+      "dont": "a destructive setting with no confirmation",
+      "do": "the DestructiveConfirm pattern",
+      "why": "\"delete this workspace\" as a Toggle row is one mis-click"
+    },
+    {
+      "dont": "unsaved changes on an inactive tab",
+      "why": "the user is told the form is dirty with nothing on screen that is"
+    },
+    {
+      "dont": "hiding settings the account cannot use",
+      "why": "an absent control is indistinguishable from a missing feature"
+    }
+  ]
+}

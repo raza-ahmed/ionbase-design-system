@@ -1,0 +1,86 @@
+{
+  "summary": "A sequence of steps with per-step validation, where progress survives leaving.",
+  "useWhen": [
+    "a task genuinely has an order — later steps depend on earlier answers",
+    "the whole task is too long to present as one form without abandonment"
+  ],
+  "composes": [
+    "Button",
+    "Input",
+    "Select",
+    "Checkbox",
+    "RadioGroup",
+    "Radio",
+    "Alert",
+    "Badge",
+    "Divider",
+    "Modal"
+  ],
+  "structure": [
+    "A step indicator naming every step and marking the current one — not Tabs, because the steps are not peers and cannot be visited in any order.",
+    "One step's fields at a time, each step a Form in its own right.",
+    "Back and Next, plus save-and-exit for anything longer than three steps.",
+    "A final review step listing every answer with a link back to the step that set it."
+  ],
+  "states": {
+    "loading": {
+      "must": "Disable Next and say what is happening on it. Never advance optimistically.",
+      "why": "advancing before the server accepts step N means step N+1 may be built on rejected data"
+    },
+    "empty": {
+      "must": "A resumed wizard opens on the first incomplete step, not step one.",
+      "why": "restarting a half-finished task is why users abandon it the second time"
+    },
+    "error": {
+      "must": "Stay on the failing step, mark the fields, and keep every answer from every step.",
+      "why": "losing step 1's answers because step 3 failed is the worst version of this pattern"
+    },
+    "partial": {
+      "must": "Save each completed step as it is accepted, so leaving mid-wizard loses at most the current step.",
+      "why": "save-and-exit that only saves at the end is not save-and-exit"
+    }
+  },
+  "propsUsed": {
+    "Button": ["variant", "size", "isDisabled"],
+    "Input": ["label", "isInvalid", "errorMessage", "isRequired"],
+    "Select": ["label", "isInvalid", "errorMessage"],
+    "RadioGroup": ["label", "value", "onChange"],
+    "Alert": ["intent", "title"],
+    "Badge": ["intent"],
+    "Modal": ["isOpen", "onOpenChange", "title", "footer"]
+  },
+  "variantsUsed": {
+    "Button": { "variant": ["primary-brand", "secondary", "tertiary"] },
+    "Alert": { "intent": ["error", "information"] },
+    "Badge": { "intent": ["success", "neutral"] }
+  },
+  "a11y": {
+    "requires": [
+      "the step change announced, and focus moved to the new step's heading — otherwise a screen-reader user does not know the page changed",
+      "the current step's position stated in text, not only drawn: \"Step 2 of 5\"",
+      "each step's fields validated on its own Next, not all at the end"
+    ],
+    "notes": [
+      "Do not build this from Tabs. The tablist role announces peers that may be visited in any order, which is the opposite of a wizard.",
+      "A Modal wraps the whole wizard only when abandoning it is safe. A long task in a dialog that closes on an outside click loses everything."
+    ]
+  },
+  "antiPatterns": [
+    {
+      "dont": "Tabs as the step indicator",
+      "why": "the role promises peers in any order, and nothing stops a user landing on the last step first"
+    },
+    {
+      "dont": "validating every step only at the end",
+      "why": "the user is sent back through steps they thought were finished"
+    },
+    {
+      "dont": "a wizard for a task that fits on one screen",
+      "why": "each step boundary is an opportunity to abandon"
+    },
+    {
+      "dont": "a progress bar with no step names",
+      "why": "a percentage does not tell the user what is left or whether they can finish now"
+    }
+  ]
+}

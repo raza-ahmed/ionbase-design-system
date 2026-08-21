@@ -1,0 +1,81 @@
+{
+  "summary": "A confirmation the user cannot pass through by reflex, for actions that cannot be undone.",
+  "useWhen": [
+    "the action deletes data, revokes access, cancels a subscription, or otherwise cannot be reversed by the user",
+    "the action applies to more than one record at once — bulk destructive actions need this even when a single one would not"
+  ],
+  "composes": ["Modal", "Button", "Input", "Alert", "Badge"],
+  "structure": [
+    "A Modal whose title names the action and the object — \"Delete 14 projects\", not \"Are you sure?\".",
+    "Body text stating what is lost and what is not, in that order.",
+    "For high-consequence actions, an Input requiring the object's name to be typed exactly before the confirm Button enables.",
+    "Footer: cancel first in the DOM, destructive second — so the safe option is reached first by keyboard."
+  ],
+  "states": {
+    "loading": {
+      "must": "Disable both footer Buttons and say what is happening on the destructive one. Keep the Modal open.",
+      "why": "closing the modal optimistically leaves the user unsure whether the deletion happened when it later fails"
+    },
+    "empty": {
+      "must": "Never open with nothing selected. If the selection emptied while the modal was opening, close it.",
+      "why": "\"Delete 0 items\" is a dialog with no purpose that still teaches the user to click through confirmations"
+    },
+    "error": {
+      "must": "Keep the Modal open, show an Alert with `intent=\"error\"` inside it, and leave the confirm Button usable for a retry.",
+      "why": "a failed deletion that closes the dialog reads as a successful one"
+    },
+    "partial": {
+      "must": "For bulk actions, report how many succeeded and name what did not, with a retry limited to the failures.",
+      "why": "\"some items could not be deleted\" with no list means the user must re-check every record by hand"
+    }
+  },
+  "propsUsed": {
+    "Modal": [
+      "isOpen",
+      "onOpenChange",
+      "size",
+      "title",
+      "description",
+      "footer",
+      "showClose"
+    ],
+    "Button": ["variant", "size", "isDisabled"],
+    "Input": ["label", "isInvalid", "errorMessage"],
+    "Alert": ["intent", "title"]
+  },
+  "variantsUsed": {
+    "Button": { "variant": ["destructive", "tertiary"] },
+    "Alert": { "intent": ["error"] },
+    "Modal": { "size": ["sm"] }
+  },
+  "a11y": {
+    "requires": [
+      "`title` on the Modal — it is the dialog's accessible name",
+      "the cancel Button before the destructive one in DOM order",
+      "a confirm Button that names the action, not \"OK\""
+    ],
+    "notes": [
+      "Modal already contains focus, closes on Escape and hides the rest of the page. Escape must cancel, never confirm.",
+      "Typed confirmation is friction on purpose. Use it where the consequence justifies it and nowhere else, or it becomes something to type without reading."
+    ]
+  },
+  "antiPatterns": [
+    {
+      "dont": "\"Are you sure?\" as the title",
+      "why": "it names neither the action nor the object, so the answer is a reflex"
+    },
+    {
+      "dont": "the destructive Button focused by default",
+      "why": "Enter on an unread dialog then performs the irreversible action"
+    },
+    {
+      "dont": "a Toast as the only confirmation of a destructive action",
+      "do": "Alert",
+      "why": "a toast disappears, and so does the undo it was carrying"
+    },
+    {
+      "dont": "a confirmation dialog on every action",
+      "why": "confirmations that appear for reversible actions train the user to dismiss the ones that matter"
+    }
+  ]
+}

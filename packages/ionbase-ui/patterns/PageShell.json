@@ -1,0 +1,71 @@
+{
+  "summary": "The frame every screen sits in: header, navigation, a named content region.",
+  "useWhen": [
+    "building any full application screen rather than an embedded widget"
+  ],
+  "composes": [
+    "Header",
+    "NavItem",
+    "Logo",
+    "LogoMark",
+    "Avatar",
+    "Button",
+    "Divider",
+    "ToastProvider"
+  ],
+  "structure": [
+    "Header at the top with the brand in `brand`, primary navigation in `center` and account actions in `end`.",
+    "One <main> content region, named, holding the page's own heading as its h1.",
+    "ToastProvider mounted once around the whole shell, not per route.",
+    "Breadcrumbs, when present, sit inside <main> above the h1 — they describe where the content is, not where the chrome is."
+  ],
+  "states": {
+    "loading": {
+      "must": "Render the shell immediately and load only the content region. Never block the header on the page's data.",
+      "why": "the navigation is what a user reaches for when a page is slow; hiding it makes a slow page feel like a broken one"
+    },
+    "empty": {
+      "must": "A route with nothing in it still renders the shell, the heading, and a statement of what would be here.",
+      "why": "a blank content region with working chrome reads as a failed load"
+    },
+    "error": {
+      "must": "Keep the shell. Put the error inside <main> with a retry and a way back to somewhere that works.",
+      "why": "a full-page error strands the user with no navigation, so their only option is the browser's back button"
+    }
+  },
+  "propsUsed": {
+    "Header": ["brand", "center", "end", "open", "onOpenChange", "menuLabel"],
+    "NavItem": ["icon", "showChevron", "href"],
+    "ToastProvider": ["placement", "limit"],
+    "Logo": ["size", "wordmark"],
+    "LogoMark": ["size", "label"]
+  },
+  "variantsUsed": {
+    "ToastProvider": { "placement": ["top-right"] }
+  },
+  "a11y": {
+    "requires": [
+      "`menuLabel` on Header — the mobile toggle is icon-only",
+      "a <nav> with its own accessible name wrapping the NavItems; Header supplies the banner landmark, not the navigation one",
+      "exactly one <main>, and exactly one h1 inside it",
+      "`aria-current=\"page\"` on the NavItem for the current route — colour alone does not tell a screen-reader user where they are"
+    ],
+    "notes": [
+      "The desktop/tablet/mobile switch is a media query inside Header. Do not duplicate that decision in React state."
+    ]
+  },
+  "antiPatterns": [
+    {
+      "dont": "a ToastProvider per route",
+      "why": "toasts queued before a navigation are unmounted mid-announcement, and two live regions announce over each other"
+    },
+    {
+      "dont": "the page title as an h2 because the logo is an h1",
+      "why": "the brand is not a heading; the page's subject is"
+    },
+    {
+      "dont": "rendering a second nav for mobile",
+      "why": "Header moves the one copy, and two copies duplicate every link in the accessibility tree"
+    }
+  ]
+}
