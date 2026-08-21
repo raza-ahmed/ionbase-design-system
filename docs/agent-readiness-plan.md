@@ -416,10 +416,44 @@ boundary that keeps the Variables REST API out of reach — which is why
 API client.
 
 Nothing about the design below is wrong; it simply cannot be executed on this
-plan. Do not re-attempt it without an Organization or Enterprise seat. When one
-exists, note that the MCP bridge writes **parserless `.figma.ts` templates**
-using `figma.code` — not the `.figma.tsx` / `figma.connect()` format most
-examples online show.
+plan. When an Org seat exists, note that the MCP bridge writes **parserless
+`.figma.ts` templates** using `figma.code` — not the `.figma.tsx` /
+`figma.connect()` format most examples online show.
+
+#### 3b′ — the free replacement, DONE 21 Aug 2026
+
+Being unable to use Code Connect is not a reason to ship without the capability.
+IonBase is meant to be usable by anyone, and gating design-to-code behind an
+Enterprise seat would contradict that at the level of the product, not just the
+tooling. So the mapping was rebuilt in the repo:
+
+```
+figma/export-components.js    paste into use_figma, exactly like the token exports
+figma/components.json         35 Figma components, their variant axes and slots
+figma/mapping.json            28 mapped, 7 explicitly unmapped with reasons
+scripts/verify-figma-map.mjs  9 checks against BOTH sides
+dist/figma-map.json           keyed by node id AND by Figma name
+```
+
+Published at `/figma-map.json` and as `ionbase-ui/figma-map`, so an agent holding
+a Figma node id — from a URL, from `get_design_context`, from a Dev Mode
+selection — resolves the real component and its real props instead of inferring
+them from a screenshot.
+
+**It is better than Code Connect in the way that matters.** Code Connect stores a
+snippet in Figma and cannot tell you when the prop it names is renamed, or when a
+variant is added and never mapped. This is verified on every build against the
+Figma export on one side and the TypeScript API on the other. It rejected two of
+its author's own claims on the first run — `Select.children` and `TabItem.title`,
+neither of which exists.
+
+What it does NOT do is render inside Dev Mode's code panel. That surface is
+Figma's and stays paywalled. The free substitute is the component `description`
+field, which any plan can write and which Dev Mode and the MCP tools both
+surface — deliberately not done yet, because it writes to the design file.
+
+156 Figma properties are checked. Coverage is complete by construction: a Figma
+component that is neither mapped nor explicitly unmapped fails the build.
 
 Add `.figma.ts` files mapping each Figma component to its
 React counterpart. The Figma pipeline and MCP bridge already exist; this is the
@@ -584,7 +618,7 @@ Phase 2c ▓▓  DONE                                 250 pairings; found 3 defe
 Phase 5  ▓▓▓▓▓▓  HARNESS DONE, A/B UNRUN          32 tasks, 9 checks, 5 context packs
 Phase 2  ▓▓▓▓▓▓  DONE                             5 lint rules + stylelint config, shipped
 Phase 3a ▓▓▓▓  DONE                                llms.txt + 35 mirrors, hosted + in-tarball
-Phase 3b ░░░  BLOCKED                             Code Connect — needs an Org/Enterprise seat
+Phase 3b ▓▓▓▓  REPLACED                            figma-map.json — Code Connect without the plan
 Phase 4a ▓▓▓▓▓  CONTRACTS DONE                     6 recipes, 7-check gate; no TSX examples yet
 Phase 4b ▓▓▓▓▓▓▓▓▓▓                               AI-feature components
 Phase 3c ░░░░                                     MCP server — only if measured need

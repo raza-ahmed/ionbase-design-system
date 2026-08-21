@@ -1,0 +1,962 @@
+{
+  "$comment": [
+    "What the Figma components ARE — their variant axes and property slots.",
+    "Produced by figma/export-components.js. Checked by scripts/verify-figma-map.mjs.",
+    "",
+    "This is the free half of Code Connect: Figma stores the mapping for",
+    "Organization and Enterprise customers, and this repo stores it for",
+    "everyone else. See figma/mapping.json for the mapping itself.",
+    "",
+    "Do not hand-edit. Re-export when the Figma components change."
+  ],
+  "file": "gaLbGd0QNb1fUl6BjSpfBA",
+  "exported": "2026-08-21",
+  "components": {
+    "Alert": {
+      "page": "Alert",
+      "id": "812:1902",
+      "kind": "SET",
+      "props": {
+        "Emphasis": {
+          "type": "VARIANT",
+          "options": ["Subtle", "Solid"],
+          "default": "Subtle"
+        },
+        "Intent": {
+          "type": "VARIANT",
+          "options": [
+            "Information",
+            "Neutral",
+            "Primary",
+            "Success",
+            "Warning",
+            "Error"
+          ],
+          "default": "Information"
+        },
+        "Layout": {
+          "type": "VARIANT",
+          "options": ["Inline", "Banner"],
+          "default": "Inline"
+        },
+        "Message#812:25": {
+          "type": "TEXT"
+        },
+        "Show Actions#812:125": {
+          "type": "BOOLEAN"
+        },
+        "Show Dismiss#812:100": {
+          "type": "BOOLEAN"
+        },
+        "Show Icon#812:75": {
+          "type": "BOOLEAN"
+        },
+        "Show Title#812:50": {
+          "type": "BOOLEAN"
+        },
+        "Title#812:0": {
+          "type": "TEXT"
+        }
+      }
+    },
+    "Avatar": {
+      "page": "Avatar",
+      "id": "74:164",
+      "kind": "SET",
+      "props": {
+        "Icon#74:50": {
+          "type": "INSTANCE_SWAP"
+        },
+        "Initials#74:25": {
+          "type": "TEXT"
+        },
+        "Shape": {
+          "type": "VARIANT",
+          "options": ["Circle", "Square"],
+          "default": "Circle"
+        },
+        "Size": {
+          "type": "VARIANT",
+          "options": ["Large", "Medium", "Small", "Mini"],
+          "default": "Large"
+        },
+        "Type": {
+          "type": "VARIANT",
+          "options": ["Character", "Image", "Icon"],
+          "default": "Icon"
+        }
+      }
+    },
+    "Avatar Group": {
+      "page": "Avatar",
+      "id": "74:279",
+      "kind": "SET",
+      "props": {
+        "Shape": {
+          "type": "VARIANT",
+          "options": ["Circle", "Square"],
+          "default": "Circle"
+        },
+        "Show Avatar 3#74:93": {
+          "type": "BOOLEAN"
+        },
+        "Show Avatar 4#74:102": {
+          "type": "BOOLEAN"
+        },
+        "Show Overflow#74:84": {
+          "type": "BOOLEAN"
+        },
+        "Size": {
+          "type": "VARIANT",
+          "options": ["Large", "Medium", "Small", "Mini"],
+          "default": "Large"
+        }
+      }
+    },
+    "Badge": {
+      "page": "Badge",
+      "id": "152:73",
+      "kind": "SET",
+      "props": {
+        "Intent": {
+          "type": "VARIANT",
+          "options": [
+            "Neutral",
+            "Success",
+            "Warning",
+            "Error",
+            "Information",
+            "Primary"
+          ],
+          "default": "Neutral"
+        },
+        "Label#152:24": {
+          "type": "TEXT"
+        },
+        "Shape": {
+          "type": "VARIANT",
+          "options": ["Pill", "Rounded"],
+          "default": "Pill"
+        },
+        "Show Dot#152:25": {
+          "type": "BOOLEAN"
+        },
+        "Show Icon#152:26": {
+          "type": "BOOLEAN"
+        },
+        "Show Label#614:0": {
+          "type": "BOOLEAN"
+        },
+        "Size": {
+          "type": "VARIANT",
+          "options": ["Medium", "Small", "Large"],
+          "default": "Small"
+        },
+        "Swap Icon#647:0": {
+          "type": "INSTANCE_SWAP"
+        }
+      }
+    },
+    "Border": {
+      "page": "Divider",
+      "id": "126:22724",
+      "kind": "SET",
+      "props": {
+        "Style": {
+          "type": "VARIANT",
+          "options": ["Vertical", "Horizontal"],
+          "default": "Vertical"
+        }
+      }
+    },
+    "Button": {
+      "page": "Buttons",
+      "id": "21:461",
+      "kind": "SET",
+      "props": {
+        "Label#21:375": {
+          "type": "TEXT"
+        },
+        "Leading Icon#21:378": {
+          "type": "INSTANCE_SWAP"
+        },
+        "Show Leading Icon#21:376": {
+          "type": "BOOLEAN"
+        },
+        "Show Trailing Icon#21:377": {
+          "type": "BOOLEAN"
+        },
+        "Size": {
+          "type": "VARIANT",
+          "options": ["Small", "Medium", "Large", "XLarge"],
+          "default": "Small"
+        },
+        "State": {
+          "type": "VARIANT",
+          "options": ["Default", "Hover", "Pressed", "Focus", "Disabled"],
+          "default": "Default"
+        },
+        "Trailing Icon#21:379": {
+          "type": "INSTANCE_SWAP"
+        },
+        "Type": {
+          "type": "VARIANT",
+          "options": [
+            "Primary Brand",
+            "Primary Neutral",
+            "Secondary",
+            "Tertiary",
+            "Destructive",
+            "Success",
+            "Primary Soft"
+          ],
+          "default": "Primary Brand"
+        }
+      }
+    },
+    "Checkbox": {
+      "page": "Checkbox",
+      "id": "87:350",
+      "kind": "SET",
+      "props": {
+        "Color": {
+          "type": "VARIANT",
+          "options": ["Brand", "Neutral", "Danger"],
+          "default": "Brand"
+        },
+        "Focused#188:38": {
+          "type": "BOOLEAN"
+        },
+        "Label#87:0": {
+          "type": "TEXT"
+        },
+        "Show Label#87:28": {
+          "type": "BOOLEAN"
+        },
+        "Size": {
+          "type": "VARIANT",
+          "options": ["Small", "Medium", "Large"],
+          "default": "Small"
+        },
+        "State": {
+          "type": "VARIANT",
+          "options": [
+            "Unchecked",
+            "Checked",
+            "Indeterminate",
+            "Unchecked-disabled",
+            "Checked-disabled",
+            "Indeterminate-disabled"
+          ],
+          "default": "Unchecked"
+        }
+      }
+    },
+    "Form Field": {
+      "page": "Input",
+      "id": "80:330",
+      "kind": "SET",
+      "props": {
+        "Helper Text#80:114": {
+          "type": "TEXT"
+        },
+        "Label Text#80:110": {
+          "type": "TEXT"
+        },
+        "Show Helper#80:122": {
+          "type": "BOOLEAN"
+        },
+        "Show Label#80:118": {
+          "type": "BOOLEAN"
+        },
+        "State": {
+          "type": "VARIANT",
+          "options": ["Default", "Error", "Disabled"],
+          "default": "Default"
+        }
+      }
+    },
+    "Full Card": {
+      "page": "Card",
+      "id": "592:857",
+      "kind": "SET",
+      "props": {
+        "Actions#592:6": {
+          "type": "INSTANCE_SWAP"
+        },
+        "Description#592:1": {
+          "type": "TEXT"
+        },
+        "Eyebrow#592:5": {
+          "type": "INSTANCE_SWAP"
+        },
+        "Headline#592:0": {
+          "type": "TEXT"
+        },
+        "Media#592:7": {
+          "type": "INSTANCE_SWAP"
+        },
+        "Row Reverse": {
+          "type": "VARIANT",
+          "options": ["True", "False"],
+          "default": "False"
+        },
+        "Show Actions#592:4": {
+          "type": "BOOLEAN"
+        },
+        "Show Description#592:3": {
+          "type": "BOOLEAN"
+        },
+        "Show Eyebrow#592:2": {
+          "type": "BOOLEAN"
+        }
+      }
+    },
+    "Header": {
+      "page": "Header",
+      "id": "69:335",
+      "kind": "SET",
+      "props": {
+        "Center Slot#68:12": {
+          "type": "SLOT"
+        },
+        "Device": {
+          "type": "VARIANT",
+          "options": ["Desktop", "Tablet", "Mobile-Closed", "Mobile-Open"],
+          "default": "Desktop"
+        },
+        "End Slot#667:37": {
+          "type": "SLOT"
+        },
+        "End Slot#68:16": {
+          "type": "SLOT"
+        },
+        "Show Center Slot#69:0": {
+          "type": "BOOLEAN"
+        },
+        "Show End Slot#69:4": {
+          "type": "BOOLEAN"
+        }
+      }
+    },
+    "Icon Button": {
+      "page": "Buttons",
+      "id": "623:151",
+      "kind": "SET",
+      "props": {
+        "Icon#623:0": {
+          "type": "INSTANCE_SWAP"
+        },
+        "Shape": {
+          "type": "VARIANT",
+          "options": ["Square", "Circle"],
+          "default": "Square"
+        },
+        "Size": {
+          "type": "VARIANT",
+          "options": ["Small", "Medium", "Large", "XLarge"],
+          "default": "Small"
+        },
+        "State": {
+          "type": "VARIANT",
+          "options": ["Default", "Hover", "Pressed", "Focus", "Disabled"],
+          "default": "Default"
+        },
+        "Type": {
+          "type": "VARIANT",
+          "options": [
+            "Primary Brand",
+            "Secondary",
+            "Tertiary",
+            "Destructive",
+            "Success",
+            "Primary Neutral",
+            "Primary Soft"
+          ],
+          "default": "Primary Brand"
+        }
+      }
+    },
+    "Input": {
+      "page": "Input",
+      "id": "80:275",
+      "kind": "SET",
+      "props": {
+        "Leading Icon#80:66": {
+          "type": "INSTANCE_SWAP"
+        },
+        "Show Leading Icon#80:22": {
+          "type": "BOOLEAN"
+        },
+        "Show Trailing Icon#80:44": {
+          "type": "BOOLEAN"
+        },
+        "Size": {
+          "type": "VARIANT",
+          "options": ["Large", "Medium", "Small"],
+          "default": "Large"
+        },
+        "State": {
+          "type": "VARIANT",
+          "options": [
+            "Default",
+            "Hover",
+            "Focus",
+            "Filled",
+            "Invalid",
+            "Disabled",
+            "Read-only"
+          ],
+          "default": "Default"
+        },
+        "Trailing Icon#80:88": {
+          "type": "INSTANCE_SWAP"
+        },
+        "Value#80:0": {
+          "type": "TEXT"
+        }
+      }
+    },
+    "Input/Phone": {
+      "page": "Input",
+      "id": "80:372",
+      "kind": "SET",
+      "props": {
+        "Dial Code#80:126": {
+          "type": "TEXT"
+        },
+        "Size": {
+          "type": "VARIANT",
+          "options": ["Large", "Medium", "Small"],
+          "default": "Large"
+        }
+      }
+    },
+    "Line": {
+      "page": "Scroll Progress",
+      "id": "191:944",
+      "kind": "SET",
+      "props": {
+        "Property 1": {
+          "type": "VARIANT",
+          "options": ["Default", "Variant2"],
+          "default": "Default"
+        }
+      }
+    },
+    "Link": {
+      "page": "Link",
+      "id": "774:1516",
+      "kind": "SET",
+      "props": {
+        "Label#774:0": {
+          "type": "TEXT"
+        },
+        "Leading Icon#774:33": {
+          "type": "INSTANCE_SWAP"
+        },
+        "Show Leading Icon#774:11": {
+          "type": "BOOLEAN"
+        },
+        "Show Trailing Icon#774:22": {
+          "type": "BOOLEAN"
+        },
+        "State": {
+          "type": "VARIANT",
+          "options": ["Default", "Hover", "Visited", "Focus", "Disabled"],
+          "default": "Default"
+        },
+        "Trailing Icon#774:44": {
+          "type": "INSTANCE_SWAP"
+        },
+        "Type": {
+          "type": "VARIANT",
+          "options": ["Inline", "Standalone"],
+          "default": "Inline"
+        }
+      }
+    },
+    "Logo-Ionbase": {
+      "page": "Logo",
+      "id": "52:21369",
+      "kind": "SET",
+      "props": {
+        "Property": {
+          "type": "VARIANT",
+          "options": ["Default", "Name"],
+          "default": "Default"
+        },
+        "Size": {
+          "type": "VARIANT",
+          "options": ["Small", "Large"],
+          "default": "Small"
+        },
+        "Type": {
+          "type": "VARIANT",
+          "options": ["Logo", "Icon"],
+          "default": "Logo"
+        }
+      }
+    },
+    "Menu": {
+      "page": "Menu",
+      "id": "82:306",
+      "kind": "SET",
+      "props": {
+        "Type": {
+          "type": "VARIANT",
+          "options": ["Single", "Multi"],
+          "default": "Single"
+        }
+      }
+    },
+    "Menu Item": {
+      "page": "Side Menu",
+      "id": "639:2634",
+      "kind": "SET",
+      "props": {
+        "Select Icon#639:20": {
+          "type": "INSTANCE_SWAP"
+        },
+        "Show Icon#639:16": {
+          "type": "BOOLEAN"
+        },
+        "Status": {
+          "type": "VARIANT",
+          "options": ["Default", "Selected", "Hover", "Selected Primary"],
+          "default": "Default"
+        },
+        "Text#639:12": {
+          "type": "TEXT"
+        }
+      }
+    },
+    "Menu Section Title": {
+      "page": "Side Menu",
+      "id": "639:2664",
+      "kind": "COMPONENT",
+      "props": {}
+    },
+    "Modal": {
+      "page": "Modal",
+      "id": "792:1537",
+      "kind": "SET",
+      "props": {
+        "Align": {
+          "type": "VARIANT",
+          "options": ["Left", "Center"],
+          "default": "Left"
+        },
+        "Description#792:5": {
+          "type": "TEXT"
+        },
+        "Media#794:33": {
+          "type": "INSTANCE_SWAP"
+        },
+        "Show Body#792:20": {
+          "type": "BOOLEAN"
+        },
+        "Show Close#792:15": {
+          "type": "BOOLEAN"
+        },
+        "Show Description#792:10": {
+          "type": "BOOLEAN"
+        },
+        "Show Footer#792:25": {
+          "type": "BOOLEAN"
+        },
+        "Show Media#794:24": {
+          "type": "BOOLEAN"
+        },
+        "Size": {
+          "type": "VARIANT",
+          "options": ["Medium", "Small", "Large", "Fullscreen"],
+          "default": "Small"
+        },
+        "Title#792:0": {
+          "type": "TEXT"
+        }
+      }
+    },
+    "Nav Item": {
+      "page": "Nav Item",
+      "id": "53:13",
+      "kind": "SET",
+      "props": {
+        "Icon#61:0": {
+          "type": "INSTANCE_SWAP"
+        },
+        "Label#53:0": {
+          "type": "TEXT"
+        },
+        "Show Chevron#53:3": {
+          "type": "BOOLEAN"
+        },
+        "State": {
+          "type": "VARIANT",
+          "options": ["Default", "Hover"],
+          "default": "Default"
+        }
+      }
+    },
+    "Popover": {
+      "page": "Popover",
+      "id": "825:1853",
+      "kind": "SET",
+      "props": {
+        "Body#825:13": {
+          "type": "TEXT"
+        },
+        "Placement": {
+          "type": "VARIANT",
+          "options": ["Bottom", "Top", "Left", "Right"],
+          "default": "Bottom"
+        },
+        "Show Arrow#825:78": {
+          "type": "BOOLEAN"
+        },
+        "Show Body#825:52": {
+          "type": "BOOLEAN"
+        },
+        "Show Close#825:39": {
+          "type": "BOOLEAN"
+        },
+        "Show Footer#825:65": {
+          "type": "BOOLEAN"
+        },
+        "Show Header#825:26": {
+          "type": "BOOLEAN"
+        },
+        "Size": {
+          "type": "VARIANT",
+          "options": ["Medium", "Small", "Large"],
+          "default": "Small"
+        },
+        "Title#825:0": {
+          "type": "TEXT"
+        }
+      }
+    },
+    "Progress": {
+      "page": "Scroll Progress",
+      "id": "191:968",
+      "kind": "SET",
+      "props": {
+        "Status": {
+          "type": "VARIANT",
+          "options": ["Default", "Hover"],
+          "default": "Default"
+        }
+      }
+    },
+    "Progress Heading": {
+      "page": "Scroll Progress",
+      "id": "191:1021",
+      "kind": "SET",
+      "props": {
+        "Status": {
+          "type": "VARIANT",
+          "options": ["Default", "Hover", "Selected"],
+          "default": "Default"
+        }
+      }
+    },
+    "Radio": {
+      "page": "Radio",
+      "id": "89:314",
+      "kind": "SET",
+      "props": {
+        "Color": {
+          "type": "VARIANT",
+          "options": ["Brand", "Neutral", "Danger"],
+          "default": "Brand"
+        },
+        "Focused#188:0": {
+          "type": "BOOLEAN"
+        },
+        "Label#89:0": {
+          "type": "TEXT"
+        },
+        "Show Label#89:19": {
+          "type": "BOOLEAN"
+        },
+        "Size": {
+          "type": "VARIANT",
+          "options": ["Small", "Medium", "Large"],
+          "default": "Large"
+        },
+        "State": {
+          "type": "VARIANT",
+          "options": ["Unselected", "Selected"],
+          "default": "Unselected"
+        }
+      }
+    },
+    "Screen Frame": {
+      "page": "Card",
+      "id": "586:55",
+      "kind": "COMPONENT",
+      "props": {}
+    },
+    "Select": {
+      "page": "Select",
+      "id": "82:379",
+      "kind": "SET",
+      "props": {
+        "Size": {
+          "type": "VARIANT",
+          "options": ["Large", "Medium", "Small"],
+          "default": "Large"
+        },
+        "State": {
+          "type": "VARIANT",
+          "options": [
+            "Default",
+            "Hover",
+            "Focus",
+            "Filled",
+            "Invalid",
+            "Disabled"
+          ],
+          "default": "Default"
+        },
+        "Value#82:18": {
+          "type": "TEXT"
+        }
+      }
+    },
+    "Table Cell": {
+      "page": "Table",
+      "id": "174:103",
+      "kind": "SET",
+      "props": {
+        "Align": {
+          "type": "VARIANT",
+          "options": ["Leading", "Trailing"],
+          "default": "Leading"
+        },
+        "Content#174:37": {
+          "type": "INSTANCE_SWAP"
+        },
+        "Density": {
+          "type": "VARIANT",
+          "options": ["Compact", "Default", "Relaxed"],
+          "default": "Compact"
+        },
+        "Show Content#174:36": {
+          "type": "BOOLEAN"
+        },
+        "Show Divider#174:38": {
+          "type": "BOOLEAN"
+        },
+        "Type": {
+          "type": "VARIANT",
+          "options": ["Header", "Body"],
+          "default": "Header"
+        }
+      }
+    },
+    "Table Row": {
+      "page": "Table",
+      "id": "175:605",
+      "kind": "SET",
+      "props": {
+        "Density": {
+          "type": "VARIANT",
+          "options": ["Compact", "Default", "Relaxed"],
+          "default": "Compact"
+        },
+        "Show Selection#175:12": {
+          "type": "BOOLEAN"
+        },
+        "State": {
+          "type": "VARIANT",
+          "options": ["Default", "Hover", "Selected", "Selected-Hover"],
+          "default": "Default"
+        }
+      }
+    },
+    "Table/Cell Text": {
+      "page": "Table",
+      "id": "173:61",
+      "kind": "SET",
+      "props": {
+        "Label#173:15": {
+          "type": "TEXT"
+        },
+        "Leading Icon#173:18": {
+          "type": "INSTANCE_SWAP"
+        },
+        "Show Leading Icon#173:16": {
+          "type": "BOOLEAN"
+        },
+        "Show Trailing Icon#173:17": {
+          "type": "BOOLEAN"
+        },
+        "Trailing Icon#173:19": {
+          "type": "INSTANCE_SWAP"
+        },
+        "Type": {
+          "type": "VARIANT",
+          "options": ["Body", "Header", "Link"],
+          "default": "Body"
+        }
+      }
+    },
+    "Tabs": {
+      "page": "Tabs",
+      "id": "157:126",
+      "kind": "SET",
+      "props": {
+        "Orientation": {
+          "type": "VARIANT",
+          "options": ["Horizontal", "Vertical"],
+          "default": "Horizontal"
+        },
+        "Type": {
+          "type": "VARIANT",
+          "options": ["Pill", "Underline"],
+          "default": "Pill"
+        }
+      }
+    },
+    "Tabs Item": {
+      "page": "Tabs",
+      "id": "156:259",
+      "kind": "SET",
+      "props": {
+        "Focused#189:0": {
+          "type": "BOOLEAN"
+        },
+        "Label#156:216": {
+          "type": "TEXT"
+        },
+        "Leading Icon#156:220": {
+          "type": "INSTANCE_SWAP"
+        },
+        "Show Label#156:218": {
+          "type": "BOOLEAN"
+        },
+        "Show Leading Icon#156:217": {
+          "type": "BOOLEAN"
+        },
+        "Show Trailing#156:219": {
+          "type": "BOOLEAN"
+        },
+        "Size": {
+          "type": "VARIANT",
+          "options": ["Small", "Medium", "Large"],
+          "default": "Small"
+        },
+        "State": {
+          "type": "VARIANT",
+          "options": [
+            "Default",
+            "Hover",
+            "Selected",
+            "Selected-Hover",
+            "Disabled"
+          ],
+          "default": "Default"
+        },
+        "Trailing#156:221": {
+          "type": "INSTANCE_SWAP"
+        },
+        "Type": {
+          "type": "VARIANT",
+          "options": ["Pill", "Underline"],
+          "default": "Pill"
+        }
+      }
+    },
+    "Toast": {
+      "page": "Toast",
+      "id": "820:1655",
+      "kind": "SET",
+      "props": {
+        "Intent": {
+          "type": "VARIANT",
+          "options": [
+            "Information",
+            "Neutral",
+            "Primary",
+            "Success",
+            "Warning",
+            "Error"
+          ],
+          "default": "Information"
+        },
+        "Message#820:7": {
+          "type": "TEXT"
+        },
+        "Show Action#820:28": {
+          "type": "BOOLEAN"
+        },
+        "Show Dismiss#820:35": {
+          "type": "BOOLEAN"
+        },
+        "Show Message#820:21": {
+          "type": "BOOLEAN"
+        },
+        "Show Title#820:14": {
+          "type": "BOOLEAN"
+        },
+        "Title#820:0": {
+          "type": "TEXT"
+        }
+      }
+    },
+    "Toggle": {
+      "page": "Toggle",
+      "id": "88:323",
+      "kind": "SET",
+      "props": {
+        "Color": {
+          "type": "VARIANT",
+          "options": ["Brand", "Neutral", "Danger"],
+          "default": "Brand"
+        },
+        "Focused#188:19": {
+          "type": "BOOLEAN"
+        },
+        "Label#88:0": {
+          "type": "TEXT"
+        },
+        "Show Label#88:19": {
+          "type": "BOOLEAN"
+        },
+        "Size": {
+          "type": "VARIANT",
+          "options": ["Small", "Medium", "Large"],
+          "default": "Small"
+        },
+        "State": {
+          "type": "VARIANT",
+          "options": ["Off", "On"],
+          "default": "Off"
+        }
+      }
+    },
+    "Tooltip": {
+      "page": "Tooltip",
+      "id": "801:68",
+      "kind": "SET",
+      "props": {
+        "Label#801:0": {
+          "type": "TEXT"
+        },
+        "Placement": {
+          "type": "VARIANT",
+          "options": ["Top", "Bottom", "Left", "Right"],
+          "default": "Top"
+        },
+        "Show Title#801:10": {
+          "type": "BOOLEAN"
+        },
+        "Title#801:5": {
+          "type": "TEXT"
+        }
+      }
+    }
+  }
+}

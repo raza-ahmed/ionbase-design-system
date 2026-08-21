@@ -1,5 +1,45 @@
 # Changelog
 
+## 0.22.0 — 2026-08-21
+
+### Added — `figma-map.json`: Code Connect without the Enterprise plan
+
+Figma's Code Connect makes Dev Mode emit the real component instead of a
+generated lookalike. It needs a Dev or Full seat on an Organization or
+Enterprise plan. A design system that only works for people who can afford that
+is not a design system, so the mapping ships in the package instead.
+
+`ionbase-ui/figma-map` — and `/figma-map.json` on the docs site — maps all 35
+Figma components in the IonBase library, by **node id and by name**, onto the
+React component, its import, and the real prop for each Figma property. An agent
+holding a node id from a URL, a Dev Mode selection, or `get_design_context` now
+resolves the actual component rather than inferring one from a screenshot.
+
+28 components mapped. The other 7 are listed as unmapped **with a reason** —
+`Form Field`, `Screen Frame` and the ScrollProgress internals have no code
+counterpart by design, and saying so is the difference between a decision and an
+oversight.
+
+**It is checked in a way Code Connect is not.** Code Connect stores a snippet
+inside Figma and cannot tell you when the prop that snippet names is renamed, or
+when a variant is added in Figma and never mapped. This is verified on every
+build against the committed Figma export on one side and the TypeScript API on
+the other — 156 properties, nine checks. Two of its author's own claims were
+rejected on the first run: `Select.children` and `TabItem.title`, neither of
+which exists.
+
+The two checks that matter most:
+
+- every Figma property is mapped or ignored with a reason, so a **new** Figma
+  property stops the build rather than passing unnoticed
+- a value map must be exhaustive — an unmapped variant option silently produces
+  `undefined`, which is Code Connect's own documented pitfall
+
+Also new: `figma/export-components.js`, the paste-into-Figma exporter, following
+the same pattern as the token exports.
+
+**Minor, not patch**: a new export path, no behaviour change.
+
 ## 0.21.0 — 2026-08-21
 
 ### Added — patterns, the tier that owns empty, loading and error

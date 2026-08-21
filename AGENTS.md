@@ -248,6 +248,51 @@ it.
 
 ---
 
+## Code Connect, without the Enterprise plan
+
+Figma's Code Connect makes Dev Mode emit `<Button variant="primary-brand">`
+instead of a generated lookalike. It requires a Dev or Full seat on an
+Organization or Enterprise plan — checked against this file on 21 Aug 2026 and
+refused. **A design system that only works for people who can afford that is not
+a design system**, so the mapping lives in this repo instead:
+
+```
+figma/export-components.js   paste into use_figma, like the token exports
+figma/components.json        what the Figma components ARE — committed
+figma/mapping.json           the claim: Figma property -> React prop
+scripts/verify-figma-map.mjs checks it against BOTH sides
+dist/figma-map.json          the output, keyed by node id and by name
+```
+
+**The trade is in our favour.** Code Connect stores a snippet inside Figma and
+nothing tells you when the prop that snippet names is renamed, or when a variant
+is added in Figma and never mapped — it will publish a stale mapping without
+complaint. This one is verified on every build against `figma/components.json`
+on one side and the TypeScript API on the other. It caught two of its own
+author's mistakes on the first run: `Select.children` and `TabItem.title`, both
+props that do not exist.
+
+Nine checks, all broken on purpose. The two that matter most:
+
+- **Every Figma property is mapped or ignored with a reason.** A new Figma
+  property appears in the export, nothing names it, and the build stops. Silence
+  is the failure mode this prevents — an unmapped property looks exactly like one
+  that was never exported.
+- **A value map must be exhaustive.** An unmapped variant option silently
+  produces `undefined`. That is Code Connect's own documented pitfall, and it is
+  invisible to the agent consuming the result.
+
+A partial mapping is allowed and often correct — Figma's one `State` axis splits
+across `isDisabled`, `:hover` and `data-pressed` — but it must carry a `note`
+saying where the rest went. `Header`'s `Device` is the clearest case: four Figma
+values, of which three are a media query the browser already answers.
+
+**Adding a Figma component means re-exporting and mapping it.** Re-export with
+`figma/export-components.js`, then either map it or add it to `unmapped` with a
+reason. Both halves are enforced.
+
+---
+
 ## Patterns — the tier that owns the states nothing else does
 
 `patterns/*.json` describes compositions: `DataTable`, `Form`, `PageShell`,

@@ -572,6 +572,16 @@ function hostedIndex() {
     p();
   }
 
+  p('## Coming from a Figma design?');
+  p();
+  p(
+    `- [Figma map](${baseUrl}/figma-map.json): every Figma component and node ` +
+      `id in the IonBase library, mapped to the React component and its real ` +
+      `props. Look the node id up here instead of inferring the component ` +
+      `from a screenshot.`,
+  );
+  p();
+
   p('## Optional');
   p();
   p(
@@ -642,6 +652,16 @@ function tarballIndex() {
     p();
   }
 
+  p('## Coming from a Figma design?');
+  p();
+  p(
+    '`dist/figma-map.json` maps every Figma component and node id in the ' +
+      'IonBase library to the React component and the real props — what Code ' +
+      'Connect does, without needing an Organization plan. Look up the node ' +
+      'id or the component name rather than guessing from a screenshot.',
+  );
+  p();
+
   p('## Rules that ship with this package');
   p();
   p(
@@ -699,6 +719,9 @@ if (siteDir) {
       join(root, 'meta', 'patterns', 'index.json'),
       readFileSync(join(PATTERNS, 'index.json'), 'utf8'),
     );
+  const figmaMap = join(PKG, 'dist', 'figma-map.json');
+  if (existsSync(figmaMap))
+    write(join(root, 'figma-map.json'), readFileSync(figmaMap, 'utf8'));
 
   for (const n of names) {
     const dir = join(root, 'components', slug(n));

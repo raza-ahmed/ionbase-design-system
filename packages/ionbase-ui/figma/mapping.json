@@ -1,0 +1,904 @@
+{
+  "$comment": [
+    "The free half of Code Connect.",
+    "",
+    "Figma's Code Connect stores this mapping inside the Figma file and needs a",
+    "Dev or Full seat on an Organization or Enterprise plan. IonBase is not for",
+    "people who can afford that and nobody else, so the mapping lives here: in",
+    "git, reviewable, free, and checked against BOTH sides on every build.",
+    "",
+    "Left side  figma/components.json  — what the Figma component actually is",
+    "Right side dist/meta/components.json — what the React component actually is",
+    "",
+    "scripts/verify-figma-map.mjs fails the build if either side moves. That is",
+    "the part Code Connect does not give you: it will happily publish a mapping",
+    "onto a prop that was renamed last week.",
+    "",
+    "Output: dist/figma-map.json, keyed by Figma node id AND by Figma component",
+    "name, so an agent holding either can resolve the real component."
+  ],
+  "components": {
+    "Button": {
+      "code": "Button",
+      "props": {
+        "Type": {
+          "prop": "variant",
+          "values": {
+            "Primary Brand": "primary-brand",
+            "Primary Neutral": "primary-neutral",
+            "Primary Soft": "primary-soft",
+            "Secondary": "secondary",
+            "Tertiary": "tertiary",
+            "Destructive": "destructive",
+            "Success": "success"
+          }
+        },
+        "Size": {
+          "prop": "size",
+          "values": {
+            "Small": "sm",
+            "Medium": "md",
+            "Large": "lg",
+            "XLarge": "xl"
+          }
+        },
+        "State": {
+          "prop": "isDisabled",
+          "when": {
+            "Disabled": true
+          },
+          "note": "Default, Hover, Pressed and Focus are CSS and React Aria — :hover, :focus-visible, data-pressed — not props. Only Disabled is one."
+        },
+        "Label#21:375": {
+          "prop": "children"
+        },
+        "Leading Icon#21:378": {
+          "prop": "startIcon",
+          "note": "wrap in Icon; omit Icon's label, the button text names it"
+        },
+        "Trailing Icon#21:379": {
+          "prop": "endIcon",
+          "note": "same"
+        },
+        "Show Leading Icon#21:376": {
+          "prop": "startIcon",
+          "note": "an absent prop is the switch — React needs no Show boolean, so false means omit startIcon"
+        },
+        "Show Trailing Icon#21:377": {
+          "prop": "endIcon",
+          "note": "same"
+        }
+      }
+    },
+    "Icon Button": {
+      "code": "Button",
+      "note": "Not a separate component in code: an icon-only Button. It is the one case where aria-label is required, because there is no text to name it.",
+      "props": {
+        "Type": {
+          "prop": "variant",
+          "values": {
+            "Primary Brand": "primary-brand",
+            "Primary Neutral": "primary-neutral",
+            "Primary Soft": "primary-soft",
+            "Secondary": "secondary",
+            "Tertiary": "tertiary",
+            "Destructive": "destructive",
+            "Success": "success"
+          }
+        },
+        "Size": {
+          "prop": "size",
+          "values": {
+            "Small": "sm",
+            "Medium": "md",
+            "Large": "lg",
+            "XLarge": "xl"
+          }
+        },
+        "State": {
+          "prop": "isDisabled",
+          "when": {
+            "Disabled": true
+          },
+          "note": "as Button"
+        },
+        "Icon#623:0": {
+          "prop": "startIcon",
+          "note": "with Icon's own label omitted — the Button's aria-label carries the name"
+        },
+        "Shape": {
+          "ignore": "Figma draws a square and a circle variant; code has no shape prop. A round icon button is a className, not an API."
+        }
+      }
+    },
+    "Input": {
+      "code": "Input",
+      "props": {
+        "Size": {
+          "prop": "size",
+          "values": {
+            "Small": "sm",
+            "Medium": "md",
+            "Large": "lg"
+          }
+        },
+        "State": {
+          "prop": "isInvalid",
+          "when": {
+            "Invalid": true
+          },
+          "note": "Hover, Focus and Filled are CSS or content. Disabled is isDisabled, Read-only is isReadOnly — both react-aria props rather than this axis."
+        },
+        "Value#80:0": {
+          "prop": "value",
+          "note": "or defaultValue when uncontrolled; Figma's text is placeholder content, not necessarily a value"
+        },
+        "Leading Icon#80:66": {
+          "prop": "leadingIcon"
+        },
+        "Trailing Icon#80:88": {
+          "prop": "trailingIcon"
+        },
+        "Show Leading Icon#80:22": {
+          "prop": "leadingIcon",
+          "note": "false means omit the prop"
+        },
+        "Show Trailing Icon#80:44": {
+          "prop": "trailingIcon",
+          "note": "false means omit the prop"
+        }
+      }
+    },
+    "Input/Phone": {
+      "code": "PhoneInput",
+      "props": {
+        "Size": {
+          "prop": "size",
+          "values": {
+            "Small": "sm",
+            "Medium": "md",
+            "Large": "lg"
+          }
+        },
+        "Dial Code#80:126": {
+          "prop": "dialCode"
+        }
+      }
+    },
+    "Select": {
+      "code": "Select",
+      "props": {
+        "Size": {
+          "prop": "size",
+          "values": {
+            "Small": "sm",
+            "Medium": "md",
+            "Large": "lg"
+          }
+        },
+        "State": {
+          "prop": "isInvalid",
+          "when": {
+            "Invalid": true
+          },
+          "note": "Hover, Focus and Filled are CSS or content; Disabled is isDisabled"
+        },
+        "Value#82:18": {
+          "prop": "placeholder",
+          "note": "Figma's text is the collapsed display value. In code that is `placeholder` when nothing is chosen; once something is, the label comes from the `options` array."
+        }
+      }
+    },
+    "Checkbox": {
+      "code": "Checkbox",
+      "props": {
+        "Size": {
+          "prop": "size",
+          "values": {
+            "Small": "sm",
+            "Medium": "md",
+            "Large": "lg"
+          }
+        },
+        "Color": {
+          "prop": "intent",
+          "values": {
+            "Brand": "brand",
+            "Neutral": "neutral",
+            "Danger": "danger"
+          }
+        },
+        "State": {
+          "prop": "isIndeterminate",
+          "when": {
+            "Indeterminate": true,
+            "Indeterminate-disabled": true
+          },
+          "note": "Checked is `checked`/`defaultChecked`, and the -disabled halves are isDisabled. One Figma axis, three code props, which is why it is not a single mapping."
+        },
+        "Label#87:0": {
+          "prop": "children"
+        },
+        "Show Label#87:28": {
+          "prop": "children",
+          "note": "false means a bare box — and then aria-label becomes required"
+        },
+        "Focused#188:38": {
+          "ignore": "a drawn focus ring. In code it is :focus-visible, which the browser owns."
+        }
+      }
+    },
+    "Radio": {
+      "code": "Radio",
+      "props": {
+        "Size": {
+          "prop": "size",
+          "values": {
+            "Small": "sm",
+            "Medium": "md",
+            "Large": "lg"
+          }
+        },
+        "Color": {
+          "prop": "intent",
+          "values": {
+            "Brand": "brand",
+            "Neutral": "neutral",
+            "Danger": "danger"
+          }
+        },
+        "State": {
+          "ignore": "Selected/Unselected is the RadioGroup's value, not a prop on the Radio — a radio cannot own its own selection"
+        },
+        "Label#89:0": {
+          "prop": "children"
+        },
+        "Show Label#89:19": {
+          "prop": "children",
+          "note": "false means aria-label is required"
+        },
+        "Focused#188:0": {
+          "ignore": "drawn focus ring; :focus-visible in code"
+        }
+      }
+    },
+    "Toggle": {
+      "code": "Toggle",
+      "props": {
+        "Size": {
+          "prop": "size",
+          "values": {
+            "Small": "sm",
+            "Medium": "md",
+            "Large": "lg"
+          }
+        },
+        "Color": {
+          "prop": "intent",
+          "values": {
+            "Brand": "brand",
+            "Neutral": "neutral",
+            "Danger": "danger"
+          }
+        },
+        "State": {
+          "ignore": "On/Off is `checked`/`defaultChecked` on the underlying input, not a Toggle prop"
+        },
+        "Label#88:0": {
+          "prop": "children"
+        },
+        "Show Label#88:19": {
+          "prop": "children",
+          "note": "false means aria-label is required"
+        },
+        "Focused#188:19": {
+          "ignore": "drawn focus ring; :focus-visible in code"
+        }
+      }
+    },
+    "Badge": {
+      "code": "Badge",
+      "props": {
+        "Intent": {
+          "prop": "intent",
+          "values": {
+            "Neutral": "neutral",
+            "Primary": "primary",
+            "Success": "success",
+            "Warning": "warning",
+            "Error": "error",
+            "Information": "information"
+          }
+        },
+        "Label#152:24": {
+          "prop": "children"
+        },
+        "Show Label#614:0": {
+          "prop": "children"
+        },
+        "Show Dot#152:25": {
+          "prop": "dot"
+        },
+        "Show Icon#152:26": {
+          "prop": "icon",
+          "note": "false means omit icon; dot wins when both are set"
+        },
+        "Swap Icon#647:0": {
+          "prop": "icon"
+        },
+        "Size": {
+          "ignore": "Figma draws three sizes; code has no size prop. Badge inherits its type from the text it labels — the same call Link makes."
+        },
+        "Shape": {
+          "ignore": "Pill and Rounded are one radius token apart and code ships the pill only. Add the prop when a real screen needs both, not before."
+        }
+      }
+    },
+    "Alert": {
+      "code": "Alert",
+      "props": {
+        "Intent": {
+          "prop": "intent",
+          "values": {
+            "Neutral": "neutral",
+            "Primary": "primary",
+            "Success": "success",
+            "Warning": "warning",
+            "Error": "error",
+            "Information": "information"
+          }
+        },
+        "Emphasis": {
+          "prop": "emphasis",
+          "values": {
+            "Subtle": "subtle",
+            "Solid": "solid"
+          }
+        },
+        "Layout": {
+          "prop": "layout",
+          "values": {
+            "Inline": "inline",
+            "Banner": "banner"
+          }
+        },
+        "Title#812:0": {
+          "prop": "title"
+        },
+        "Show Title#812:50": {
+          "prop": "title",
+          "note": "false means omit title"
+        },
+        "Message#812:25": {
+          "prop": "children"
+        },
+        "Show Icon#812:75": {
+          "prop": "hideIcon",
+          "note": "inverted — Figma's Show Icon false is hideIcon true"
+        },
+        "Show Dismiss#812:100": {
+          "prop": "onDismiss",
+          "note": "the dismiss button appears when a handler is passed; there is no boolean"
+        },
+        "Show Actions#812:125": {
+          "prop": "actions",
+          "note": "an absent prop is the switch"
+        }
+      }
+    },
+    "Toast": {
+      "code": "Toast",
+      "props": {
+        "Intent": {
+          "prop": "intent",
+          "values": {
+            "Neutral": "neutral",
+            "Primary": "primary",
+            "Success": "success",
+            "Warning": "warning",
+            "Error": "error",
+            "Information": "information"
+          }
+        },
+        "Title#820:0": {
+          "prop": "title"
+        },
+        "Show Title#820:14": {
+          "prop": "title"
+        },
+        "Message#820:7": {
+          "prop": "message"
+        },
+        "Show Message#820:21": {
+          "prop": "message"
+        },
+        "Show Action#820:28": {
+          "prop": "action",
+          "note": "one action only — a second belongs in a Modal"
+        },
+        "Show Dismiss#820:35": {
+          "prop": "dismissLabel",
+          "note": "the dismiss control is always rendered; only its label is configurable"
+        }
+      }
+    },
+    "Link": {
+      "code": "Link",
+      "props": {
+        "Type": {
+          "prop": "variant",
+          "values": {
+            "Inline": "inline",
+            "Standalone": "standalone"
+          }
+        },
+        "State": {
+          "prop": "isDisabled",
+          "when": {
+            "Disabled": true
+          },
+          "note": "Hover and Focus are CSS; Visited is :visited, which no prop can set"
+        },
+        "Label#774:0": {
+          "prop": "children"
+        },
+        "Leading Icon#774:33": {
+          "prop": "startIcon"
+        },
+        "Trailing Icon#774:44": {
+          "prop": "endIcon"
+        },
+        "Show Leading Icon#774:11": {
+          "prop": "startIcon"
+        },
+        "Show Trailing Icon#774:22": {
+          "prop": "endIcon"
+        }
+      }
+    },
+    "Nav Item": {
+      "code": "NavItem",
+      "props": {
+        "State": {
+          "ignore": "Default and Hover are CSS and React Aria's useHover, not props"
+        },
+        "Label#53:0": {
+          "prop": "children"
+        },
+        "Icon#61:0": {
+          "prop": "icon"
+        },
+        "Show Chevron#53:3": {
+          "prop": "showChevron"
+        }
+      }
+    },
+    "Menu": {
+      "code": "Menu",
+      "props": {
+        "Type": {
+          "ignore": "Single and Multi describe how many items may be selected, which is the caller's state. Menu renders the surface and holds no selection of its own."
+        }
+      }
+    },
+    "Menu Item": {
+      "code": "MenuItem",
+      "props": {
+        "Status": {
+          "prop": "isSelected",
+          "when": {
+            "Selected": true,
+            "Selected Primary": true
+          },
+          "note": "Hover is CSS. Selected Primary is a second selected styling Figma draws and code does not yet ship."
+        },
+        "Text#639:12": {
+          "prop": "children"
+        },
+        "Show Icon#639:16": {
+          "prop": "icon"
+        },
+        "Select Icon#639:20": {
+          "prop": "icon"
+        }
+      }
+    },
+    "Tabs": {
+      "code": "Tabs",
+      "props": {
+        "Type": {
+          "prop": "type",
+          "values": {
+            "Pill": "pill",
+            "Underline": "underline"
+          }
+        },
+        "Orientation": {
+          "prop": "orientation",
+          "values": {
+            "Horizontal": "horizontal",
+            "Vertical": "vertical"
+          }
+        }
+      }
+    },
+    "Tabs Item": {
+      "code": "TabItem",
+      "note": "TabItem is a collection item and takes no props of its own. Type, Size and State belong to the parent Tabs or to its selection state, which is why almost everything here is ignored rather than mapped.",
+      "props": {
+        "Label#156:216": {
+          "ignore": "TabItem's label is its `title` collection prop. It is not a typed prop the TypeScript checker can see, so there is nothing here to verify against — see TabItem's contract."
+        },
+        "Type": {
+          "ignore": "set on the parent Tabs, not per item"
+        },
+        "Size": {
+          "ignore": "set on the parent Tabs, not per item"
+        },
+        "State": {
+          "ignore": "selection is the Tabs collection's state; Disabled is disabledKeys on Tabs"
+        },
+        "Show Label#156:218": {
+          "ignore": "a tab without a label is a tab that cannot be named"
+        },
+        "Show Leading Icon#156:217": {
+          "ignore": "not yet in the code component"
+        },
+        "Leading Icon#156:220": {
+          "ignore": "not yet in the code component"
+        },
+        "Show Trailing#156:219": {
+          "ignore": "not yet in the code component"
+        },
+        "Trailing#156:221": {
+          "ignore": "not yet in the code component"
+        },
+        "Focused#189:0": {
+          "ignore": "drawn focus ring; :focus-visible in code"
+        }
+      }
+    },
+    "Table Cell": {
+      "code": "TableCell",
+      "props": {
+        "Type": {
+          "prop": "header",
+          "when": {
+            "Header": true
+          },
+          "note": "Body is the default <td>"
+        },
+        "Align": {
+          "prop": "align",
+          "values": {
+            "Leading": "leading",
+            "Trailing": "trailing"
+          }
+        },
+        "Show Divider#174:38": {
+          "prop": "showDivider"
+        },
+        "Content#174:37": {
+          "prop": "children"
+        },
+        "Show Content#174:36": {
+          "prop": "children"
+        },
+        "Density": {
+          "ignore": "density is set once on Table and reaches the cell through CSS — a per-cell prop could disagree with its own table"
+        }
+      }
+    },
+    "Table Row": {
+      "code": "TableRow",
+      "props": {
+        "State": {
+          "prop": "isSelected",
+          "when": {
+            "Selected": true,
+            "Selected-Hover": true
+          },
+          "note": "Hover is CSS"
+        },
+        "Show Selection#175:12": {
+          "prop": "selection",
+          "note": "takes the Checkbox's own props, not a boolean — a selectable row needs checked/onChange wiring"
+        },
+        "Density": {
+          "ignore": "set once on Table; see Table Cell"
+        }
+      }
+    },
+    "Avatar": {
+      "code": "Avatar",
+      "props": {
+        "Size": {
+          "prop": "size",
+          "values": {
+            "Mini": "mini",
+            "Small": "sm",
+            "Medium": "md",
+            "Large": "lg"
+          }
+        },
+        "Shape": {
+          "prop": "shape",
+          "values": {
+            "Circle": "circle",
+            "Square": "square"
+          }
+        },
+        "Type": {
+          "prop": "src",
+          "when": {
+            "Image": true
+          },
+          "note": "code picks by precedence rather than a type prop: src, then initials, then icon. Character means pass initials, Icon means pass icon."
+        },
+        "Initials#74:25": {
+          "prop": "initials"
+        },
+        "Icon#74:50": {
+          "prop": "icon"
+        }
+      }
+    },
+    "Avatar Group": {
+      "code": "AvatarGroup",
+      "props": {
+        "Size": {
+          "prop": "size",
+          "values": {
+            "Mini": "mini",
+            "Small": "sm",
+            "Medium": "md",
+            "Large": "lg"
+          }
+        },
+        "Shape": {
+          "prop": "shape",
+          "values": {
+            "Circle": "circle",
+            "Square": "square"
+          }
+        },
+        "Show Overflow#74:84": {
+          "prop": "max",
+          "note": "the +N avatar appears when children exceed max"
+        },
+        "Show Avatar 3#74:93": {
+          "prop": "children",
+          "note": "Figma needs a boolean per slot; React just renders fewer children"
+        },
+        "Show Avatar 4#74:102": {
+          "prop": "children",
+          "note": "same"
+        }
+      }
+    },
+    "Border": {
+      "code": "Divider",
+      "note": "Figma calls it Border; the code component is Divider, because it renders an <hr> and an <hr> is a thematic break rather than an edge.",
+      "props": {
+        "Style": {
+          "prop": "orientation",
+          "values": {
+            "Horizontal": "horizontal",
+            "Vertical": "vertical"
+          }
+        }
+      }
+    },
+    "Logo-Ionbase": {
+      "code": "Logo",
+      "props": {
+        "Size": {
+          "prop": "size",
+          "values": {
+            "Small": "sm",
+            "Large": "lg"
+          }
+        },
+        "Type": {
+          "prop": "wordmark",
+          "values": {
+            "Logo": "vector",
+            "Icon": "text"
+          },
+          "note": "the names invert: Figma's Logo is the serif vector wordmark, Figma's Icon is live Host Grotesk text"
+        },
+        "Property": {
+          "ignore": "the Name axis renders placeholder text in an unbound colour — leftover debug content, not a real asset. LogoMark covers the no-wordmark case."
+        }
+      }
+    },
+    "Modal": {
+      "code": "Modal",
+      "props": {
+        "Size": {
+          "prop": "size",
+          "values": {
+            "Small": "sm",
+            "Medium": "md",
+            "Large": "lg",
+            "Fullscreen": "fullscreen"
+          }
+        },
+        "Align": {
+          "prop": "align",
+          "values": {
+            "Left": "left",
+            "Center": "center"
+          }
+        },
+        "Title#792:0": {
+          "prop": "title"
+        },
+        "Description#792:5": {
+          "prop": "description"
+        },
+        "Show Description#792:10": {
+          "prop": "description"
+        },
+        "Show Close#792:15": {
+          "prop": "showClose"
+        },
+        "Show Body#792:20": {
+          "prop": "children"
+        },
+        "Show Footer#792:25": {
+          "prop": "footer"
+        },
+        "Show Media#794:24": {
+          "prop": "media"
+        },
+        "Media#794:33": {
+          "prop": "media"
+        }
+      }
+    },
+    "Popover": {
+      "code": "Popover",
+      "props": {
+        "Placement": {
+          "prop": "placement",
+          "values": {
+            "Top": "top",
+            "Bottom": "bottom",
+            "Left": "left",
+            "Right": "right"
+          }
+        },
+        "Size": {
+          "prop": "size",
+          "values": {
+            "Small": "sm",
+            "Medium": "md",
+            "Large": "lg"
+          }
+        },
+        "Title#825:0": {
+          "prop": "title"
+        },
+        "Show Header#825:26": {
+          "prop": "title"
+        },
+        "Body#825:13": {
+          "prop": "content"
+        },
+        "Show Body#825:52": {
+          "prop": "content"
+        },
+        "Show Close#825:39": {
+          "prop": "showClose"
+        },
+        "Show Footer#825:65": {
+          "prop": "footer"
+        },
+        "Show Arrow#825:78": {
+          "prop": "hideArrow",
+          "note": "inverted — Show Arrow false is hideArrow true"
+        }
+      }
+    },
+    "Tooltip": {
+      "code": "Tooltip",
+      "props": {
+        "Placement": {
+          "prop": "placement",
+          "values": {
+            "Top": "top",
+            "Bottom": "bottom",
+            "Left": "left",
+            "Right": "right"
+          }
+        },
+        "Label#801:0": {
+          "prop": "label"
+        },
+        "Title#801:5": {
+          "prop": "title"
+        },
+        "Show Title#801:10": {
+          "prop": "title"
+        }
+      }
+    },
+    "Full Card": {
+      "code": "FullCard",
+      "props": {
+        "Row Reverse": {
+          "prop": "alignment",
+          "values": {
+            "True": "left",
+            "False": "right"
+          },
+          "note": "Figma's boolean reverses the row; the code prop names which side the MEDIA sits on"
+        },
+        "Headline#592:0": {
+          "prop": "headline"
+        },
+        "Description#592:1": {
+          "prop": "description"
+        },
+        "Show Description#592:3": {
+          "prop": "description"
+        },
+        "Eyebrow#592:5": {
+          "prop": "eyebrow"
+        },
+        "Show Eyebrow#592:2": {
+          "prop": "eyebrow"
+        },
+        "Actions#592:6": {
+          "prop": "actions"
+        },
+        "Show Actions#592:4": {
+          "prop": "actions"
+        },
+        "Media#592:7": {
+          "prop": "media",
+          "note": "pass the screenshot itself — the component draws the frame"
+        }
+      }
+    },
+    "Header": {
+      "code": "Header",
+      "props": {
+        "Device": {
+          "prop": "open",
+          "when": {
+            "Mobile-Open": true,
+            "Mobile-Closed": false
+          },
+          "note": "Figma spells one four-way axis; code splits it in two. Desktop/Tablet/Mobile is a media query the browser already answers, and only Open/Closed is a prop."
+        },
+        "Center Slot#68:12": {
+          "prop": "center"
+        },
+        "End Slot#68:16": {
+          "prop": "end"
+        },
+        "End Slot#667:37": {
+          "prop": "end",
+          "note": "a duplicate slot in the Figma component"
+        },
+        "Show Center Slot#69:0": {
+          "prop": "center"
+        },
+        "Show End Slot#69:4": {
+          "prop": "end"
+        }
+      }
+    }
+  },
+  "unmapped": {
+    "Form Field": "Label, helper text and error wiring are built into Input and Select rather than a separate wrapper — the wrapper is how Figma composes them, not how React does.",
+    "Table/Cell Text": "TableCell covers Figma's Table Cell and Cell Text together; the two are never used apart in the design. Recorded in TableCell's contract.",
+    "Screen Frame": "The frame FullCard draws around its media slot. The component owns it, so there is nothing for a caller to place.",
+    "Menu Section Title": "No code counterpart yet. It is a heading inside a menu surface; nothing renders it.",
+    "Line": "An internal part of the Scroll Progress rail, not a component a caller composes.",
+    "Progress": "As Line — internal to ScrollProgress.",
+    "Progress Heading": "As Line — internal to ScrollProgress."
+  }
+}
