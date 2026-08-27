@@ -556,7 +556,8 @@
         "Focused#189:0": {
           "ignore": "drawn focus ring; :focus-visible in code"
         }
-      }
+      },
+      "example": "<TabItem key=\"billing\" title=\"Billing\">Panel content</TabItem>"
     },
     "Table Cell": {
       "code": "TableCell",

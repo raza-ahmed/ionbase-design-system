@@ -291,6 +291,27 @@ values, of which three are a media query the browser already answers.
 `figma/export-components.js`, then either map it or add it to `unmapped` with a
 reason. Both halves are enforced.
 
+### The snippets are in the Figma descriptions too
+
+`figma/apply-descriptions.js` writes the generated block into each component's
+description, fenced by markers, so Dev Mode shows the real component on **any**
+plan. All 28 carry one. Re-running replaces only the fenced block; the
+hand-written text above it — Link's is nearly 3,000 characters of real design
+reasoning — is untouched.
+
+**Use `descriptionMarkdown`, never `description`.** The plain setter HTML-escapes
+on write: `<Button x="a">'` goes in at 16 characters and comes back at 40 as
+`&lt;Button x=&quot;a&quot;&gt;&#39;`. Every write adds another layer, so a
+second pass over an already-written description produces `&amp;amp;#39;` and
+corrupts every apostrophe and angle bracket a designer typed. That is exactly
+what happened here on the first attempt, to seven components, and it was caught
+by arithmetic rather than by eye — the stored length was 3055 where the text was 3011. `descriptionMarkdown` round-trips exactly. The two are separate fields, so
+recovery meant reading the escaped `description`, decoding until stable, and
+writing the result to `descriptionMarkdown`.
+
+If you ever see `&amp;` in a Figma description, something wrote through
+`description`. The decode loop in `apply-descriptions.js` repairs it.
+
 ---
 
 ## Patterns — the tier that owns the states nothing else does

@@ -192,6 +192,7 @@ for (const [name, entry] of Object.entries(mapped)) {
       .replace(/([a-z0-9])([A-Z])/g, '$1-$2')
       .toLowerCase()}/index.html.md`,
     ...(entry.note ? { note: entry.note } : {}),
+    ...(entry.example ? { example: entry.example } : {}),
     props: entry.props ?? {},
   };
   byName[name] = record;
