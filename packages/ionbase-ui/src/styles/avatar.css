@@ -1,45 +1,104 @@
 /*
  * Avatar
  *
- * Measured from Figma `Avatar` (77:22248) and `Avatar Group`.
+ * Measured from Figma `Avatar` (74:164) and `Avatar Group` (74:279).
  *
- *   mini    24   type 12/18   icon 12   square radius/xs
- *   small   32   type 14/20   icon 16   square radius/sm
- *   medium  40   type 16/24   icon 20   square radius/md
- *   large   48   type 20/32   icon 24   square radius/md
+ *   mini    24   type 12/18 regular   icon 12   square radius/xs
+ *   small   32   type 14/20 medium    icon 16   square radius/sm
+ *   medium  40   type 16/24 medium    icon 20   square radius/md
+ *   large   48   type 20/32 medium    icon 24   square radius/md
  *
  * Circle is radius/full at every size; square steps up with the box, which is
  * concentric-corner arithmetic rather than one shared corner.
  *
- * Surface is surface/muted with a 1px border/strong at every size and type —
- * the border is what separates overlapping avatars in a group, so it is not
- * decoration and must not be dropped.
+ * Two things here were wrong against Figma until the 2026-08-27 re-export, and
+ * both were invisible because they are one token apart from something plausible:
+ *
+ *   Large used `type/h5` (20/28). The style Figma applies is Body/Large
+ *   Emphasis (20/32). Same font-size, four pixels of leading apart.
+ *
+ *   Mini used font-weight/medium. Figma's Mini is the Caption style, which is
+ *   font-weight/regular. Every other size is Emphasis and stays medium.
+ *
+ * Surface and border depend on the Type variant, which is the other correction:
+ * Character and Icon sit on surface/muted behind border/strong, but Image sits
+ * on surface/placeholder behind border/subtle — a photo needs a quieter frame
+ * than an empty box does. The border is what separates overlapping avatars in a
+ * group, so it is not decoration and must not be dropped from either.
+ *
+ * THE ROOT DOES NOT CLIP, AND THAT IS LODAD-BEARING
+ *
+ * `.ion-avatar__media` carries the surface, the border and the `overflow` that
+ * crops the photo. The root carries only geometry. They cannot be the same box:
+ * an indicator sits in a corner that is OUTSIDE a circle's clip path, so a root
+ * that clipped the image would slice the indicator in half. Figma draws it the
+ * same way — an unclipped frame around a clipped `Media` child, with the ring
+ * and the indicators as siblings of it.
  */
 .ion-avatar {
   --ion-avatar-size: var(--spacing-40);
   --ion-avatar-radius: var(--radius-md);
   --ion-avatar-font-size: var(--type-body);
   --ion-avatar-line-height: var(--type-body-line-height);
+  --ion-avatar-font-weight: var(--font-weight-medium);
   --ion-avatar-icon: var(--icon-size-md);
+  --ion-avatar-surface: var(--surface-muted);
+  --ion-avatar-border: var(--border-strong);
 
+  /* Ring and indicator geometry, indexed by size the way everything else is. */
+  --ion-avatar-ring-width: var(--border-width-thick);
+  --ion-avatar-indicator-size: var(--spacing-14);
+
+  /*
+   * 1.5px, and it cannot be a token: the border ladder is 1 / 2 / 4 and Figma
+   * puts a half-step here so the 14px indicator keeps the same visual gap the
+   * 16px one gets from 2px. Written once, as a local, rather than inline —
+   * a raw length in a `border-width` declaration is a theming bug everywhere
+   * else in this system and the lint rule is right to say so.
+   */
+  --ion-avatar-indicator-ring: 1.5px;
+
+  /*
+   * The glyph inside the top indicator: 11 / 10 / 8 / 6 against a 16 / 14 / 12
+   * / 8 dot. Not a ratio and not a rung on the icon ladder — Figma tuned these
+   * four by eye, and the smallest is below anything `--icon-size-*` carries.
+   */
+  --ion-avatar-indicator-icon: 10px;
+
+  position: relative;
   display: inline-flex;
-  align-items: center;
-  justify-content: center;
   flex-shrink: 0;
-  overflow: hidden;
   width: var(--ion-avatar-size);
   height: var(--ion-avatar-size);
-  background-color: var(--surface-muted);
-  border-style: solid;
-  border-width: var(--border-width-default);
-  border-color: var(--border-strong);
   border-radius: var(--ion-avatar-radius);
   color: var(--text-tertiary);
   font-family: var(--font-family-sans);
   font-size: var(--ion-avatar-font-size);
   line-height: var(--ion-avatar-line-height);
-  font-weight: var(--font-weight-medium);
+  font-weight: var(--ion-avatar-font-weight);
   user-select: none;
+}
+
+.ion-avatar__media {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background-color: var(--ion-avatar-surface);
+  border-style: solid;
+  border-width: var(--border-width-default);
+  border-color: var(--ion-avatar-border);
+  border-radius: inherit;
+}
+
+/* Figma's `Type=Image`: a photo gets the placeholder surface and the quiet
+ * border. Applied from `showImage`, not from `src`, so a 404 that falls back
+ * to initials also falls back to the Character variant's frame. */
+.ion-avatar--image {
+  --ion-avatar-surface: var(--surface-placeholder);
+  --ion-avatar-border: var(--border-subtle);
 }
 
 .ion-avatar--mini {
@@ -47,6 +106,11 @@
   --ion-avatar-radius: var(--radius-xs);
   --ion-avatar-font-size: var(--type-caption);
   --ion-avatar-line-height: var(--type-caption-line-height);
+  --ion-avatar-font-weight: var(--font-weight-regular);
+  --ion-avatar-ring-width: var(--border-width-default);
+  --ion-avatar-indicator-size: var(--spacing-8);
+  --ion-avatar-indicator-ring: var(--border-width-default);
+  --ion-avatar-indicator-icon: 6px;
 
   /*
    * `2xs`, not `xs` — this is 12 and must stay 12.
@@ -64,21 +128,28 @@
   --ion-avatar-font-size: var(--type-body-sm);
   --ion-avatar-line-height: var(--type-body-sm-line-height);
   --ion-avatar-icon: var(--icon-size-sm);
+  --ion-avatar-ring-width: var(--border-width-default);
+  --ion-avatar-indicator-size: var(--spacing-12);
+  --ion-avatar-indicator-ring: var(--border-width-default);
+  --ion-avatar-indicator-icon: 8px;
 }
 
 /* Large shares Medium's corner — the square ladder stops climbing at radius/md. */
 .ion-avatar--lg {
   --ion-avatar-size: var(--spacing-48);
-  --ion-avatar-font-size: var(--type-h5);
-  --ion-avatar-line-height: var(--type-h5-line-height);
+  --ion-avatar-font-size: var(--type-body-lg);
+  --ion-avatar-line-height: var(--type-body-lg-line-height);
   --ion-avatar-icon: var(--icon-size-lg);
+  --ion-avatar-indicator-size: var(--spacing-16);
+  --ion-avatar-indicator-ring: var(--border-width-thick);
+  --ion-avatar-indicator-icon: 11px;
 }
 
 .ion-avatar--circle {
   --ion-avatar-radius: var(--radius-full);
 }
 
-/* The image fills the box and is cropped by `overflow: hidden` on the parent,
+/* The image fills the box and is cropped by `overflow: hidden` on the media,
  * so it inherits the corner without repeating it. */
 .ion-avatar__image {
   width: 100%;
@@ -97,6 +168,101 @@
 .ion-avatar__icon svg {
   width: var(--ion-avatar-icon);
   height: var(--ion-avatar-icon);
+}
+
+/*
+ * Ring — Figma's `Show Ring`.
+ *
+ * Drawn INSIDE the avatar's own edge, over the media, at the same size as the
+ * box. Not an `outline` and not a `box-shadow` spread: both of those sit
+ * outside the element and would change the avatar's footprint, which breaks the
+ * group's overlap arithmetic and any layout that measured the avatar. Figma
+ * draws a same-size overlay, so this does too.
+ */
+.ion-avatar__ring {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border-style: solid;
+  border-width: var(--ion-avatar-ring-width);
+  border-color: var(--surface-primary);
+  border-radius: inherit;
+}
+
+/*
+ * Indicators — Figma's `Show Top Indicator` / `Show Bottom Indicator`, each an
+ * instance of the `Status Indicator` component (1008:1764).
+ *
+ * Both sit flush in a corner: Figma's `left` is size minus indicator at every
+ * size and shape, which is `right: 0`. The border is `ring/offset`, so the dot
+ * reads as separate from the photo underneath it rather than as part of it —
+ * that is why it is a border and not a gap.
+ */
+.ion-avatar__indicator {
+  position: absolute;
+  right: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--ion-avatar-indicator-size);
+  height: var(--ion-avatar-indicator-size);
+  border-style: solid;
+  border-width: var(--ion-avatar-indicator-ring);
+  border-color: var(--ring-offset);
+  border-radius: var(--radius-full);
+}
+
+.ion-avatar__indicator--top {
+  top: 0;
+}
+
+.ion-avatar__indicator--bottom {
+  bottom: 0;
+}
+
+.ion-avatar__indicator svg {
+  width: var(--ion-avatar-indicator-icon);
+  height: var(--ion-avatar-indicator-icon);
+}
+
+/*
+ * The six intents, spelled the same way Badge and Alert spell them. Colour and
+ * surface are declared together per intent rather than hoisted to the block:
+ * the contrast gate pairs what one rule declares, and a foreground it has to
+ * find on a different element resolves to the block's `--text-tertiary` and
+ * measures a pairing that never renders.
+ */
+.ion-avatar__indicator--neutral,
+.ion-avatar__indicator--primary,
+.ion-avatar__indicator--success,
+.ion-avatar__indicator--warning,
+.ion-avatar__indicator--error,
+.ion-avatar__indicator--information {
+  color: var(--text-on-color);
+}
+
+.ion-avatar__indicator--neutral {
+  background-color: var(--surface-inverse);
+}
+
+.ion-avatar__indicator--primary {
+  background-color: var(--surface-primary);
+}
+
+.ion-avatar__indicator--success {
+  background-color: var(--surface-success);
+}
+
+.ion-avatar__indicator--warning {
+  background-color: var(--surface-warning);
+}
+
+.ion-avatar__indicator--error {
+  background-color: var(--surface-error);
+}
+
+.ion-avatar__indicator--information {
+  background-color: var(--surface-information);
 }
 
 /*
