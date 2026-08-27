@@ -543,6 +543,35 @@ same failure mode applies one tier up.
 | `ConfidenceIndicator` | calibrated, not a fake percentage                                |
 | `AgentStop`           | always-visible cancel. Not optional, not behind a menu.          |
 
+#### 4b — the two that matter are DONE, 28 Aug 2026
+
+`AgentStop` and `ApprovalGate` ship in 0.24.0. Both pass every existing gate on
+their own terms: 154 enforced contrast pairings with zero defects, client
+boundaries verified, full intent contracts, and interaction tests that assert
+the behaviour rather than the markup — that the stop control survives its own
+press, that Escape inside a dialog does not cancel a background run, that
+neither approval button holds focus on mount.
+
+They are the first components here with **no Figma counterpart**. Measurements
+are borrowed from Button and Alert rather than invented, so the design can
+arrive later and change values instead of structure.
+
+The defining constraint: **neither enforces anything.** AgentStop reports intent;
+the caller aborts. ApprovalGate renders a decision; the caller gates execution by
+not acting until `onApprove` fires. Shipping something that _looked_ like it
+enforced a policy would be worse than shipping nothing, because teams would rely
+on a guarantee living entirely in their own call site.
+
+One test caught a bad assertion rather than a bad component:
+`expect(document.activeElement).not.toHaveTextContent('Approve')` passes
+trivially, since `document.activeElement` is `<body>` and body contains the word.
+Asserting `.not.toHaveFocus()` on the button is the real check.
+
+Still open in 4b: `StreamingText`, `AgentActivity`, `Citation` and
+`ConfidenceIndicator`. Not started, and not blocked — they are the four where
+the field has converged least, and none of them carries the compliance weight
+that made these two non-negotiable.
+
 `ApprovalGate` and `AgentStop` are the two that matter. Human-in-the-loop
 controls and a visible kill switch are treated as non-negotiable in regulated
 enterprise contexts, and the EU AI Act's August 2026 enforcement makes
@@ -620,7 +649,7 @@ Phase 2  ▓▓▓▓▓▓  DONE                             5 lint rules + sty
 Phase 3a ▓▓▓▓  DONE                                llms.txt + 35 mirrors, hosted + in-tarball
 Phase 3b ▓▓▓▓  REPLACED                            figma-map.json — Code Connect without the plan
 Phase 4a ▓▓▓▓▓  CONTRACTS DONE                     6 recipes, 7-check gate; no TSX examples yet
-Phase 4b ▓▓▓▓▓▓▓▓▓▓                               AI-feature components
+Phase 4b ▓▓▓▓  2 of 6 DONE                         AgentStop + ApprovalGate shipped
 Phase 3c ░░░░                                     MCP server — only if measured need
 ```
 

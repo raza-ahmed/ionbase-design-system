@@ -314,6 +314,49 @@ If you ever see `&amp;` in a Figma description, something wrote through
 
 ---
 
+## The agentic tier — `AgentStop` and `ApprovalGate`
+
+Two components for products where an agent acts and a person supervises. They
+are the first components in this system with **no Figma counterpart**, so their
+measurements are borrowed rather than invented: `AgentStop` takes Button's size
+ramp, radius and focus ring; `ApprovalGate` takes Alert's icon-rail structure and
+one-variable-per-colour-slot approach. When Figma draws them, those files should
+need values changed, not structure rewritten.
+
+**Neither enforces anything, and that is the most important thing about them.**
+`AgentStop` does not stop a run — it reports intent, and the caller aborts the
+request. `ApprovalGate` does not gate execution — the caller gates it by not
+acting until `onApprove` fires. A component that *looked* like it enforced a
+policy would be the worst thing this system could ship, because teams would rely
+on a guarantee that lives entirely in their own call site. `risk` on
+`ApprovalGate` changes emphasis and nothing else, for exactly that reason.
+
+Three decisions worth not re-litigating:
+
+- **AgentStop is not destructive-red.** Stopping is normal, expected and
+  repeatable. Colouring it like a delete teaches hesitation about the one
+  control that must never be hesitated over. It goes error-coloured on hover,
+  where the colour confirms rather than warns.
+- **ApprovalGate is not a Modal.** A modal steals focus and hides the page — but
+  the page is the evidence. The plan, the diff and the tool call have to stay
+  visible while deciding, and focus is never trapped: an approval a user was
+  rushed through is not oversight. Neither button is focused on mount, and
+  reject precedes approve in the DOM.
+- **`high` risk sits on warning, not error.** Error means something went wrong.
+  A high-risk approval is working correctly and asking. Reserving red for
+  failure is what keeps red meaningful when a failure happens.
+
+Both keep their place through their transition rather than unmounting, and both
+announce it through `.ion-visually-hidden` live regions — a label change alone is
+only heard if the element happens to hold focus, which it does not when the run
+was started elsewhere.
+
+`.ion-visually-hidden` is in `styles/index.css` because both needed it. Do not
+write a third copy: `display: none` and `visibility: hidden` both drop the node
+from the accessibility tree, so an announcement placed in one is never made.
+
+---
+
 ## Patterns — the tier that owns the states nothing else does
 
 `patterns/*.json` describes compositions: `DataTable`, `Form`, `PageShell`,

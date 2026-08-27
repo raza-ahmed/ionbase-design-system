@@ -1,5 +1,58 @@
 # Changelog
 
+## 0.24.0 — 2026-08-28
+
+### Added — `AgentStop` and `ApprovalGate`
+
+The first two components for products where an agent acts and a person
+supervises: an always-visible way to end a run, and a proposed action held until
+someone decides.
+
+**Neither enforces anything, and that is the most important thing about them.**
+`AgentStop` does not stop a run — it reports intent, and the caller aborts the
+request. `ApprovalGate` does not gate execution — the caller does, by not acting
+until `onApprove` fires. A component that _looked_ like it enforced a policy
+would be the worst thing to ship here, because teams would rely on a guarantee
+living entirely in their own call site. `risk` changes emphasis and nothing else,
+for the same reason.
+
+`AgentStop`
+
+- keeps its place while stopping: it relabels and disables rather than
+  vanishing, so nothing moves under the pointer while the run is still going
+- announces the transition through a live region, because a label change is only
+  heard if the button holds focus — and it usually does not
+- is deliberately not destructive-red. Stopping is normal and repeatable;
+  red teaches hesitation about the one control that must never be hesitated over
+- `stopOnEscape` is opt-in, and even then ignores Escape raised inside a dialog,
+  so closing a modal never cancels a background run
+
+`ApprovalGate`
+
+- is not a Modal. The page is the evidence — the plan, the diff, the tool call
+  stay visible while deciding, and focus is never trapped
+- focuses neither button on mount. Autofocusing approve turns a decision into an
+  Enter keypress on an unread page, which is what an audit looks for
+- puts reject before approve in the DOM, so a keyboard reaches the safe answer
+- has `approved`, `rejected` and `expired` states that replace the actions with
+  the record. `expired` exists because an approval nobody answers is the common
+  real outcome, and a gate stuck pending is indistinguishable from a broken one
+- `high` risk sits on the warning surface, **not** error. Error means something
+  went wrong; a high-risk approval is working correctly and asking
+
+Both are the first components here with no Figma counterpart, so measurements
+are borrowed from `Button` and `Alert` rather than invented — the design can
+arrive later and change values, not structure.
+
+### Added — `.ion-visually-hidden`
+
+Both live regions needed it, and a second copy of a rule this fiddly is how two
+copies quietly diverge. `display: none` and `visibility: hidden` both drop the
+node from the accessibility tree, so an announcement placed in one is never made.
+
+**Minor, not patch**: two new components and a new utility class, no existing
+behaviour changed.
+
 ## 0.23.0 — 2026-08-28
 
 ### Added — the code snippets are in the Figma file itself

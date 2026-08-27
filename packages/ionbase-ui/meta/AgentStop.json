@@ -1,0 +1,69 @@
+{
+  "status": "stable",
+  "summary": "The always-visible way to end a running agent. Not optional, and not behind a menu.",
+  "useWhen": [
+    "anything runs long enough that a person might want it to stop — a generation, a tool chain, a batch job",
+    "the run was started by the user and is still going"
+  ],
+  "useInstead": [
+    {
+      "when": "the action is instant and there is nothing to interrupt",
+      "use": "Button"
+    },
+    {
+      "when": "you are asking permission before something happens rather than ending something already happening",
+      "use": "ApprovalGate"
+    },
+    {
+      "when": "the thing to undo has already finished",
+      "use": "Toast",
+      "why": "an undo affordance belongs with the confirmation of what was done"
+    }
+  ],
+  "variants": {
+    "size": {
+      "sm": { "use": "inside a toolbar or beside an inline activity row" },
+      "md": { "use": "the default" },
+      "lg": {
+        "use": "a full-width run surface where stopping is the primary available action"
+      }
+    }
+  },
+  "a11y": {
+    "role": "button",
+    "guarantees": [
+      "the control keeps its place while stopping — it relabels and disables rather than disappearing, so the layout does not move under the pointer",
+      "the transition to stopping is announced once through a polite live region, because the label change alone is only heard if the button happens to hold focus",
+      "`stopOnEscape` ignores Escape raised inside a dialog, so closing a modal never cancels a background run"
+    ],
+    "requires": [
+      "keeping it rendered and visible for the whole run — a stop control that scrolls away or hides in an overflow menu is the failure this component exists to prevent"
+    ],
+    "notes": [
+      "It does not stop anything. It reports intent; aborting the request and settling the state is the caller's. A stop that resolves optimistically while output keeps arriving lies about the one guarantee the user is relying on."
+    ]
+  },
+  "antiPatterns": [
+    {
+      "dont": "putting the stop control in an overflow menu",
+      "why": "a user who cannot reach it is watching the agent, not supervising it"
+    },
+    {
+      "dont": "disabling it while the run is going",
+      "why": "the only correct disabled state is `isStopping` — after the request, never before"
+    },
+    {
+      "dont": "unmounting it the moment it is pressed",
+      "do": "pass `isStopping`",
+      "why": "the run is usually still going, and a control that vanishes leaves the user unsure the press registered"
+    },
+    {
+      "dont": "styling it as destructive",
+      "why": "stopping is normal and repeatable; red teaches hesitation about the one control that must never be hesitated over"
+    },
+    {
+      "dont": "`stopOnEscape` on a page with modals over the run",
+      "why": "Escape already means dismiss to every overlay in this system"
+    }
+  ]
+}

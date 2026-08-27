@@ -1,0 +1,181 @@
+/*
+ * ApprovalGate
+ *
+ * NOT DRAWN IN FIGMA. Structure is Alert's — icon rail, body, one variable per
+ * colour slot — so that when Figma draws it, this file needs values changed
+ * rather than rewriting. The action row borrows Button's ramp.
+ *
+ * RISK CHANGES EMPHASIS, NOT MEANING
+ *
+ * Three risk tiers reassign four variables, exactly the way Alert's intents do.
+ * `low` sits on the neutral surface, `medium` on information, `high` on
+ * warning — NOT on error. Error is for something that has gone wrong; a
+ * high-risk approval is working correctly, and it is asking. Reserving red for
+ * failure is what keeps red meaningful when a failure actually happens.
+ */
+.ion-approval-gate {
+  --ion-approval-surface: var(--surface-information-subtle);
+  --ion-approval-border: var(--border-information);
+  --ion-approval-icon: var(--icon-information);
+  --ion-approval-accent: var(--text-information);
+
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-12);
+  padding: var(--spacing-16);
+  background-color: var(--ion-approval-surface);
+
+  /*
+   * A thicker leading edge, not a heavier box. A decision waiting on a person
+   * has to be findable at a glance down a long transcript, and a full heavy
+   * border would compete with every Alert on the page.
+   */
+  border: var(--border-width-default) solid var(--ion-approval-border);
+  border-inline-start-width: var(--border-width-thicker);
+  border-radius: var(--radius-md);
+  color: var(--text-default);
+  font-family: var(--font-family-sans);
+  font-size: var(--type-body);
+  line-height: var(--type-body-line-height);
+}
+
+.ion-approval-gate--low {
+  --ion-approval-surface: var(--surface-muted);
+  --ion-approval-border: var(--border-default);
+  --ion-approval-icon: var(--icon-secondary);
+  --ion-approval-accent: var(--text-secondary);
+}
+
+.ion-approval-gate--high {
+  --ion-approval-surface: var(--surface-warning-subtle);
+  --ion-approval-border: var(--border-warning-strong);
+  --ion-approval-icon: var(--icon-warning);
+  --ion-approval-accent: var(--text-warning);
+}
+
+/* Resolved: the decision is a record now, not a question. Drop the tint and
+ * keep the rule, so the row stays scannable without still looking pending. */
+.ion-approval-gate--approved,
+.ion-approval-gate--rejected,
+.ion-approval-gate--expired {
+  --ion-approval-surface: var(--surface-default);
+  --ion-approval-border: var(--border-default);
+  --ion-approval-icon: var(--icon-tertiary);
+}
+
+.ion-approval-gate--approved {
+  --ion-approval-border: var(--border-success);
+  --ion-approval-icon: var(--icon-success);
+  --ion-approval-accent: var(--text-success);
+}
+
+.ion-approval-gate--rejected {
+  --ion-approval-accent: var(--text-secondary);
+}
+
+.ion-approval-gate__icon {
+  display: inline-flex;
+  flex: none;
+  width: var(--icon-size-md);
+  height: var(--icon-size-md);
+  color: var(--ion-approval-icon);
+}
+
+.ion-approval-gate__icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+.ion-approval-gate__body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-8);
+  min-width: 0;
+  flex: 1;
+}
+
+.ion-approval-gate__title {
+  margin: 0;
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-default);
+}
+
+/* Focusable only programmatically, so it takes a ring but no tab stop. */
+.ion-approval-gate__title:focus-visible {
+  outline: var(--border-width-thick) solid var(--border-focus);
+  outline-offset: 2px;
+  border-radius: var(--radius-xs);
+}
+
+.ion-approval-gate__detail {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: var(--type-body-sm);
+  line-height: var(--type-body-sm-line-height);
+}
+
+.ion-approval-gate__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-8);
+  margin-top: var(--spacing-4);
+}
+
+.ion-approval-gate__action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--spacing-32);
+  padding: var(--spacing-4) var(--spacing-12);
+  border: var(--border-width-default) solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  background-color: var(--surface-default);
+  color: var(--text-default);
+  font-family: var(--font-family-sans);
+  font-size: var(--type-body-sm);
+  line-height: var(--type-body-sm-line-height);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition:
+    background-color var(--ion-duration-base) var(--ion-ease-out),
+    border-color var(--ion-duration-base) var(--ion-ease-out);
+}
+
+.ion-approval-gate__action:focus-visible {
+  outline: var(--border-width-thick) solid var(--border-focus);
+  outline-offset: 2px;
+}
+
+/* Before :hover so specificity reads non-decreasing. */
+.ion-approval-gate__action:disabled {
+  cursor: default;
+  background-color: var(--surface-disabled);
+  border-color: var(--border-disabled);
+  color: var(--text-disabled);
+}
+
+.ion-approval-gate__action:hover:not(:disabled) {
+  background-color: var(--surface-hover);
+}
+
+/*
+ * Approve is the only filled button, and it is filled in brand rather than
+ * success. Success would state an outcome before there is one.
+ */
+.ion-approval-gate__action--approve {
+  background-color: var(--surface-primary);
+  border-color: var(--surface-primary);
+  color: var(--text-on-color);
+}
+
+.ion-approval-gate__action--approve:hover:not(:disabled) {
+  background-color: var(--surface-primary-hover);
+  border-color: var(--surface-primary-hover);
+}
+
+.ion-approval-gate__resolution {
+  margin: 0;
+  font-weight: var(--font-weight-medium);
+  color: var(--ion-approval-accent);
+}

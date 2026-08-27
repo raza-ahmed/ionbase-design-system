@@ -53,6 +53,36 @@
 @import url('./full-card.css');
 
 /*
+ * The agentic tier. No Figma counterpart yet, so these borrow their
+ * measurements from Button and Alert rather than inventing any — see the
+ * header of each file.
+ */
+@import url('./agent-stop.css');
+@import url('./approval-gate.css');
+
+/*
+ * Visually hidden, but not hidden from assistive tech.
+ *
+ * Written once here rather than per component: two components already needed
+ * it for their live regions, and a second copy of a rule this fiddly is how the
+ * two quietly diverge. `display: none` and `visibility: hidden` both remove the
+ * node from the accessibility tree, so an announcement placed in one would
+ * never be made — the clip-path is what keeps it readable while occupying no
+ * space. No `margin: -1px`: that belongs to the older `clip: rect()` variant
+ * and is not needed here, which is convenient, because it is also not a token.
+ */
+.ion-visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+/*
  * Every IonBase element is border-box.
  *
  * Not cosmetic: `<button>` inherits border-box from the UA stylesheet but

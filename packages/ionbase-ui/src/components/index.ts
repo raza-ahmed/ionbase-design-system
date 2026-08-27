@@ -92,3 +92,11 @@ export type {
   FullCardAlignment,
   FullCardHeadingLevel,
 } from './FullCard.js';
+export { AgentStop } from './AgentStop.js';
+export type { AgentStopProps, AgentStopSize } from './AgentStop.js';
+export { ApprovalGate } from './ApprovalGate.js';
+export type {
+  ApprovalGateProps,
+  ApprovalGateRisk,
+  ApprovalGateStatus,
+} from './ApprovalGate.js';

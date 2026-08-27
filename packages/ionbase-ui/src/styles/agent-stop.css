@@ -1,0 +1,109 @@
+/*
+ * AgentStop
+ *
+ * NOT DRAWN IN FIGMA. This component has no Figma counterpart yet, so the
+ * measurements are borrowed rather than invented: the size ramp, radius, focus
+ * ring and icon sizing are Button's, read from the same tokens. When Figma
+ * draws it, this file should need values changed, not structure.
+ *
+ * DELIBERATELY NOT `surface/error`. Stopping a run is normal and expected, and
+ * you can start it again. Colouring it like a delete teaches hesitation about
+ * the one control that must never be hesitated over. It reads as a firm
+ * neutral: strong border, plain surface, error colour only on hover, where it
+ * confirms rather than warns.
+ */
+.ion-agent-stop {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-8);
+  min-height: var(--spacing-40);
+  padding: var(--spacing-8) var(--spacing-16);
+  border: var(--border-width-default) solid var(--border-strong);
+  border-radius: var(--radius-md);
+  background-color: var(--surface-default);
+  color: var(--text-default);
+  font-family: var(--font-family-sans);
+  font-size: var(--type-body);
+  line-height: var(--type-body-line-height);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition:
+    background-color var(--ion-duration-base) var(--ion-ease-out),
+    border-color var(--ion-duration-base) var(--ion-ease-out),
+    color var(--ion-duration-base) var(--ion-ease-out);
+}
+
+.ion-agent-stop:focus-visible {
+  outline: var(--border-width-thick) solid var(--border-focus);
+  outline-offset: 2px;
+}
+
+/*
+ * Disabled ONLY while the stop is in flight, never as a resting state. A
+ * greyed-out stop button on a running agent is the failure this component
+ * exists to prevent, so the styling deliberately does not read as
+ * "unavailable" — it reads as "already asked".
+ *
+ * Declared before :hover so specificity reads non-decreasing; the :not(:disabled)
+ * on the hover rules is what keeps them from fighting.
+ */
+.ion-agent-stop:disabled {
+  cursor: default;
+  background-color: var(--surface-muted);
+  border-color: var(--border-default);
+  color: var(--text-secondary);
+}
+
+.ion-agent-stop:hover:not(:disabled) {
+  background-color: var(--surface-error-subtle);
+  border-color: var(--border-error);
+  color: var(--text-error);
+}
+
+.ion-agent-stop:active:not(:disabled) {
+  background-color: var(--surface-error-subtle-hover);
+}
+
+.ion-agent-stop__glyph {
+  display: inline-flex;
+  flex: none;
+  width: var(--icon-size-sm);
+  height: var(--icon-size-sm);
+}
+
+.ion-agent-stop__glyph svg {
+  width: 100%;
+  height: 100%;
+}
+
+/* The square shrinks while stopping — the one motion cue that the press
+ * landed, on a control whose text also changed. */
+.ion-agent-stop[data-stopping] .ion-agent-stop__glyph svg {
+  transform: scale(0.7);
+  transition: transform var(--ion-duration-base) var(--ion-ease-out);
+}
+
+.ion-agent-stop--sm {
+  min-height: var(--spacing-32);
+  padding: var(--spacing-4) var(--spacing-12);
+  font-size: var(--type-body-sm);
+  line-height: var(--type-body-sm-line-height);
+}
+
+.ion-agent-stop--sm .ion-agent-stop__glyph {
+  width: var(--icon-size-xs);
+  height: var(--icon-size-xs);
+}
+
+.ion-agent-stop--lg {
+  min-height: var(--spacing-48);
+  padding: var(--spacing-12) var(--spacing-20);
+  font-size: var(--type-body-lg);
+  line-height: var(--type-body-lg-line-height);
+}
+
+.ion-agent-stop--lg .ion-agent-stop__glyph {
+  width: var(--icon-size-md);
+  height: var(--icon-size-md);
+}

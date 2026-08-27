@@ -1,0 +1,103 @@
+{
+  "status": "stable",
+  "summary": "A proposed action held until a person approves, rejects or amends it. It renders the decision; it does not enforce it.",
+  "useWhen": [
+    "an agent proposes something with consequences — spending, sending, deleting, deploying, changing permissions",
+    "a regulated or audited process needs demonstrable human oversight at a specific point",
+    "the proposal is worth showing in full, in context, before it runs"
+  ],
+  "useInstead": [
+    {
+      "when": "the action is already happening and needs stopping",
+      "use": "AgentStop"
+    },
+    {
+      "when": "a person initiated the action themselves and only needs to confirm it",
+      "use": "Modal",
+      "why": "confirming your own request is a dialog; reviewing something proposed for you is a decision"
+    },
+    {
+      "when": "you are reporting what happened rather than asking",
+      "use": "Alert"
+    }
+  ],
+  "variants": {
+    "risk": {
+      "low": {
+        "use": "reversible and cheap — a draft, a local edit. Neutral surface"
+      },
+      "medium": { "use": "the default. Real but recoverable consequences" },
+      "high": {
+        "use": "spending, sending externally, deleting, granting access. Warning surface, deliberately not error"
+      }
+    },
+    "status": {
+      "pending": { "use": "the default, and the only state with actions" },
+      "approved": {
+        "use": "resolved — the actions are replaced by the record"
+      },
+      "rejected": { "use": "resolved, declined" },
+      "expired": {
+        "use": "nobody answered. The common real outcome, and the reason a gate cannot sit pending for ever"
+      }
+    }
+  },
+  "slots": {
+    "title": {
+      "accepts": "text",
+      "note": "required, and the region's accessible name. Name the action and its object — \"Delete 14 projects\", never \"Confirm action\""
+    },
+    "children": {
+      "accepts": "any",
+      "note": "the evidence: the plan, the diff, the tool call. This is what the person is deciding about"
+    },
+    "resolution": {
+      "accepts": "text",
+      "note": "shown in place of the actions once resolved; defaults to the status"
+    }
+  },
+  "a11y": {
+    "role": "region, named by its title",
+    "guarantees": [
+      "neither button is focused on mount — autofocusing approve turns a decision into an Enter keypress on an unread page",
+      "the title is programmatically focusable, so the caller can move focus to the question rather than to an answer",
+      "reject precedes approve in the DOM, so a keyboard reaches the safe answer first",
+      "resolution is announced once through a polite live region",
+      "focus is never trapped: an approval a user was rushed through is not oversight"
+    ],
+    "requires": [
+      "not acting until `onApprove` fires — this component gates nothing on its own",
+      "a `title` that names the action and its object"
+    ],
+    "notes": [
+      "`risk` changes emphasis and nothing else. It does not add confirmation, does not disable anything, and must never be read as a policy the component enforces."
+    ]
+  },
+  "antiPatterns": [
+    {
+      "dont": "treating the gate as the enforcement point",
+      "why": "it renders a decision. If your code acts before `onApprove`, there is no gate — only a picture of one"
+    },
+    {
+      "dont": "putting it in a Modal",
+      "why": "the page is the evidence; hiding it to ask about it removes what the decision needs"
+    },
+    {
+      "dont": "autofocusing the approve button",
+      "why": "Enter on an unread page is not oversight, and it is exactly what an audit will look for"
+    },
+    {
+      "dont": "an approve-only gate with no reject",
+      "why": "a decision with one answer is a notification wearing a button"
+    },
+    {
+      "dont": "`onEdit` when the proposal cannot actually be amended",
+      "why": "an edit button that discards the edit is worse than no edit button"
+    },
+    {
+      "dont": "leaving gates pending indefinitely",
+      "do": "the `expired` status",
+      "why": "a gate nobody answered is indistinguishable from one that is broken"
+    }
+  ]
+}
