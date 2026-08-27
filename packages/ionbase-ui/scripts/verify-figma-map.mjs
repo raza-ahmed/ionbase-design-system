@@ -50,6 +50,7 @@ const err = (c, m) => errors.push(`${c}: ${m}`);
 const figmaNames = Object.keys(figma.components);
 const mapped = map.components ?? {};
 const unmapped = map.unmapped ?? {};
+const codeUnmapped = map.codeUnmapped ?? {};
 
 /* 1. Every Figma component is either mapped or explicitly unmapped WITH A
  * REASON. Silence is the failure mode: a component nobody mapped and nobody
@@ -169,6 +170,54 @@ for (const [name, entry] of Object.entries(mapped)) {
       err(name, `maps "${propName}", which this Figma component does not have`);
 }
 
+/* ------------------------------------------------------ the other direction
+ *
+ * Checks 1-9 all start from Figma. A component that exists in code and nowhere
+ * in Figma is invisible to every one of them: it is not in the export, so
+ * nothing asks about it, and the build passes. That is the failure this half
+ * exists to break — the same silence, read the other way round.
+ *
+ * It matters most for components drawn LATER. When a designer adds a frame for
+ * one of these, check 11 fires the moment it is mapped and the stale
+ * "not yet drawn" line has to go, so the two sides cannot quietly disagree
+ * about what has been done.
+ */
+
+const codeNames = Object.keys(code.components);
+const codeTargets = new Set(Object.values(mapped).map((e) => e.code));
+
+/* 10. Every exported component is either mapped from Figma or explicitly
+ * listed as having no Figma counterpart, with a reason. */
+for (const name of codeNames) {
+  if (codeTargets.has(name)) continue;
+  const reason = codeUnmapped[name];
+  if (reason === undefined)
+    err(
+      name,
+      'is exported but has no Figma component and is not listed in "codeUnmapped"',
+    );
+  else if (!String(reason).trim())
+    err(name, 'listed in "codeUnmapped" with no reason');
+}
+
+/* 11. ...and the list stays honest in both directions: nothing claims to be
+ * undrawn while a mapping points at it, and nothing lists a component that
+ * ionbase-ui does not export. */
+for (const [name, reason] of Object.entries(codeUnmapped)) {
+  if (codeTargets.has(name)) {
+    const from = Object.entries(mapped)
+      .filter(([, e]) => e.code === name)
+      .map(([f]) => f)
+      .join(', ');
+    err(
+      name,
+      `listed in "codeUnmapped" ("${reason}") but Figma's ${from} maps to it`,
+    );
+  }
+  if (!codeNames.includes(name))
+    err(name, 'listed in "codeUnmapped" but ionbase-ui does not export it');
+}
+
 if (errors.length) {
   for (const e of errors) console.error(`  ERROR ${e}`);
   console.error(`\nFigma map: ${errors.length} errors`);
@@ -213,6 +262,7 @@ const out = {
   byNodeId: byNode,
   byFigmaName: byName,
   unmapped,
+  codeUnmapped,
 };
 mkdirSync(join(PKG, 'dist'), { recursive: true });
 writeFileSync(
@@ -226,6 +276,7 @@ const propCount = Object.values(mapped).reduce(
 );
 console.log(
   `Figma map: ${Object.keys(mapped).length} components mapped, ` +
-    `${Object.keys(unmapped).length} explicitly unmapped, ` +
+    `${Object.keys(unmapped).length} Figma components explicitly unmapped, ` +
+    `${Object.keys(codeUnmapped).length} code components with no Figma counterpart, ` +
     `${propCount} properties checked against both sides — 0 errors`,
 );

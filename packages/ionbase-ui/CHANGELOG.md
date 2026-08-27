@@ -1,5 +1,46 @@
 # Changelog
 
+## 0.26.0 — 2026-08-28
+
+### Fixed — the Figma gate only ran in one direction
+
+`verify-figma-map.mjs` had nine checks and every one of them started from the
+Figma export: is this Figma component mapped, is this Figma property named, is
+this variant option exhaustive. A component that exists in code and nowhere in
+Figma is invisible to all nine — it is not in the export, so nothing asks about
+it, and the build passes. Seventeen of the forty-four were in exactly that
+position and nothing in the repo said so.
+
+Two checks close it:
+
+- **10.** Every exported component is either the target of a mapping or listed
+  in a new `codeUnmapped` block **with a reason**.
+- **11.** That list stays honest in both directions: a component that claims to
+  be undrawn while a Figma mapping points at it fails, and so does one that
+  names a component `ionbase-ui` does not export.
+
+Check 11 is the one that earns its keep later. Nine of the seventeen are the
+agentic tier — `AgentStop`, `ApprovalGate`, `StreamingText`, `AgentActivity`,
+`AgentActivityStep`, `Citation`, `CitationList`, `CitationListItem`,
+`ConfidenceIndicator` — all recorded as "not yet drawn in Figma". The moment one
+is drawn and mapped, the stale line fails the build. The list cannot rot into
+fiction, which is the failure mode a hand-kept to-do list in a document has.
+
+The other eight are permanent and say why: `Table`, `TableHead` and `TableBody`
+are the caller assembling rows Figma draws individually; `RadioGroup` owns a
+selected value a static frame cannot express; `ToastProvider` is placement,
+queueing and a live region, with nothing to draw; `Icon` wraps vector assets
+Figma has no component for; `LogoMark` is a Type axis on `Logo-Ionbase`;
+`ScrollProgress` owns the three parts Figma draws — `Line`, `Progress`,
+`Progress Heading`.
+
+`figma-map.json` now carries `codeUnmapped` alongside `unmapped`, so a consumer
+can tell "no Figma counterpart, and here is why" apart from "not looked at".
+
+All four failure modes were tested by breaking them: a dropped entry, a blank
+reason, a stale entry Figma maps, and an entry naming a component that is not
+exported. A gate that cannot fail is worse than no gate.
+
 ## 0.25.0 — 2026-08-28
 
 ### Added — the agentic tier is complete: 44 components

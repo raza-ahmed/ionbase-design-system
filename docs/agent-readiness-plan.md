@@ -430,8 +430,8 @@ tooling. So the mapping was rebuilt in the repo:
 ```
 figma/export-components.js    paste into use_figma, exactly like the token exports
 figma/components.json         35 Figma components, their variant axes and slots
-figma/mapping.json            28 mapped, 7 explicitly unmapped with reasons
-scripts/verify-figma-map.mjs  9 checks against BOTH sides
+figma/mapping.json            28 mapped, 7 Figma + 17 code components unmapped with reasons
+scripts/verify-figma-map.mjs  11 checks against BOTH sides
 dist/figma-map.json           keyed by node id AND by Figma name
 ```
 
@@ -454,6 +454,17 @@ surface — deliberately not done yet, because it writes to the design file.
 
 156 Figma properties are checked. Coverage is complete by construction: a Figma
 component that is neither mapped nor explicitly unmapped fails the build.
+
+**Closed 28 Aug 2026: the gate ran in one direction only.** Every one of the
+first nine checks starts from the Figma export, so a component that exists in
+code and nowhere in Figma was invisible to all of them — seventeen of the
+forty-four, and nothing said so. Checks 10 and 11 add the reverse: an exported
+component must be mapped or listed in `codeUnmapped` with a reason, and that list
+must stay honest — naming a component that is mapped, or one that is not
+exported, fails. Eight of the seventeen are permanent (code-side composition:
+`Table`, `TableHead`, `TableBody`, `RadioGroup`, `ToastProvider`, `Icon`,
+`LogoMark`, `ScrollProgress`); nine are the agentic tier, undrawn. When those are
+drawn, the build is what notices.
 
 Add `.figma.ts` files mapping each Figma component to its
 React counterpart. The Figma pipeline and MCP bridge already exist; this is the

@@ -15,7 +15,13 @@
     "onto a prop that was renamed last week.",
     "",
     "Output: dist/figma-map.json, keyed by Figma node id AND by Figma component",
-    "name, so an agent holding either can resolve the real component."
+    "name, so an agent holding either can resolve the real component.",
+    "",
+    "BOTH DIRECTIONS ARE CHECKED. \"unmapped\" answers \"this Figma component has",
+    "no React counterpart, and here is why\". \"codeUnmapped\" answers the reverse:",
+    "this React component has nothing in Figma. Without it, a component that is",
+    "drawn later would be silently missing from Dev Mode forever — the same",
+    "silence the Figma-side gate exists to break."
   ],
   "components": {
     "Button": {
@@ -901,5 +907,24 @@
     "Line": "An internal part of the Scroll Progress rail, not a component a caller composes.",
     "Progress": "As Line — internal to ScrollProgress.",
     "Progress Heading": "As Line — internal to ScrollProgress."
+  },
+  "codeUnmapped": {
+    "Icon": "Figma has no Icon component; icons are vector assets dropped into slots. Icon is the React wrapper that gives any of them a size rung and an accessible label, so there is nothing on the Figma side to point at.",
+    "LogoMark": "Logo-Ionbase maps to Logo. Figma spells the no-wordmark case as that component's Type axis rather than a separate component; LogoMark is how code spells the same thing.",
+    "RadioGroup": "Figma draws Radio only. The group is the thing that owns the selected value, which a static frame cannot express — Figma's Radio State axis is ignored for exactly this reason.",
+    "ScrollProgress": "Drawn in Figma as its three parts — Line, Progress, Progress Heading — all of which the component owns internally. There is no whole-component frame to map.",
+    "Table": "Figma draws Table Row and Table Cell; the table itself is the caller assembling them. Density, the one property Table owns, is mapped on Table Cell.",
+    "TableHead": "As Table — a code-side grouping element. Figma expresses a header row as a Table Row variant, not a separate component.",
+    "TableBody": "As TableHead.",
+    "ToastProvider": "Figma draws Toast, which is mapped. The provider is placement, queueing and the live region — runtime behaviour with nothing to draw.",
+    "AgentStop": "Agentic tier. Not yet drawn in Figma.",
+    "ApprovalGate": "Agentic tier. Not yet drawn in Figma.",
+    "StreamingText": "Agentic tier. Not yet drawn in Figma.",
+    "AgentActivity": "Agentic tier. Not yet drawn in Figma.",
+    "AgentActivityStep": "Agentic tier. Not yet drawn in Figma.",
+    "Citation": "Agentic tier. Not yet drawn in Figma.",
+    "CitationList": "Agentic tier. Not yet drawn in Figma.",
+    "CitationListItem": "Agentic tier. Not yet drawn in Figma.",
+    "ConfidenceIndicator": "Agentic tier. Not yet drawn in Figma."
   }
 }

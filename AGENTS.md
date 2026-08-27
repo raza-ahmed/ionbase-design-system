@@ -272,7 +272,7 @@ on one side and the TypeScript API on the other. It caught two of its own
 author's mistakes on the first run: `Select.children` and `TabItem.title`, both
 props that do not exist.
 
-Nine checks, all broken on purpose. The two that matter most:
+Eleven checks, all broken on purpose. The three that matter most:
 
 - **Every Figma property is mapped or ignored with a reason.** A new Figma
   property appears in the export, nothing names it, and the build stops. Silence
@@ -281,6 +281,12 @@ Nine checks, all broken on purpose. The two that matter most:
 - **A value map must be exhaustive.** An unmapped variant option silently
   produces `undefined`. That is Code Connect's own documented pitfall, and it is
   invisible to the agent consuming the result.
+- **Every exported component is mapped or listed in `codeUnmapped` with a
+  reason.** Checks 1–9 all start from Figma, so a component that exists in code
+  and nowhere in Figma is invisible to every one of them — it is not in the
+  export, so nothing asks about it. `codeUnmapped` is the same question read
+  backwards, and it is what makes a component drawn later impossible to forget:
+  the moment someone maps it, the stale "not yet drawn" line fails the build.
 
 A partial mapping is allowed and often correct — Figma's one `State` axis splits
 across `isDisabled`, `:hover` and `data-pressed` — but it must carry a `note`
@@ -290,6 +296,14 @@ values, of which three are a media query the browser already answers.
 **Adding a Figma component means re-exporting and mapping it.** Re-export with
 `figma/export-components.js`, then either map it or add it to `unmapped` with a
 reason. Both halves are enforced.
+
+**Adding a React component means answering the Figma question too.** Map it, or
+put it in `codeUnmapped` with a reason. Seventeen sit there now: eight are
+permanent — `Table`, `TableHead`, `TableBody`, `RadioGroup`, `ToastProvider`,
+`Icon`, `LogoMark`, `ScrollProgress` are code-side composition or runtime
+behaviour, with nothing in Figma to point at — and nine are the agentic tier,
+simply not drawn yet. That second group is a to-do list with a build behind it,
+not a note in a document.
 
 ### The snippets are in the Figma descriptions too
 
