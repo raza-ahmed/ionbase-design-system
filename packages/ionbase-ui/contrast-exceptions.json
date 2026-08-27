@@ -3,7 +3,7 @@
     "Accepted results for scripts/verify-contrast.mjs.",
     "",
     "Two kinds, and the distinction is the point. `wcag-exempt` means the",
-    "success criterion does not apply \u2014 the pairing is correct and will never",
+    "success criterion does not apply — the pairing is correct and will never",
     "need fixing. `defect` means it genuinely fails and is not fixed yet; the",
     "gate keeps reporting those in its summary so they cannot be forgotten,",
     "and they are copied into every affected component's contract as",
@@ -18,7 +18,7 @@
     "",
     "The dark theme has not been finalised in Figma yet. Measuring a theme that is",
     "still being designed produces findings that are true of today's values and",
-    "meaningless as decisions \u2014 and worse, they were being shipped: all three",
+    "meaningless as decisions — and worse, they were being shipped: all three",
     "outstanding defects were Dark, they were written into Button and Alert's",
     "a11y.knownIssues on npm, and ionbase-ui/eslint-plugin was telling consumers",
     "not to use `variant=\"primary-soft\"` on the strength of them. A light-only app",
@@ -29,7 +29,7 @@
     "not enter any component contract, and is not linted.",
     "",
     "Remove 'Dark' from this list once the dark theme is settled in Figma. Every",
-    "deferred result becomes a real finding again the moment you do \u2014 and on",
+    "deferred result becomes a real finding again the moment you do — and on",
     "today's values that is 3 defects, listed under deferred below."
   ],
   "accepted": [
@@ -41,6 +41,42 @@
       "ratio": 4.31,
       "reason": "WCAG 2.2 SC 1.4.3 exempts text that is part of an inactive user interface component: it has no contrast requirement. Disabled controls are required to look unavailable, and raising this would work against that.",
       "affects": ["Button", "Input", "Select"]
+    },
+    {
+      "fg": "--text-secondary",
+      "bg": "--icon-warning",
+      "mode": "Light",
+      "kind": "wcag-exempt",
+      "ratio": 1.7,
+      "reason": "Not a text pairing. `.ion-confidence__bar--on` is an empty, aria-hidden <span> — the gate pairs the inherited text colour against its background because it models every element as potentially holding text. There is no text here and SC 1.4.3 does not apply. What DOES apply is SC 1.4.11, and it was measured by hand: the filled bar reads 5.32:1 against the unfilled one, and the unfilled bar's outline reads 7.09:1 against the page. Both clear 3:1.",
+      "affects": ["ConfidenceIndicator"]
+    },
+    {
+      "fg": "--text-secondary",
+      "bg": "--icon-information",
+      "mode": "Light",
+      "kind": "wcag-exempt",
+      "ratio": 1.36,
+      "reason": "As above — an empty bar, not text. Filled vs unfilled measures 6.65:1, over the 3:1 SC 1.4.11 asks of a non-text indicator.",
+      "affects": ["ConfidenceIndicator"]
+    },
+    {
+      "fg": "--text-secondary",
+      "bg": "--icon-success",
+      "mode": "Light",
+      "kind": "wcag-exempt",
+      "ratio": 1.94,
+      "reason": "As above — an empty bar, not text. Filled vs unfilled measures 4.67:1, over 3:1.",
+      "affects": ["ConfidenceIndicator"]
+    },
+    {
+      "fg": "--text-default",
+      "bg": "--text-tertiary",
+      "mode": "Light",
+      "kind": "wcag-exempt",
+      "ratio": 2.33,
+      "reason": "Not a text pairing. `.ion-streaming-text__cursor` is an empty, aria-hidden <span> drawn as a block — deliberately not a text character, since some screen readers read a literal cursor glyph aloud. The gate pairs the paragraph's inherited colour against the cursor's background. Measured properly, the cursor is 7.09:1 against the page.",
+      "affects": ["StreamingText"]
     }
   ],
   "deferred": [
@@ -50,7 +86,7 @@
       "mode": "Dark",
       "kind": "wcag-exempt",
       "ratio": 3.12,
-      "reason": "Same exemption as Light \u2014 SC 1.4.3 incidental text, inactive component.",
+      "reason": "Same exemption as Light — SC 1.4.3 incidental text, inactive component.",
       "affects": ["Button", "Input", "Select"]
     },
     {
@@ -62,7 +98,7 @@
       "reason": "Long-recorded. Fix is the same shape as the success green on 2026-08-18: move the PURPLE PRIMITIVES, not the role binding. Re-pointing surface/information at information/700 would make the base identical to its own hover.",
       "affects": ["Alert"],
       "surfacedBy": "Alert with emphasis=solid intent=information",
-      "note": "AGENTS.md described this role as 'not yet used'. That was wrong, and this gate is what proved it \u2014 Alert ships it today.",
+      "note": "AGENTS.md described this role as 'not yet used'. That was wrong, and this gate is what proved it — Alert ships it today.",
       "appliesTo": {
         "component": "Alert",
         "props": {
@@ -77,7 +113,7 @@
       "mode": "Dark",
       "kind": "defect",
       "ratio": 4.25,
-      "reason": "Found by this gate on 2026-08-18, not previously known. Button primary-soft on hover in dark mode. Marginal \u2014 4.25 against 4.5 \u2014 but it is an interactive state, so it is the state a user is most likely to be reading when they act.",
+      "reason": "Found by this gate on 2026-08-18, not previously known. Button primary-soft on hover in dark mode. Marginal — 4.25 against 4.5 — but it is an interactive state, so it is the state a user is most likely to be reading when they act.",
       "affects": ["Button"],
       "surfacedBy": "Button variant=primary-soft, hover",
       "appliesTo": {
@@ -93,7 +129,7 @@
       "mode": "Dark",
       "kind": "defect",
       "ratio": 4.25,
-      "reason": "Same pair of values as the hover case above \u2014 surface/primary-tint and surface/primary-subtle/hover both resolve to #0e2d8b in Dark. One fix addresses both.",
+      "reason": "Same pair of values as the hover case above — surface/primary-tint and surface/primary-subtle/hover both resolve to #0e2d8b in Dark. One fix addresses both.",
       "affects": ["Button"],
       "surfacedBy": "Button variant=primary-soft, pressed",
       "appliesTo": {

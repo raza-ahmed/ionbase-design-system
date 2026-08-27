@@ -1,0 +1,49 @@
+{
+  "status": "stable",
+  "summary": "The inline source marker. The visible number is for the eye; the accessible name is the sentence.",
+  "useWhen": [
+    "a claim in generated text is drawn from a specific source the reader can check",
+    "attribution has to survive being read aloud, on touch, and in a links list"
+  ],
+  "useInstead": [
+    {
+      "when": "the source needs a full row with a passage",
+      "use": "CitationListItem"
+    },
+    {
+      "when": "it is an ordinary link in prose",
+      "use": "Link"
+    },
+    {
+      "when": "you were about to put the source in a hover-only hint",
+      "use": "Popover",
+      "why": "a tooltip cannot be reached on touch and closes on the way to it"
+    }
+  ],
+  "a11y": {
+    "role": "link when `href` is set, note otherwise",
+    "guarantees": [
+      "the accessible name is \"Source <index>: <source>\", never the bare number — a superscript 1 announces as \"link, 1\", which tells a screen-reader user nothing about whether to follow it",
+      "without `href` it renders a marker rather than a dead anchor, so an unfollowable link never enters the page's link list"
+    ],
+    "requires": [
+      "`source` naming what is being cited",
+      "an `index` matching the footer row, if there is one"
+    ]
+  },
+  "antiPatterns": [
+    {
+      "dont": "a bare superscript number with no accessible name",
+      "why": "\"link, 1\" is not attribution"
+    },
+    {
+      "dont": "an empty `href` for a source with no address",
+      "do": "omit `href`",
+      "why": "a dead anchor is announced as a link and goes nowhere"
+    },
+    {
+      "dont": "putting the source only in a tooltip",
+      "why": "undiscoverable on touch, and gone before it can be read"
+    }
+  ]
+}

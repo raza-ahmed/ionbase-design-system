@@ -1,0 +1,46 @@
+{
+  "status": "stable",
+  "summary": "One step in an activity log: what happened, in the user's language, with a status carried by shape and text.",
+  "useWhen": ["a child of AgentActivity — it is not usable elsewhere"],
+  "useInstead": [
+    { "when": "it is a row in a dropdown", "use": "MenuItem" },
+    { "when": "it is a data row", "use": "TableRow" }
+  ],
+  "variants": {
+    "status": {
+      "pending": { "use": "the default — queued, not started" },
+      "active": { "use": "happening now. Only one step should carry it" },
+      "done": { "use": "finished successfully" },
+      "failed": { "use": "did not finish. Say why in `detail`" },
+      "skipped": {
+        "use": "deliberately not run — a branch not taken, a cached result"
+      }
+    }
+  },
+  "slots": {
+    "children": {
+      "accepts": "text",
+      "note": "the step in plain language"
+    },
+    "detail": {
+      "accepts": "text",
+      "note": "the result, a count, a tool name — whatever makes the step checkable"
+    }
+  },
+  "a11y": {
+    "guarantees": [
+      "the status name is rendered as visually hidden text, so it is never carried by the glyph's colour alone",
+      "each status has a differently shaped glyph, which survives greyscale and forced-colours mode"
+    ]
+  },
+  "antiPatterns": [
+    {
+      "dont": "`failed` with no `detail`",
+      "why": "a failure the reader cannot diagnose is just a red mark"
+    },
+    {
+      "dont": "using it outside AgentActivity",
+      "why": "it renders an <li>, which is only valid inside a list"
+    }
+  ]
+}

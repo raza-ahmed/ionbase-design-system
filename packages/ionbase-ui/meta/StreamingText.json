@@ -1,0 +1,47 @@
+{
+  "status": "stable",
+  "summary": "Model output arriving a token at a time, in a container that does not move. Deliberately not a live region.",
+  "useWhen": [
+    "rendering a response that streams in rather than arriving whole",
+    "the reader should be able to start reading before generation finishes"
+  ],
+  "useInstead": [
+    {
+      "when": "the text is already complete",
+      "use": "Alert",
+      "why": "nothing about this component helps once there is nothing left to arrive"
+    },
+    {
+      "when": "you are showing progress through steps rather than producing text",
+      "use": "AgentActivity"
+    }
+  ],
+  "a11y": {
+    "role": "region when `label` is set, none otherwise",
+    "guarantees": [
+      "`aria-live=\"off\"`, deliberately — a polite live region re-announces the whole answer on every token, which makes a streaming response unusable with a screen reader",
+      "`aria-busy` while streaming, so assistive tech knows the region is unsettled",
+      "the text stays ordinary readable content throughout, so a screen-reader user can read ahead exactly as a sighted user does",
+      "the cursor is `aria-hidden`, is a styled box rather than a text character, and stops blinking under `prefers-reduced-motion` (WCAG 2.3.1)"
+    ],
+    "requires": [
+      "announcing completion yourself, with your own `role=\"status\"`, if the surface wants it — a chat with ten turns on screen does not want ten announcements",
+      "`label` when the region needs a name of its own"
+    ]
+  },
+  "antiPatterns": [
+    {
+      "dont": "wrapping it in `aria-live=\"polite\"`",
+      "why": "every token queues an announcement; the user hears the answer stuttered dozens of times and cannot get ahead of it"
+    },
+    {
+      "dont": "letting the container grow token by token with no reserved height",
+      "do": "`minLines`",
+      "why": "the content below climbs the screen while someone is reading it, which is worse under magnification than the wait"
+    },
+    {
+      "dont": "a text-character cursor like ▌",
+      "why": "some screen readers read it aloud even inside an aria-hidden span"
+    }
+  ]
+}

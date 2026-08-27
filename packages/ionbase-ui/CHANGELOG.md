@@ -1,5 +1,56 @@
 # Changelog
 
+## 0.25.0 — 2026-08-28
+
+### Added — the agentic tier is complete: 44 components
+
+`StreamingText`, `AgentActivity` + `AgentActivityStep`, `Citation` +
+`CitationList` + `CitationListItem`, and `ConfidenceIndicator`.
+
+Each exists because the obvious implementation of it is inaccessible.
+
+**StreamingText is not a live region, and that is the whole design.**
+`aria-live="polite"` on streaming text queues an announcement per token, so a
+screen-reader user hears the answer re-read and stuttered dozens of times with no
+way to get ahead of it. This sets `aria-live="off"` and `aria-busy`, leaving the
+text as ordinary readable content — a screen-reader user reads ahead exactly as a
+sighted one does. Announcing completion is the caller's call; a chat with ten
+turns on screen does not want ten announcements. `minLines` reserves height in
+`lh` so the page below does not climb while someone is reading.
+
+**AgentActivity never carries status in colour alone.** Every step renders its
+status as hidden text and the glyphs differ in shape, so the list survives
+greyscale, colour blindness and forced-colours mode. The active step is announced
+once when it changes, read out of the children rather than duplicated in a prop.
+
+**Citation's marker is not its name.** A superscript "1" announces as "link, 1".
+The accessible name is "Source 1: <source>". Without `href` it renders a marker
+rather than a dead anchor, so an unfollowable link never enters the link list.
+
+**ConfidenceIndicator has no percentage prop, and will not get one.** "87%
+confident" reads as a measurement and almost never is one — usually a softmax
+score or a model's claim about itself. Three levels cannot overclaim that way,
+and `basis` is required: a level with nothing behind it is decoration that still
+changes behaviour.
+
+### Fixed — a defect the contrast gate could not see
+
+The unfilled confidence bars used `surface/muted`, which measures **1.05:1**
+against the page. Invisible — so "one bar filled of three" collapsed into "one
+bar" and the level could not be read from the meter at all.
+
+Found by hand while justifying four gate false positives: `.ion-confidence__bar`
+and `.ion-streaming-text__cursor` are aria-hidden spans holding a background and
+no text, so the gate pairs inherited text colour against them and reports a text
+failure that cannot exist. Computing the pairing that _does_ apply — SC 1.4.11,
+filled versus unfilled — surfaced the real bug. Every bar is now outlined in
+`icon/tertiary` at 7.09:1, matching what the forced-colours block already did.
+
+The four false positives are recorded in `contrast-exceptions.json` as
+`wcag-exempt`, each with its real measurement.
+
+**Minor, not patch**: seven new exports, nothing existing changed.
+
 ## 0.24.0 — 2026-08-28
 
 ### Added — `AgentStop` and `ApprovalGate`

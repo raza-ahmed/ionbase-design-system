@@ -59,6 +59,10 @@
  */
 @import url('./agent-stop.css');
 @import url('./approval-gate.css');
+@import url('./agent-activity.css');
+@import url('./streaming-text.css');
+@import url('./citation.css');
+@import url('./confidence-indicator.css');
 
 /*
  * Visually hidden, but not hidden from assistive tech.

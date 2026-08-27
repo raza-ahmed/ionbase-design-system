@@ -1,0 +1,44 @@
+{
+  "status": "stable",
+  "summary": "The footer list of sources, as an ordered list so the count and order are structural.",
+  "useWhen": [
+    "several claims cite sources and the reader should be able to see them all at once"
+  ],
+  "useInstead": [
+    {
+      "when": "there is one source and it belongs in the sentence",
+      "use": "Link"
+    },
+    {
+      "when": "it is tabular data with more than a source per row",
+      "use": "Table"
+    }
+  ],
+  "composition": {
+    "order": ["CitationList", "CitationListItem"],
+    "example": "<CitationList><CitationListItem index={1} source=\"Q3 filing\" href=\"/q3\">Revenue rose 4%.</CitationListItem></CitationList>"
+  },
+  "slots": {
+    "label": {
+      "accepts": "text",
+      "note": "rendered as plain text, not a heading element — it should not enter the document outline as a section"
+    },
+    "children": { "accepts": "CitationListItem" }
+  },
+  "a11y": {
+    "guarantees": [
+      "an <ol>, so a screen reader can say how many sources there are before the reader commits to hearing them",
+      "list markers are hidden in CSS while the semantics stay, because the visible number must match the inline Citation's exactly"
+    ]
+  },
+  "antiPatterns": [
+    {
+      "dont": "a <div> stack of sources",
+      "why": "the count and the ordering are the useful part, and only a list carries them"
+    },
+    {
+      "dont": "numbers that disagree with the inline markers",
+      "why": "the marker is a promise about where to look"
+    }
+  ]
+}

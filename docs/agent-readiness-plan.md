@@ -567,10 +567,24 @@ One test caught a bad assertion rather than a bad component:
 trivially, since `document.activeElement` is `<body>` and body contains the word.
 Asserting `.not.toHaveFocus()` on the button is the real check.
 
-Still open in 4b: `StreamingText`, `AgentActivity`, `Citation` and
-`ConfidenceIndicator`. Not started, and not blocked — they are the four where
-the field has converged least, and none of them carries the compliance weight
-that made these two non-negotiable.
+`StreamingText`, `AgentActivity`, `Citation` and `ConfidenceIndicator` followed
+in 0.25.0, completing the tier at 44 components. Each earns its place by being
+the accessible version of something usually built wrong: streaming text that is
+deliberately not a live region, a status log that never encodes state in colour
+alone, a citation whose accessible name is the source rather than the digit, and
+a confidence indicator with no percentage prop and a required `basis`.
+
+Two findings worth keeping:
+
+**The contrast gate does not model empty elements.** Four Light "failures" were
+the gate pairing inherited text colour against aria-hidden spans that hold a
+background and no text. They are recorded as `wcag-exempt` with the pairing that
+actually applies measured by hand.
+
+**Doing that measurement found a defect the gate could not see.** The unfilled
+confidence bars were `surface/muted` — 1.05:1 against the page, so "one of three"
+collapsed into "one bar". Outlining every bar in `icon/tertiary` (7.09:1) fixed
+it. The gate's blind spot was real, and so was the bug hiding in it.
 
 `ApprovalGate` and `AgentStop` are the two that matter. Human-in-the-loop
 controls and a visible kill switch are treated as non-negotiable in regulated
@@ -649,7 +663,7 @@ Phase 2  ▓▓▓▓▓▓  DONE                             5 lint rules + sty
 Phase 3a ▓▓▓▓  DONE                                llms.txt + 35 mirrors, hosted + in-tarball
 Phase 3b ▓▓▓▓  REPLACED                            figma-map.json — Code Connect without the plan
 Phase 4a ▓▓▓▓▓  CONTRACTS DONE                     6 recipes, 7-check gate; no TSX examples yet
-Phase 4b ▓▓▓▓  2 of 6 DONE                         AgentStop + ApprovalGate shipped
+Phase 4b ▓▓▓▓▓▓▓▓▓▓  DONE                          all 6 shipped; 44 components
 Phase 3c ░░░░                                     MCP server — only if measured need
 ```
 

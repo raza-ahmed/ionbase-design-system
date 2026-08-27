@@ -1,0 +1,97 @@
+/*
+ * ConfidenceIndicator
+ *
+ * NOT DRAWN IN FIGMA. Three bars and a line of text; the colours are the
+ * system's status roles.
+ *
+ * THE BARS ARE THE SECOND SIGNAL, NOT THE FIRST. The count of filled bars
+ * carries the level, so it reads in greyscale and in forced-colours mode; the
+ * colour only reinforces it. The label spells the level out regardless, which
+ * is what makes the meter safe to look at quickly.
+ */
+.ion-confidence {
+  display: inline-flex;
+  align-items: baseline;
+  gap: var(--spacing-8);
+  font-family: var(--font-family-sans);
+  font-size: var(--type-caption);
+  line-height: var(--type-caption-line-height);
+  color: var(--text-secondary);
+}
+
+.ion-confidence__meter {
+  display: inline-flex;
+  align-items: flex-end;
+  gap: var(--spacing-2);
+
+  /* Baseline-aligned with the label rather than centred, so the meter sits on
+   * the text's baseline the way a small-caps run would. */
+  align-self: center;
+}
+
+/*
+ * EVERY bar is outlined; only the filled ones take a colour.
+ *
+ * The first draft used `surface/muted` as the empty bar's fill, which measures
+ * 1.05:1 against `surface/page` — invisible. That breaks the reading the meter
+ * depends on: "one bar filled of three" collapses into "one bar", and the level
+ * can no longer be judged without reading the label. Found by computing the
+ * pairing the contrast gate does not model, since these spans hold no text.
+ *
+ * `icon/tertiary` is 7.09:1 against the page and 7.56:1 against a card, so the
+ * empty bars are legible on both surfaces. This is also the same construction
+ * the forced-colours block below uses, so the two no longer diverge.
+ */
+.ion-confidence__bar {
+  width: var(--spacing-4);
+  height: var(--spacing-8);
+  border: var(--border-width-default) solid var(--icon-tertiary);
+  border-radius: var(--radius-2xs);
+  background-color: transparent;
+}
+
+.ion-confidence__bar:nth-child(2) {
+  height: var(--spacing-12);
+}
+
+.ion-confidence__bar:nth-child(3) {
+  height: var(--spacing-16);
+}
+
+.ion-confidence--low .ion-confidence__bar--on {
+  border-color: var(--icon-warning);
+  background-color: var(--icon-warning);
+}
+
+.ion-confidence--medium .ion-confidence__bar--on {
+  border-color: var(--icon-information);
+  background-color: var(--icon-information);
+}
+
+.ion-confidence--high .ion-confidence__bar--on {
+  border-color: var(--icon-success);
+  background-color: var(--icon-success);
+}
+
+.ion-confidence__label {
+  color: var(--text-default);
+  font-weight: var(--font-weight-medium);
+}
+
+.ion-confidence__basis {
+  color: var(--text-tertiary);
+}
+
+@media (forced-colors: active) {
+  /* Colour is remapped away entirely here, so the filled bars must still be
+   * distinguishable from the empty ones by fill rather than hue. */
+  .ion-confidence__bar {
+    forced-color-adjust: none;
+    background-color: Canvas;
+    border: var(--border-width-default) solid CanvasText;
+  }
+
+  .ion-confidence__bar--on {
+    background-color: CanvasText;
+  }
+}

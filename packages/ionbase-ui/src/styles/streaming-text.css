@@ -1,0 +1,56 @@
+/*
+ * StreamingText
+ *
+ * NOT DRAWN IN FIGMA. Type and rhythm come from the body tokens, so this is
+ * ordinary prose that happens to be arriving late.
+ */
+.ion-streaming-text {
+  color: var(--text-default);
+  font-family: var(--font-family-sans);
+  font-size: var(--type-body);
+  line-height: var(--type-body-line-height);
+  white-space: pre-wrap;
+}
+
+/*
+ * Reserve the height rather than growing into it. `lh` is the line box of THIS
+ * element, so the reserved space tracks the font size instead of a guessed
+ * pixel value — which is what makes it hold at any zoom level.
+ */
+.ion-streaming-text--reserved {
+  min-height: calc(var(--ion-streaming-min-lines, 3) * 1lh);
+}
+
+/*
+ * The cursor is a box, not a text character: a literal "▌" is read aloud by
+ * some screen readers even inside an aria-hidden span, and it inherits font
+ * metrics that differ per family.
+ */
+.ion-streaming-text__cursor {
+  display: inline-block;
+  width: 0.5em;
+  height: 1em;
+  margin-inline-start: 0.1em;
+  vertical-align: text-bottom;
+  background-color: var(--text-tertiary);
+  animation: ion-streaming-blink 1s step-end infinite;
+}
+
+@keyframes ion-streaming-blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+/*
+ * Blinking is a WCAG 2.3.1 concern and a real problem for some vestibular and
+ * attention conditions. The global reduced-motion block in index.css collapses
+ * the duration, which would leave the cursor stuck mid-blink — so pin it
+ * visible here instead of merely stopping the animation.
+ */
+@media (prefers-reduced-motion: reduce) {
+  .ion-streaming-text__cursor {
+    animation: none;
+    opacity: 1;
+  }
+}

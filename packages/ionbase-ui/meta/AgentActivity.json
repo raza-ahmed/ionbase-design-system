@@ -1,0 +1,57 @@
+{
+  "status": "stable",
+  "summary": "An ordered, plain-language log of what the agent is doing. Status is text and shape, never colour alone.",
+  "useWhen": [
+    "a run takes long enough that the user needs to know where it has got to",
+    "a person will decide whether to let it continue — which means they need to read what it did"
+  ],
+  "useInstead": [
+    {
+      "when": "the output is prose rather than steps",
+      "use": "StreamingText"
+    },
+    {
+      "when": "you need a decision, not a report",
+      "use": "ApprovalGate"
+    },
+    {
+      "when": "it is one finished outcome",
+      "use": "Alert"
+    }
+  ],
+  "composition": {
+    "order": ["AgentActivity", "AgentActivityStep"],
+    "note": "An <ol>, so a screen reader can say \"3 of 7\" and the order is structural rather than typed into each row.",
+    "example": "<AgentActivity><AgentActivityStep status=\"done\">Searched the invoice archive</AgentActivityStep><AgentActivityStep status=\"active\">Reading 12 matches</AgentActivityStep></AgentActivity>"
+  },
+  "a11y": {
+    "role": "list",
+    "guarantees": [
+      "every step renders its status as visually hidden text as well as a glyph, and the glyphs differ in shape rather than only in colour — a row of coloured dots fails WCAG 1.4.1 outright",
+      "the active step is announced once, when it changes, in a polite live region",
+      "the active step's spinner stops under `prefers-reduced-motion`"
+    ],
+    "requires": [
+      "step text in the user's language — \"Searched the invoice archive\", not a function signature",
+      "`announceActive={false}` when several logs are on screen, or they narrate over each other"
+    ],
+    "notes": [
+      "The active step is read out of the children rather than taken as a prop. Two sources for one fact is how they come to disagree."
+    ]
+  },
+  "antiPatterns": [
+    {
+      "dont": "raw tool calls or JSON as the step label",
+      "why": "this is the account a person reads to decide whether to let the run continue"
+    },
+    {
+      "dont": "more than one step with `status=\"active\"`",
+      "why": "the announcement names one thing, and two claims about what is happening now cannot both be true"
+    },
+    {
+      "dont": "several announcing logs on one screen",
+      "do": "`announceActive={false}` on all but one",
+      "why": "they interrupt each other and the user turns the whole thing off"
+    }
+  ]
+}

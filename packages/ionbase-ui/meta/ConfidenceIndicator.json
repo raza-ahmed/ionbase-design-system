@@ -1,0 +1,53 @@
+{
+  "status": "stable",
+  "summary": "How much to trust the thing next to it — three levels with a required basis, never a percentage.",
+  "useWhen": [
+    "a generated answer varies in reliability and the reader should weigh it",
+    "you can say what the confidence rests on"
+  ],
+  "useInstead": [
+    {
+      "when": "the answer is wrong or missing rather than uncertain",
+      "use": "Alert"
+    },
+    {
+      "when": "you want to show where the claim came from",
+      "use": "Citation",
+      "why": "a source is stronger than a confidence level, and often what the reader actually wanted"
+    },
+    {
+      "when": "it is a status rather than a reliability",
+      "use": "Badge"
+    }
+  ],
+  "variants": {
+    "level": {
+      "low": { "use": "thin or conflicting evidence. One bar, warning colour" },
+      "medium": { "use": "reasonable support with real gaps. Two bars" },
+      "high": { "use": "corroborated, and you can say by what. Three bars" }
+    }
+  },
+  "a11y": {
+    "guarantees": [
+      "the level is spelled out in text, so it never depends on the meter",
+      "the meter differs in filled COUNT rather than only in colour, and in forced-colours mode filled bars are solid while empty ones are outlined"
+    ],
+    "requires": [
+      "`basis` — a type error if omitted, and the reason this component exists rather than a coloured dot"
+    ]
+  },
+  "antiPatterns": [
+    {
+      "dont": "asking for a percentage prop",
+      "why": "\"87% confident\" reads as a measurement and almost never is one — usually a softmax score or a model's claim about itself, neither of which is a calibrated probability. Three levels cannot overclaim that way"
+    },
+    {
+      "dont": "a vague basis like \"model output\"",
+      "why": "it satisfies the type and defeats the purpose — say \"3 of 4 sources agree\" or \"single unverified source\""
+    },
+    {
+      "dont": "high confidence on every response",
+      "why": "an indicator that never varies is decoration that still changes behaviour"
+    }
+  ]
+}

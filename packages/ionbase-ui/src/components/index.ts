@@ -100,3 +100,22 @@ export type {
   ApprovalGateRisk,
   ApprovalGateStatus,
 } from './ApprovalGate.js';
+export { StreamingText } from './StreamingText.js';
+export type { StreamingTextProps } from './StreamingText.js';
+export { AgentActivity, AgentActivityStep } from './AgentActivity.js';
+export type {
+  AgentActivityProps,
+  AgentActivityStepProps,
+  AgentActivityStatus,
+} from './AgentActivity.js';
+export { Citation, CitationList, CitationListItem } from './Citation.js';
+export type {
+  CitationProps,
+  CitationListProps,
+  CitationListItemProps,
+} from './Citation.js';
+export { ConfidenceIndicator } from './ConfidenceIndicator.js';
+export type {
+  ConfidenceIndicatorProps,
+  ConfidenceLevel,
+} from './ConfidenceIndicator.js';

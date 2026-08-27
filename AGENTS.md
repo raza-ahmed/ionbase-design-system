@@ -326,7 +326,7 @@ need values changed, not structure rewritten.
 **Neither enforces anything, and that is the most important thing about them.**
 `AgentStop` does not stop a run — it reports intent, and the caller aborts the
 request. `ApprovalGate` does not gate execution — the caller gates it by not
-acting until `onApprove` fires. A component that *looked* like it enforced a
+acting until `onApprove` fires. A component that _looked_ like it enforced a
 policy would be the worst thing this system could ship, because teams would rely
 on a guarantee that lives entirely in their own call site. `risk` on
 `ApprovalGate` changes emphasis and nothing else, for exactly that reason.
@@ -350,6 +350,43 @@ Both keep their place through their transition rather than unmounting, and both
 announce it through `.ion-visually-hidden` live regions — a label change alone is
 only heard if the element happens to hold focus, which it does not when the run
 was started elsewhere.
+
+### The other four, and the one rule they share
+
+`StreamingText`, `AgentActivity`, `Citation` and `ConfidenceIndicator` complete
+the tier. Each exists because the obvious implementation of it is inaccessible:
+
+- **StreamingText is NOT a live region.** `aria-live="polite"` on streaming text
+  queues an announcement per token, so a screen-reader user hears the answer
+  re-read and stuttered dozens of times with no way to get ahead of it.
+  `aria-live="off"` plus `aria-busy` is the accessible choice, not an oversight.
+  Announcing completion is the caller's decision — a chat with ten turns on
+  screen does not want ten announcements.
+- **AgentActivity never carries status in colour alone.** Every step renders its
+  status as hidden text, and the glyphs differ in shape. A row of coloured dots
+  fails WCAG 1.4.1 outright.
+- **Citation's marker is not its name.** A superscript "1" announces as
+  "link, 1". The accessible name is "Source 1: <source>" — the number is for the
+  eye, the sentence is for everyone. With no `href` it is not an anchor, so an
+  unfollowable link never enters the page's link list.
+- **ConfidenceIndicator has no percentage prop, and will not get one.** "87%
+  confident" reads as a measurement and almost never is one. `basis` is required
+  — a level with nothing behind it is decoration that still changes behaviour,
+  and a required prop is a type error rather than a policy, which is the
+  strongest enforcement available.
+
+**The contrast gate does not model empty elements**, and this tier is where that
+first mattered. `.ion-confidence__bar` and `.ion-streaming-text__cursor` are
+aria-hidden spans with a background and no text, so the gate pairs the inherited
+text colour against them and reports a text failure that cannot exist. Those four
+are in `contrast-exceptions.json` as `wcag-exempt`, each with the pairing that
+actually applies measured by hand.
+
+Doing that measurement found a real defect the gate could not see: the unfilled
+confidence bars used `surface/muted`, which is **1.05:1** against the page.
+"One bar filled of three" collapsed into "one bar". Every bar is outlined in
+`icon/tertiary` now — 7.09:1 — which is also what the forced-colours block
+already did, so the two constructions no longer disagree.
 
 `.ion-visually-hidden` is in `styles/index.css` because both needed it. Do not
 write a third copy: `display: none` and `visibility: hidden` both drop the node

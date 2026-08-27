@@ -1,0 +1,95 @@
+/*
+ * AgentActivity
+ *
+ * NOT DRAWN IN FIGMA. The rail-and-body layout is Alert's, one step down in
+ * scale; colours are the status roles used everywhere else in the system.
+ */
+.ion-agent-activity {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-8);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-family: var(--font-family-sans);
+  font-size: var(--type-body-sm);
+  line-height: var(--type-body-sm-line-height);
+}
+
+.ion-agent-activity__step {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-8);
+  color: var(--text-secondary);
+}
+
+.ion-agent-activity__glyph {
+  display: inline-flex;
+  flex: none;
+  width: var(--icon-size-sm);
+  height: var(--icon-size-sm);
+
+  /* Optical alignment to the first line of the label, not to the box. */
+  margin-top: var(--spacing-2);
+  color: var(--icon-tertiary);
+}
+
+.ion-agent-activity__glyph svg {
+  width: 100%;
+  height: 100%;
+}
+
+.ion-agent-activity__body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2);
+  min-width: 0;
+}
+
+.ion-agent-activity__detail {
+  color: var(--text-tertiary);
+  font-size: var(--type-caption);
+  line-height: var(--type-caption-line-height);
+}
+
+/*
+ * Status colour is the second signal, never the only one: each status also has
+ * a differently SHAPED glyph, and its name in visually hidden text. A row of
+ * dots that differ only in hue fails WCAG 1.4.1 outright.
+ */
+.ion-agent-activity__step--active {
+  color: var(--text-default);
+}
+
+.ion-agent-activity__step--active .ion-agent-activity__glyph {
+  color: var(--icon-primary);
+  animation: ion-agent-activity-spin 1.2s linear infinite;
+}
+
+.ion-agent-activity__step--done .ion-agent-activity__glyph {
+  color: var(--icon-success);
+}
+
+.ion-agent-activity__step--failed {
+  color: var(--text-error);
+}
+
+.ion-agent-activity__step--failed .ion-agent-activity__glyph {
+  color: var(--icon-error);
+}
+
+.ion-agent-activity__step--skipped {
+  color: var(--text-tertiary);
+}
+
+@keyframes ion-agent-activity-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ion-agent-activity__step--active .ion-agent-activity__glyph {
+    animation: none;
+  }
+}

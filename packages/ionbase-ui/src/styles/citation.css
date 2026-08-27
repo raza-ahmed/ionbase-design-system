@@ -1,0 +1,93 @@
+/*
+ * Citation
+ *
+ * NOT DRAWN IN FIGMA. The inline marker borrows Badge's pill geometry at the
+ * smallest size; the footer list borrows the Table's row rhythm.
+ */
+.ion-citation {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: var(--spacing-16);
+  height: var(--spacing-16);
+  padding: 0 var(--spacing-4);
+
+  /* Sits with the text, not on it: superscript positioning would shift the
+   * line box and make a paragraph of citations ripple. */
+  margin-inline-start: var(--spacing-2);
+  border-radius: var(--radius-xs);
+  background-color: var(--surface-primary-subtle);
+  color: var(--text-link);
+  font-size: var(--type-caption);
+  line-height: var(--type-caption-line-height);
+  font-weight: var(--font-weight-medium);
+  text-decoration: none;
+  vertical-align: baseline;
+}
+
+a.ion-citation:hover {
+  background-color: var(--surface-primary-subtle-hover);
+}
+
+a.ion-citation:focus-visible {
+  outline: var(--border-width-thick) solid var(--border-focus);
+  outline-offset: 1px;
+}
+
+.ion-citation-list {
+  font-family: var(--font-family-sans);
+  font-size: var(--type-body-sm);
+  line-height: var(--type-body-sm-line-height);
+}
+
+.ion-citation-list__label {
+  margin: 0 0 var(--spacing-8);
+  color: var(--text-tertiary);
+  font-size: var(--type-caption);
+  line-height: var(--type-caption-line-height);
+  font-weight: var(--font-weight-semibold);
+}
+
+.ion-citation-list__items {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-8);
+  margin: 0;
+  padding: 0;
+
+  /* The <ol> keeps its semantics and loses its markers: the visible number is
+   * the citation's own, which must match the inline marker exactly. */
+  list-style: none;
+}
+
+.ion-citation-list__item {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-8);
+}
+
+.ion-citation-list__marker {
+  flex: none;
+  min-width: var(--spacing-16);
+  color: var(--text-tertiary);
+  font-size: var(--type-caption);
+  line-height: var(--type-body-sm-line-height);
+  text-align: end;
+}
+
+.ion-citation-list__body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2);
+  min-width: 0;
+}
+
+.ion-citation-list__source {
+  color: var(--text-link);
+}
+
+.ion-citation-list__passage {
+  color: var(--text-tertiary);
+  font-size: var(--type-caption);
+  line-height: var(--type-caption-line-height);
+}

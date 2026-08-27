@@ -1,0 +1,27 @@
+{
+  "status": "stable",
+  "summary": "One source row: its number, what it is, and the passage it supports.",
+  "useWhen": ["a child of CitationList"],
+  "useInstead": [
+    { "when": "it is the inline marker in the prose", "use": "Citation" }
+  ],
+  "slots": {
+    "children": {
+      "accepts": "text",
+      "note": "the quoted or summarised passage this source supports"
+    }
+  },
+  "a11y": {
+    "guarantees": [
+      "the visible number is `aria-hidden`; the row is named by its source text, which is what a reader needs to hear",
+      "without `href` the source renders as text rather than a dead link"
+    ],
+    "requires": ["`source` naming what is being cited"]
+  },
+  "antiPatterns": [
+    {
+      "dont": "a bare URL as the `source`",
+      "why": "a screen reader spells it out character by character, and it names nothing"
+    }
+  ]
+}
