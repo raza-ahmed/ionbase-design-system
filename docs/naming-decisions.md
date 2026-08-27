@@ -5,7 +5,7 @@ rules are. It is built to be looked up, so it carries no justification. This fil
 carries the justification. Read it once; you should rarely need it again.
 
 Newest first.
-<!-- Hey Afroz! -->
+
 ---
 
 ## 2026-08-06 — a ladder indexed by value cannot be appended to
