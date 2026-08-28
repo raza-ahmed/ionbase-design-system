@@ -297,6 +297,30 @@ values, of which three are a media query the browser already answers.
 `figma/export-components.js`, then either map it or add it to `unmapped` with a
 reason. Both halves are enforced.
 
+### A duplicate variant takes the whole export down, and the error does not say so
+
+`export-components.js` throws
+`in get_componentPropertyDefinitions: Component set has existing errors` and
+stops. The message names no component, so it reads like a broken script — it is
+not. Figma refuses `componentPropertyDefinitions` on a set that contains two
+variants with the **same** property combination, and one bad set kills the run
+for all thirty-seven.
+
+Find it by counting instead of asking. Group each set's children by their
+variant-name signature and compare the group count to `children.length`; the set
+where they disagree is the one, and the duplicate pairs fall out of the same
+grouping. Sort the parts of the name before joining — Figma stores them in
+authoring order, so `Type=A, Size=B` and `Size=B, Type=A` are the same variant
+spelled two ways and a naive string compare misses it.
+
+The tell that it is an accident rather than a design: the duplicate sits at
+exactly +10,+10 from its twin, which is Figma's paste offset. Three of them were
+sitting in `Icon Button` on 2026-08-28 — 283 children over 280 combinations —
+and they had to be deleted **in Figma** before the export could run again. There
+is nothing to fix on the repo side, which is why this is written down here
+rather than guarded by a gate: the gate cannot run at all until the file is
+clean.
+
 **Adding a React component means answering the Figma question too.** Map it, or
 put it in `codeUnmapped` with a reason. Seventeen sit there now: eight are
 permanent — `Table`, `TableHead`, `TableBody`, `RadioGroup`, `ToastProvider`,
@@ -846,6 +870,21 @@ PR**. The vocabularies exist in two places that must stay in step: the spec's
 **Demand-driven ramps are gone.** v2 gives every accent role identical slots, so
 the old "danger has five steps, warning has two" asymmetry cannot recur. Full
 ramps live in Semantics; Interface picks the step.
+
+**Button and Icon Button disagree on Primary Neutral's press, and code follows
+Button.** `Button` pins all four sizes to `Inset/Flush/lg` while their rest
+states scale xs/sm/lg/lg like every other type — the one place in that component
+where size stops mattering, flagged in `button.css` as reading more like an
+unfinished edit than a decision. `Icon Button`, drawn later, does **not**
+reproduce it: its Primary Neutral presses `Inset/Lifted/{xs,sm,lg,lg}`, tracking
+its own rung exactly like Primary Brand.
+
+Both were re-measured on 2026-08-28 and the disagreement is real, not a stale
+reading. `button.css` serves both — there is one React `Button` and the icon-only
+case is the same component — so code cannot honour both and currently follows
+`Button`. Two sets drawing one component two ways is the thing to resolve, in
+Figma, before anything is changed here; whichever way it goes, it is a one-line
+edit to `--ion-button-pressed` on the `primary-neutral` variant.
 
 **Contrast is now checked — by `ionbase-ui`, not by the token pipeline.**
 `tokens:tier` proves an alias resolves; `tokens:verify` proves a name matches its

@@ -448,3 +448,86 @@ export const HeightPerButtonSize: Story = {
     }
   },
 };
+
+/**
+ * Which elevation family each variant rests on, resolved rather than asserted
+ * as a literal.
+ *
+ * Figma moved Secondary and Primary Soft off `Raised/Lifted` and onto the plain
+ * `Shadow` family on 2026-08-28 — measured across all four sizes of both the
+ * Button and Icon Button sets. The two are not interchangeable: `Raised/Lifted`
+ * is embossed, with inset highlights that only read as a bevel over a solid
+ * saturated fill, and both of the moved variants sit on a light surface.
+ *
+ * The assertion compares two custom properties read off the SAME element, so it
+ * never hardcodes a shadow value. That matters because the shadows are
+ * generated from the Figma effect styles: a story asserting the literal would
+ * have to be rewritten every time a designer nudges an alpha, and would then be
+ * testing the generator rather than the button.
+ *
+ * The `lg` case is the one worth having. The two ramps are different shapes —
+ * `raised` runs xs/sm/lg/lg where `shadow` runs xs/sm/md/md — so deriving one
+ * from the other puts Large a rung too heavy, and nothing else here would catch
+ * it.
+ */
+export const ElevationFamilyPerVariant: Story = {
+  render: () => (
+    <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
+      <Button variant="primary-brand">primary-brand</Button>
+      <Button variant="primary-neutral">primary-neutral</Button>
+      <Button variant="primary-soft">primary-soft</Button>
+      <Button variant="secondary">secondary</Button>
+      <Button variant="destructive">destructive</Button>
+      <Button variant="success">success</Button>
+      <Button variant="secondary" size="lg">
+        secondary-lg
+      </Button>
+      <Button variant="primary-brand" size="lg">
+        brand-lg
+      </Button>
+    </div>
+  ),
+  play: async ({ canvas }) => {
+    // name -> the effect-style token its rest elevation must resolve to.
+    const expected = {
+      'primary-brand': '--ion-shadow-raised-lifted-sm',
+      'primary-neutral': '--ion-shadow-raised-lifted-sm',
+      destructive: '--ion-shadow-raised-lifted-sm',
+      success: '--ion-shadow-raised-lifted-sm',
+      'primary-soft': '--ion-shadow-shadow-sm',
+      secondary: '--ion-shadow-shadow-sm',
+      // Large: the ramps diverge here.
+      'secondary-lg': '--ion-shadow-shadow-md',
+      'brand-lg': '--ion-shadow-raised-lifted-lg',
+    };
+
+    for (const [name, token] of Object.entries(expected)) {
+      const button = canvas.getByRole('button', { name });
+      const styles = getComputedStyle(button);
+
+      const actual = styles.getPropertyValue('--ion-button-elevation').trim();
+      const wanted = styles.getPropertyValue(token).trim();
+
+      // A typo in either name would make both sides '' and pass vacuously.
+      await expect(wanted).not.toBe('');
+      await expect(actual).toBe(wanted);
+    }
+  },
+};
+
+/**
+ * Tertiary is the one variant with no elevation at all — a ghost button has no
+ * surface to raise. Asserted separately because the story above compares
+ * against a token, and the correct answer here is the absence of one.
+ */
+export const TertiaryHasNoElevation: Story = {
+  render: () => <Button variant="tertiary">Tertiary</Button>,
+  play: async ({ canvas }) => {
+    const button = canvas.getByRole('button', { name: 'Tertiary' });
+    const styles = getComputedStyle(button);
+
+    await expect(styles.getPropertyValue('--ion-button-elevation').trim()).toBe(
+      styles.getPropertyValue('--ion-shadow-none').trim(),
+    );
+  },
+};

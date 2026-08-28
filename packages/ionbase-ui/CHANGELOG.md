@@ -1,5 +1,41 @@
 # Changelog
 
+## 0.28.0 — 2026-08-28
+
+### Fixed — Secondary and Primary Soft rest on the wrong shadow family
+
+Figma moved both variants off `Raised/Lifted` and onto the plain `Shadow`
+family. Measured across all four sizes of **both** button sets — `Button`
+(21:461) and `Icon Button` (623:151) — and it is the only thing that changed in
+either: fills, strokes, borders, text styles, icon rungs, heights, padding, gaps
+and every pressed inset are identical to what shipped in 0.27.0.
+
+The two families are not two spellings of one idea. `Raised/Lifted` is embossed
+— an inset dark edge and an inset white highlight that together read as a bevel
+— and that only works over a solid, saturated fill. Over `surface/default` and
+`surface/primary-subtle` the white highlight has nothing to lift away from, so
+it read as a smudge along the top edge rather than as a raised surface.
+Secondary and Primary Soft are exactly the two light-surfaced variants, and now
+they are exactly the two on `Shadow`.
+
+**The two ramps are different shapes, which is the part worth remembering.**
+`raised` runs xs / sm / lg / lg across the size ramp; `shadow` runs
+xs / sm / md / md. Large and XLarge share `Shadow/md` where the raised family
+jumps to `lg` — so deriving one ramp from the other, which is the obvious
+shortcut, puts Large a rung too heavy. `ElevationFamilyPerVariant` asserts the
+`lg` case for that reason.
+
+No new tokens. `--ion-shadow-shadow-xs|sm|md` were already generated from the
+Figma effect styles and already shipping — nothing bound them. The change is one
+new size-indexed slot, `--ion-button-shadow`, and two variants selecting it
+instead of `--ion-button-raised`.
+
+Two stories cover it, and both compare two custom properties read off the same
+element rather than asserting a literal shadow: the shadows are generated from
+Figma, so a story hardcoding one would be testing the generator and would need
+rewriting every time a designer nudges an alpha. Negative-tested by pointing
+`secondary` at the raised token and confirming the failure.
+
 ## 0.26.0 — 2026-08-28
 
 ### Fixed — the Figma gate only ran in one direction

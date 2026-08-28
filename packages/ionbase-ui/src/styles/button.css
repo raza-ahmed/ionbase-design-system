@@ -17,16 +17,29 @@
   --ion-button-elevation: var(--ion-shadow-none);
 
   /*
-   * ELEVATION IS INDEXED BY SIZE, NOT BY VARIANT
+   * ELEVATION IS INDEXED BY SIZE; THE VARIANT PICKS THE FAMILY
    *
-   * Measured: Primary Brand, Primary Neutral, Secondary and Destructive all sit
-   * on the same rung at a given size — Small is `xs`, Medium `sm`, Large `lg`.
-   * The variant chooses only the *family* it presses into, so these are slots
-   * the size modifiers reassign and the variants select from. This replaces the
+   * Each of these is a rung reassigned by the size modifiers, and a variant
+   * selects one. That is the whole structure — no variant restates a shadow
+   * value, and no size modifier knows which variant is asking. It replaces the
    * old per-variant `button-raised` / `button-surface` pair, which encoded a
    * distinction Figma no longer draws.
+   *
+   * `raised` and `shadow` are two DIFFERENT rest families, and which one a
+   * variant takes is a real design decision rather than a spelling of the same
+   * idea. `Raised/Lifted` is embossed — two inset highlights that read as a
+   * bevel — and it only works over a solid, saturated fill. `Shadow` is a plain
+   * drop shadow. The two light-surfaced variants, Secondary and Primary Soft,
+   * are on `shadow`; the four solid ones are on `raised`. Measured across all
+   * four sizes of both Figma sets on 2026-08-28.
+   *
+   * The two ramps are not the same shape, which is the trap here. `raised` runs
+   * xs / sm / lg / lg, but `shadow` runs xs / sm / md / md — Large and XLarge
+   * share `Shadow/md`, where the raised family jumps to `lg`. Assuming one ramp
+   * from the other puts Large one rung too heavy.
    */
   --ion-button-raised: var(--ion-shadow-raised-lifted-sm);
+  --ion-button-shadow: var(--ion-shadow-shadow-sm);
   --ion-button-inset-lifted: var(--ion-shadow-inset-lifted-sm);
   --ion-button-inset-flush: var(--ion-shadow-inset-flush-sm);
 
@@ -137,6 +150,7 @@
   --ion-button-font-size: var(--type-body-sm);
   --ion-button-line-height: var(--type-body-sm-line-height);
   --ion-button-raised: var(--ion-shadow-raised-lifted-xs);
+  --ion-button-shadow: var(--ion-shadow-shadow-xs);
   --ion-button-inset-lifted: var(--ion-shadow-inset-lifted-xs);
   --ion-button-inset-flush: var(--ion-shadow-inset-flush-xs);
 }
@@ -149,6 +163,9 @@
   --ion-button-font-size: var(--type-body-md);
   --ion-button-line-height: var(--type-body-md-line-height);
   --ion-button-raised: var(--ion-shadow-raised-lifted-lg);
+
+  /* `md`, not `lg` — the shadow ramp tops out a rung below the raised one. */
+  --ion-button-shadow: var(--ion-shadow-shadow-md);
   --ion-button-inset-lifted: var(--ion-shadow-inset-lifted-lg);
   --ion-button-inset-flush: var(--ion-shadow-inset-flush-lg);
 }
@@ -179,13 +196,15 @@
  * the one rung where the icon does NOT run ahead of its label (24 vs 20, where
  * Large is 24 vs 18). Reproduced as measured.
  *
- * Elevation reuses the `lg` rungs, and this is where "there is no xl rung" would
- * be the easy wrong answer. `Raised/Lifted/xl` and `Raised/Flush/xl` DO exist as
- * effect styles — it is the *inset* families that stop at lg, so there is no
- * complete xl rung to press into. Figma binds Raised/Lifted/lg, Inset/Lifted/lg
- * and Inset/Flush/lg on XLarge exactly as on Large. These three lines restate
+ * Elevation reuses the Large rungs, and this is where "there is no xl rung"
+ * would be the easy wrong answer. `Raised/Lifted/xl` and `Raised/Flush/xl` DO
+ * exist as effect styles — it is the *inset* families that stop at lg, so there
+ * is no complete xl rung to press into. Figma binds Raised/Lifted/lg,
+ * Inset/Lifted/lg and Inset/Flush/lg on XLarge exactly as on Large, and
+ * `Shadow/md` for the two shadow-family variants — also exactly as on Large,
+ * even though `Shadow/lg` and `Shadow/xl` both exist. These four lines restate
  * the inherited defaults on purpose, so the next reader does not have to go and
- * check which half of the family exists.
+ * check which half of each family exists.
  */
 .ion-button--xl {
   --ion-button-size: var(--spacing-56);
@@ -195,6 +214,7 @@
   --ion-button-font-size: var(--type-body-lg);
   --ion-button-line-height: var(--type-body-lg-line-height);
   --ion-button-raised: var(--ion-shadow-raised-lifted-lg);
+  --ion-button-shadow: var(--ion-shadow-shadow-md);
   --ion-button-inset-lifted: var(--ion-shadow-inset-lifted-lg);
   --ion-button-inset-flush: var(--ion-shadow-inset-flush-lg);
 }
@@ -232,9 +252,9 @@
  *
  * HOVER DOES NOT CHANGE ELEVATION — only the surface colour moves. Measured:
  * every Hover variant in Figma carries the same effect style as its Default,
- * across all four elevated types. Reproduced as measured rather than preserved
- * from the old `button-raised-hover` step, which encodes a difference the
- * current design no longer draws.
+ * across all six elevated types and both Figma sets. Reproduced as measured
+ * rather than preserved from the old `button-raised-hover` step, which encodes
+ * a difference the current design no longer draws.
  */
 
 /* Primary Brand Variant */
@@ -314,10 +334,12 @@
  * (secondary). Measured on all four sizes.
  *
  * Elevation presses flush like Secondary, not lifted like Brand — a tinted
- * surface has too little contrast for the lifted inset to register.
+ * surface has too little contrast for the lifted inset to register. It rests on
+ * the `shadow` family for the same reason: the embossed `Raised/Lifted` bevel
+ * needs a solid saturated fill under it, and a subtle tint is not one.
  */
 .ion-button--primary-soft {
-  --ion-button-elevation: var(--ion-button-raised);
+  --ion-button-elevation: var(--ion-button-shadow);
   --ion-button-pressed: var(--ion-button-inset-flush);
 
   background-color: var(--surface-primary-subtle);
@@ -343,9 +365,16 @@
   border-color: var(--border-primary);
 }
 
-/* Secondary Variant — presses flush, losing its lift; brand and destructive keep theirs. */
+/*
+ * Secondary Variant — presses flush, losing its lift; brand and destructive keep
+ * theirs.
+ *
+ * Rests on the `shadow` family, not `raised`. Figma moved it there along with
+ * Primary Soft: both sit on a light surface, and `Raised/Lifted`'s inset
+ * highlight reads as a smudge over white rather than as a bevel.
+ */
 .ion-button--secondary {
-  --ion-button-elevation: var(--ion-button-raised);
+  --ion-button-elevation: var(--ion-button-shadow);
   --ion-button-pressed: var(--ion-button-inset-flush);
 
   background-color: var(--surface-default);
