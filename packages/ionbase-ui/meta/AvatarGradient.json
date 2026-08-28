@@ -1,0 +1,79 @@
+{
+  "status": "stable",
+  "summary": "Avatar's initials-only sibling: a lit, bevelled disc in one of eight colours, for people with no photo.",
+  "useWhen": [
+    "someone has no profile image and the fallback should still look deliberate rather than empty",
+    "a list of people reads better when each one is a different colour — the colour is recognisable long before the letters are legible"
+  ],
+  "useInstead": [
+    {
+      "when": "there is a photo, or there may be one later",
+      "use": "Avatar",
+      "why": "Avatar falls back from image to initials to icon on its own; this component has no image to fall back from"
+    },
+    {
+      "when": "the mark needs a square shape, an icon, a ring or a status indicator",
+      "use": "Avatar",
+      "why": "Figma draws none of those on this component, and a gradient this directional only reads on a circle"
+    },
+    {
+      "when": "the thing being marked is a status, count or category rather than a person",
+      "use": "Badge"
+    }
+  ],
+  "variants": {
+    "size": {
+      "mini": { "use": "24px — inline beside body text, dense table rows" },
+      "sm": { "use": "32px — menu rows, compact lists" },
+      "md": { "use": "the default, 40px" },
+      "lg": { "use": "48px — profile headers and detail pages" }
+    },
+    "color": {
+      "slate": {
+        "use": "the default. The one to reach for when nothing about the person suggests a colour"
+      },
+      "blue": { "use": "as slate — one of seven, picked to tell people apart" },
+      "violet": { "use": "as slate" },
+      "pink": {
+        "use": "as slate. See `a11y.knownIssues` before putting it behind text that matters"
+      },
+      "orange": { "use": "as slate. See `a11y.knownIssues`" },
+      "green": {
+        "use": "as slate. Not a status — a green disc here does not mean online, and Avatar's `bottomIndicator` is what does"
+      },
+      "red": {
+        "use": "as slate. Not an error — this is identity, not state. See `a11y.knownIssues`"
+      },
+      "light": {
+        "use": "dark text on a near-white disc, for dense surfaces where seven saturated circles would shout"
+      }
+    }
+  },
+  "a11y": {
+    "guarantees": [
+      "`alt` falls back to `initials`, so the disc is never announced as an unlabelled image"
+    ],
+    "requires": [
+      "`alt` naming the person — \"Ada Lovelace\", not \"AB\". Two letters are not a name, and that is all a screen reader would otherwise get"
+    ],
+    "notes": [
+      "Colour is decoration here, never information. Nothing about which of the eight a person gets should be recoverable, because a screen reader cannot recover it."
+    ]
+  },
+  "antiPatterns": [
+    {
+      "dont": "picking the colour from a status — green for online, red for failing",
+      "do": "use Avatar's `bottomIndicator`, or say it in text",
+      "why": "the colour is identity, not state. It is also invisible to assistive tech, so a status expressed only this way is not expressed at all"
+    },
+    {
+      "dont": "hashing a user id to a colour and treating it as stable",
+      "do": "store the chosen colour with the person, the way you would store their avatar",
+      "why": "the palette has eight entries and any hash of it will collide; worse, it silently reassigns everyone the day the palette or the hash changes"
+    },
+    {
+      "dont": "passing more than two letters",
+      "why": "Figma draws two. Three fit at 48 and clip at 24, so it looks correct in the story and wrong in the table"
+    }
+  ]
+}

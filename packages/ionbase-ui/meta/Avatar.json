@@ -17,15 +17,65 @@
   ],
   "variants": {
     "size": {
-      "mini": { "use": "24px — inline beside body text, dense table rows" },
-      "sm": { "use": "32px — menu rows, compact lists" },
-      "md": { "use": "the default, 40px" },
-      "lg": { "use": "48px — profile headers and detail pages" }
+      "mini": {
+        "use": "24px — inline beside body text, dense table rows"
+      },
+      "sm": {
+        "use": "32px — menu rows, compact lists"
+      },
+      "md": {
+        "use": "the default, 40px"
+      },
+      "lg": {
+        "use": "48px — profile headers and detail pages"
+      }
     },
     "shape": {
-      "circle": { "use": "the default — people" },
+      "circle": {
+        "use": "the default — people"
+      },
       "square": {
         "use": "organisations, projects, workspaces and other non-human entities"
+      }
+    },
+    "topIndicator": {
+      "neutral": {
+        "use": "no state, or a state this system has no colour for"
+      },
+      "primary": {
+        "use": "attention rather than health — a request, an invite, a mention"
+      },
+      "success": {
+        "use": "online, available, verified, complete"
+      },
+      "warning": {
+        "use": "away, idle, needs attention but is not broken"
+      },
+      "error": {
+        "use": "offline, blocked, failed"
+      },
+      "information": {
+        "use": "a neutral fact about the person — a role or a badge, not a state"
+      }
+    },
+    "bottomIndicator": {
+      "neutral": {
+        "use": "no state, or a state this system has no colour for"
+      },
+      "primary": {
+        "use": "attention rather than health — a request, an invite, a mention"
+      },
+      "success": {
+        "use": "online, available, verified, complete"
+      },
+      "warning": {
+        "use": "away, idle, needs attention but is not broken"
+      },
+      "error": {
+        "use": "offline, blocked, failed"
+      },
+      "information": {
+        "use": "a neutral fact about the person — a role or a badge, not a state"
       }
     }
   },
@@ -33,15 +83,21 @@
     "icon": {
       "accepts": "Icon",
       "note": "the last fallback — rendered only when there is neither `src` nor `initials`"
+    },
+    "topIndicatorIcon": {
+      "accepts": "Icon",
+      "note": "replaces the top indicator's default check glyph. The bottom indicator takes no glyph — Figma draws it bare, and at Mini it is 8px, which nothing legible fits inside."
     }
   },
   "a11y": {
     "guarantees": [
       "`alt` falls back to `initials`, so the avatar is never announced as an unlabelled image",
-      "a `src` that fails to load falls through to initials, then icon — never the browser's broken-image glyph"
+      "a `src` that fails to load falls through to initials, then icon — never the browser's broken-image glyph",
+      "indicator labels are announced wherever they land: folded into the avatar's own `aria-label` when there is no image (the root is `role=\"img\"` and therefore a leaf), and carried as hidden text inside each indicator when there is"
     ],
     "requires": [
-      "`alt` describing the person, not the picture — \"Ada Lovelace\", not \"profile photo\""
+      "`alt` describing the person, not the picture — \"Ada Lovelace\", not \"profile photo\"",
+      "`topIndicatorLabel` / `bottomIndicatorLabel` on any indicator that carries meaning. An indicator with no label is decorative, which is the right answer only when the same fact is already stated in text beside it."
     ]
   },
   "antiPatterns": [
@@ -53,6 +109,15 @@
       "dont": "using Avatar as a button",
       "do": "put the Avatar inside a Button or Link",
       "why": "Avatar renders a <span> with no role and takes no focus"
+    },
+    {
+      "dont": "using an indicator's colour as the only carrier of a status",
+      "do": "pass `topIndicatorLabel` / `bottomIndicatorLabel`, or state the status in text nearby",
+      "why": "WCAG 1.4.1. A green dot and a red dot are the same dot to a screen reader, and to a good share of sighted users too"
+    },
+    {
+      "dont": "reaching for `ring` to mean selected or focused",
+      "why": "it is a static brand ring from the design, not a focus indicator. Focus belongs on whatever interactive element wraps the avatar, and that element draws its own"
     }
   ]
 }

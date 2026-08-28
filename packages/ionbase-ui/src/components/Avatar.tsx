@@ -11,12 +11,7 @@ export type AvatarShape = 'circle' | 'square';
  * system says "success", and it should not say it differently here.
  */
 export type AvatarIndicatorIntent =
-  | 'neutral'
-  | 'primary'
-  | 'success'
-  | 'warning'
-  | 'error'
-  | 'information';
+  'neutral' | 'primary' | 'success' | 'warning' | 'error' | 'information';
 
 export interface AvatarProps extends React.HTMLAttributes<HTMLSpanElement> {
   /** Matches the Figma `Size` variant: Mini 24, Small 32, Medium 40, Large 48. */
@@ -209,7 +204,12 @@ export const Avatar = forwardRef<HTMLSpanElement, AvatarProps>(
           : null}
 
         {bottomIndicator
-          ? renderIndicator('bottom', bottomIndicator, bottomIndicatorLabel, null)
+          ? renderIndicator(
+              'bottom',
+              bottomIndicator,
+              bottomIndicatorLabel,
+              null,
+            )
           : null}
       </span>
     );

@@ -40,7 +40,13 @@ export type {
   AvatarGroupProps,
   AvatarSize,
   AvatarShape,
+  AvatarIndicatorIntent,
 } from './Avatar.js';
+export { AvatarGradient } from './AvatarGradient.js';
+export type {
+  AvatarGradientProps,
+  AvatarGradientColor,
+} from './AvatarGradient.js';
 export { Header } from './Header.js';
 export type { HeaderProps } from './Header.js';
 export { Logo, LogoMark } from './Logo.js';

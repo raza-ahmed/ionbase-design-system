@@ -245,3 +245,174 @@ export const BrokenImageFallsBackToInitials: Story = {
     await expect(avatar.textContent).toBe('AB');
   },
 };
+
+/**
+ * Figma's `Show Ring`, `Show Top Indicator` and `Show Bottom Indicator`.
+ *
+ * The two indicators are separate booleans in Figma because the intent lives on
+ * the nested `Status Indicator` instance, which a boolean cannot carry. Code
+ * takes the intent directly, so passing one is what shows the mark — there is
+ * no second `showIndicator` prop to keep in sync with it.
+ */
+export const RingAndIndicators: Story = {
+  render: () => (
+    <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
+      <Avatar initials="AB" alt="Ada Byron" ring />
+      <Avatar
+        initials="AB"
+        alt="Ada Byron"
+        bottomIndicator="success"
+        bottomIndicatorLabel="Online"
+      />
+      <Avatar
+        initials="AB"
+        alt="Ada Byron"
+        topIndicator="primary"
+        topIndicatorLabel="Verified"
+      />
+      <Avatar
+        src={avatarPhoto}
+        initials="AB"
+        alt="Ada Byron"
+        size="lg"
+        ring
+        topIndicator="primary"
+        topIndicatorLabel="Verified"
+        bottomIndicator="warning"
+        bottomIndicatorLabel="Away"
+      />
+      <Avatar
+        initials="AB"
+        alt="Ada Byron"
+        shape="square"
+        size="lg"
+        bottomIndicator="error"
+        bottomIndicatorLabel="Offline"
+      />
+    </div>
+  ),
+};
+
+/** Figma: 16 / 14 / 12 / 8, flush in the corner at every size. */
+export const IndicatorGeometryMatchesFigma: Story = {
+  render: () => (
+    <div>
+      {(['mini', 'sm', 'md', 'lg'] as const).map((size) => (
+        <Avatar
+          key={size}
+          size={size}
+          initials="AB"
+          alt={size}
+          bottomIndicator="success"
+        />
+      ))}
+    </div>
+  ),
+  play: async ({ canvas }) => {
+    for (const [size, avatar, dot] of [
+      ['mini', 24, 8],
+      ['sm', 32, 12],
+      ['md', 40, 14],
+      ['lg', 48, 16],
+    ] as const) {
+      const el = canvas.getByLabelText(size);
+      const indicator = el.querySelector(
+        '.ion-avatar__indicator',
+      ) as HTMLElement;
+
+      await expect(Math.round(indicator.getBoundingClientRect().width)).toBe(
+        dot,
+      );
+
+      // Flush in the corner: Figma writes the offset as `size - indicator`,
+      // which is `right: 0`. Assert the edges rather than the offset, so the
+      // test still means something if the CSS is expressed differently.
+      const box = el.getBoundingClientRect();
+      const mark = indicator.getBoundingClientRect();
+      await expect(Math.round(mark.right)).toBe(Math.round(box.right));
+      await expect(Math.round(mark.bottom)).toBe(Math.round(box.bottom));
+      await expect(Math.round(box.width)).toBe(avatar);
+    }
+  },
+};
+
+/**
+ * The ring is drawn INSIDE the avatar's edge, so it does not change the
+ * footprint. An outline or a spread shadow would, and that would quietly break
+ * the group's overlap arithmetic.
+ */
+export const RingDoesNotChangeTheFootprint: Story = {
+  render: () => (
+    <div style={{ display: 'flex', gap: '1rem' }}>
+      <Avatar initials="AB" alt="plain" size="lg" />
+      <Avatar initials="AB" alt="ringed" size="lg" ring />
+    </div>
+  ),
+  play: async ({ canvas }) => {
+    const plain = canvas.getByLabelText('plain').getBoundingClientRect();
+    const ringed = canvas.getByLabelText('ringed').getBoundingClientRect();
+
+    await expect(Math.round(ringed.width)).toBe(Math.round(plain.width));
+    await expect(Math.round(ringed.width)).toBe(48);
+  },
+};
+
+/**
+ * An indicator that means something has to say so.
+ *
+ * Where the name goes depends on whether there is an image, and that is not an
+ * inconsistency: with no image the root is `role="img"` and therefore a leaf,
+ * so nothing inside it would be announced and the names fold into its own
+ * label. With an image the root has no role, so each indicator carries its own
+ * hidden text instead.
+ */
+export const IndicatorNamesAreAnnouncedEitherWay: Story = {
+  render: () => (
+    <div style={{ display: 'flex', gap: '1rem' }}>
+      <Avatar
+        initials="AB"
+        alt="Ada Byron"
+        bottomIndicator="success"
+        bottomIndicatorLabel="Online"
+      />
+      <Avatar
+        src={avatarPhoto}
+        initials="AB"
+        alt="Grace Hopper"
+        bottomIndicator="warning"
+        bottomIndicatorLabel="Away"
+        data-testid="with-image"
+      />
+    </div>
+  ),
+  play: async ({ canvas, canvasElement }) => {
+    // No image: one name, carrying both facts.
+    const initialsAvatar = canvas.getByLabelText('Ada Byron, Online');
+    await expect(initialsAvatar).toHaveAttribute('role', 'img');
+
+    // Image: the <img> keeps the person's name, and the status rides alongside
+    // it rather than being swallowed by a role that hides its own subtree.
+    const withImage = canvas.getByTestId('with-image');
+    await expect(withImage.getAttribute('role')).toBeNull();
+    await expect(
+      (withImage.querySelector('.ion-avatar__image') as HTMLImageElement).alt,
+    ).toBe('Grace Hopper');
+    await expect(withImage.textContent).toContain('Away');
+    await expect(canvasElement.textContent).not.toContain('Online, Away');
+  },
+};
+
+/**
+ * An unlabelled indicator is decorative, and is treated as such rather than
+ * being announced as an unnamed graphic.
+ */
+export const UnlabelledIndicatorIsHidden: Story = {
+  render: () => (
+    <Avatar initials="AB" alt="Ada Byron" bottomIndicator="success" />
+  ),
+  play: async ({ canvas }) => {
+    const el = canvas.getByLabelText('Ada Byron');
+    const indicator = el.querySelector('.ion-avatar__indicator');
+    await expect(indicator).toHaveAttribute('aria-hidden', 'true');
+  },
+};

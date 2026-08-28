@@ -10,7 +10,7 @@
     "Do not hand-edit. Re-export when the Figma components change."
   ],
   "file": "gaLbGd0QNb1fUl6BjSpfBA",
-  "exported": "2026-08-21",
+  "exported": "2026-08-27",
   "components": {
     "Alert": {
       "page": "Alert",
@@ -75,6 +75,15 @@
           "options": ["Circle", "Square"],
           "default": "Circle"
         },
+        "Show Bottom Indicator#1009:50": {
+          "type": "BOOLEAN"
+        },
+        "Show Ring#1009:0": {
+          "type": "BOOLEAN"
+        },
+        "Show Top Indicator#1009:25": {
+          "type": "BOOLEAN"
+        },
         "Size": {
           "type": "VARIANT",
           "options": ["Large", "Medium", "Small", "Mini"],
@@ -84,6 +93,35 @@
           "type": "VARIANT",
           "options": ["Character", "Image", "Icon"],
           "default": "Icon"
+        }
+      }
+    },
+    "Avatar Gradient": {
+      "page": "Avatar",
+      "id": "1054:305",
+      "kind": "SET",
+      "props": {
+        "Color": {
+          "type": "VARIANT",
+          "options": [
+            "Slate",
+            "Blue",
+            "Violet",
+            "Pink",
+            "Orange",
+            "Green",
+            "Red",
+            "Light"
+          ],
+          "default": "Slate"
+        },
+        "Initials#1054:32": {
+          "type": "TEXT"
+        },
+        "Size": {
+          "type": "VARIANT",
+          "options": ["Large", "Medium", "Small", "Mini"],
+          "default": "Large"
         }
       }
     },
@@ -722,6 +760,36 @@
         },
         "Value#82:18": {
           "type": "TEXT"
+        }
+      }
+    },
+    "Status Indicator": {
+      "page": "Avatar",
+      "id": "1008:1764",
+      "kind": "SET",
+      "props": {
+        "Intent": {
+          "type": "VARIANT",
+          "options": [
+            "Neutral",
+            "Primary",
+            "Success",
+            "Warning",
+            "Error",
+            "Information"
+          ],
+          "default": "Neutral"
+        },
+        "Show Icon#1008:48": {
+          "type": "BOOLEAN"
+        },
+        "Size": {
+          "type": "VARIANT",
+          "options": ["Large", "Medium", "Small", "Mini"],
+          "default": "Large"
+        },
+        "Swap Icon#1008:49": {
+          "type": "INSTANCE_SWAP"
         }
       }
     },

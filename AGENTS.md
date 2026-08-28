@@ -882,6 +882,44 @@ are true of today's values and worthless as decisions.
 deferred result becomes a real finding again immediately; on today's values that
 is 3 defects, listed under `deferred` in the same file so nothing is lost.
 
+Note that un-deferring is now more expensive than that number suggests:
+`AvatarGradient` adds four more Dark failures that are not in the `deferred`
+array, because they are the same four pairs already recorded as Light defects
+below. Count from the gate's printed list, not from the array.
+
+### The first Light-mode defects are Figma's to fix, not this repo's
+
+`AvatarGradient` ships with **four outstanding Light defects** — white initials
+on `--color-{pink,orange,green,red}-500`, measured at 3.53, 3.6, 3.69 and 3.78
+against the 4.5 the gate enforces. Until 0.27.0 every outstanding defect was
+Dark, so a build that prints a non-zero Light count is a new thing and not a
+regression in the gate.
+
+They are recorded in `contrast-exceptions.json` as `defect` rather than
+`wcag-exempt`, which is the distinction that matters here. It would have been
+easy to call them exempt: the initials are `aria-hidden` and the accessible name
+comes from `alt`, so nothing is lost to a screen reader. That is the wrong
+reading. SC 1.4.3 is about **visible** text, and these are visible text a sighted
+user is expected to read.
+
+**Do not fix this in CSS.** The values are a `--color-<hue>-500` to `-600`
+gradient that Figma owns; the repo darkening one end locally would put the two
+into the silent disagreement the whole token pipeline exists to prevent. The fix
+is in the Figma component (`Avatar Gradient`, 1054:305) — darker endpoints, or a
+dark foreground on those four the way `Light` already has one — followed by a
+re-export. Prune the four exceptions when it lands; an exception that no longer
+fails is itself an error.
+
+There is a second trap in that component worth knowing, because the gate caught
+it and a human review would not have. Its first draft used `--text-on-color` and
+`--text-default` for the initials, which is what every other component in this
+system correctly does. Here it is a bug: the disc is built from **primitives**,
+which do not theme, while both of those text tokens do — so the dark theme
+flipped the foreground and left the background alone, and `Light` measured
+1.05:1. A foreground has to theme exactly as much as the background it sits on.
+`--color-base-white` and `--color-gray-900` are deliberate; do not "correct" them
+to the semantic tokens.
+
 It extracts 250 real pairings from 17 stylesheets by resolving the cascade —
 BEM blocks, compound modifiers, state inheritance, component-local `--ion-*`
 indirection, and alpha compositing for translucent hover overlays. Accepted

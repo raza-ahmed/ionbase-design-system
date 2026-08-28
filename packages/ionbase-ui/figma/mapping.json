@@ -647,6 +647,17 @@
         },
         "Icon#74:50": {
           "prop": "icon"
+        },
+        "Show Ring#1009:0": {
+          "prop": "ring"
+        },
+        "Show Top Indicator#1009:25": {
+          "prop": "topIndicator",
+          "note": "Figma needs a boolean because the intent lives on the nested Status Indicator instance; code takes the intent itself, so passing one is what shows the mark. The drawn instance is Intent=Primary with its check glyph, which is what `topIndicator=\"primary\"` renders."
+        },
+        "Show Bottom Indicator#1009:50": {
+          "prop": "bottomIndicator",
+          "note": "As the top indicator — the intent comes from the nested Status Indicator, which a boolean cannot carry. The drawn instance is Intent=Success with no glyph."
         }
       }
     },
@@ -680,6 +691,36 @@
         "Show Avatar 4#74:102": {
           "prop": "children",
           "note": "same"
+        }
+      }
+    },
+    "Avatar Gradient": {
+      "code": "AvatarGradient",
+      "props": {
+        "Size": {
+          "prop": "size",
+          "values": {
+            "Mini": "mini",
+            "Small": "sm",
+            "Medium": "md",
+            "Large": "lg"
+          }
+        },
+        "Color": {
+          "prop": "color",
+          "values": {
+            "Slate": "slate",
+            "Blue": "blue",
+            "Violet": "violet",
+            "Pink": "pink",
+            "Orange": "orange",
+            "Green": "green",
+            "Red": "red",
+            "Light": "light"
+          }
+        },
+        "Initials#1054:32": {
+          "prop": "initials"
         }
       }
     },
@@ -906,7 +947,8 @@
     "Menu Section Title": "No code counterpart yet. It is a heading inside a menu surface; nothing renders it.",
     "Line": "An internal part of the Scroll Progress rail, not a component a caller composes.",
     "Progress": "As Line — internal to ScrollProgress.",
-    "Progress Heading": "As Line — internal to ScrollProgress."
+    "Progress Heading": "As Line — internal to ScrollProgress.",
+    "Status Indicator": "The dot Avatar draws in its corners, and nothing else composes it. Avatar owns both instances and exposes them as `topIndicator` / `bottomIndicator`, so there is no standalone component for a caller to place — the same call Line, Progress and Progress Heading get for being internal to ScrollProgress. Map it the day a screen needs a status dot away from an avatar."
   },
   "codeUnmapped": {
     "Icon": "Figma has no Icon component; icons are vector assets dropped into slots. Icon is the React wrapper that gives any of them a size rung and an accessible label, so there is nothing on the Figma side to point at.",

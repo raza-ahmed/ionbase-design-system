@@ -77,6 +77,42 @@
       "ratio": 2.33,
       "reason": "Not a text pairing. `.ion-streaming-text__cursor` is an empty, aria-hidden <span> drawn as a block — deliberately not a text character, since some screen readers read a literal cursor glyph aloud. The gate pairs the paragraph's inherited colour against the cursor's background. Measured properly, the cursor is 7.09:1 against the page.",
       "affects": ["StreamingText"]
+    },
+    {
+      "fg": "--color-base-white",
+      "bg": "--color-pink-500",
+      "mode": "Light",
+      "kind": "defect",
+      "ratio": 3.53,
+      "reason": "Figma-side defect, not a code one. The disc is a vertical gradient from `--color-{hue}-500` down to `--color-{hue}-600`, and the 500 end is too light to carry white initials: measured at the top stop, which is where the text is hardest to read, and it does not clear 4.5:1 at the midpoint either. The four that fail are the four warm/mid-luminance hues; slate, blue, violet and light all pass.\n\nNOT EXEMPT. The initials are `aria-hidden` and the accessible name comes from `alt`, so nothing is lost to a screen reader — but SC 1.4.3 is about visible text, and these are visible text a sighted user is expected to read. Treating an aria-hidden glyph as decorative here would be the wrong reading of the criterion.\n\nThe fix belongs in the Figma component (1054:305): darken both endpoints by a step, or give these four a dark foreground the way `Light` already has one. It is deliberately not fixed in code — this repo does not own these values, and a local override would put the repo and Figma into silent disagreement, which is the failure mode the whole token pipeline exists to prevent.",
+      "affects": ["AvatarGradient"]
+    },
+    {
+      "fg": "--color-base-white",
+      "bg": "--color-orange-500",
+      "mode": "Light",
+      "kind": "defect",
+      "ratio": 3.6,
+      "reason": "Figma-side defect, not a code one. The disc is a vertical gradient from `--color-{hue}-500` down to `--color-{hue}-600`, and the 500 end is too light to carry white initials: measured at the top stop, which is where the text is hardest to read, and it does not clear 4.5:1 at the midpoint either. The four that fail are the four warm/mid-luminance hues; slate, blue, violet and light all pass.\n\nNOT EXEMPT. The initials are `aria-hidden` and the accessible name comes from `alt`, so nothing is lost to a screen reader — but SC 1.4.3 is about visible text, and these are visible text a sighted user is expected to read. Treating an aria-hidden glyph as decorative here would be the wrong reading of the criterion.\n\nThe fix belongs in the Figma component (1054:305): darken both endpoints by a step, or give these four a dark foreground the way `Light` already has one. It is deliberately not fixed in code — this repo does not own these values, and a local override would put the repo and Figma into silent disagreement, which is the failure mode the whole token pipeline exists to prevent.",
+      "affects": ["AvatarGradient"]
+    },
+    {
+      "fg": "--color-base-white",
+      "bg": "--color-green-500",
+      "mode": "Light",
+      "kind": "defect",
+      "ratio": 3.69,
+      "reason": "Figma-side defect, not a code one. The disc is a vertical gradient from `--color-{hue}-500` down to `--color-{hue}-600`, and the 500 end is too light to carry white initials: measured at the top stop, which is where the text is hardest to read, and it does not clear 4.5:1 at the midpoint either. The four that fail are the four warm/mid-luminance hues; slate, blue, violet and light all pass.\n\nNOT EXEMPT. The initials are `aria-hidden` and the accessible name comes from `alt`, so nothing is lost to a screen reader — but SC 1.4.3 is about visible text, and these are visible text a sighted user is expected to read. Treating an aria-hidden glyph as decorative here would be the wrong reading of the criterion.\n\nThe fix belongs in the Figma component (1054:305): darken both endpoints by a step, or give these four a dark foreground the way `Light` already has one. It is deliberately not fixed in code — this repo does not own these values, and a local override would put the repo and Figma into silent disagreement, which is the failure mode the whole token pipeline exists to prevent.",
+      "affects": ["AvatarGradient"]
+    },
+    {
+      "fg": "--color-base-white",
+      "bg": "--color-red-500",
+      "mode": "Light",
+      "kind": "defect",
+      "ratio": 3.78,
+      "reason": "Figma-side defect, not a code one. The disc is a vertical gradient from `--color-{hue}-500` down to `--color-{hue}-600`, and the 500 end is too light to carry white initials: measured at the top stop, which is where the text is hardest to read, and it does not clear 4.5:1 at the midpoint either. The four that fail are the four warm/mid-luminance hues; slate, blue, violet and light all pass.\n\nNOT EXEMPT. The initials are `aria-hidden` and the accessible name comes from `alt`, so nothing is lost to a screen reader — but SC 1.4.3 is about visible text, and these are visible text a sighted user is expected to read. Treating an aria-hidden glyph as decorative here would be the wrong reading of the criterion.\n\nThe fix belongs in the Figma component (1054:305): darken both endpoints by a step, or give these four a dark foreground the way `Light` already has one. It is deliberately not fixed in code — this repo does not own these values, and a local override would put the repo and Figma into silent disagreement, which is the failure mode the whole token pipeline exists to prevent.",
+      "affects": ["AvatarGradient"]
     }
   ],
   "deferred": [
