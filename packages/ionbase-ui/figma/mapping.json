@@ -947,7 +947,7 @@
     "Line": "An internal part of the Scroll Progress rail, not a component a caller composes.",
     "Progress": "As Line — internal to ScrollProgress.",
     "Progress Heading": "As Line — internal to ScrollProgress.",
-    "Status Indicator": "The dot Avatar draws in its corners, and nothing else composes it. Avatar owns both instances and exposes them as `topIndicator` / `bottomIndicator`, so there is no standalone component for a caller to place — the same call Line, Progress and Progress Heading get for being internal to ScrollProgress. Map it the day a screen needs a status dot away from an avatar."
+    ".Status Indicator": "The dot Avatar draws in its corners. Avatar owns both instances — Top is Intent=Primary with the check glyph, Bottom is Intent=Success with Show Icon off — and exposes them as `topIndicator` / `bottomIndicator`.\n\nThe leading dot in the name is Figma's own marker for a private component: it is excluded from the published library, so a designer cannot place one on a canvas even if they wanted to. That settles a question this entry used to argue: it is internal by the file's own declaration, not merely by our reading of it. The same call Line, Progress and Progress Heading get for being internal to ScrollProgress — with better evidence.\n\nMap it only if the dot is ever removed."
   },
   "codeUnmapped": {
     "Icon": "Figma has no Icon component; icons are vector assets dropped into slots. Icon is the React wrapper that gives any of them a size rung and an accessible label, so there is nothing on the Figma side to point at.",

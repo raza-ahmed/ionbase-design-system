@@ -12,6 +12,36 @@
   "file": "gaLbGd0QNb1fUl6BjSpfBA",
   "exported": "2026-08-28",
   "components": {
+    ".Status Indicator": {
+      "page": "Avatar",
+      "id": "1008:1764",
+      "kind": "SET",
+      "props": {
+        "Intent": {
+          "type": "VARIANT",
+          "options": [
+            "Neutral",
+            "Primary",
+            "Success",
+            "Warning",
+            "Error",
+            "Information"
+          ],
+          "default": "Neutral"
+        },
+        "Show Icon#1008:48": {
+          "type": "BOOLEAN"
+        },
+        "Size": {
+          "type": "VARIANT",
+          "options": ["Large", "Medium", "Small", "Mini"],
+          "default": "Large"
+        },
+        "Swap Icon#1008:49": {
+          "type": "INSTANCE_SWAP"
+        }
+      }
+    },
     "Alert": {
       "page": "Alert",
       "id": "812:1902",
@@ -759,36 +789,6 @@
         },
         "Value#82:18": {
           "type": "TEXT"
-        }
-      }
-    },
-    "Status Indicator": {
-      "page": "Avatar",
-      "id": "1008:1764",
-      "kind": "SET",
-      "props": {
-        "Intent": {
-          "type": "VARIANT",
-          "options": [
-            "Neutral",
-            "Primary",
-            "Success",
-            "Warning",
-            "Error",
-            "Information"
-          ],
-          "default": "Neutral"
-        },
-        "Show Icon#1008:48": {
-          "type": "BOOLEAN"
-        },
-        "Size": {
-          "type": "VARIANT",
-          "options": ["Large", "Medium", "Small", "Mini"],
-          "default": "Large"
-        },
-        "Swap Icon#1008:49": {
-          "type": "INSTANCE_SWAP"
         }
       }
     },
