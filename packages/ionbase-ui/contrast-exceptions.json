@@ -77,15 +77,6 @@
       "ratio": 2.33,
       "reason": "Not a text pairing. `.ion-streaming-text__cursor` is an empty, aria-hidden <span> drawn as a block — deliberately not a text character, since some screen readers read a literal cursor glyph aloud. The gate pairs the paragraph's inherited colour against the cursor's background. Measured properly, the cursor is 7.09:1 against the page.",
       "affects": ["StreamingText"]
-    },
-    {
-      "fg": "--color-red-600",
-      "bg": "--color-red-50",
-      "mode": "Light",
-      "kind": "defect",
-      "ratio": 4.36,
-      "reason": "Figma-side defect, and the last survivor of the one that took the whole component apart. The 2026-08-28 redesign inverted every disc — pale `300 -> 200 -> 50` gradient, initials carrying the colour — and that cleared pink, orange and green outright. Red lands at 4.36:1 against the 4.5 the gate asks for: closer than before, still short.\n\nThe fix already exists inside this same component. Pink's initials are on `color/pink/700` precisely because its 600 did not clear its own 50; red needs the same step and did not get it. `--color-red-700` (#ba1c1c) on `--color-red-50` measures 5.84:1, so one rung is enough and no new primitive is needed.\n\nNOT EXEMPT, for the same reason the original four were not: the initials are `aria-hidden` and the name comes from `alt`, so a screen reader loses nothing, but SC 1.4.3 is about visible text and these are visible text.\n\nDeliberately not fixed in CSS. Rebinding red's initials here would render a colour the Figma file does not contain, so Dev Mode and the app would disagree — which is the drift the token pipeline exists to prevent. Change it in `Avatar Gradient` (1054:305), re-export, and delete this entry.",
-      "affects": ["AvatarGradient"]
     }
   ],
   "deferred": [

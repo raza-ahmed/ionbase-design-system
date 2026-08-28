@@ -151,9 +151,11 @@
  * rule declares, and a colour it has to find on a different scope resolves
  * through the cascade to something that never renders together.
  *
- * Pink takes `700` where every other hue takes `600`, and that is Figma's
- * choice rather than a slip — pink's 600 is the one that does not clear AA
- * against its own 50.
+ * All seven take `600`, including pink. It took `700` here until the 2026-08-28
+ * primitive re-export, and that was not a design choice — the pink ramp shifted
+ * down a rung, so the value this component wants (#c3135c) simply moved from
+ * `700` to `600`. Renaming under a stable name is the failure the token
+ * pipeline is built to catch; it caught this one.
  */
 .ion-avatar-gradient--slate,
 .ion-avatar-gradient--blue,
@@ -191,7 +193,7 @@
   --ion-avatar-gradient-from: var(--color-pink-300);
   --ion-avatar-gradient-mid: var(--color-pink-200);
   --ion-avatar-gradient-to: var(--color-pink-50);
-  --ion-avatar-gradient-text: var(--color-pink-700);
+  --ion-avatar-gradient-text: var(--color-pink-600);
 }
 
 .ion-avatar-gradient--orange {

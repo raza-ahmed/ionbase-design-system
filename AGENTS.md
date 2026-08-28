@@ -910,6 +910,31 @@ left the background alone, and `Light` measured 1.05:1. A foreground has to
 theme exactly as much as the background it sits on. The `--color-*` values in
 `avatar-gradient.css` are deliberate.
 
+### A primitive re-export moved pink a whole rung — 2026-08-28
+
+The red ramp was retuned to fix `AvatarGradient`'s last contrast failure
+(`red/600` #dc2828 -> #c61616, and 500/700/800/900 with it). The same export
+also shifted **pink**, and that one is the dangerous shape:
+
+```
+pink/500  #f04299 -> #df2679     each value slid one rung DOWN the ramp
+pink/600  #df2679 -> #c3135c
+pink/700  #c3135c -> #a0134b
+```
+
+Nothing was renamed, so `verify-renames.mjs` had nothing to say and every
+`var(--color-pink-600)` in the repo kept resolving — to a different colour.
+`avatar-gradient.css` was pointing at `pink/700` precisely because that is where
+#c3135c used to live, and after the export it would silently have rendered
+#a0134b. It now points at `600`, like every other hue.
+
+**A value moving under a stable name is invisible to every name-based gate.**
+The one that catches it is the value checksum described under "Value drift needs
+its own checksum" — run it after any Figma session where colours were touched,
+and re-read any component that names a primitive rung directly rather than a
+semantic token. Components that used semantic aliases were unaffected here,
+which is the argument for preferring them wherever the surface actually themes.
+
 ### Figma has a `palette` collection the token export does not cover
 
 Found while re-reading `Avatar Gradient` on 2026-08-28: its initials are bound
