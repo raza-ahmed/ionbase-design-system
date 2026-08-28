@@ -2,13 +2,16 @@ import React, { forwardRef } from 'react';
 import type { AvatarSize } from './Avatar.js';
 
 /**
- * Figma's `Color` axis. Seven hues plus `light`, and every one of them is a
- * `--color-<hue>-500` -> `--color-<hue>-600` pair — the gradient needed no new
- * token, which is the tell that it was drawn from the palette rather than
- * beside it.
+ * Figma's `Color` axis. Seven hues, each a `--color-<hue>-300` -> `-200` ->
+ * `-50` run with the initials on `-600` — every rung already in the palette,
+ * which is the tell that it was drawn from the ramp rather than beside it.
+ *
+ * There was an eighth, `light`, and it is gone rather than renamed: the
+ * 2026-08-28 redesign turned every disc pale, so a separate pale one had
+ * nothing left to be.
  */
 export type AvatarGradientColor =
-  'slate' | 'blue' | 'violet' | 'pink' | 'orange' | 'green' | 'red' | 'light';
+  'slate' | 'blue' | 'violet' | 'pink' | 'orange' | 'green' | 'red';
 
 export interface AvatarGradientProps extends React.HTMLAttributes<HTMLSpanElement> {
   /** Matches the Figma `Size` variant: Mini 24, Small 32, Medium 40, Large 48. */
@@ -26,7 +29,7 @@ export interface AvatarGradientProps extends React.HTMLAttributes<HTMLSpanElemen
 }
 
 /**
- * AvatarGradient is Avatar's initials-only sibling: a lit, bevelled disc for
+ * AvatarGradient is Avatar's initials-only sibling: a tinted, bevelled disc for
  * people who have no photo.
  *
  * IT IS A SEPARATE COMPONENT BECAUSE FIGMA DRAWS A SEPARATE COMPONENT, AND THE

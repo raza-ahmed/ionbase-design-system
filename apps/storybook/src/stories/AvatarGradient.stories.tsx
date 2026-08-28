@@ -11,7 +11,6 @@ const COLORS = [
   'orange',
   'green',
   'red',
-  'light',
 ] as const;
 
 const meta: Meta<typeof AvatarGradient> = {
@@ -27,7 +26,7 @@ const meta: Meta<typeof AvatarGradient> = {
     docs: {
       description: {
         component:
-          "Measured from Figma `Avatar Gradient` — Mini 24, Small 32, Medium 40, Large 48. Circle only: the set has no `Shape` axis, because a gradient this directional does not survive a corner.\n\nEvery gradient is a `--color-<hue>-500` to `--color-<hue>-600` pair already in the palette, so the component needed no new token. The middle stop is the arithmetic midpoint of the two, placed at 60% rather than 50% — that offset is the whole shape of it, and a plain two-stop gradient reads flatter.\n\nThis is Avatar's initials-only sibling, not a replacement for it. There is no image, no icon, no square, no ring and no status indicator here; if you need any of those, use `Avatar`.\n\n**Known contrast issue.** The white initials do not clear WCAG AA against `pink`, `orange`, `green` and `red` — measured at 3.53, 3.6, 3.69 and 3.78 against a 4.5 requirement. It is a defect in the Figma component rather than in this code, it is recorded in the component's contract under `a11y.knownIssues`, and the fix belongs in Figma. Prefer `slate`, `blue`, `violet` or `light` anywhere the letters actually have to be read.",
+          "Measured from Figma `Avatar Gradient` — Mini 24, Small 32, Medium 40, Large 48. Circle only: the set has no `Shape` axis, because a gradient this directional does not survive a corner.\n\nSeven colours, each a `--color-<hue>-300` to `-200` to `-50` run down the disc with the initials on `-600`. Every rung is already in the palette, so the component needed no new token, and every stop is variable-bound in Figma rather than eyeballed.\n\nThis is Avatar's initials-only sibling, not a replacement for it. There is no image, no icon, no square, no ring and no status indicator here; if you need any of those, use `Avatar`.\n\nIt used to be the other way up — a saturated disc with white initials — and four of its colours failed WCAG AA at 3.5 to 3.8:1. That was fixed in Figma by inverting it rather than patched in CSS, which is why the pale version is the one that ships.",
       },
     },
   },
@@ -82,7 +81,7 @@ export const AlongsideAvatar: Story = {
       <AvatarGradient color="violet" initials="AB" alt="Ada Byron" />
       <AvatarGradient color="blue" initials="GH" alt="Grace Hopper" />
       <AvatarGradient color="slate" initials="KJ" alt="Katherine Johnson" />
-      <AvatarGradient color="light" initials="MW" alt="Mary Wilkes" />
+      <AvatarGradient color="green" initials="MW" alt="Mary Wilkes" />
     </div>
   ),
 };
@@ -117,9 +116,10 @@ export const RenderedGeometryMatchesFigma: Story = {
 
 /**
  * The gradient is a real gradient, not a flat fill — and the flat colour
- * underneath it is the light end, deliberately. It is the fallback if the
- * image layer never paints, and it is the worst case for white text, which is
- * what makes the contrast gate measure the pairing that needs measuring.
+ * underneath it is the palest end, deliberately. It is the fallback if the
+ * image layer never paints, and it is the worst case for the dark initials,
+ * which is what makes the contrast gate measure the pairing that needs
+ * measuring rather than a flattering one.
  */
 export const GradientPaintsOverAFlatFallback: Story = {
   render: () => <AvatarGradient color="blue" initials="AB" alt="Ada Byron" />,
@@ -129,8 +129,9 @@ export const GradientPaintsOverAFlatFallback: Story = {
 
     await expect(style.backgroundImage).toContain('linear-gradient');
     await expect(style.backgroundImage).toContain('radial-gradient');
-    // `--color-blue-500`, the top of the ramp.
-    await expect(style.backgroundColor).toBe('rgb(40, 110, 240)');
+    // `--color-blue-50`, the bottom of the run and the palest thing the
+    // initials ever sit on.
+    await expect(style.backgroundColor).toBe('rgb(235, 247, 255)');
   },
 };
 

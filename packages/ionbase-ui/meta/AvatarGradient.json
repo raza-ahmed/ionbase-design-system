@@ -1,6 +1,6 @@
 {
   "status": "stable",
-  "summary": "Avatar's initials-only sibling: a lit, bevelled disc in one of eight colours, for people with no photo.",
+  "summary": "Avatar's initials-only sibling: a tinted, bevelled disc in one of seven colours, for people with no photo.",
   "useWhen": [
     "someone has no profile image and the fallback should still look deliberate rather than empty",
     "a list of people reads better when each one is a different colour — the colour is recognisable long before the letters are legible"
@@ -23,41 +23,54 @@
   ],
   "variants": {
     "size": {
-      "mini": { "use": "24px — inline beside body text, dense table rows" },
-      "sm": { "use": "32px — menu rows, compact lists" },
-      "md": { "use": "the default, 40px" },
-      "lg": { "use": "48px — profile headers and detail pages" }
+      "mini": {
+        "use": "24px — inline beside body text, dense table rows"
+      },
+      "sm": {
+        "use": "32px — menu rows, compact lists"
+      },
+      "md": {
+        "use": "the default, 40px"
+      },
+      "lg": {
+        "use": "48px — profile headers and detail pages"
+      }
     },
     "color": {
       "slate": {
         "use": "the default. The one to reach for when nothing about the person suggests a colour"
       },
-      "blue": { "use": "as slate — one of seven, picked to tell people apart" },
-      "violet": { "use": "as slate" },
-      "pink": {
-        "use": "as slate. See `a11y.knownIssues` before putting it behind text that matters"
+      "blue": {
+        "use": "one of seven, picked to tell people apart"
       },
-      "orange": { "use": "as slate. See `a11y.knownIssues`" },
+      "violet": {
+        "use": "one of seven, picked to tell people apart"
+      },
+      "pink": {
+        "use": "one of seven, picked to tell people apart"
+      },
+      "orange": {
+        "use": "one of seven, picked to tell people apart"
+      },
       "green": {
-        "use": "as slate. Not a status — a green disc here does not mean online, and Avatar's `bottomIndicator` is what does"
+        "use": "as the rest. Not a status — a green disc here does not mean online, and Avatar's `bottomIndicator` is what does"
       },
       "red": {
-        "use": "as slate. Not an error — this is identity, not state. See `a11y.knownIssues`"
-      },
-      "light": {
-        "use": "dark text on a near-white disc, for dense surfaces where seven saturated circles would shout"
+        "use": "as the rest. Not an error — this is identity, not state"
       }
     }
   },
   "a11y": {
     "guarantees": [
-      "`alt` falls back to `initials`, so the disc is never announced as an unlabelled image"
+      "`alt` falls back to `initials`, so the disc is never announced as an unlabelled image",
+      "all seven colours clear WCAG AA for the initials against the palest end of their own gradient, which is the worst case the text sits on"
     ],
     "requires": [
       "`alt` naming the person — \"Ada Lovelace\", not \"AB\". Two letters are not a name, and that is all a screen reader would otherwise get"
     ],
     "notes": [
-      "Colour is decoration here, never information. Nothing about which of the eight a person gets should be recoverable, because a screen reader cannot recover it."
+      "Colour is decoration here, never information. Nothing about which of the seven a person gets should be recoverable, because a screen reader cannot recover it.",
+      "The first version of this component was a saturated disc with white initials and failed AA on four of its colours. It was fixed in Figma by inverting it — pale disc, coloured initials — rather than in code. Do not reintroduce the saturated version."
     ]
   },
   "antiPatterns": [

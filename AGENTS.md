@@ -882,43 +882,48 @@ are true of today's values and worthless as decisions.
 deferred result becomes a real finding again immediately; on today's values that
 is 3 defects, listed under `deferred` in the same file so nothing is lost.
 
-Note that un-deferring is now more expensive than that number suggests:
-`AvatarGradient` adds four more Dark failures that are not in the `deferred`
-array, because they are the same four pairs already recorded as Light defects
-below. Count from the gate's printed list, not from the array.
+### The gate has now moved a design, which is what it is for
 
-### The first Light-mode defects are Figma's to fix, not this repo's
+`AvatarGradient` shipped its first draft as a saturated disc — `color/<hue>/500`
+to `/600` — with white initials. Four of the seven failed AA in **Light**: pink,
+orange, green and red, at 3.53, 3.6, 3.69 and 3.78 against 4.5. They were the
+first Light defects this repo had ever carried, and they were recorded as
+`defect` rather than `wcag-exempt` on purpose. Exempt was available and wrong:
+the initials are `aria-hidden` and the accessible name comes from `alt`, so a
+screen reader loses nothing — but SC 1.4.3 is about **visible** text, and these
+are visible text a sighted user is expected to read.
 
-`AvatarGradient` ships with **four outstanding Light defects** — white initials
-on `--color-{pink,orange,green,red}-500`, measured at 3.53, 3.6, 3.69 and 3.78
-against the 4.5 the gate enforces. Until 0.27.0 every outstanding defect was
-Dark, so a build that prints a non-zero Light count is a new thing and not a
-regression in the gate.
+**They were not fixed in CSS, and that is the part worth copying.** The values
+belong to Figma; darkening one end here would have put the repo and the file
+into the silent disagreement the whole token pipeline exists to prevent. The
+component was inverted in Figma instead — a pale `300 -> 200 -> 50` disc with
+the initials carrying the colour at `600` — and re-exported. All four exceptions
+were then pruned, because an exception that no longer fails is itself an error.
 
-They are recorded in `contrast-exceptions.json` as `defect` rather than
-`wcag-exempt`, which is the distinction that matters here. It would have been
-easy to call them exempt: the initials are `aria-hidden` and the accessible name
-comes from `alt`, so nothing is lost to a screen reader. That is the wrong
-reading. SC 1.4.3 is about **visible** text, and these are visible text a sighted
-user is expected to read.
+Two things survive from it. **Do not "restore" the saturated version**; it is
+not a style preference that changed. And the trap that produced a _second_
+finding on the way through: the draft used `--text-on-color` and `--text-default`
+for the initials, which is what every other component in this system correctly
+does, and here it is a bug. The disc is built from **primitives**, which do not
+theme, while both of those text tokens do — so Dark flipped the foreground,
+left the background alone, and `Light` measured 1.05:1. A foreground has to
+theme exactly as much as the background it sits on. The `--color-*` values in
+`avatar-gradient.css` are deliberate.
 
-**Do not fix this in CSS.** The values are a `--color-<hue>-500` to `-600`
-gradient that Figma owns; the repo darkening one end locally would put the two
-into the silent disagreement the whole token pipeline exists to prevent. The fix
-is in the Figma component (`Avatar Gradient`, 1054:305) — darker endpoints, or a
-dark foreground on those four the way `Light` already has one — followed by a
-re-export. Prune the four exceptions when it lands; an exception that no longer
-fails is itself an error.
+### Figma has a `palette` collection the token export does not cover
 
-There is a second trap in that component worth knowing, because the gate caught
-it and a human review would not have. Its first draft used `--text-on-color` and
-`--text-default` for the initials, which is what every other component in this
-system correctly does. Here it is a bug: the disc is built from **primitives**,
-which do not theme, while both of those text tokens do — so the dark theme
-flipped the foreground and left the background alone, and `Light` measured
-1.05:1. A foreground has to theme exactly as much as the background it sits on.
-`--color-base-white` and `--color-gray-900` are deliberate; do not "correct" them
-to the semantic tokens.
+Found while re-reading `Avatar Gradient` on 2026-08-28: its initials are bound
+to variables named `palette/1` through `palette/7`, and nothing in
+`src/styles/tokens/` defines a `--palette-*`. Each one currently resolves to a
+`color/<hue>/600` primitive, so the component names those primitives directly
+and loses nothing today.
+
+It is still a gap, and it is the shape AGENTS.md already warns about under
+"Verifying repo ↔ Figma sync": a collection that exists in Figma and not in the
+export is invisible to every gate here, because all of them start from what was
+exported. Diff the collection list, not just the variable checksum, after any
+Figma session. If `palette` is meant to ship, export it and move
+`avatar-gradient.css` onto it.
 
 It extracts 250 real pairings from 17 stylesheets by resolving the cascade —
 BEM blocks, compound modifiers, state inheritance, component-local `--ion-*`
