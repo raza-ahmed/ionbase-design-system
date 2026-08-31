@@ -1,5 +1,42 @@
 # Changelog
 
+## 0.30.0 — 2026-09-01
+
+### Fixed — the ScrollProgress rail walked sideways as the percentage changed
+
+`__trigger` had no width, so it sized to its widest child — the percentage —
+and the percentage changes width as the reader scrolls. The ticks are centred
+inside it, so every digit the readout gained slid them half that digit's width
+across the page. Measured on the runner: at `9%` the root collapses to 24px, at
+`100%` it grows past 32, so the rail drifts about 4–5px over a full scroll. An
+indicator of position appearing to move on its own is the one failure mode this
+component cannot have.
+
+Three lines, two of them load-bearing together:
+
+- `width: var(--spacing-32)` on `__trigger`. The box no longer tracks the text,
+  so a long value overflows it symmetrically instead of resizing it.
+- `white-space: nowrap` on `__percent`. This is what makes the fixed width
+  safe — `100%` overflows 32px rather than wrapping inside it.
+- `font-variant-numeric: tabular-nums`, for the second and smaller source of
+  the same drift: `1` is narrower than `8` in most grotesks, so even 11% to 18%
+  — no digit gained — re-centred the string. A font without the `tnum` feature
+  ignores this and loses nothing the fixed width already covers.
+
+**This corrects a call made in 0.29.0.** That entry listed Figma's `w-[32px]`
+root as canvas layout rather than spec and declined to adopt it, on the grounds
+that `100%` would wrap inside 32px. The wrap was real; the conclusion was not.
+The answer is `nowrap`, not a fluid container, and the fixed width was the spec
+all along. The stylesheet says so at the point of the rule, because the
+superseded reasoning is in the git history where someone could otherwise follow
+it back and undo this.
+
+`RailHoldsStillAsDigitsChange` renders `9%` and `100%` side by side and asserts
+both roots are 32px with identical tick offsets. It measures the text with a
+`Range` rather than element rects: both percentages stretch to the full 32px,
+so an element-rect comparison passes with the bug present and proves nothing.
+Negative-tested by removing the width — `expected 24 to be 32`.
+
 ## 0.29.0 — 2026-08-31
 
 ### Fixed — ScrollProgress re-measured against the retuned Figma node

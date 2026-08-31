@@ -53,10 +53,26 @@
   display: inline-flex;
 }
 
+/*
+ * THE FIXED WIDTH IS WHAT STOPS THE RAIL WALKING SIDEWAYS
+ *
+ * Without it the trigger sizes to its widest child, which is the percentage,
+ * and the percentage changes width as the reader scrolls — 9% to 10%, 99% to
+ * 100%. The ticks are centred, so every digit gained slid them half its width
+ * across the page. It read as the rail drifting, which is the one thing an
+ * indicator of position must never appear to do on its own.
+ *
+ * `spacing/32` is Figma's own root frame (191:967). 0.29.0 declined to adopt
+ * it on the grounds that `100%` would wrap inside 32px — true, but the fix for
+ * that is `nowrap` on the percentage, not a fluid container. A long value now
+ * overflows the box symmetrically instead of resizing it, so the ticks hold
+ * still and the number grows evenly around their axis.
+ */
 .ion-scroll-progress__trigger {
   display: flex;
   flex-direction: column;
   align-items: center;
+  width: var(--spacing-32);
   gap: var(--spacing-8);
   padding: 0;
   background: none;
@@ -82,6 +98,17 @@
   font-size: var(--type-body-sm);
   line-height: var(--type-body-sm-line-height);
   text-align: center;
+  white-space: nowrap;
+
+  /*
+   * Proportional digits are a second, smaller source of the same drift: `1` is
+   * narrower than `8` in most grotesks, so even 11% to 18% — no digit gained —
+   * re-centres the string. `tabular-nums` pins every digit to one advance, so
+   * the readout only moves when it genuinely gains a digit. A font without the
+   * `tnum` feature ignores this and loses nothing the fixed width above was
+   * already covering.
+   */
+  font-variant-numeric: tabular-nums;
 }
 
 .ion-scroll-progress__percent-sign {

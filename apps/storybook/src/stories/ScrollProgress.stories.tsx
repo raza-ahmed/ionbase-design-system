@@ -102,6 +102,77 @@ export const RenderedGeometryMatchesFigma: Story = {
 };
 
 /**
+ * The rail must not move as the readout gains a digit. The trigger is a fixed
+ * `spacing/32` — Figma's own root frame — so `9%` and `100%` produce the same
+ * box and the ticks sit at the same offset in both; the number overflows
+ * symmetrically rather than resizing its container.
+ *
+ * The text-width measurement is what keeps this honest. Both percentages
+ * stretch to the full 32px, so comparing element rects would pass even with
+ * the bug present — a Range over the text nodes measures what actually
+ * rendered, and asserting the two differ proves the strings really are
+ * different widths while the ticks still line up.
+ */
+export const RailHoldsStillAsDigitsChange: Story = {
+  render: () => (
+    // `align-items: flex-start` so each root stays shrink-to-fit — a stretching
+    // wrapper would hand both of them the same width for the wrong reason and
+    // the comparison below would prove nothing.
+    <div
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'flex-start',
+        gap: '24px',
+      }}
+    >
+      <ScrollProgress progress={9} sections={SECTIONS} activeId="intro" />
+      <ScrollProgress progress={100} sections={SECTIONS} activeId="faq" />
+    </div>
+  ),
+  play: async ({ canvasElement }) => {
+    const roots = Array.from(
+      canvasElement.querySelectorAll('.ion-scroll-progress'),
+    ) as HTMLElement[];
+    await expect(roots).toHaveLength(2);
+
+    const textWidth = (el: Element) => {
+      const range = document.createRange();
+      range.selectNodeContents(el);
+      return range.getBoundingClientRect().width;
+    };
+
+    const measured = roots.map((root) => {
+      const rootRect = root.getBoundingClientRect();
+      const percent = root.querySelector(
+        '.ion-scroll-progress__percent',
+      ) as HTMLElement;
+      const tick = root.querySelector(
+        '.ion-scroll-progress__tick',
+      ) as HTMLElement;
+      return {
+        label: percent.textContent,
+        rootWidth: Math.round(rootRect.width),
+        tickOffset: tick.getBoundingClientRect().left - rootRect.left,
+        text: textWidth(percent),
+      };
+    });
+
+    const [short, long] = measured;
+    await expect(short.label).toBe('9%');
+    await expect(long.label).toBe('100%');
+
+    // The strings genuinely differ in width — otherwise the rest is vacuous.
+    await expect(long.text).toBeGreaterThan(short.text);
+
+    // ...yet the container and the ticks are identical.
+    await expect(short.rootWidth).toBe(32);
+    await expect(long.rootWidth).toBe(32);
+    await expect(long.tickOffset).toBeCloseTo(short.tickOffset, 1);
+  },
+};
+
+/**
  * The percentage is two type sizes, not one: the digits sit on `type/body-sm`
  * and the `%` a rung down on `type/caption`. It reads as an export artefact in
  * Figma and is not — the two spans carry different bound size variables.
