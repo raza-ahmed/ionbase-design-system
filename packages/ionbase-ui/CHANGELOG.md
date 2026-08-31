@@ -1,5 +1,72 @@
 # Changelog
 
+## 0.29.0 — 2026-08-31
+
+### Fixed — ScrollProgress re-measured against the retuned Figma node
+
+Sizes, colours and spacing were retuned on `Progress` (191:968) and
+`Progress Heading` (191:1021). Measured against both, plus the exported `Line`
+strokes, and every difference is below.
+
+|              | Was                | Now                                                                  |
+| ------------ | ------------------ | -------------------------------------------------------------------- |
+| Tick width   | `spacing/32`       | `spacing/24`                                                         |
+| Tick ends    | square             | `radius/full`                                                        |
+| Rail gap     | `spacing/12`       | `spacing/8`                                                          |
+| Panel gap    | `spacing/12`       | `spacing/4`                                                          |
+| Panel width  | `min-width: 220px` | `width: 220px`                                                       |
+| Panel shadow | none               | `Shadow/md`                                                          |
+| Row padding  | `2px 8px`          | `spacing/6` `spacing/8`                                              |
+| Row text     | `text/secondary`   | `text/tertiary` → `text/default` hovered → `text/secondary` selected |
+| Row overflow | wraps              | ellipsis                                                             |
+
+The tick colours did **not** change: the exported strokes are still `#DDE0E4`
+and `#9CA3B0`, which are `border/strong` and `border/stronger`. Worth stating,
+because "the rail looks different" invites re-deriving those and they were
+already right.
+
+**The percentage is two type sizes, not one.** The digits stay on
+`type/body-sm`; the `%` drops a rung to `type/caption`. That reads as an export
+artefact and is not — the two spans carry different bound size variables. It is
+the one change here that needed markup rather than CSS, so `__percent` now
+wraps a `__percent-sign` span.
+
+**The percentage no longer lifts to `text/secondary` on hover.** The retuned
+`Status=Hover` variant keeps it tertiary and lets the panel opening be the
+whole feedback, so the rule is gone rather than kept as a local invention.
+
+Two things in the frame are canvas layout rather than spec and were not
+adopted: the root's fixed `w-[32px]`, which would wrap at `100%`, and the
+panel's `top: -64px`, where the existing vertical centring survives a variable
+row count and -64 does not. One conflict resolved in favour of the component
+set: the `Progress` instance overrides its selected row to `text/default`,
+while `Progress Heading`'s own Selected variant is `text/secondary`. The set
+defines all three states coherently, so the set wins.
+
+### Fixed — the flyout is capped at 60vh instead of growing without limit
+
+Figma draws seven rows and stops, because a Figma frame has no viewport to
+overflow. A real document index is as long as the document, and the panel is
+centred on the rail, so an uncapped one grows off the top and bottom of the
+screen at once — and the rows nearest the active section are the first to
+leave. `60vh` is not a new number: `.ion-popover__body` already caps against
+the viewport at exactly that.
+
+`overscroll-behavior: contain` goes with it, and matters more here than in most
+flyouts. This component reports reading position, so a wheel gesture chaining
+into the document once the list bottoms out would scroll the page — moving the
+very percentage the reader opened the panel to act on.
+
+**`flex-shrink: 0` on the rows is what makes the cap scroll instead of squash.**
+A column flex item is normally protected from shrinking past its content by the
+automatic minimum size, but that protection is dropped for any item whose
+`overflow` is not `visible` — and the ellipsis above sets `overflow: hidden` on
+every row. Without it the panel meets its `max-height` by compressing forty
+rows to 14px each and never overflows at all, which no assertion about
+`max-height`, `overflow-y` or `scrollHeight` would catch.
+`LongListScrollsRatherThanGrowing` asserts the row height for that reason, and
+was negative-tested by removing the line.
+
 ## 0.28.0 — 2026-08-28
 
 ### Fixed — Secondary and Primary Soft rest on the wrong shadow family

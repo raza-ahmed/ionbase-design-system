@@ -11,6 +11,12 @@ const SECTIONS = [
   { id: 'faq', label: 'FAQ' },
 ];
 
+/** Longer than any viewport will show — the panel caps and scrolls. */
+const MANY_SECTIONS = Array.from({ length: 40 }, (_, i) => ({
+  id: `s${i}`,
+  label: `Section ${i + 1}`,
+}));
+
 const meta: Meta<typeof ScrollProgress> = {
   title: 'Components/ScrollProgress',
   component: ScrollProgress,
@@ -19,7 +25,7 @@ const meta: Meta<typeof ScrollProgress> = {
     docs: {
       description: {
         component:
-          'Measured from Figma `Line` / `Progress` / `Progress Heading` (191:927).\n\n`progress` and `activeId` are props, not something this component tracks itself — the same reason `Select` takes `value` rather than reading scroll position from the DOM. Which container scrolls and how "the active section" is defined are facts only the consuming app has.\n\nThe disclosure follows the WAI-ARIA Disclosure pattern (`aria-expanded` + `aria-controls`), not a menu role: its rows sit in normal tab order rather than the roving-tabindex arrow-key model `role="menu"` would promise.',
+          'Measured from Figma `Line` / `Progress` (191:968) / `Progress Heading` (191:1021), re-synced August 2026 after the sizes, colours and spacing were retuned on the canvas.\n\n`progress` and `activeId` are props, not something this component tracks itself — the same reason `Select` takes `value` rather than reading scroll position from the DOM. Which container scrolls and how "the active section" is defined are facts only the consuming app has.\n\nThe disclosure follows the WAI-ARIA Disclosure pattern (`aria-expanded` + `aria-controls`), not a menu role: its rows sit in normal tab order rather than the roving-tabindex arrow-key model `role="menu"` would promise.',
       },
     },
   },
@@ -56,8 +62,11 @@ export const NearComplete: Story = {
   ),
 };
 
-/** Figma: tick width 32, 2px stroke (`border-width/thick`, not the default
- *  1px every other hairline in the system uses), 12px gap between ticks. */
+/** Figma: tick width 24 (`spacing/24` — the instance override, not the `Line`
+ *  component's own 32px frame), 2px stroke (`border-width/thick`, not the
+ *  default 1px every other hairline in the system uses), 8px gap between
+ *  ticks. The panel is a fixed 220 with 4px between rows and 6px/8px inside
+ *  each one. */
 export const RenderedGeometryMatchesFigma: Story = {
   render: () => (
     <ScrollProgress progress={32} sections={SECTIONS} activeId="setup" />
@@ -68,13 +77,118 @@ export const RenderedGeometryMatchesFigma: Story = {
     ) as HTMLElement;
     const cs = getComputedStyle(tick);
 
-    await expect(Math.round(tick.getBoundingClientRect().width)).toBe(32);
+    await expect(Math.round(tick.getBoundingClientRect().width)).toBe(24);
     await expect(cs.height).toBe('2px');
 
     const rail = canvasElement.querySelector(
       '.ion-scroll-progress__rail',
     ) as HTMLElement;
-    await expect(getComputedStyle(rail).rowGap).toBe('12px');
+    await expect(getComputedStyle(rail).rowGap).toBe('8px');
+
+    const panel = canvasElement.querySelector(
+      '.ion-scroll-progress__panel',
+    ) as HTMLElement;
+    const panelStyle = getComputedStyle(panel);
+    await expect(panelStyle.rowGap).toBe('4px');
+    await expect(Math.round(panel.getBoundingClientRect().width)).toBe(220);
+
+    const heading = canvasElement.querySelector(
+      '.ion-scroll-progress__heading',
+    ) as HTMLElement;
+    const headingStyle = getComputedStyle(heading);
+    await expect(headingStyle.paddingTop).toBe('6px');
+    await expect(headingStyle.paddingLeft).toBe('8px');
+  },
+};
+
+/**
+ * The percentage is two type sizes, not one: the digits sit on `type/body-sm`
+ * and the `%` a rung down on `type/caption`. It reads as an export artefact in
+ * Figma and is not — the two spans carry different bound size variables.
+ */
+export const PercentSignIsARungDown: Story = {
+  render: () => (
+    <ScrollProgress progress={32} sections={SECTIONS} activeId="setup" />
+  ),
+  play: async ({ canvasElement }) => {
+    const percent = canvasElement.querySelector(
+      '.ion-scroll-progress__percent',
+    ) as HTMLElement;
+    const sign = canvasElement.querySelector(
+      '.ion-scroll-progress__percent-sign',
+    ) as HTMLElement;
+
+    await expect(percent.textContent).toBe('32%');
+    await expect(getComputedStyle(percent).fontSize).toBe('14px');
+    await expect(getComputedStyle(sign).fontSize).toBe('12px');
+  },
+};
+
+/**
+ * The panel is a fixed 220 wide, so a heading longer than that truncates
+ * rather than widening the flyout — Figma's own mockup shows every row
+ * ellipsised. The full label stays in the accessible name, so a screen reader
+ * still gets all of it.
+ */
+export const LongHeadingsTruncate: Story = {
+  render: () => (
+    <ScrollProgress
+      progress={32}
+      sections={[
+        { id: 'intro', label: 'Progress tile for the articles truncated' },
+        { id: 'setup', label: 'Progress tile for the articles completed' },
+        { id: 'usage', label: 'Progress tile for the articles in review' },
+      ]}
+      activeId="setup"
+    />
+  ),
+  play: async ({ canvasElement }) => {
+    const heading = canvasElement.querySelector(
+      '.ion-scroll-progress__heading',
+    ) as HTMLElement;
+    const cs = getComputedStyle(heading);
+
+    await expect(cs.textOverflow).toBe('ellipsis');
+    await expect(cs.whiteSpace).toBe('nowrap');
+    // Overflowing, not merely capable of it — the row is genuinely clipped.
+    await expect(heading.scrollWidth).toBeGreaterThan(heading.clientWidth);
+  },
+};
+
+/**
+ * A real document index is as long as the document, so the panel caps at 60vh
+ * — the same rung `.ion-popover__body` uses — and scrolls past it. Figma draws
+ * seven rows and stops, because a Figma frame has no viewport to overflow.
+ *
+ * The row-height assertion is the load-bearing one. Every row sets
+ * `overflow: hidden` for its ellipsis, which drops the automatic minimum size
+ * that normally stops a column flex item from shrinking — so without
+ * `flex-shrink: 0` the panel would meet its cap by squashing forty rows
+ * rather than by overflowing, and every other assertion here would still
+ * pass. Negative-tested by removing that line.
+ */
+export const LongListScrollsRatherThanGrowing: Story = {
+  render: () => (
+    <ScrollProgress progress={12} sections={MANY_SECTIONS} activeId="s3" />
+  ),
+  play: async ({ canvasElement }) => {
+    const panel = canvasElement.querySelector(
+      '.ion-scroll-progress__panel',
+    ) as HTMLElement;
+    const cs = getComputedStyle(panel);
+
+    await expect(cs.overflowY).toBe('auto');
+    await expect(cs.overscrollBehaviorY).toBe('contain');
+
+    await expect(panel.getBoundingClientRect().height).toBeLessThanOrEqual(
+      window.innerHeight * 0.6 + 1,
+    );
+    await expect(panel.scrollHeight).toBeGreaterThan(panel.clientHeight);
+
+    const heading = canvasElement.querySelector(
+      '.ion-scroll-progress__heading',
+    ) as HTMLElement;
+    await expect(Math.round(heading.getBoundingClientRect().height)).toBe(34);
   },
 };
 

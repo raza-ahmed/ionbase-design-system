@@ -1,7 +1,9 @@
 /*
  * Scroll Progress
  *
- * Measured from Figma `Line` / `Progress` / `Progress Heading` (191:927).
+ * Measured from Figma `Line` / `Progress` (191:968) / `Progress Heading`
+ * (191:1021), re-synced August 2026 after the sizes, colours and spacing were
+ * retuned on the canvas.
  *
  * FIGMA SPECIFIES STATES, NOT SCROLL-TRACKING
  *
@@ -13,11 +15,20 @@
  * scrolls, whether the page is one document or many, and how "the active
  * section" is defined are all facts only the consuming app has.
  *
- * TICKS ARE 2px, NOT 1px — MEASURED, NOT A TYPO
+ * TICKS ARE 2px TALL AND 24px WIDE, WITH ROUND ENDS
  *
  * Figma's `Line` stroke is 2, `border-width/thick`, not `/default`. Easy to
  * misread as a mistake since every hairline elsewhere in the system is 1px;
- * checked against the node rather than assumed.
+ * checked against the node rather than assumed. The instances are 24px wide
+ * (`spacing/24`) even though the `Line` component's own frame is still 32 —
+ * the instance override is what renders, and it is what this file follows.
+ * The stroke is `stroke-linecap="round"`, hence `--radius-full`.
+ *
+ * THE PERCENTAGE IS TWO TYPE SIZES, NOT ONE
+ *
+ * The number sits on `type/body-sm` and the `%` sign a rung down on
+ * `type/caption`. It looks like a rendering artefact in the Figma export and
+ * is not — the two spans carry different bound size variables.
  *
  * THE FLYOUT IS A DISCLOSURE, NOT A MENU
  *
@@ -59,25 +70,37 @@
   outline-offset: 2px;
 }
 
+/*
+ * `--text-tertiary` in every state. The rail used to lift to
+ * `--text-secondary` on hover; the retuned `Status=Hover` variant keeps the
+ * percentage tertiary and lets the panel opening be the whole feedback, so
+ * that rule is gone rather than kept as a local invention.
+ */
 .ion-scroll-progress__percent {
   color: var(--text-tertiary);
   font-family: var(--font-family-sans);
   font-size: var(--type-body-sm);
   line-height: var(--type-body-sm-line-height);
-  transition: color var(--ion-duration-base) var(--ion-ease-out);
+  text-align: center;
+}
+
+.ion-scroll-progress__percent-sign {
+  font-size: var(--type-caption);
+  line-height: var(--type-caption-line-height);
 }
 
 .ion-scroll-progress__rail {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--spacing-12);
+  gap: var(--spacing-8);
 }
 
 .ion-scroll-progress__tick {
-  width: var(--spacing-32);
+  width: var(--spacing-24);
   height: var(--border-width-thick);
   background-color: var(--border-strong);
+  border-radius: var(--radius-full);
   transition: background-color var(--ion-duration-base) var(--ion-ease-out);
 }
 
@@ -85,22 +108,31 @@
   background-color: var(--border-stronger);
 }
 
-@media (hover: hover) {
-  .ion-scroll-progress__trigger:hover .ion-scroll-progress__percent {
-    color: var(--text-secondary);
-  }
-}
-
-.ion-scroll-progress__trigger[data-hovered='true']
-  .ion-scroll-progress__percent {
-  color: var(--text-secondary);
-}
-
 /*
  * Hidden via visibility + opacity, not `display: none` — the transition needs
  * a property to animate, and `visibility` still pulls the panel's buttons out
  * of tab order and the accessibility tree while closed, same as a native
  * `<details>` collapses its content.
+ *
+ * `width`, not `min-width`: Figma fixes the panel at 220 and truncates each
+ * row rather than letting a long heading widen the flyout — see the ellipsis
+ * on `__heading`.
+ *
+ * CAPPED AT 60vh, THE SAME RUNG AS THE POPOVER BODY
+ *
+ * Figma draws seven rows and stops, because a Figma frame has no viewport to
+ * overflow. A real document index is as long as the document, and an
+ * uncapped centred panel grows off both edges of the screen at once — the
+ * rows a reader most wants are the ones that leave first. `60vh` is not a new
+ * number: `.ion-popover__body` already caps against the viewport at exactly
+ * that, and this is the same problem.
+ *
+ * `overscroll-behavior: contain` matters more here than in most flyouts. This
+ * component reports reading position, so letting a wheel gesture chain into
+ * the document once the list bottoms out would scroll the page — and move the
+ * very percentage the reader opened the panel to act on. Keyboard users are
+ * unaffected either way: the rows are real buttons in tab order, so Tab
+ * scrolls each one into view without touching the wheel.
  */
 .ion-scroll-progress__panel {
   position: absolute;
@@ -109,12 +141,16 @@
   z-index: 10;
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-12);
-  min-width: 220px;
+  gap: var(--spacing-4);
+  width: 220px;
+  max-height: 60vh;
+  overflow-y: auto;
+  overscroll-behavior: contain;
   padding: var(--spacing-8);
   background-color: var(--surface-default);
   border: var(--border-width-default) solid var(--border-default);
   border-radius: var(--radius-md);
+  box-shadow: var(--ion-shadow-shadow-md);
   opacity: 0;
   visibility: hidden;
   pointer-events: none;
@@ -132,39 +168,60 @@
   transform: translateY(-50%) translateX(0);
 }
 
+/*
+ * `display: block`, not `flex`: `text-overflow: ellipsis` does not apply to an
+ * anonymous flex item, so a flex row here would clip the label with no ellipsis
+ * at all. Padding plus the body-sm line height gives Figma's 32px row exactly.
+ *
+ * `flex-shrink: 0` is what makes the panel's `max-height` scroll instead of
+ * squash, and the reason is not obvious. A column flex item is normally
+ * protected from shrinking past its content by the automatic minimum size —
+ * but that protection is dropped for any item whose `overflow` is not
+ * `visible`, and the ellipsis above sets `overflow: hidden` on every row. So
+ * the rows would have compressed toward 0 to fit the cap, and the panel would
+ * never have overflowed at all.
+ */
 .ion-scroll-progress__heading {
-  display: flex;
-  align-items: center;
-  padding: var(--spacing-2) var(--spacing-8);
+  display: block;
+  flex-shrink: 0;
+  width: 100%;
+  padding: var(--spacing-6) var(--spacing-8);
   background-color: transparent;
   border: var(--border-width-default) solid transparent;
   border-radius: var(--radius-md);
-  color: var(--text-secondary);
+  color: var(--text-tertiary);
   font-family: var(--font-family-sans);
   font-size: var(--type-body-sm);
   line-height: var(--type-body-sm-line-height);
   font-weight: var(--font-weight-regular);
   text-align: left;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
   cursor: pointer;
   transition:
     background-color var(--ion-duration-base) var(--ion-ease-out),
-    border-color var(--ion-duration-base) var(--ion-ease-out);
+    border-color var(--ion-duration-base) var(--ion-ease-out),
+    color var(--ion-duration-base) var(--ion-ease-out);
 }
 
 @media (hover: hover) {
   .ion-scroll-progress__heading:hover {
     background-color: var(--surface-muted);
     border-color: var(--border-strong);
+    color: var(--text-default);
   }
 }
 
 .ion-scroll-progress__heading[data-hovered='true'] {
   background-color: var(--surface-muted);
   border-color: var(--border-strong);
+  color: var(--text-default);
 }
 
 .ion-scroll-progress__heading--selected {
   background-color: var(--surface-muted);
+  color: var(--text-secondary);
 }
 
 .ion-scroll-progress__heading:focus-visible {

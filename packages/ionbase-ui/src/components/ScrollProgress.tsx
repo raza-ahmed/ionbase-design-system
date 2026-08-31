@@ -154,8 +154,12 @@ export const ScrollProgress = forwardRef<HTMLDivElement, ScrollProgressProps>(
           }
           onClick={() => setIsOpen((v) => !v)}
         >
+          {/* The number and the sign are separate spans because Figma binds
+              them to different size variables — `type/body-sm` for the digits,
+              `type/caption` for the `%`. */}
           <span className="ion-scroll-progress__percent" aria-hidden="true">
-            {roundedProgress}%
+            {roundedProgress}
+            <span className="ion-scroll-progress__percent-sign">%</span>
           </span>
           <span className="ion-scroll-progress__rail" aria-hidden="true">
             {sections.map((section) => (

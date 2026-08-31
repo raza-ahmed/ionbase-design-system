@@ -38,6 +38,10 @@
     {
       "dont": "deriving `progress` from a scroll listener without throttling",
       "why": "this re-renders the rail on every scroll frame"
+    },
+    {
+      "dont": "expecting every section to be visible at once",
+      "why": "the panel caps at 60vh and scrolls — a document-length index would otherwise grow off both edges of the viewport, taking the rows nearest the active one with it"
     }
   ]
 }
