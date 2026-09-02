@@ -22,11 +22,25 @@ const cssVar = (tokenPath) => `var(--${tokenPath.split('/').join('-')})`;
 
 /**
  * `Body/Large Emphasis` -> `.ion-text-body-lg` + `.ion-text--emphasis`.
+ * `Caption Semibold`    -> `.ion-text-caption` + `.ion-text--semibold`.
  *
- * The Emphasis pairs differ from their base in font-weight and nothing else, so
- * they become one modifier rather than four near-duplicate classes. Keeping them
- * separate would mean a change to Body/Large has to be made twice.
+ * A modifier suffix differs from its base in font-weight and nothing else, so
+ * each becomes one modifier rather than a set of near-duplicate classes.
+ * Keeping them separate would mean a change to Body/Large has to be made twice.
+ *
+ * Adding a weight rung is therefore a one-line change here — but only because
+ * the checks below refuse to fold a suffix that is not weight-only, or whose
+ * members disagree about which weight they carry.
  */
+const WEIGHT_MODIFIERS = {
+  ' Emphasis': 'ion-text--emphasis',
+  ' Semibold': 'ion-text--semibold',
+};
+
+/** The modifier suffix a style name carries, or null for a base style. */
+const modifierSuffix = (name) =>
+  Object.keys(WEIGHT_MODIFIERS).find((suffix) => name.endsWith(suffix)) ?? null;
+
 const CLASS_NAMES = {
   Display: 'ion-text-display',
   'Heading/H1': 'ion-text-h1',
@@ -50,10 +64,11 @@ const { textStyles } = loadTextStyles();
 const errors = [];
 const blocks = [];
 
-// Verify each Emphasis variant really is weight-only before folding it away.
+// Verify each modifier variant really is weight-only before folding it away.
 for (const [name, style] of Object.entries(textStyles)) {
-  if (!name.endsWith(' Emphasis')) continue;
-  const base = textStyles[name.replace(/ Emphasis$/, '')];
+  const suffix = modifierSuffix(name);
+  if (!suffix) continue;
+  const base = textStyles[name.slice(0, -suffix.length)];
   if (!base) {
     errors.push(`${name}: no base style to pair with`);
     continue;
@@ -64,6 +79,27 @@ for (const [name, style] of Object.entries(textStyles)) {
   if (differs.length) {
     errors.push(
       `${name} differs from its base in ${differs.join(', ')} — it is not a weight-only modifier and needs its own class`,
+    );
+  }
+}
+
+/*
+ * One class per suffix is only correct while every style carrying that suffix
+ * resolves to the same weight. `Caption Semibold` at 600 beside a hypothetical
+ * `Body/Small Semibold` at 700 would silently render one of them wrong.
+ */
+for (const [suffix, className] of Object.entries(WEIGHT_MODIFIERS)) {
+  const members = Object.entries(textStyles).filter(([n]) =>
+    n.endsWith(suffix),
+  );
+  if (!members.length) {
+    errors.push(`.${className} has no ${suffix.trim()} styles to fold`);
+    continue;
+  }
+  const weights = [...new Set(members.map(([, st]) => st.fontWeight))];
+  if (weights.length > 1) {
+    errors.push(
+      `.${className} folds ${suffix.trim()} styles that disagree on weight: ${weights.join(', ')}`,
     );
   }
 }
@@ -112,7 +148,7 @@ for (const [name, style] of Object.entries(textStyles)) {
 
 // Any exported style with no class is a gap, not a silent omission.
 const unmapped = Object.keys(textStyles).filter(
-  (n) => !CLASS_NAMES[n] && !n.endsWith(' Emphasis'),
+  (n) => !CLASS_NAMES[n] && !modifierSuffix(n),
 );
 if (unmapped.length) {
   errors.push(`no class mapping for: ${unmapped.join(', ')}`);
@@ -124,7 +160,17 @@ if (errors.length) {
   process.exit(1);
 }
 
-const emphasisWeight = textStyles['Body/Default Emphasis'].fontWeight;
+const modifierBlocks = Object.entries(WEIGHT_MODIFIERS).map(
+  ([suffix, className]) => {
+    const [, sample] = Object.entries(textStyles).find(([n]) =>
+      n.endsWith(suffix),
+    );
+    return (
+      `/* Weight-only modifier, pairs with any body class. */\n` +
+      `.${className} {\n  font-weight: ${cssVar(sample.fontWeight)};\n}`
+    );
+  },
+);
 
 const header = [
   '/**',
@@ -136,19 +182,13 @@ const header = [
   ' */',
 ].join('\n');
 
-const css =
-  [
-    header,
-    ...blocks,
-    '/* Weight-only modifier, pairs with any body class. */\n' +
-      `.ion-text--emphasis {\n  font-weight: ${cssVar(emphasisWeight)};\n}`,
-  ].join('\n\n') + '\n';
+const css = [header, ...blocks, ...modifierBlocks].join('\n\n') + '\n';
 
 mkdirSync(OUT, { recursive: true });
 writeFileSync(join(OUT, 'typography.css'), css);
 
 console.log(
-  `Typography: ${blocks.length} classes + 1 emphasis modifier -> dist/css/typography.css`,
+  `Typography: ${blocks.length} classes + ${modifierBlocks.length} weight modifiers -> dist/css/typography.css`,
 );
 
 if (primitiveBound.length) {

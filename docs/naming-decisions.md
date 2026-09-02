@@ -8,6 +8,100 @@ Newest first.
 
 ---
 
+## 2026-09-03 — `Emphasis` is a name for Medium, so the second weight needed its own
+
+**Text styles 21 -> 23. `Body/Default Semibold`, `Caption Semibold`. One new
+generated class modifier, `.ion-text--semibold`.**
+
+Drawing the agentic tier turned up two components whose CSS asked for a weight
+the Figma ramp could not supply: Approval Gate's title (`type-body` at
+`font-weight-semibold`) and Citation List's label (`type-caption`, same weight).
+The code had been right since it shipped. Figma had no style to match it, so
+both were bound to the weight variable directly — a second source of truth
+sitting beside a text style that would silently overrule it, which is the exact
+failure `--ion-button-font-size` was deleted for.
+
+### The ramp already had semibold, in the other shape
+
+`Heading/H1` through `H6` and `Display` are all `font/weight/semibold` at the
+base. Body and Caption top out at `font/weight/medium`. So semibold was never
+missing from the system — it was missing from the half of the system that
+expresses weight as a modifier rather than baking it in.
+
+That asymmetry is worth keeping rather than flattening. A heading is semibold
+because it is a heading; there is no lighter H3 worth having. A body style is
+regular by default and takes weight to mark a span of it, so weight there is a
+modifier on a size. Making headings take `.ion-text-h3 .ion-text--semibold` would
+add a required modifier to every heading in the system to buy nothing.
+
+### Why not another intensity word
+
+The obvious move is a second abstract rung — `Strong` above `Emphasis`. It was
+rejected because `Emphasis` is already not an intensity in this system: it is a
+name for Medium, and `build-typography.mjs` folds every `* Emphasis` style into
+one `.ion-text--emphasis` class on exactly that assumption. A `Strong` above it
+gives two abstract words in a fixed order that must be memorised, and the order
+is only recoverable by opening the generator.
+
+`Semibold` names the weight it binds. `font/weight/semibold` -> `Semibold` ->
+`.ion-text--semibold` reads the same at all three layers, and a reader who knows
+what semibold means needs no key. The cost is that the suffix vocabulary is now
+mixed — one abstract name inherited, one literal — which is worse than either
+pure scheme and better than renaming `Emphasis` across 8 styles, 46 components
+and every `.ion-text--emphasis` in the wild.
+
+**The rule: a new weight rung is named for its weight.** `Emphasis` stays as it
+is, grandfathered.
+
+### This does not contradict the retired-words list
+
+The spec retires `emphasis` and `bold` and says do not reintroduce them. Both
+survive here, and neither is a violation: that list governs **variable names** —
+the `surface` / `text` / `border` role ladders, where `emphasis` was a synonym of
+`strong` and `bold` of `stronger`. Text styles are not variables (see 2026-08-03,
+which is the whole reason they need their own gate), and font weight is not a
+role ladder. `font/weight/bold` is a weight, not an intensity, and stays.
+
+The two namespaces are allowed to use the same word for different things. What
+is not allowed is a variable named `text/emphasis`.
+
+### The generator had already decided this was a gap
+
+`build-typography.mjs` ends with a check whose comment reads "Any exported style
+with no class is a gap, not a silent omission" — every exported style must map to
+a class or be a known modifier suffix. Adding the two styles in Figma and
+re-running `export-text-styles.js` failed the tokens build immediately:
+
+```
+Typography build failed — 1 problem(s):
+  no class mapping for: Body/Default Semibold, Caption Semibold
+```
+
+This is the gate working. A design system where a designer can add a Figma style
+that reaches production as nothing at all is one where the two halves drift by
+default, and the drift is only found by someone wondering why their class does
+not exist.
+
+### Folding a suffix needs two proofs, not one
+
+The `Emphasis` fold was guarded by one check: each variant must differ from its
+base in weight alone. Generalising to a table of suffixes needs a second, because
+one class per suffix is only correct while every member agrees on the weight:
+
+```
+.ion-text--semibold folds Semibold styles that disagree on weight:
+  font/weight/semibold, font/weight/bold
+```
+
+Without it, adding `Body/Small Semibold` at 700 would emit one modifier at 600
+and render one of the two wrong, with nothing to say so. Both checks are
+negative-tested on a deliberate break.
+
+Adding a third rung is now a one-line change to `WEIGHT_MODIFIERS` — and the
+checks are what make that safe rather than merely short.
+
+---
+
 ## 2026-08-06 — a ladder indexed by value cannot be appended to
 
 **383 variables; names `4048145791`. Primitives 141 -> 142, Semantics 106 -> 107.**
