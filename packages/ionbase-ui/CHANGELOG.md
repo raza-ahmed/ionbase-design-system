@@ -1,5 +1,88 @@
 # Changelog
 
+## 0.32.0 — 2026-09-03
+
+### Added — the agentic tier is drawn in Figma
+
+The nine components that shipped in 0.24.0 and 0.25.0 existed only in code.
+Every one of their stylesheets opened `NOT DRAWN IN FIGMA`, and every one sat in
+`figma/mapping.json` under `codeUnmapped` reading "Agentic tier. Not yet drawn
+in Figma." They are drawn now — 36 variants across six pages:
+
+| Component             | Variants | Axes                    |
+| --------------------- | -------- | ----------------------- |
+| `AgentStop`           | 9        | Size × State, + Focused |
+| `ApprovalGate`        | 12       | Risk × Status           |
+| `AgentActivityStep`   | 5        | Status                  |
+| `AgentActivity`       | 1        | the `<ol>` container    |
+| `StreamingText`       | 2        | Streaming               |
+| `ConfidenceIndicator` | 3        | Level                   |
+| `Citation`            | 2        | State, + Focused        |
+| `CitationListItem`    | 1        |                         |
+| `CitationList`        | 1        |                         |
+
+**No new tokens, and that is the result rather than the shortcut.** All four
+collections already held every variable the nine stylesheets reference, in the
+roles they reference them in — nothing needed inventing and the code/Figma
+conflict list came back empty. The tier was built on existing semantics on
+purpose, and this is the first time that has been checked from the other side.
+
+`codeUnmapped` is now the eight permanent code-side compositions and nothing
+else: `Table`, `TableHead`, `TableBody`, `RadioGroup`, `ToastProvider`, `Icon`,
+`LogoMark`, `ScrollProgress`. `verify-figma-map` checks 192 properties against
+both sides.
+
+Nothing in the React API changed. This release is Figma coverage, one geometry
+fix, and one addition to the type ramp.
+
+### Added — a second weight rung on the body ramp, `Semibold`
+
+`ApprovalGate`'s title and `CitationList`'s label ask for
+`font-weight-semibold` at body and caption size. The code had been right since
+it shipped; Figma had no style to match, so both were bound to the weight
+variable directly — a second source of truth beside a text style that would
+silently overrule it.
+
+Adds `Body/Default Semibold` and `Caption Semibold` (21 text styles → 23) and
+one generated utility, `.ion-text--semibold`, which pairs with any body class
+the way `.ion-text--emphasis` does.
+
+Named for the weight rather than as a second abstract rung above `Emphasis`,
+because `Emphasis` is not an intensity in this system — it is a name for Medium,
+and the generator folds every `* Emphasis` style into one class on exactly that
+assumption. `docs/naming-decisions.md` records the reasoning, including why this
+does not contradict the spec's retired-words list.
+
+### Fixed — AgentStop's Large rung was 56px tall, not 48
+
+The ramp shipped as 32/40/56 and only two of its three rungs were the number
+they claimed. Padding and `min-height` both claim the block axis and the larger
+wins: Large set `padding: var(--spacing-12) var(--spacing-20)` over a 48px
+`min-height`, so it computed 12 + 32 + 12 = 56. Small had the same bug pointing
+the other way — 4 + 20 + 4 = 28 against a 32 floor — invisible only because
+there the floor won.
+
+`Button` hit this and wrote the rule at the point of the declaration: "deriving
+height from padding instead is what left all three sizes 2px off." So the fix is
+Button's — pad the inline axis only, let `min-height` own the block axis, and
+the control still grows rather than clips if a label wraps. Large also moves
+from `type-body-lg` to `type-body-md`, again matching Button: body-lg is the
+XLarge rung, and a 32px line box in a 48px control leaves no room for the
+control to read as one.
+
+Type across the ramp is now 14/16/18 — the Emphasis body styles, which is what
+the file already claimed.
+
+**Not followed, and worth recording:** four text _nodes_ in Figma bind
+Primitives rather than their Semantics aliases — `Full Card / Headline`
+(`font/weight/600`), `Full Card / Description` (`400`) and `Badge / Label`
+twice (`500`). This is the defect `docs/naming-decisions.md` recorded on
+2026-08-03, but on nodes rather than styles, so `build-typography.mjs`'s
+`primitiveBound` warning — which inspects styles only — cannot see it. It
+renders identically today and stops re-branding the moment a second brand mode
+exists. Rebinding them needs a node-level gate to go with it, which is a larger
+change than this release.
+
 ## 0.31.0 — 2026-09-02
 
 ### Fixed — the Neutral badge rested on `surface/muted`, and Figma had moved it
