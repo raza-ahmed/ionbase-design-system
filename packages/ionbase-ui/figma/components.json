@@ -10,7 +10,7 @@
     "Do not hand-edit. Re-export when the Figma components change."
   ],
   "file": "gaLbGd0QNb1fUl6BjSpfBA",
-  "exported": "2026-08-28",
+  "exported": "2026-09-02",
   "components": {
     ".Status Indicator": {
       "page": "Avatar",
@@ -39,6 +39,59 @@
         },
         "Swap Icon#1008:49": {
           "type": "INSTANCE_SWAP"
+        }
+      }
+    },
+    "Agent Activity": {
+      "page": "Agent Activity",
+      "id": "1162:246",
+      "kind": "COMPONENT",
+      "props": {}
+    },
+    "Agent Activity Step": {
+      "page": "Agent Activity",
+      "id": "1161:287",
+      "kind": "SET",
+      "props": {
+        "Detail#1162:6": {
+          "type": "TEXT"
+        },
+        "Label#1162:0": {
+          "type": "TEXT"
+        },
+        "Show Detail#1162:12": {
+          "type": "BOOLEAN"
+        },
+        "Status": {
+          "type": "VARIANT",
+          "options": ["Pending", "Active", "Done", "Failed", "Skipped"],
+          "default": "Pending"
+        }
+      }
+    },
+    "Agent Stop": {
+      "page": "Agent Stop",
+      "id": "1156:296",
+      "kind": "SET",
+      "props": {
+        "Focused#1156:20": {
+          "type": "BOOLEAN"
+        },
+        "Label#1156:0": {
+          "type": "TEXT"
+        },
+        "Size": {
+          "type": "VARIANT",
+          "options": ["Small", "Medium", "Large"],
+          "default": "Small"
+        },
+        "State": {
+          "type": "VARIANT",
+          "options": ["Default", "Hover", "Stopping"],
+          "default": "Default"
+        },
+        "Stopping Label#1156:10": {
+          "type": "TEXT"
         }
       }
     },
@@ -85,6 +138,44 @@
           "type": "BOOLEAN"
         },
         "Title#812:0": {
+          "type": "TEXT"
+        }
+      }
+    },
+    "Approval Gate": {
+      "page": "Approval Gate",
+      "id": "1160:423",
+      "kind": "SET",
+      "props": {
+        "Approve Label#1160:65": {
+          "type": "TEXT"
+        },
+        "Detail#1160:13": {
+          "type": "TEXT"
+        },
+        "Edit Label#1160:52": {
+          "type": "TEXT"
+        },
+        "Reject Label#1160:39": {
+          "type": "TEXT"
+        },
+        "Risk": {
+          "type": "VARIANT",
+          "options": ["Low", "Medium", "High"],
+          "default": "Low"
+        },
+        "Show Detail#1160:26": {
+          "type": "BOOLEAN"
+        },
+        "Show Edit#1160:78": {
+          "type": "BOOLEAN"
+        },
+        "Status": {
+          "type": "VARIANT",
+          "options": ["Pending", "Approved", "Rejected", "Expired"],
+          "default": "Pending"
+        },
+        "Title#1160:0": {
           "type": "TEXT"
         }
       }
@@ -316,6 +407,68 @@
             "Indeterminate-disabled"
           ],
           "default": "Unchecked"
+        }
+      }
+    },
+    "Citation": {
+      "page": "Citation",
+      "id": "1167:247",
+      "kind": "SET",
+      "props": {
+        "Focused#1167:3": {
+          "type": "BOOLEAN"
+        },
+        "Index#1167:0": {
+          "type": "TEXT"
+        },
+        "State": {
+          "type": "VARIANT",
+          "options": ["Default", "Hover"],
+          "default": "Default"
+        }
+      }
+    },
+    "Citation List": {
+      "page": "Citation",
+      "id": "1168:246",
+      "kind": "COMPONENT",
+      "props": {
+        "Label#1168:4": {
+          "type": "TEXT"
+        }
+      }
+    },
+    "Citation List Item": {
+      "page": "Citation",
+      "id": "1168:241",
+      "kind": "COMPONENT",
+      "props": {
+        "Index#1168:0": {
+          "type": "TEXT"
+        },
+        "Passage#1168:2": {
+          "type": "TEXT"
+        },
+        "Show Passage#1168:3": {
+          "type": "BOOLEAN"
+        },
+        "Source#1168:1": {
+          "type": "TEXT"
+        }
+      }
+    },
+    "Confidence Indicator": {
+      "page": "Confidence Indicator",
+      "id": "1166:262",
+      "kind": "SET",
+      "props": {
+        "Basis#1166:0": {
+          "type": "TEXT"
+        },
+        "Level": {
+          "type": "VARIANT",
+          "options": ["Low", "Medium", "High"],
+          "default": "Low"
         }
       }
     },
@@ -788,6 +941,21 @@
           "default": "Default"
         },
         "Value#82:18": {
+          "type": "TEXT"
+        }
+      }
+    },
+    "Streaming Text": {
+      "page": "Streaming Text",
+      "id": "1164:248",
+      "kind": "SET",
+      "props": {
+        "Streaming": {
+          "type": "VARIANT",
+          "options": ["True", "False"],
+          "default": "True"
+        },
+        "Text#1164:0": {
           "type": "TEXT"
         }
       }

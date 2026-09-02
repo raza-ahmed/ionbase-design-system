@@ -937,6 +937,176 @@
           "prop": "end"
         }
       }
+    },
+    "Agent Stop": {
+      "code": "AgentStop",
+      "props": {
+        "Size": {
+          "prop": "size",
+          "values": {
+            "Small": "sm",
+            "Medium": "md",
+            "Large": "lg"
+          }
+        },
+        "State": {
+          "ignore": "Default/Hover are CSS states; Stopping is the drawn form of isStopping"
+        },
+        "Label#1156:0": {
+          "prop": "label"
+        },
+        "Stopping Label#1156:10": {
+          "prop": "stoppingLabel"
+        },
+        "Focused#1156:20": {
+          "ignore": "drawn focus ring; :focus-visible in code"
+        }
+      }
+    },
+    "Approval Gate": {
+      "code": "ApprovalGate",
+      "props": {
+        "Risk": {
+          "prop": "risk",
+          "values": {
+            "Low": "low",
+            "Medium": "medium",
+            "High": "high"
+          }
+        },
+        "Status": {
+          "prop": "status",
+          "values": {
+            "Pending": "pending",
+            "Approved": "approved",
+            "Rejected": "rejected",
+            "Expired": "expired"
+          }
+        },
+        "Title#1160:0": {
+          "prop": "title"
+        },
+        "Detail#1160:13": {
+          "prop": "children"
+        },
+        "Show Detail#1160:26": {
+          "prop": "children",
+          "note": "false means no children passed"
+        },
+        "Reject Label#1160:39": {
+          "prop": "rejectLabel"
+        },
+        "Edit Label#1160:52": {
+          "prop": "editLabel"
+        },
+        "Approve Label#1160:65": {
+          "prop": "approveLabel"
+        },
+        "Show Edit#1160:78": {
+          "prop": "onEdit",
+          "note": "the Edit button renders only when onEdit is supplied"
+        }
+      }
+    },
+    "Agent Activity": {
+      "code": "AgentActivity",
+      "props": {}
+    },
+    "Agent Activity Step": {
+      "code": "AgentActivityStep",
+      "props": {
+        "Status": {
+          "prop": "status",
+          "values": {
+            "Pending": "pending",
+            "Active": "active",
+            "Done": "done",
+            "Failed": "failed",
+            "Skipped": "skipped"
+          }
+        },
+        "Label#1162:0": {
+          "prop": "children"
+        },
+        "Detail#1162:6": {
+          "prop": "detail"
+        },
+        "Show Detail#1162:12": {
+          "prop": "detail",
+          "note": "false means detail is omitted"
+        }
+      }
+    },
+    "Streaming Text": {
+      "code": "StreamingText",
+      "props": {
+        "Streaming": {
+          "prop": "isStreaming",
+          "values": {
+            "True": true,
+            "False": false
+          }
+        },
+        "Text#1164:0": {
+          "prop": "children"
+        }
+      }
+    },
+    "Citation": {
+      "code": "Citation",
+      "props": {
+        "State": {
+          "ignore": "Default/Hover is :hover in code"
+        },
+        "Index#1167:0": {
+          "prop": "index"
+        },
+        "Focused#1167:3": {
+          "ignore": "drawn focus ring; :focus-visible in code"
+        }
+      }
+    },
+    "Citation List": {
+      "code": "CitationList",
+      "props": {
+        "Label#1168:4": {
+          "prop": "label"
+        }
+      }
+    },
+    "Citation List Item": {
+      "code": "CitationListItem",
+      "props": {
+        "Index#1168:0": {
+          "prop": "index"
+        },
+        "Source#1168:1": {
+          "prop": "source"
+        },
+        "Passage#1168:2": {
+          "prop": "children"
+        },
+        "Show Passage#1168:3": {
+          "prop": "children",
+          "note": "false means no children passed"
+        }
+      }
+    },
+    "Confidence Indicator": {
+      "code": "ConfidenceIndicator",
+      "props": {
+        "Level": {
+          "prop": "level",
+          "values": {
+            "Low": "low",
+            "Medium": "medium",
+            "High": "high"
+          }
+        },
+        "Basis#1166:0": {
+          "prop": "basis"
+        }
+      }
     }
   },
   "unmapped": {
@@ -957,15 +1127,6 @@
     "Table": "Figma draws Table Row and Table Cell; the table itself is the caller assembling them. Density, the one property Table owns, is mapped on Table Cell.",
     "TableHead": "As Table — a code-side grouping element. Figma expresses a header row as a Table Row variant, not a separate component.",
     "TableBody": "As TableHead.",
-    "ToastProvider": "Figma draws Toast, which is mapped. The provider is placement, queueing and the live region — runtime behaviour with nothing to draw.",
-    "AgentStop": "Agentic tier. Not yet drawn in Figma.",
-    "ApprovalGate": "Agentic tier. Not yet drawn in Figma.",
-    "StreamingText": "Agentic tier. Not yet drawn in Figma.",
-    "AgentActivity": "Agentic tier. Not yet drawn in Figma.",
-    "AgentActivityStep": "Agentic tier. Not yet drawn in Figma.",
-    "Citation": "Agentic tier. Not yet drawn in Figma.",
-    "CitationList": "Agentic tier. Not yet drawn in Figma.",
-    "CitationListItem": "Agentic tier. Not yet drawn in Figma.",
-    "ConfidenceIndicator": "Agentic tier. Not yet drawn in Figma."
+    "ToastProvider": "Figma draws Toast, which is mapped. The provider is placement, queueing and the live region — runtime behaviour with nothing to draw."
   }
 }
