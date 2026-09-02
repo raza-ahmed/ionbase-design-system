@@ -1,10 +1,29 @@
 /*
  * AgentStop
  *
- * NOT DRAWN IN FIGMA. This component has no Figma counterpart yet, so the
- * measurements are borrowed rather than invented: the size ramp, radius, focus
- * ring and icon sizing are Button's, read from the same tokens. When Figma
- * draws it, this file should need values changed, not structure.
+ * Drawn in Figma as `Agent Stop` (1156:296), Size x State + Focused. The size
+ * ramp, radius and focus ring are Button's, read from the same tokens.
+ *
+ * HEIGHT COMES FROM `min-height`, NEVER FROM VERTICAL PADDING
+ *
+ * This file used to set `padding: <v> <h>` on all three sizes. Padding and
+ * min-height then both claim the height, and the larger wins: Large asked for
+ * 48 but computed 12 + 32 + 12 = 56, so the ramp shipped as 32/40/56 and only
+ * two of its three rungs were the ones it meant. Button hit this exact bug and
+ * says so at the point of the rule — "deriving height from padding instead is
+ * what left all three sizes 2px off" — so the fix is Button's fix: pad the
+ * inline axis only and let `min-height` own the block axis. The ramp is
+ * 32/40/48, and it now grows rather than jumps if a label ever wraps.
+ *
+ * Large is `type-body-md`, not `type-body-lg`, for the same reason Button's
+ * Large is: body-lg is the XLarge rung, and a 32px line box in a 48px control
+ * leaves no room to look like a control.
+ *
+ * THE GLYPH RUNS ONE RUNG BELOW BUTTON'S ICON LADDER — xs/sm/md against
+ * Button's xs/md/lg. Deliberate, and the one place this does not follow
+ * Button: the glyph is a plain hollow square, which carries far more visual
+ * weight than a detailed Lucide glyph at the same size. Matched rung for rung
+ * it out-weighs the label it is meant to sit beside.
  *
  * DELIBERATELY NOT `surface/error`. Stopping a run is normal and expected, and
  * you can start it again. Colouring it like a delete teaches hesitation about
@@ -18,7 +37,7 @@
   justify-content: center;
   gap: var(--spacing-8);
   min-height: var(--spacing-40);
-  padding: var(--spacing-8) var(--spacing-16);
+  padding-inline: var(--spacing-16);
   border: var(--border-width-default) solid var(--border-strong);
   border-radius: var(--radius-md);
   background-color: var(--surface-default);
@@ -86,7 +105,7 @@
 
 .ion-agent-stop--sm {
   min-height: var(--spacing-32);
-  padding: var(--spacing-4) var(--spacing-12);
+  padding-inline: var(--spacing-12);
   font-size: var(--type-body-sm);
   line-height: var(--type-body-sm-line-height);
 }
@@ -98,9 +117,9 @@
 
 .ion-agent-stop--lg {
   min-height: var(--spacing-48);
-  padding: var(--spacing-12) var(--spacing-20);
-  font-size: var(--type-body-lg);
-  line-height: var(--type-body-lg-line-height);
+  padding-inline: var(--spacing-20);
+  font-size: var(--type-body-md);
+  line-height: var(--type-body-md-line-height);
 }
 
 .ion-agent-stop--lg .ion-agent-stop__glyph {
