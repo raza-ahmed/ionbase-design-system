@@ -1,5 +1,38 @@
 # Changelog
 
+## 0.31.0 — 2026-09-02
+
+### Fixed — the Neutral badge rested on `surface/muted`, and Figma had moved it
+
+`Badge` (152:73) was retuned so that every neutral variant binds `surface/page`
+rather than `surface/muted`. Light mode goes #f0f2f4 → #f6f8f9; dark goes
+#1d2735 → #131923. One declaration in `badge.css`, and no token values changed
+— this is which token the component reads, not what the token is worth.
+
+The reason is worth keeping, because it is the kind of thing a later
+"consistency" pass undoes: the five coloured intents each sit on a `*-subtle`
+surface a shade off the page, so a neutral badge sitting a shade the _other_
+way read as a seventh intent instead of the absence of one. On `surface/page`
+it is the border that draws the badge and the fill that disappears, which is
+what "no judgement attached" should look like.
+
+Contrast improves in both modes: `text/secondary` on `surface/page` is 9.53:1
+light and 13.31:1 dark, where `surface/muted` gave 9.04:1 and 11.38:1, against
+a 4.5 floor. The gate re-derives the pair from the stylesheet and needed no
+exception.
+
+**Two things in Figma the code deliberately does not follow yet:**
+
+- `Intent=Neutral, Size=Small, Shape=Pill` (615:49) is still on
+  `surface/default` — white — where the other seventeen neutral variants are on
+  `surface/page`. One outlier out of eighteen reads as a variant that was missed
+  rather than a decision, so the code takes the majority. It costs nothing to
+  leave: `Badge` has no size axis.
+- The Figma component has grown `Size` (Small/Medium/Large) and `Shape`
+  (Pill/Rounded) axes; `Badge` in code is still single-size and always a pill.
+  That is a real gap, and a larger change than a colour — it needs the meta
+  contract, the Figma map and a size ramp, not a stylesheet edit.
+
 ## 0.30.0 — 2026-09-01
 
 ### Fixed — the ScrollProgress rail walked sideways as the percentage changed

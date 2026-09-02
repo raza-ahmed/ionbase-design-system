@@ -64,8 +64,18 @@
 }
 
 /* Intent modifiers */
+
+/*
+ * Neutral sits on `surface/page`, not `surface/muted`. Figma retuned it there
+ * on 2026-09-02 (152:43, and every Medium/Large/Rounded neutral variant), which
+ * lifts the light-mode fill from #f0f2f4 to #f6f8f9 and drops the dark one from
+ * #1d2735 to #131923. The point of the move is that a neutral badge should read
+ * as unfilled next to the five coloured intents — those all sit on a `*-subtle`
+ * surface a shade off the page, so a neutral one a shade the OTHER way looked
+ * like a seventh intent rather than the absence of one.
+ */
 .ion-badge--neutral {
-  background-color: var(--surface-muted);
+  background-color: var(--surface-page);
   color: var(--text-secondary);
   border-color: var(--border-default);
 }
