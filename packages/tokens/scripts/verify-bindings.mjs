@@ -20,20 +20,35 @@
  *   STALE         A snapshot older than the variable export it is checked
  *                 against is not evidence of anything.
  *
- * THE TWO SANCTIONED PRIMITIVE BINDINGS
+ * THE SANCTIONED PRIMITIVE BINDINGS
  *
  *   spacing/*   Components bind these directly. A 16px gap means 16px in every
  *               brand, so routing it through Semantics would add a layer that
  *               never varies. This is stated in the architecture doc, not an
  *               oversight.
  *
- *   font/*      Typography reaches components through Figma TEXT STYLES, and a
- *               text style binds primitives. The style owns the typography —
- *               that is the whole reason `build-typography.mjs` exists as a
- *               separate pipeline. Flagging it here would fail the build for
- *               something no component author can fix.
+ *   color/*, on `Avatar/Avatar Gradient` ONLY. Its disc is built from the raw
+ *               hue ramp on purpose: the gradient does not theme, so a semantic
+ *               foreground over it would flip in dark mode and leave the
+ *               background alone. An earlier draft did exactly that and the
+ *               contrast gate caught it at 1.05:1. The reasoning is written at
+ *               the point of the declaration in `avatar-gradient.css` under
+ *               "NOT AN OVERSIGHT", and the exemption is scoped to that one
+ *               component so nothing else inherits it.
  *
  * Anything else from Primitives is a real defect.
+ *
+ * `font/*` WAS SANCTIONED AND NO LONGER IS. The carve-out existed because text
+ * styles used to bind primitives, so flagging font here would have failed the
+ * build for something no component author could fix. The 2026-08-03 entry in
+ * naming-decisions.md repaired that — every text style now binds the Semantics
+ * aliases — but the carve-out outlived its reason and went on hiding the case
+ * it was never meant to cover: a text NODE with no style, binding
+ * `font/weight/600` straight from Primitives. `Full Card` and `Badge` were
+ * doing exactly that. Both now carry text styles instead.
+ *
+ * A carve-out is only as good as the reason written next to it. When the reason
+ * is repaired, the carve-out is the next defect.
  *
  * WHY THE SNAPSHOT CAN LIE. `figma/export-bindings.js` must set the current
  * page, walk `.children`, and reveal hidden instances before reading. Skipping
@@ -60,8 +75,17 @@ for (const c of collections) {
   }
 }
 
-/** Primitive families a component may bind directly. */
-const ALLOWED_PRIMITIVE = /^(spacing|font)\//;
+/** Primitive families ANY component may bind directly. */
+const ALLOWED_PRIMITIVE = /^spacing\//;
+
+/**
+ * Per-component exemptions, each earned and each documented at the point of the
+ * declaration in the component's own stylesheet. Deliberately not a family-wide
+ * allowance: `color/*` from Primitives is a defect everywhere else.
+ */
+const COMPONENT_EXEMPT = {
+  'Avatar/Avatar Gradient': /^color\//,
+};
 
 const ghosts = [];
 const wrongTier = [];
@@ -85,7 +109,12 @@ for (const [component, bindings] of Object.entries(snapshot.components)) {
       );
       continue;
     }
-    if (collection === 'Primitives' && !ALLOWED_PRIMITIVE.test(token)) {
+    const exempt = COMPONENT_EXEMPT[component];
+    if (
+      collection === 'Primitives' &&
+      !ALLOWED_PRIMITIVE.test(token) &&
+      !(exempt && exempt.test(token))
+    ) {
       wrongTier.push(
         `${component} :: ${token} — components bind Interface, Semantics or Breakpoint`,
       );
@@ -111,7 +140,8 @@ bad += fail(
 bad += fail(
   'WRONG TIER',
   wrongTier,
-  'Only spacing/* and font/* may be bound from Primitives — see the header.',
+  'Only spacing/* may be bound from Primitives by any component, plus the\n' +
+    'per-component exemptions listed in COMPONENT_EXEMPT — see the header.',
 );
 bad += fail(
   'SNAPSHOT DISAGREES WITH EXPORT',

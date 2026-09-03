@@ -434,10 +434,17 @@ from the accessibility tree, so an announcement placed in one is never made.
 
 ## Patterns — the tier that owns the states nothing else does
 
-`patterns/*.json` describes compositions: `DataTable`, `Form`, `PageShell`,
-`DestructiveConfirm`, `SettingsPanel`, `Wizard`. They are built and verified into
-`dist/meta/patterns/` by `scripts/build-patterns.mjs` and published beside the
-component pages.
+`patterns/*.json` describes compositions. Six for classic screens — `DataTable`,
+`Form`, `PageShell`, `DestructiveConfirm`, `SettingsPanel`, `Wizard` — and three
+for the agentic tier: `AgentRun`, `HumanApproval`, `AssistantAnswer`. They are
+built and verified into `dist/meta/patterns/` by `scripts/build-patterns.mjs` and
+published beside the component pages.
+
+**A component tier with no recipes is a tier an agent will compose wrongly.** The
+agentic components shipped two releases before their patterns did, and in between
+the system had nine contracts for audience C and no answer to how they go
+together. Adding a component to that tier means asking which recipe it belongs
+to, or writing one.
 
 **A pattern is a documented composition, not a component.** Nothing in
 `patterns/` ships React code, and nothing in it may define a token. That is Brad

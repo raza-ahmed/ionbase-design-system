@@ -83,7 +83,7 @@ const NOT_GEOMETRY = [
   /^container\//,
   /^section\//,
   /^(text|icon|surface|border|ring)\//,
-  /^(primary|neutral|success|warning|error|information|chart|base|alpha)\//,
+  /^(primary|neutral|success|warning|error|information|chart|palette|base|alpha)\//,
 ];
 
 const offScale = [];

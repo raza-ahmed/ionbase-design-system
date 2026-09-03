@@ -18,6 +18,11 @@ export default tseslint.config(
       // Machine-written token data — reviewed as a Figma diff, not as source.
       'packages/tokens/src/dtcg/**',
       'packages/tokens/src/generated/**',
+      // A/B candidates. This is the output UNDER TEST — a model's answer to a
+      // prompt, graded by evals/score/score.mjs against its own rule set. Held
+      // to the repo's lint config it would fail on its own terms and, worse,
+      // tempt someone to fix it, which is tampering with the measurement.
+      'evals/results/**',
     ],
   },
   {

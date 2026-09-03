@@ -48,6 +48,19 @@ jobs:
       - name: Build
         run: pnpm build
 
+      # `build` covers tokens:audit, tokens:tier and tokens:verify. It does NOT
+      # cover tokens:bindings or tokens:geometry, which read the Figma binding
+      # snapshot rather than the variable export — so until this step existed
+      # they ran only when someone remembered to. The snapshot went a month
+      # stale and a carve-out outlived its reason without anything noticing.
+      #
+      # This checks the snapshot, not Figma. A snapshot that is not re-exported
+      # after a Figma change passes while being wrong, which is what the STALE
+      # rule inside verify-bindings.mjs exists to catch — re-run
+      # figma/export-bindings.js whenever components change.
+      - name: Token gates
+        run: pnpm --filter @ionbase-ui/tokens tokens:gate
+
       - name: Lint
         run: pnpm lint
 

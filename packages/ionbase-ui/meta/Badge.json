@@ -22,15 +22,40 @@
       "neutral": {
         "use": "the default — a category with no judgement attached"
       },
-      "primary": { "use": "brand emphasis: Beta, New, Pro" },
-      "success": { "use": "a terminal good state: Active, Paid, Passed" },
+      "primary": {
+        "use": "brand emphasis: Beta, New, Pro"
+      },
+      "success": {
+        "use": "a terminal good state: Active, Paid, Passed"
+      },
       "warning": {
         "use": "needs attention but is not broken: Pending, Expiring"
       },
       "error": {
         "use": "a failed or blocked state: Failed, Overdue, Rejected"
       },
-      "information": { "use": "a neutral fact worth marking: Draft, Scheduled" }
+      "information": {
+        "use": "a neutral fact worth marking: Draft, Scheduled"
+      }
+    },
+    "size": {
+      "sm": {
+        "use": "the default. 20px tall on caption type — a marker beside a row, a cell or a title"
+      },
+      "md": {
+        "use": "24px on body-sm. Use when the badge sits in body copy and a caption-sized label would read as a footnote"
+      },
+      "lg": {
+        "use": "32px. A page-level status the eye should reach before the prose, not a marker in a list"
+      }
+    },
+    "shape": {
+      "pill": {
+        "use": "the default. Fully round at every size"
+      },
+      "rounded": {
+        "use": "a squarer corner that steps with the size — 4/6/8. Use when the badge sits in a grid of rectangular things and a pill reads as the odd one out"
+      }
     }
   },
   "slots": {

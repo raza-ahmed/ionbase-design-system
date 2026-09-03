@@ -1,5 +1,125 @@
 # Changelog
 
+## 0.34.0 — 2026-09-03
+
+### Added — the agentic tier gets recipes: `AgentRun`, `HumanApproval`, `AssistantAnswer`
+
+Nine components shipped in 0.24.0 and 0.25.0 for audience C. Not one of them
+appeared in a pattern. All six recipes — `DataTable`, `Form`, `PageShell`,
+`DestructiveConfirm`, `SettingsPanel`, `Wizard` — are the classic enterprise
+set, so the tier this system exists for was the only tier with no documented
+composition. An agent had nine contracts and no answer to "how do these go
+together".
+
+**`AgentRun`** — `AgentActivity` + `AgentActivityStep` + `StreamingText` +
+`AgentStop`. The stop is on screen from the first frame, not after a delay:
+the moment a user most wants to stop is the moment they realise the agent
+misunderstood, which is usually within the first second.
+
+**`HumanApproval`** — `ApprovalGate` in place, inside the step log, with the
+run still visible behind it. Not in a modal: the evidence for the decision is
+the log, and a person cannot judge an action they can no longer see. `risk` is
+set from consequence, never from the model's confidence.
+
+**`AssistantAnswer`** — `StreamingText` + `Citation` + `CitationList` +
+`ConfidenceIndicator`. Inline citations at the claims they support, not gathered
+at the end, where the list documents that sources exist rather than what they
+establish.
+
+**The states are the point of the tier, and these three have the ones nothing
+else names.** `AgentRun.partial` is the stopped run: every completed step kept,
+the interrupted one marked `skipped`, and whatever was already written left on
+screen — a stopped agent has usually already changed something, and a UI that
+clears itself hides the side effects the user stopped it to prevent.
+`HumanApproval` carries a fourth required state, `expired`, whose rule is that
+silence defaults to not doing the thing. `AssistantAnswer.partial` is the answer
+built on half its sources, which is indistinguishable from a complete one unless
+`basis` says "3 of 7 sources; 4 unavailable".
+
+No React code and no tokens — a pattern is a documented composition, and a tier
+that grows its own tokens has forked the tier below it. All five failure modes
+of the existing gate were re-tested against these files: a prop that is not a
+prop, a variant value not in the union, a prop on a component the recipe does
+not compose, a state with no `why`, and a reference to a pattern that does not
+exist.
+
+### Fixed — `typecheck` raced the build that rewrites its source files
+
+`ionbase-icons`' `generate.mjs` `rmSync`s `src/icons/` and rewrites all 1,753
+files; `ionbase-ui`'s `sync-tokens` writes into `src/tokens/`. `typecheck` had
+no `dependsOn`, so Turbo scheduled it alongside those builds and `tsc` read the
+directory mid-delete — `Cannot find module './icons/zodiac-pisces.js'` for a
+file that was on disk before the run and after it.
+
+It only surfaced from a cold cache, and only sometimes, which is the worst
+property a check can have: the same race can report success just as easily.
+`typecheck` now depends on its own package's build. Verified with three forced
+runs.
+
+### Fixed — the repo linted its own A/B candidates
+
+`evals/results/**` is model output under test, graded by `evals/score/score.mjs`
+against its own rule set. Held to the repo's ESLint config it failed the root
+`lint` task and — worse — invited someone to fix it, which is tampering with the
+measurement. Now ignored at the root config, next to the generated token data.
+
+## 0.33.0 — 2026-09-03
+
+### Added — Badge grows the Size and Shape axes Figma already had
+
+`Badge` gains `size` (`sm` | `md` | `lg`) and `shape` (`pill` | `rounded`),
+closing the gap 0.31.0 recorded: the Figma component had both axes and the code
+was single-size and always a pill.
+
+| Size | Height       | Inline pad  | Gap | Label pad | Type    | Icon            |
+| ---- | ------------ | ----------- | --- | --------- | ------- | --------------- |
+| `sm` | `spacing/20` | `spacing/4` | 4   | 2         | caption | `icon-size/2xs` |
+| `md` | `spacing/24` | `spacing/4` | 4   | 4         | body-sm | `icon-size/sm`  |
+| `lg` | `spacing/32` | `spacing/6` | 6   | 6         | body-sm | `icon-size/md`  |
+
+`sm` is the default and matches Figma's default variant, so existing call sites
+keep the size they had. `rounded` steps its corner with the size — `radius/xs`,
+`/sm`, `/md` against heights of 20, 24, 32 — so the corner stays proportional;
+`pill` is `radius/full` at every size.
+
+**THIS REVERSES A DELIBERATE DECISION, WHICH IS WORTH SAYING PLAINLY.**
+`figma/mapping.json` did not merely lack these props — it declined them, in
+writing: _"Pill and Rounded are one radius token apart and code ships the pill
+only. Add the prop when a real screen needs both, not before."_ and _"Badge
+inherits its type from the text it labels — the same call Link makes."_ That is
+a YAGNI position with a stated trigger, and the trigger has not obviously
+fired — no screen in this repo needs `rounded` today. It was reversed because
+the axes were asked for, not because the condition was met. If the two-axis
+Badge turns out to be unused in six months, this entry is the reason to look at
+removing it rather than assuming it was always wanted.
+
+### Fixed — height came from padding, and the label had no slot
+
+Two measurement errors surfaced while adding the ramp, both pre-existing.
+
+`min-height` now comes from the height token. Figma binds each size's height to
+`spacing/20|24|32` and the 2px vertical padding it also carries is inert,
+because the pinned height already exceeds it. The code reproduced the padding
+instead and computed 22px where Figma renders 20 — the same failure recorded in
+`button.css` ("deriving height from padding instead is what left all three
+sizes 2px off") and fixed in `agent-stop.css` in 0.32.0. Third occurrence; it is
+now the rule rather than three coincidences.
+
+Horizontal padding was `spacing/8`, where Figma is `spacing/4` on the badge plus
+a `Label Slot` frame carrying its own inline padding. The label is now wrapped
+in `.ion-badge__label` so the dot and icon stay at the badge's padding and only
+the text takes the extra inset — collapsing the two into one padding would move
+the dot. **Callers rendering `Badge` children now get a wrapping span**, which
+matters if you were selecting the text node directly.
+
+Icon size is set for the first time. The previous note in `badge.css` recorded
+Figma at a single off-scale 14px and declined to follow what looked like a slip;
+the retuned component reads 12 / 16 / 20 — `icon-size/2xs`, `/sm`, `/md`, one
+rung per size — so there is a ladder to follow now.
+
+No token values changed and no new contrast pairings exist: the six intents are
+untouched.
+
 ## 0.32.0 — 2026-09-03
 
 ### Added — the agentic tier is drawn in Figma

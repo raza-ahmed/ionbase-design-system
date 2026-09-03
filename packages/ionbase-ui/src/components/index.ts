@@ -10,7 +10,12 @@ export type {
   AlertLayout,
 } from './Alert.js';
 export { Badge } from './Badge.js';
-export type { BadgeProps, BadgeIntent } from './Badge.js';
+export type {
+  BadgeProps,
+  BadgeIntent,
+  BadgeSize,
+  BadgeShape,
+} from './Badge.js';
 export { Input } from './Input.js';
 export type { InputProps, InputSize } from './Input.js';
 export { PhoneInput } from './PhoneInput.js';

@@ -1,7 +1,7 @@
 {
   "$schema": "https://turbo.build/schema.json",
 
-  "//": "globalDependencies lists the root config files that change what a task MEANS. Without them Turbo hashes package contents only, so tightening a lint rule leaves every package cached and the stricter rule never runs - the task reports success without executing. A green build that proves nothing is worse than a slow one. NOTE on build.outputs: src/tokens/** and src/styles/tokens/** are generated INTO ionbase-ui's source tree by its sync-tokens step, so they must be declared as outputs - otherwise a cache hit restores dist/ while leaving those stale, and the build compiles against last week's tokens. Turbo rejects comment keys inside tasks, which is why this note lives up here. NOTE on lint.dependsOn: two of the ESLint rules read their data from ionbase-ui's dist/meta/components.json, which is a build output and therefore not part of any package's default input hash. Without this dependency, editing an intent file left lint cached and the widened rule never ran - which is exactly what happened on 0.19.0: lint passed locally from cache and failed in CI, where the cache is empty. Depending on the build folds that task's hash into lint's, and meta/*.json IS tracked, so an intent change now invalidates lint.",
+  "//": "globalDependencies lists the root config files that change what a task MEANS. Without them Turbo hashes package contents only, so tightening a lint rule leaves every package cached and the stricter rule never runs - the task reports success without executing. A green build that proves nothing is worse than a slow one. NOTE on build.outputs: src/tokens/** and src/styles/tokens/** are generated INTO ionbase-ui's source tree by its sync-tokens step, so they must be declared as outputs - otherwise a cache hit restores dist/ while leaving those stale, and the build compiles against last week's tokens. Turbo rejects comment keys inside tasks, which is why this note lives up here. NOTE on lint.dependsOn: two of the ESLint rules read their data from ionbase-ui's dist/meta/components.json, which is a build output and therefore not part of any package's default input hash. Without this dependency, editing an intent file left lint cached and the widened rule never ran - which is exactly what happened on 0.19.0: lint passed locally from cache and failed in CI, where the cache is empty. Depending on the build folds that task's hash into lint's, and meta/*.json IS tracked, so an intent change now invalidates lint. NOTE on typecheck.dependsOn: two packages GENERATE INTO THEIR OWN SOURCE TREE - ionbase-icons' generate.mjs rmSync's src/icons/ and rewrites all 1753 files, and ionbase-ui's sync-tokens writes src/tokens/. With no dependency, Turbo scheduled typecheck alongside that build and tsc read the directory mid-delete: 'Cannot find module ./icons/zodiac-pisces.js' for files that were on disk before the run and after it. A race, so it failed only from a cold cache and only sometimes - and the same race can report success just as easily. Depending on the package's own build orders the two.",
   "globalDependencies": [
     "stylelint.config.js",
     "eslint.config.js",
@@ -33,6 +33,7 @@
       "outputs": []
     },
     "typecheck": {
+      "dependsOn": ["build"],
       "outputs": []
     },
     "dev": {
