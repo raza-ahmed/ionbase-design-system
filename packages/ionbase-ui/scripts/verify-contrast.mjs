@@ -44,6 +44,47 @@ const EXCEPTIONS = join(PKG, 'contrast-exceptions.json');
 const TEXT_MIN = 4.5;
 const NONTEXT_MIN = 3.0;
 
+/*
+ * THE GROUNDS A BACKGROUND-LESS COMPONENT CAN LAND ON.
+ *
+ * Until 3 Sep 2026 a rule with a `color` and no `background` was skipped, and
+ * the component passed by never being asked. 106 slots across 19 stylesheets
+ * were in that position, and `EmptyState` — the first component that is
+ * text-only from top to bottom — produced ZERO pairings while the gate
+ * reported green.
+ *
+ * There is no single right backdrop for such a rule: the component sits on
+ * whatever region holds it. So it is measured against all three neutral
+ * grounds a caller can place a region on, and must be readable on every one.
+ * Assuming only `surface/page` would let a component fail inside a card and
+ * still pass the gate.
+ *
+ * Intent surfaces are deliberately NOT in this list. A component placed inside
+ * a solid Alert inherits that Alert's text roles; pairing an ordinary
+ * `text/secondary` against `surface/error` would report a combination nothing
+ * constructs.
+ */
+const ASSUMED_GROUNDS = [
+  '--surface-page',
+  '--surface-default',
+  '--surface-muted',
+];
+
+/*
+ * Foreground roles whose whole meaning is "on a coloured surface". Measuring
+ * them against a neutral ground asks a question the design never poses: an
+ * on-colour checkmark is never drawn on the page, it is drawn on the filled
+ * box that the same component painted. Where those elements declare no
+ * background of their own, the honest answer is "not applicable", not a
+ * fabricated failure.
+ */
+const ON_COLOR_ROLES = new Set([
+  '--text-on-color',
+  '--icon-on-color',
+  '--text-inverse',
+  '--icon-inverse',
+]);
+
 /* ------------------------------------------------------------ token values */
 
 function declarations(css) {
@@ -288,13 +329,22 @@ for (const file of files) {
     const { ctx, state } = slot;
     const fg = lookup('color', ctx, state, ctx.element);
     const bg = lookup('background', ctx, state, ctx.element);
-    if (!fg || !bg) continue;
+    if (!fg) continue;
 
     const fgRef = deref(fg.raw, ctx, state, ctx.element);
-    const bgRef = deref(bg.raw, ctx, state, ctx.element);
-    if (!fgRef || !bgRef) continue;
+    if (!fgRef) continue;
     const fgToken = fgRef.token;
-    const bgToken = bgRef.token;
+
+    /*
+     * No background anywhere up the chain: the component draws no surface and
+     * sits on whatever holds it. Measure against every ground it could land
+     * on rather than skipping it — see ASSUMED_GROUNDS.
+     */
+    const bgRef = bg ? deref(bg.raw, ctx, state, ctx.element) : null;
+    if (bg && !bgRef) continue;
+    const assumed = !bg;
+    if (assumed && ON_COLOR_ROLES.has(fgToken)) continue;
+    const bgTokens = assumed ? ASSUMED_GROUNDS : [bgRef.token];
 
     /*
      * Skip states the component cannot actually render.
@@ -311,7 +361,7 @@ for (const file of files) {
      */
     const single = (ctx.modifiers ?? []).length === 1;
     const surfaceFromBlock =
-      (bgRef.scope ?? bg.from.split('|')[0]) === ctx.base;
+      !assumed && (bgRef.scope ?? bg.from.split('|')[0]) === ctx.base;
     if (single && surfaceFromBlock && compounds.has(ctx.modifiers[0])) continue;
 
     if (fgToken.startsWith('--text-')) textRolesSeen.add(fgToken);
@@ -328,15 +378,18 @@ for (const file of files) {
         ? (deref(baseBgRaw, ctx, 'default', null)?.token ?? null)
         : null;
 
-    pairings.push({
-      component: file.replace(/\.css$/, ''),
-      context: ctx.element ? `${ctx.variant} ${ctx.element}` : ctx.variant,
-      state,
-      fg: fgToken,
-      bg: bgToken,
-      backdrop,
-      kind: isText ? 'text' : 'non-text',
-    });
+    for (const bgToken of bgTokens) {
+      pairings.push({
+        component: file.replace(/\.css$/, ''),
+        context: ctx.element ? `${ctx.variant} ${ctx.element}` : ctx.variant,
+        state,
+        fg: fgToken,
+        bg: bgToken,
+        backdrop,
+        kind: isText ? 'text' : 'non-text',
+        ...(assumed ? { ground: 'assumed' } : {}),
+      });
+    }
   }
 }
 

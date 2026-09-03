@@ -17,27 +17,22 @@
  * their existing rungs rather than growing an `empty-state/*` family, which
  * would be the `control/<size>/*` mistake recorded in AGENTS.md one tier up.
  *
- * CONTRAST WAS MEASURED BY HAND, BECAUSE THE GATE CANNOT SEE THIS FILE
+ * CONTRAST: 60 PAIRINGS, AND THIS FILE IS WHY THE GATE COUNTS THEM
  *
- * verify-contrast.mjs pairs a `color` against a `background` found on the same
- * rule. This component declares no background at all — it sits on whatever
- * region holds it — so every rule here is skipped and the component
- * contributes zero pairings. That is a structural property of the gate, not
- * something wrong with this file, and it applies to any text-only component.
+ * This component declares no background — it sits on whatever region holds it.
+ * Until 3 Sep 2026 verify-contrast.mjs paired a `color` against a `background`
+ * on the same rule, so every rule here was skipped and the component
+ * contributed ZERO pairings while the gate reported green. It was the first
+ * component that is text-only from top to bottom, which is what made the hole
+ * visible.
  *
- * So the pairings were measured directly, against all three surfaces an empty
- * state can land on, in both modes. Worst case is `icon/primary` on
- * `surface/muted` at 4.79:1 against the 3:1 that SC 1.4.11 asks of a non-text
- * mark; every text pairing clears 4.5:1 with room to spare:
+ * The gate now measures a background-less rule against all three neutral
+ * grounds a caller can place a region on — surface/page, surface/default and
+ * surface/muted — and this file's 60 pairings are checked on every build like
+ * any other. Nothing here needs a hand-measured table any more.
  *
- *              text/default  text/secondary  icon/tertiary  icon/primary
- *   page       16.55 / 16.55  9.53 / 13.31   7.09 / 6.95    5.05 / 6.31
- *   default    17.63 / 19.71 10.15 / 15.86   7.56 / 8.28    5.38 / 7.51
- *   muted      15.71 / 14.14  9.04 / 11.38   6.73 / 5.94    4.79 / 5.39
- *                                                        (Light / Dark)
- *
- * icon/warning and icon/error, the other two reason tints, sit between those
- * columns: 5.30 to 8.08 across the same grid.
+ * The tightest of them is icon/primary on surface/muted at 4.79:1, against the
+ * 3:1 SC 1.4.11 asks of a non-text mark. Every text pairing clears 4.5:1.
  */
 .ion-empty-state {
   --ion-empty-state-icon: var(--icon-tertiary);
