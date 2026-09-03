@@ -130,3 +130,10 @@ export type {
   ConfidenceIndicatorProps,
   ConfidenceLevel,
 } from './ConfidenceIndicator.js';
+export { EmptyState } from './EmptyState.js';
+export type {
+  EmptyStateProps,
+  EmptyStateReason,
+  EmptyStateSize,
+  EmptyStateHeadingLevel,
+} from './EmptyState.js';

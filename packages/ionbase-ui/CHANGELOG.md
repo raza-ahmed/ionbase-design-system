@@ -1,5 +1,63 @@
 # Changelog
 
+## 0.37.0 — 2026-09-03
+
+### Added — `EmptyState`: the state five patterns required and none could render
+
+`DataTable`, `PageShell`, `SettingsPanel`, `AssistantAnswer` and `HumanApproval`
+all specify an empty state in their recipe. Nothing in the component tier could
+render one, so every consumer invented their own — which is how a design system
+ends up with four different ways to say "nothing here".
+
+**`reason` is required and has no default.** Four situations, and they are not
+interchangeable:
+
+| `reason`     | means                                                  | the action that resolves it |
+| ------------ | ------------------------------------------------------ | --------------------------- |
+| `first-run`  | nothing exists yet                                     | create the first one        |
+| `no-results` | records exist; the filter matches none                 | **clear the filter**        |
+| `no-access`  | records exist and match; this account may not see them | request access              |
+| `error`      | the fetch failed, so nobody knows                      | **retry**                   |
+
+Collapsing these is the most common empty-state bug in enterprise software.
+"No invoices yet — Create your first invoice", shown to someone who has 400
+invoices and a typo in their date filter, tells them their data is gone. A
+default `reason` would make that the easy path, so there is not one. `error`
+never offers a create action either: the fetch failed, nobody knows whether the
+record exists, and that is how duplicates get made.
+
+`size` is `inline` | `panel` | `page` — a table body, a region, a whole route.
+The title renders as a real heading (`h2`–`h6`, default `h3`) so the region
+stays in the document outline; `h1` is not offered, on the same reasoning
+`FullCard` uses.
+
+**It is deliberately not a live region.** An empty state replaces content, so it
+is what the user reads next rather than something announced over what they are
+reading — `role="status"` here fires on every keystroke of a filter box. The
+caller can pass `role` if a specific flow needs it. Same call `StreamingText`
+makes about `aria-live`.
+
+`reason` changes the icon tint and nothing else. It does not grow an
+`empty-state/*` token family — that would be the `control/<size>/*` mistake
+recorded in `AGENTS.md`, one tier up.
+
+### Fixed — the contrast gate is blind to text-only components
+
+`verify-contrast.mjs` pairs a `color` against a `background` on the same rule,
+so a component that declares no background is skipped and passes by never being
+asked. `EmptyState` is the first component that is text-only throughout — it
+draws no surface because it sits on whatever region holds it — and it produced
+**zero pairings** while reporting green.
+
+The gate is unchanged: closing this means assuming a backdrop for every
+background-less rule in the system, which is a decision about every component at
+once and is not one to make in passing. What changed is that the hole is now
+written down in `AGENTS.md` with the rule that follows from it — **a text-only
+component gets measured by hand, because the gate will not tell you it skipped
+you** — and `EmptyState`'s 36 pairings, across three surfaces and both modes,
+are recorded in `empty-state.css`. Worst case is `icon/primary` on
+`surface/muted` at 4.79:1 against a 3:1 minimum; every text pairing clears 4.5:1.
+
 ## 0.36.0 — 2026-09-03
 
 ### Fixed — the deferral note said 3 defects; the gate measures 8
