@@ -333,9 +333,34 @@ not a note in a document.
 
 `figma/apply-descriptions.js` writes the generated block into each component's
 description, fenced by markers, so Dev Mode shows the real component on **any**
-plan. All 28 carry one. Re-running replaces only the fenced block; the
-hand-written text above it — Link's is nearly 3,000 characters of real design
-reasoning — is untouched.
+plan. All 38 carry one, over 29,794 characters of hand-written prose that the
+markers keep intact. Re-running replaces only the fenced block; the text above
+it — Link's is nearly 3,000 characters of real design reasoning — is untouched.
+
+**Generating a block is not applying it, and for a while nothing knew the
+difference.** The build produced a block for every mapped component and reported
+success on its own output. `Avatar Gradient` was mapped, generated a block, and
+sat in Figma with a completely empty description while every gate in the repo
+passed — found on 3 Sep 2026 by reading the file rather than the build log.
+
+`figma/descriptions-applied.json` now records what was actually written, and
+`scripts/verify-figma-descriptions.mjs` checks it on every build: a generated
+block with no applied record fails, and so does a record whose hash no longer
+matches the snippet the code produces — which is precisely when Figma is showing
+a reader a prop that has been renamed. The hash deliberately excludes the
+`Generated from ionbase-ui@<version>` line, because a gate that demanded 38
+re-applications per release to update one number would be skipped, and a skipped
+gate still reports green.
+
+CI cannot read Figma, so the check verifies that a person did. After applying,
+re-read the file, confirm every mapped node carries a block, then countersign:
+
+```
+pnpm --filter ionbase-ui figma:applied --verified <count>
+```
+
+`--verified` must equal the number of generated blocks, so a partial apply
+cannot be signed off as a complete one.
 
 **Use `descriptionMarkdown`, never `description`.** The plain setter HTML-escapes
 on write: `<Button x="a">'` goes in at 16 characters and comes back at 40 as

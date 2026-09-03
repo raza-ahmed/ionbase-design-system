@@ -450,7 +450,20 @@ neither of which exists.
 What it does NOT do is render inside Dev Mode's code panel. That surface is
 Figma's and stays paywalled. The free substitute is the component `description`
 field, which any plan can write and which Dev Mode and the MCP tools both
-surface — deliberately not done yet, because it writes to the design file.
+surface. All 38 mapped components carry one.
+
+**Closed 3 Sep 2026: nothing checked that the blocks were ever applied.** The
+build generated a block per mapped component and reported success — on its own
+output. `Avatar Gradient` was mapped, generated a block, and sat in Figma with
+an empty description while every gate passed; it was found by reading the file,
+not the build log. `figma/descriptions-applied.json` now records what was
+written and `scripts/verify-figma-descriptions.mjs` checks it: an unapplied
+block fails, and so does a record whose hash no longer matches the snippet the
+code produces. The hash excludes the version line, because a gate that demanded
+38 re-applications per release would be skipped, and a skipped gate still
+reports green. CI cannot read Figma, so the check verifies that a person did —
+`--verified` must equal the block count, so a partial apply cannot be signed off
+as a complete one.
 
 156 Figma properties are checked. Coverage is complete by construction: a Figma
 component that is neither mapped nor explicitly unmapped fails the build.

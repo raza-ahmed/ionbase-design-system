@@ -1,0 +1,215 @@
+{
+  "$comment": [
+    "WHAT WAS ACTUALLY WRITTEN INTO THE FIGMA FILE.",
+    "",
+    "dist/figma-descriptions.json is what the build GENERATES. This file records what",
+    "was APPLIED, by running figma/apply-descriptions.js against the file. The two are",
+    "different claims, and until this file existed nothing checked the second one:",
+    "Avatar Gradient was mapped, generated a block, and sat in Figma with an empty",
+    "description while every gate in the repo passed.",
+    "",
+    "The hash covers the block with its version line removed. The version changes on",
+    "every release, and re-applying 38 descriptions to change one number is a chore",
+    "that would get skipped — and a gate people skip is not a gate. A mismatch here",
+    "therefore means the SNIPPET changed: a renamed prop, a new variant, a new slot.",
+    "That is exactly when Figma is showing a reader something false.",
+    "",
+    "To update: apply the blocks via figma/apply-descriptions.js, confirm the audit",
+    "returns 0 missing, then run: pnpm --filter ionbase-ui figma:applied"
+  ],
+  "file": "gaLbGd0QNb1fUl6BjSpfBA",
+  "appliedOn": "2026-09-03",
+  "verifiedInFigma": 38,
+  "applied": {
+    "21:461": {
+      "figmaComponent": "Button",
+      "component": "Button",
+      "hash": "0fe348a72167194c"
+    },
+    "623:151": {
+      "figmaComponent": "Icon Button",
+      "component": "Button",
+      "hash": "f4bdf241a43cf9ef"
+    },
+    "80:275": {
+      "figmaComponent": "Input",
+      "component": "Input",
+      "hash": "893d74193ea1f8de"
+    },
+    "80:372": {
+      "figmaComponent": "Input/Phone",
+      "component": "PhoneInput",
+      "hash": "ba9f22f8a25af702"
+    },
+    "82:379": {
+      "figmaComponent": "Select",
+      "component": "Select",
+      "hash": "6f30dd4afd7565f5"
+    },
+    "87:350": {
+      "figmaComponent": "Checkbox",
+      "component": "Checkbox",
+      "hash": "04f1b81a01ae85e7"
+    },
+    "89:314": {
+      "figmaComponent": "Radio",
+      "component": "Radio",
+      "hash": "3eef9529655a0368"
+    },
+    "88:323": {
+      "figmaComponent": "Toggle",
+      "component": "Toggle",
+      "hash": "a59081fe0eb3dc62"
+    },
+    "152:73": {
+      "figmaComponent": "Badge",
+      "component": "Badge",
+      "hash": "8ec46037b2608a50"
+    },
+    "812:1902": {
+      "figmaComponent": "Alert",
+      "component": "Alert",
+      "hash": "f60590d42572cab2"
+    },
+    "820:1655": {
+      "figmaComponent": "Toast",
+      "component": "Toast",
+      "hash": "01dfd19d8a2ca20e"
+    },
+    "774:1516": {
+      "figmaComponent": "Link",
+      "component": "Link",
+      "hash": "63495c519ea7e12b"
+    },
+    "53:13": {
+      "figmaComponent": "Nav Item",
+      "component": "NavItem",
+      "hash": "808349e1526bfc6b"
+    },
+    "82:306": {
+      "figmaComponent": "Menu",
+      "component": "Menu",
+      "hash": "3efe9cc224c0ecbf"
+    },
+    "639:2634": {
+      "figmaComponent": "Menu Item",
+      "component": "MenuItem",
+      "hash": "9a05657cf78004ef"
+    },
+    "157:126": {
+      "figmaComponent": "Tabs",
+      "component": "Tabs",
+      "hash": "ddf8c360b08b00b1"
+    },
+    "156:259": {
+      "figmaComponent": "Tabs Item",
+      "component": "TabItem",
+      "hash": "67c9bc17cec7b26c"
+    },
+    "174:103": {
+      "figmaComponent": "Table Cell",
+      "component": "TableCell",
+      "hash": "189e83ce69a6778e"
+    },
+    "175:605": {
+      "figmaComponent": "Table Row",
+      "component": "TableRow",
+      "hash": "d9bd4edca3bd6d50"
+    },
+    "74:164": {
+      "figmaComponent": "Avatar",
+      "component": "Avatar",
+      "hash": "2010d32df283b1c6"
+    },
+    "74:279": {
+      "figmaComponent": "Avatar Group",
+      "component": "AvatarGroup",
+      "hash": "d547434c5ebf758a"
+    },
+    "1054:305": {
+      "figmaComponent": "Avatar Gradient",
+      "component": "AvatarGradient",
+      "hash": "7a3f7f4e4cca7515"
+    },
+    "126:22724": {
+      "figmaComponent": "Border",
+      "component": "Divider",
+      "hash": "ac190a15d7c26cc1"
+    },
+    "52:21369": {
+      "figmaComponent": "Logo-Ionbase",
+      "component": "Logo",
+      "hash": "4968d146a2ce40ce"
+    },
+    "792:1537": {
+      "figmaComponent": "Modal",
+      "component": "Modal",
+      "hash": "a2804ec5efda015a"
+    },
+    "825:1853": {
+      "figmaComponent": "Popover",
+      "component": "Popover",
+      "hash": "ea51a31bf58baa35"
+    },
+    "801:68": {
+      "figmaComponent": "Tooltip",
+      "component": "Tooltip",
+      "hash": "7ad87137b8699fb8"
+    },
+    "592:857": {
+      "figmaComponent": "Full Card",
+      "component": "FullCard",
+      "hash": "b7a66cfecd3cd5fe"
+    },
+    "69:335": {
+      "figmaComponent": "Header",
+      "component": "Header",
+      "hash": "31c1b415c13a918c"
+    },
+    "1156:296": {
+      "figmaComponent": "Agent Stop",
+      "component": "AgentStop",
+      "hash": "f562334c87464dc9"
+    },
+    "1160:423": {
+      "figmaComponent": "Approval Gate",
+      "component": "ApprovalGate",
+      "hash": "989900a3258440aa"
+    },
+    "1162:246": {
+      "figmaComponent": "Agent Activity",
+      "component": "AgentActivity",
+      "hash": "39e7edfc0fe57b5b"
+    },
+    "1161:287": {
+      "figmaComponent": "Agent Activity Step",
+      "component": "AgentActivityStep",
+      "hash": "a8f01506fd69cd64"
+    },
+    "1164:248": {
+      "figmaComponent": "Streaming Text",
+      "component": "StreamingText",
+      "hash": "c9565c80a17f6b1f"
+    },
+    "1167:247": {
+      "figmaComponent": "Citation",
+      "component": "Citation",
+      "hash": "445a5794b40357c9"
+    },
+    "1168:246": {
+      "figmaComponent": "Citation List",
+      "component": "CitationList",
+      "hash": "d41c3dce5da28aff"
+    },
+    "1168:241": {
+      "figmaComponent": "Citation List Item",
+      "component": "CitationListItem",
+      "hash": "7f3c4e189cbca699"
+    },
+    "1166:262": {
+      "figmaComponent": "Confidence Indicator",
+      "component": "ConfidenceIndicator",
+      "hash": "37749d2f3023ab3d"
+    }
+  }
+}
