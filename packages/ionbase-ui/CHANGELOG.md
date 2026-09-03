@@ -1,5 +1,47 @@
 # Changelog
 
+## 0.35.0 — 2026-09-03
+
+### Fixed — the Figma snippets were generated, and one was never delivered
+
+`scripts/build-figma-descriptions.mjs` produces a code block for every mapped
+component, and reported success on its own output. Nothing checked whether any
+of them reached Figma.
+
+One had not. `Avatar Gradient` was mapped, generated a block, and sat in the
+Figma file with a **completely empty description** while the map gate, the
+description generator and every other check in the repo passed. It was found by
+reading the file rather than the build log — the block is now applied, and all
+38 mapped components carry one, over 29,794 characters of hand-written prose
+kept intact by the fence markers.
+
+**A generator that reports its own success is not a check.** Two new files make
+it one:
+
+- `figma/descriptions-applied.json` records what was actually written — node id,
+  component, and a hash of the block.
+- `scripts/verify-figma-descriptions.mjs` runs on every build and compares that
+  record against what the build now generates.
+
+Four failure modes, all negative-tested by breaking them: a generated block with
+no applied record (the `Avatar Gradient` case), a record whose hash no longer
+matches the snippet, a stale record for a node that is no longer mapped, and a
+`verifiedInFigma` count that disagrees with the record it signs.
+
+**The hash deliberately excludes the `Generated from ionbase-ui@<version>`
+line.** That line changes on every release, and a gate demanding 38
+re-applications to update one number is a gate that gets skipped — and a skipped
+gate still reports green, which is worse than the silence it replaced. What is
+hashed is the part a reader acts on: the import, the JSX, the property mapping.
+A mismatch therefore means a prop was renamed or a variant added, which is
+exactly when Figma is showing someone something false. Verified by bumping the
+version to 9.9.9 and back: the gate stays quiet.
+
+CI cannot read Figma, so the check verifies that a person did.
+`pnpm --filter ionbase-ui figma:applied --verified <count>` countersigns it, and
+refuses when the count does not equal the number of generated blocks — a partial
+apply cannot be signed off as a complete one.
+
 ## 0.34.0 — 2026-09-03
 
 ### Added — the agentic tier gets recipes: `AgentRun`, `HumanApproval`, `AssistantAnswer`
