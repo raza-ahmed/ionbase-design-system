@@ -510,21 +510,46 @@ if (outstanding.length) {
   }
 }
 
+/* Deferred failures, counted here rather than written down anywhere.
+ *
+ * contrast-exceptions.json used to state the number in prose — "on today's
+ * values that is 3 defects". It was 8 by the time anyone looked, because the
+ * agentic tier shipped and nobody edits a comment to match a measurement. The
+ * count now comes from the measurement, and the note points here.
+ *
+ * The exempt/unexempt split is the part that matters to whoever un-defers a
+ * mode: an entry already marked wcag-exempt for this mode needs no work, and
+ * everything else is either a real defect or a false positive still owed an
+ * exemption of its own. */
+let deferredUnexempt = 0;
 if (deferredModes.size) {
   console.log(
     `\n  Deferred (${[...deferredModes].join(', ')}) — measured, not enforced, not shipped in any contract:`,
+  );
+  const deferredExempt = new Set(
+    (exFile.deferred ?? [])
+      .filter((e) => e.kind === 'wcag-exempt')
+      .map((e) => `${e.fg}|${e.bg}|${e.mode}`),
   );
   const seenPair = new Set();
   for (const r of deferredFailures.sort((a, b) => a.ratio - b.ratio)) {
     const k = `${r.fg}|${r.bg}|${r.mode}`;
     if (seenPair.has(k)) continue;
     seenPair.add(k);
+    const isExempt = deferredExempt.has(k);
+    if (!isExempt) deferredUnexempt++;
     console.log(
-      `    ${r.ratio}:1  ${r.mode.padEnd(5)} ${r.fg} on ${r.bg}  (${r.component})`,
+      `    ${r.ratio}:1  ${r.mode.padEnd(5)} ${r.fg} on ${r.bg}  (${r.component})` +
+        (isExempt ? '  [wcag-exempt]' : ''),
     );
   }
   if (!deferredFailures.length)
     console.log('    none failing on current values');
+  else
+    console.log(
+      `    ${seenPair.size} distinct pairings, ${deferredUnexempt} without an exemption — ` +
+        `these become real findings the moment the mode is un-deferred`,
+    );
 }
 
 const exempt = exceptions.filter((e) => e.kind === 'wcag-exempt').length;
@@ -532,7 +557,8 @@ console.log(
   `\nContrast: ${measured.length} enforced pairings (+${deferredResults.length} deferred) across ` +
     `${new Set(unique.map((p) => p.component)).size} stylesheets — ` +
     `${unexpected.length} unexpected, ${outstanding.length} outstanding defects, ` +
-    `${exempt} WCAG-exempt, ${skipped.length} skipped, ${unresolved.length} unresolved`,
+    `${exempt} WCAG-exempt, ${skipped.length} skipped, ${unresolved.length} unresolved` +
+    (deferredUnexempt ? `, ${deferredUnexempt} deferred and unexempt` : ''),
 );
 
 process.exit(

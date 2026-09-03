@@ -29,8 +29,22 @@
     "not enter any component contract, and is not linted.",
     "",
     "Remove 'Dark' from this list once the dark theme is settled in Figma. Every",
-    "deferred result becomes a real finding again the moment you do — and on",
-    "today's values that is 3 defects, listed under deferred below."
+    "deferred result becomes a real finding again the moment you do.",
+    "",
+    "HOW MANY, is a question for the gate and not for this comment. This text used",
+    "to answer it — 'on today's values that is 3 defects' — and by 3 Sep 2026 it was",
+    "8, because the agentic tier shipped and nobody edits a sentence to match a",
+    "measurement. The count now comes from the measurement: `pnpm --filter ionbase-ui",
+    "contrast` prints every deferred pairing, flags the ones already exempt, and ends",
+    "with 'N without an exemption'. The entries below are the SUBSET that has been",
+    "investigated and written up, not the whole list.",
+    "",
+    "Four of the unexempt eight are the same empty-element false positives already",
+    "exempted under Light — the confidence bars and the streaming cursor, neither of",
+    "which holds text. They are deliberately NOT given Dark exemptions here, because",
+    "an exemption cites a measured ratio and measuring a theme still being designed",
+    "produces a number that is true today and meaningless as a decision. Write them",
+    "when Dark is final, with real values."
   ],
   "accepted": [
     {
@@ -136,6 +150,22 @@
         "component": "Button",
         "props": {
           "variant": "primary-soft"
+        }
+      }
+    },
+    {
+      "fg": "--text-link",
+      "bg": "--surface-primary-subtle-hover",
+      "mode": "Dark",
+      "kind": "defect",
+      "ratio": 4.25,
+      "reason": "Citation on a hovered primary-subtle surface. The THIRD component to land on #0e2d8b in Dark — surface/primary-tint and surface/primary-subtle/hover both resolve to it, and text/link and text/primary both read 4.25:1 against it. One primitive shift fixes all three. Undocumented until 3 Sep 2026, when the gate was made to count its own deferred findings instead of a comment claiming there were three.",
+      "affects": ["Citation"],
+      "surfacedBy": "Citation, hover",
+      "appliesTo": {
+        "component": "Citation",
+        "props": {
+          "href": "set"
         }
       }
     }

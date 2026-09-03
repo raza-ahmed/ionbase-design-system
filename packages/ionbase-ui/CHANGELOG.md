@@ -1,5 +1,45 @@
 # Changelog
 
+## 0.36.0 — 2026-09-03
+
+### Fixed — the deferral note said 3 defects; the gate measures 8
+
+`contrast-exceptions.json` explained the Dark deferral and ended with a count:
+_"on today's values that is 3 defects, listed under deferred below"_. By today
+it was 8. The agentic tier shipped four releases ago and nobody edits a sentence
+to match a measurement — the same failure `AGENTS.md` warns about for vendor
+files, one tier down.
+
+**The count now comes from the measurement.** `verify-contrast.mjs` prints every
+deferred pairing, marks the ones that already carry an exemption, and ends with
+`N distinct pairings, M without an exemption — these become real findings the
+moment the mode is un-deferred`. The summary line carries `M deferred and
+unexempt` beside the enforced numbers. The prose no longer states a number it
+cannot keep.
+
+**One real defect was undocumented.** `Citation` on a hovered primary-subtle
+surface reads 4.25:1 in Dark — the third component to land on `#0e2d8b`, after
+`Button`'s hover and pressed states. `surface/primary-tint` and
+`surface/primary-subtle/hover` both resolve to it, and `text/link` and
+`text/primary` both fall 0.25 short against it. One primitive shift fixes all
+three, and it is now written down so whoever does that work knows the scope.
+
+**Four of the eight are deliberately left unexempted.** They are the same
+empty-element false positives already exempted under Light — the three
+confidence bars and the streaming cursor, none of which holds text. An exemption
+has to cite a measured ratio, and measuring a theme still being designed
+produces a number that is true today and meaningless as a decision. They get
+written when Dark is final, with real values.
+
+Nothing about the Light theme changed: 173 enforced pairings, 0 defects.
+
+### Not changed — `a11y.knownIssues` is empty, and correctly so
+
+Investigated and left alone. The field is populated automatically from contrast
+defects, and it has nothing to say because it should not: all 10 Light-mode
+failures are WCAG-exempt, and all 15 Dark ones are suppressed by the deferral.
+An empty field here is the system working, not a gap in it.
+
 ## 0.35.0 — 2026-09-03
 
 ### Fixed — the Figma snippets were generated, and one was never delivered
