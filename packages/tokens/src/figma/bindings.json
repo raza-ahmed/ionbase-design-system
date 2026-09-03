@@ -3,7 +3,7 @@
     "What the Figma components actually BIND, as opposed to what variables exist.",
     "Produced by figma/export-bindings.js. Checked by scripts/verify-bindings.mjs.",
     "",
-    "File: gaLbGd0QNb1fUl6BjSpfBA   Exported: 2026-08-07   Variables: 384",
+    "File: gaLbGd0QNb1fUl6BjSpfBA   Exported: 2026-09-03   Variables: 384",
     "",
     "The exporter MUST use all three traversal rules or this file is a lie:",
     "  1. setCurrentPageAsync before reading - instance overrides are unreliable otherwise",
@@ -15,1004 +15,4481 @@
     "would triple the file for one repeated fact."
   ],
   "file": "gaLbGd0QNb1fUl6BjSpfBA",
-  "exported": "2026-08-07",
+  "exported": "2026-09-03",
   "components": {
     "Avatar/Avatar": [
-      {"collection": "Breakpoint", "token": "type/body"},
-      {"collection": "Breakpoint", "token": "type/body-lg"},
-      {"collection": "Breakpoint", "token": "type/body-lg/line-height"},
-      {"collection": "Breakpoint", "token": "type/body-sm"},
-      {"collection": "Breakpoint", "token": "type/body-sm/line-height"},
-      {"collection": "Breakpoint", "token": "type/body/line-height"},
-      {"collection": "Breakpoint", "token": "type/caption"},
-      {"collection": "Breakpoint", "token": "type/caption/line-height"},
-      {"collection": "Interface", "token": "border/strong"},
-      {"collection": "Interface", "token": "icon/tertiary"},
-      {"collection": "Interface", "token": "surface/default"},
-      {"collection": "Interface", "token": "surface/muted"},
-      {"collection": "Interface", "token": "surface/placeholder"},
-      {"collection": "Interface", "token": "text/tertiary"},
-      {"collection": "Primitives", "token": "font/family/host-grotesk"},
-      {"collection": "Primitives", "token": "font/weight/500"},
-      {"collection": "Semantics", "token": "border-width/default"},
-      {"collection": "Semantics", "token": "font/family/sans"},
-      {"collection": "Semantics", "token": "font/weight/medium"},
-      {"collection": "Semantics", "token": "font/weight/regular"},
-      {"collection": "Semantics", "token": "radius/full"},
-      {"collection": "Semantics", "token": "radius/md"},
-      {"collection": "Semantics", "token": "radius/sm"},
-      {"collection": "Semantics", "token": "radius/xs"}
+      {
+        "collection": "Breakpoint",
+        "token": "type/body"
+      },
+      {
+        "collection": "Breakpoint",
+        "token": "type/body-lg"
+      },
+      {
+        "collection": "Breakpoint",
+        "token": "type/body-lg/line-height"
+      },
+      {
+        "collection": "Breakpoint",
+        "token": "type/body-sm"
+      },
+      {
+        "collection": "Breakpoint",
+        "token": "type/body-sm/line-height"
+      },
+      {
+        "collection": "Breakpoint",
+        "token": "type/body/line-height"
+      },
+      {
+        "collection": "Breakpoint",
+        "token": "type/caption"
+      },
+      {
+        "collection": "Breakpoint",
+        "token": "type/caption/line-height"
+      },
+      {
+        "collection": "Interface",
+        "token": "border/strong"
+      },
+      {
+        "collection": "Interface",
+        "token": "border/subtle"
+      },
+      {
+        "collection": "Interface",
+        "token": "icon/on-color"
+      },
+      {
+        "collection": "Interface",
+        "token": "icon/tertiary"
+      },
+      {
+        "collection": "Interface",
+        "token": "ring/offset"
+      },
+      {
+        "collection": "Interface",
+        "token": "surface/default"
+      },
+      {
+        "collection": "Interface",
+        "token": "surface/muted"
+      },
+      {
+        "collection": "Interface",
+        "token": "surface/placeholder"
+      },
+      {
+        "collection": "Interface",
+        "token": "surface/primary"
+      },
+      {
+        "collection": "Interface",
+        "token": "surface/success"
+      },
+      {
+        "collection": "Interface",
+        "token": "text/tertiary"
+      },
+      {
+        "collection": "Semantics",
+        "token": "border-width/default"
+      },
+      {
+        "collection": "Semantics",
+        "token": "border-width/thick"
+      },
+      {
+        "collection": "Semantics",
+        "token": "font/family/sans"
+      },
+      {
+        "collection": "Semantics",
+        "token": "font/weight/medium"
+      },
+      {
+        "collection": "Semantics",
+        "token": "font/weight/regular"
+      },
+      {
+        "collection": "Semantics",
+        "token": "radius/full"
+      },
+      {
+        "collection": "Semantics",
+        "token": "radius/md"
+      },
+      {
+        "collection": "Semantics",
+        "token": "radius/sm"
+      },
+      {
+        "collection": "Semantics",
+        "token": "radius/xs"
+      }
     ],
     "Avatar/Avatar Group": [
-      {"collection": "Breakpoint", "token": "type/body"},
-      {"collection": "Breakpoint", "token": "type/body-lg"},
-      {"collection": "Breakpoint", "token": "type/body-lg/line-height"},
-      {"collection": "Breakpoint", "token": "type/body-sm"},
-      {"collection": "Breakpoint", "token": "type/body-sm/line-height"},
-      {"collection": "Breakpoint", "token": "type/body/line-height"},
-      {"collection": "Breakpoint", "token": "type/caption"},
-      {"collection": "Breakpoint", "token": "type/caption/line-height"},
-      {"collection": "Interface", "token": "border/strong"},
-      {"collection": "Interface", "token": "surface/default"},
-      {"collection": "Interface", "token": "surface/muted"},
-      {"collection": "Interface", "token": "surface/placeholder"},
-      {"collection": "Interface", "token": "text/tertiary"},
-      {"collection": "Primitives", "token": "font/family/host-grotesk"},
-      {"collection": "Primitives", "token": "font/weight/500"},
-      {"collection": "Semantics", "token": "border-width/default"},
-      {"collection": "Semantics", "token": "font/family/sans"},
-      {"collection": "Semantics", "token": "font/weight/medium"},
-      {"collection": "Semantics", "token": "font/weight/regular"},
-      {"collection": "Semantics", "token": "radius/full"},
-      {"collection": "Semantics", "token": "radius/md"},
-      {"collection": "Semantics", "token": "radius/sm"},
-      {"collection": "Semantics", "token": "radius/xs"}
+      {
+        "collection": "Breakpoint",
+        "token": "type/body"
+      },
+      {
+        "collection": "Breakpoint",
+        "token": "type/body-lg"
+      },
+      {
+        "collection": "Breakpoint",
+        "token": "type/body-lg/line-height"
+      },
+      {
+        "collection": "Breakpoint",
+        "token": "type/body-sm"
+      },
+      {
+        "collection": "Breakpoint",
+        "token": "type/body-sm/line-height"
+      },
+      {
+        "collection": "Breakpoint",
+        "token": "type/body/line-height"
+      },
+      {
+        "collection": "Breakpoint",
+        "token": "type/caption"
+      },
+      {
+        "collection": "Breakpoint",
+        "token": "type/caption/line-height"
+      },
+      {
+        "collection": "Interface",
+        "token": "border/strong"
+      },
+      {
+        "collection": "Interface",
+        "token": "border/subtle"
+      },
+      {
+        "collection": "Interface",
+        "token": "icon/on-color"
+      },
+      {
+        "collection": "Interface",
+        "token": "ring/offset"
+      },
+      {
+        "collection": "Interface",
+        "token": "surface/default"
+      },
+      {
+        "collection": "Interface",
+        "token": "surface/muted"
+      },
+      {
+        "collection": "Interface",
+        "token": "surface/placeholder"
+      },
+      {
+        "collection": "Interface",
+        "token": "surface/primary"
+      },
+      {
+        "collection": "Interface",
+        "token": "surface/success"
+      },
+      {
+        "collection": "Interface",
+        "token": "text/tertiary"
+      },
+      {
+        "collection": "Semantics",
+        "token": "border-width/default"
+      },
+      {
+        "collection": "Semantics",
+        "token": "font/family/sans"
+      },
+      {
+        "collection": "Semantics",
+        "token": "font/weight/medium"
+      },
+      {
+        "collection": "Semantics",
+        "token": "font/weight/regular"
+      },
+      {
+        "collection": "Semantics",
+        "token": "radius/full"
+      },
+      {
+        "collection": "Semantics",
+        "token": "radius/md"
+      },
+      {
+        "collection": "Semantics",
+        "token": "radius/sm"
+      },
+      {
+        "collection": "Semantics",
+        "token": "radius/xs"
+      }
+    ],
+    "Avatar/.Status Indicator": [
+      {
+        "collection": "Interface",
+        "token": "icon/on-color"
+      },
+      {
+        "collection": "Interface",
+        "token": "ring/offset"
+      },
+      {
+        "collection": "Interface",
+        "token": "surface/default"
+      },
+      {
+        "collection": "Interface",
+        "token": "surface/error"
+      },
+      {
+        "collection": "Interface",
+        "token": "surface/information"
+      },
+      {
+        "collection": "Interface",
+        "token": "surface/inverse"
+      },
+      {
+        "collection": "Interface",
+        "token": "surface/primary"
+      },
+      {
+        "collection": "Interface",
+        "token": "surface/success"
+      },
+      {
+        "collection": "Interface",
+        "token": "surface/warning"
+      }
+    ],
+    "Avatar/Avatar Gradient": [
+      {
+        "collection": "Breakpoint",
+        "token": "type/body"
+      },
+      {
+        "collection": "Breakpoint",
+        "token": "type/body-lg"
+      },
+      {
+        "collection": "Breakpoint",
+        "token": "type/body-lg/line-height"
+      },
+      {
+        "collection": "Breakpoint",
+        "token": "type/body-sm"
+      },
+      {
+        "collection": "Breakpoint",
+        "token": "type/body-sm/line-height"
+      },
+      {
+        "collection": "Breakpoint",
+        "token": "type/body/line-height"
+      },
+      {
+        "collection": "Breakpoint",
+        "token": "type/caption"
+      },
+      {
+        "collection": "Breakpoint",
+        "token": "type/caption/line-height"
+      },
+      {
+        "collection": "Primitives",
+        "token": "color/blue/200"
+      },
+      {
+        "collection": "Primitives",
+        "token": "color/blue/300"
+      },
+      {
+        "collection": "Primitives",
+        "token": "color/blue/50"
+      },
+      {
+        "collection": "Primitives",
+        "token": "color/gray/200"
+      },
+      {
+        "collection": "Primitives",
+        "token": "color/gray/300"
+      },
+      {
+        "collection": "Primitives",
+        "token": "color/gray/50"
+      },
+      {
+        "collection": "Primitives",
+        "token": "color/green/200"
+      },
+      {
+        "collection": "Primitives",
+        "token": "color/green/300"
+      },
+      {
+        "collection": "Primitives",
+        "token": "color/green/50"
+      },
+      {
+        "collection": "Primitives",
+        "token": "color/orange/200"
+      },
+      {
+        "collection": "Primitives",
+        "token": "color/orange/300"
+      },
+      {
+        "collection": "Primitives",
+        "token": "color/orange/50"
+      },
+      {
+        "collection": "Primitives",
+        "token": "color/pink/200"
+      },
+      {
+        "collection": "Primitives",
+        "token": "color/pink/300"
+      },
+      {
+        "collection": "Primitives",
+        "token": "color/pink/50"
+      },
+      {
+        "collection": "Primitives",
+        "token": "color/purple/200"
+      },
+      {
+        "collection": "Primitives",
+        "token": "color/purple/300"
+      },
+      {
+        "collection": "Primitives",
+        "token": "color/purple/50"
+      },
+      {
+        "collection": "Primitives",
+        "token": "color/red/200"
+      },
+      {
+        "collection": "Primitives",
+        "token": "color/red/300"
+      },
+      {
+        "collection": "Primitives",
+        "token": "color/red/50"
+      },
+      {
+        "collection": "Semantics",
+        "token": "font/family/sans"
+      },
+      {
+        "collection": "Semantics",
+        "token": "font/weight/medium"
+      },
+      {
+        "collection": "Semantics",
+        "token": "font/weight/regular"
+      },
+      {
+        "collection": "Semantics",
+        "token": "palette/1"
+      },
+      {
+        "collection": "Semantics",
+        "token": "palette/2"
+      },
+      {
+        "collection": "Semantics",
+        "token": "palette/3"
+      },
+      {
+        "collection": "Semantics",
+        "token": "palette/4"
+      },
+      {
+        "collection": "Semantics",
+        "token": "palette/5"
+      },
+      {
+        "collection": "Semantics",
+        "token": "palette/6"
+      },
+      {
+        "collection": "Semantics",
+        "token": "palette/7"
+      }
     ],
     "Buttons/Button": [
-      {"collection": "Breakpoint", "token": "type/body"},
-      {"collection": "Breakpoint", "token": "type/body-lg"},
-      {"collection": "Breakpoint", "token": "type/body-lg/line-height"},
-      {"collection": "Breakpoint", "token": "type/body-md"},
-      {"collection": "Breakpoint", "token": "type/body-md/line-height"},
-      {"collection": "Breakpoint", "token": "type/body-sm"},
-      {"collection": "Breakpoint", "token": "type/body-sm/line-height"},
-      {"collection": "Breakpoint", "token": "type/body/line-height"},
-      {"collection": "Interface", "token": "border/disabled"},
-      {"collection": "Interface", "token": "border/error-strong"},
-      {"collection": "Interface", "token": "border/inverse"},
-      {"collection": "Interface", "token": "border/primary"},
-      {"collection": "Interface", "token": "border/primary-strong"},
-      {"collection": "Interface", "token": "border/primary-subtle"},
-      {"collection": "Interface", "token": "border/strong"},
-      {"collection": "Interface", "token": "border/stronger"},
-      {"collection": "Interface", "token": "border/success-strong"},
-      {"collection": "Interface", "token": "icon/disabled"},
-      {"collection": "Interface", "token": "icon/interactive"},
-      {"collection": "Interface", "token": "icon/on-color"},
-      {"collection": "Interface", "token": "surface/default"},
-      {"collection": "Interface", "token": "surface/disabled"},
-      {"collection": "Interface", "token": "surface/error"},
-      {"collection": "Interface", "token": "surface/error/hover"},
-      {"collection": "Interface", "token": "surface/error/pressed"},
-      {"collection": "Interface", "token": "surface/inverse"},
-      {"collection": "Interface", "token": "surface/inverse-subtle"},
-      {"collection": "Interface", "token": "surface/muted"},
-      {"collection": "Interface", "token": "surface/page"},
-      {"collection": "Interface", "token": "surface/primary"},
-      {"collection": "Interface", "token": "surface/primary-subtle"},
-      {"collection": "Interface", "token": "surface/primary-subtle/hover"},
-      {"collection": "Interface", "token": "surface/primary-tint"},
-      {"collection": "Interface", "token": "surface/primary/hover"},
-      {"collection": "Interface", "token": "surface/primary/pressed"},
-      {"collection": "Interface", "token": "surface/success"},
-      {"collection": "Interface", "token": "surface/success/hover"},
-      {"collection": "Interface", "token": "surface/success/pressed"},
-      {"collection": "Interface", "token": "text/disabled"},
-      {"collection": "Interface", "token": "text/on-color"},
-      {"collection": "Interface", "token": "text/primary"},
-      {"collection": "Interface", "token": "text/secondary"},
-      {"collection": "Primitives", "token": "spacing/12"},
-      {"collection": "Primitives", "token": "spacing/16"},
-      {"collection": "Primitives", "token": "spacing/20"},
-      {"collection": "Primitives", "token": "spacing/24"},
-      {"collection": "Primitives", "token": "spacing/32"},
-      {"collection": "Primitives", "token": "spacing/40"},
-      {"collection": "Primitives", "token": "spacing/48"},
-      {"collection": "Primitives", "token": "spacing/56"},
-      {"collection": "Primitives", "token": "spacing/6"},
-      {"collection": "Primitives", "token": "spacing/8"},
-      {"collection": "Semantics", "token": "border-width/default"},
-      {"collection": "Semantics", "token": "font/family/sans"},
-      {"collection": "Semantics", "token": "font/weight/medium"},
-      {"collection": "Semantics", "token": "icon-size/lg"},
-      {"collection": "Semantics", "token": "icon-size/md"},
-      {"collection": "Semantics", "token": "icon-size/xs"},
-      {"collection": "Semantics", "token": "radius/md"}
+      {
+        "collection": "Breakpoint",
+        "token": "type/body"
+      },
+      {
+        "collection": "Breakpoint",
+        "token": "type/body-lg"
+      },
+      {
+        "collection": "Breakpoint",
+        "token": "type/body-lg/line-height"
+      },
+      {
+        "collection": "Breakpoint",
+        "token": "type/body-md"
+      },
+      {
+        "collection": "Breakpoint",
+        "token": "type/body-md/line-height"
+      },
+      {
+        "collection": "Breakpoint",
+        "token": "type/body-sm"
+      },
+      {
+        "collection": "Breakpoint",
+        "token": "type/body-sm/line-height"
+      },
+      {
+        "collection": "Breakpoint",
+        "token": "type/body/line-height"
+      },
+      {
+        "collection": "Interface",
+        "token": "border/disabled"
+      },
+      {
+        "collection": "Interface",
+        "token": "border/error-strong"
+      },
+      {
+        "collection": "Interface",
+        "token": "border/inverse"
+      },
+      {
+        "collection": "Interface",
+        "token": "border/primary"
+      },
+      {
+        "collection": "Interface",
+        "token": "border/primary-strong"
+      },
+      {
+        "collection": "Interface",
+        "token": "border/primary-subtle"
+      },
+      {
+        "collection": "Interface",
+        "token": "border/strong"
+      },
+      {
+        "collection": "Interface",
+        "token": "border/stronger"
+      },
+      {
+        "collection": "Interface",
+        "token": "border/success-strong"
+      },
+      {
+        "collection": "Interface",
+        "token": "icon/disabled"
+      },
+      {
+        "collection": "Interface",
+        "token": "icon/interactive"
+      },
+      {
+        "collection": "Interface",
+        "token": "icon/on-color"
+      },
+      {
+        "collection": "Interface",
+        "token": "surface/default"
+      },
+      {
+        "collection": "Interface",
+        "token": "surface/disabled"
+      },
+      {
+        "collection": "Interface",
+        "token": "surface/error"
+      },
+      {
+        "collection": "Interface",
+        "token": "surface/error/hover"
+      },
+      {
+        "collection": "Interface",
+        "token": "surface/error/pressed"
+      },
+      {
+        "collection": "Interface",
+        "token": "surface/inverse"
+      },
+      {
+        "collection": "Interface",
+        "token": "surface/inverse-subtle"
+      },
+      {
+        "collection": "Interface",
+        "token": "surface/muted"
+      },
+      {
+        "collection": "Interface",
+        "token": "surface/page"
+      },
+      {
+        "collection": "Interface",
+        "token": "surface/primary"
+      },
+      {
+        "collection": "Interface",
+        "token": "surface/primary-subtle"
+      },
+      {
+        "collection": "Interface",
+        "token": "surface/primary-subtle/hover"
+      },
+      {
+        "collection": "Interface",
+        "token": "surface/primary-tint"
+      },
+      {
+        "collection": "Interface",
+        "token": "surface/primary/hover"
+      },
+      {
+        "collection": "Interface",
+        "token": "surface/primary/pressed"
+      },
+      {
+        "collection": "Interface",
+        "token": "surface/success"
+      },
+      {
+        "collection": "Interface",
+        "token": "surface/success/hover"
+      },
+      {
+        "collection": "Interface",
+        "token": "surface/success/pressed"
+      },
+      {
+        "collection": "Interface",
+        "token": "text/disabled"
+      },
+      {
+        "collection": "Interface",
+        "token": "text/on-color"
+      },
+      {
+        "collection": "Interface",
+        "token": "text/primary"
+      },
+      {
+        "collection": "Interface",
+        "token": "text/secondary"
+      },
+      {
+        "collection": "Primitives",
+        "token": "spacing/12"
+      },
+      {
+        "collection": "Primitives",
+        "token": "spacing/16"
+      },
+      {
+        "collection": "Primitives",
+        "token": "spacing/20"
+      },
+      {
+        "collection": "Primitives",
+        "token": "spacing/24"
+      },
+      {
+        "collection": "Primitives",
+        "token": "spacing/32"
+      },
+      {
+        "collection": "Primitives",
+        "token": "spacing/40"
+      },
+      {
+        "collection": "Primitives",
+        "token": "spacing/48"
+      },
+      {
+        "collection": "Primitives",
+        "token": "spacing/56"
+      },
+      {
+        "collection": "Primitives",
+        "token": "spacing/6"
+      },
+      {
+        "collection": "Primitives",
+        "token": "spacing/8"
+      },
+      {
+        "collection": "Semantics",
+        "token": "border-width/default"
+      },
+      {
+        "collection": "Semantics",
+        "token": "font/family/sans"
+      },
+      {
+        "collection": "Semantics",
+        "token": "font/weight/medium"
+      },
+      {
+        "collection": "Semantics",
+        "token": "icon-size/lg"
+      },
+      {
+        "collection": "Semantics",
+        "token": "icon-size/md"
+      },
+      {
+        "collection": "Semantics",
+        "token": "icon-size/xs"
+      },
+      {
+        "collection": "Semantics",
+        "token": "radius/md"
+      }
     ],
     "Buttons/Icon Button": [
-      {"collection": "Interface", "token": "border/disabled"},
-      {"collection": "Interface", "token": "border/error-strong"},
-      {"collection": "Interface", "token": "border/inverse"},
-      {"collection": "Interface", "token": "border/primary"},
-      {"collection": "Interface", "token": "border/primary-strong"},
-      {"collection": "Interface", "token": "border/primary-subtle"},
-      {"collection": "Interface", "token": "border/strong"},
-      {"collection": "Interface", "token": "border/stronger"},
-      {"collection": "Interface", "token": "border/success-strong"},
-      {"collection": "Interface", "token": "icon/default"},
-      {"collection": "Interface", "token": "icon/disabled"},
-      {"collection": "Interface", "token": "icon/on-color"},
-      {"collection": "Interface", "token": "icon/primary"},
-      {"collection": "Interface", "token": "surface/default"},
-      {"collection": "Interface", "token": "surface/disabled"},
-      {"collection": "Interface", "token": "surface/error"},
-      {"collection": "Interface", "token": "surface/error/hover"},
-      {"collection": "Interface", "token": "surface/error/pressed"},
-      {"collection": "Interface", "token": "surface/inverse"},
-      {"collection": "Interface", "token": "surface/inverse-subtle"},
-      {"collection": "Interface", "token": "surface/muted"},
-      {"collection": "Interface", "token": "surface/page"},
-      {"collection": "Interface", "token": "surface/primary"},
-      {"collection": "Interface", "token": "surface/primary-subtle"},
-      {"collection": "Interface", "token": "surface/primary-subtle/hover"},
-      {"collection": "Interface", "token": "surface/primary-tint"},
-      {"collection": "Interface", "token": "surface/primary/hover"},
-      {"collection": "Interface", "token": "surface/primary/pressed"},
-      {"collection": "Interface", "token": "surface/success"},
-      {"collection": "Interface", "token": "surface/success/hover"},
-      {"collection": "Interface", "token": "surface/success/pressed"},
-      {"collection": "Primitives", "token": "spacing/32"},
-      {"collection": "Primitives", "token": "spacing/40"},
-      {"collection": "Primitives", "token": "spacing/48"},
-      {"collection": "Primitives", "token": "spacing/6"},
-      {"collection": "Primitives", "token": "spacing/8"},
-      {"collection": "Semantics", "token": "border-width/default"},
-      {"collection": "Semantics", "token": "icon-size/lg"},
-      {"collection": "Semantics", "token": "icon-size/md"},
-      {"collection": "Semantics", "token": "icon-size/xs"},
-      {"collection": "Semantics", "token": "radius/full"},
-      {"collection": "Semantics", "token": "radius/md"}
+      {
+        "collection": "Interface",
+        "token": "border/disabled"
+      },
+      {
+        "collection": "Interface",
+        "token": "border/error-strong"
+      },
+      {
+        "collection": "Interface",
+        "token": "border/inverse"
+      },
+      {
+        "collection": "Interface",
+        "token": "border/primary"
+      },
+      {
+        "collection": "Interface",
+        "token": "border/primary-strong"
+      },
+      {
+        "collection": "Interface",
+        "token": "border/primary-subtle"
+      },
+      {
+        "collection": "Interface",
+        "token": "border/strong"
+      },
+      {
+        "collection": "Interface",
+        "token": "border/stronger"
+      },
+      {
+        "collection": "Interface",
+        "token": "border/success-strong"
+      },
+      {
+        "collection": "Interface",
+        "token": "icon/default"
+      },
+      {
+        "collection": "Interface",
+        "token": "icon/disabled"
+      },
+      {
+        "collection": "Interface",
+        "token": "icon/on-color"
+      },
+      {
+        "collection": "Interface",
+        "token": "icon/primary"
+      },
+      {
+        "collection": "Interface",
+        "token": "surface/default"
+      },
+      {
+        "collection": "Interface",
+        "token": "surface/disabled"
+      },
+      {
+        "collection": "Interface",
+        "token": "surface/error"
+      },
+      {
+        "collection": "Interface",
+        "token": "surface/error/hover"
+      },
+      {
+        "collection": "Interface",
+        "token": "surface/error/pressed"
+      },
+      {
+        "collection": "Interface",
+        "token": "surface/inverse"
+      },
+      {
+        "collection": "Interface",
+        "token": "surface/inverse-subtle"
+      },
+      {
+        "collection": "Interface",
+        "token": "surface/muted"
+      },
+      {
+        "collection": "Interface",
+        "token": "surface/page"
+      },
+      {
+        "collection": "Interface",
+        "token": "surface/primary"
+      },
+      {
+        "collection": "Interface",
+        "token": "surface/primary-subtle"
+      },
+      {
+        "collection": "Interface",
+        "token": "surface/primary-subtle/hover"
+      },
+      {
+        "collection": "Interface",
+        "token": "surface/primary-tint"
+      },
+      {
+        "collection": "Interface",
+        "token": "surface/primary/hover"
+      },
+      {
+        "collection": "Interface",
+        "token": "surface/primary/pressed"
+      },
+      {
+        "collection": "Interface",
+        "token": "surface/success"
+      },
+      {
+        "collection": "Interface",
+        "token": "surface/success/hover"
+      },
+      {
+        "collection": "Interface",
+        "token": "surface/success/pressed"
+      },
+      {
+        "collection": "Primitives",
+        "token": "spacing/32"
+      },
+      {
+        "collection": "Primitives",
+        "token": "spacing/40"
+      },
+      {
+        "collection": "Primitives",
+        "token": "spacing/48"
+      },
+      {
+        "collection": "Primitives",
+        "token": "spacing/6"
+      },
+      {
+        "collection": "Primitives",
+        "token": "spacing/8"
+      },
+      {
+        "collection": "Semantics",
+        "token": "border-width/default"
+      },
+      {
+        "collection": "Semantics",
+        "token": "icon-size/lg"
+      },
+      {
+        "collection": "Semantics",
+        "token": "icon-size/md"
+      },
+      {
+        "collection": "Semantics",
+        "token": "icon-size/xs"
+      },
+      {
+        "collection": "Semantics",
+        "token": "radius/full"
+      },
+      {
+        "collection": "Semantics",
+        "token": "radius/md"
+      }
     ],
     "Logo/Logo-Ionbase": [
-      {"collection": "Breakpoint", "token": "type/body"},
-      {"collection": "Breakpoint", "token": "type/body/line-height"},
-      {"collection": "Interface", "token": "border/strong"},
-      {"collection": "Interface", "token": "icon/default"},
-      {"collection": "Interface", "token": "surface/default"},
-      {"collection": "Interface", "token": "text/tertiary"},
-      {"collection": "Primitives", "token": "font/family/host-grotesk"},
-      {"collection": "Primitives", "token": "font/weight/500"},
-      {"collection": "Primitives", "token": "spacing/4"},
-      {"collection": "Primitives", "token": "spacing/8"},
-      {"collection": "Semantics", "token": "font/family/sans"},
-      {"collection": "Semantics", "token": "font/weight/medium"}
+      {
+        "collection": "Breakpoint",
+        "token": "type/body"
+      },
+      {
+        "collection": "Breakpoint",
+        "token": "type/body/line-height"
+      },
+      {
+        "collection": "Interface",
+        "token": "border/strong"
+      },
+      {
+        "collection": "Interface",
+        "token": "icon/default"
+      },
+      {
+        "collection": "Interface",
+        "token": "surface/default"
+      },
+      {
+        "collection": "Interface",
+        "token": "text/tertiary"
+      },
+      {
+        "collection": "Primitives",
+        "token": "spacing/4"
+      },
+      {
+        "collection": "Primitives",
+        "token": "spacing/8"
+      },
+      {
+        "collection": "Semantics",
+        "token": "font/family/sans"
+      },
+      {
+        "collection": "Semantics",
+        "token": "font/weight/medium"
+      }
     ],
     "Input/Input": [
-      {"collection": "Breakpoint", "token": "type/body"},
-      {"collection": "Breakpoint", "token": "type/body-sm"},
-      {"collection": "Breakpoint", "token": "type/body-sm/line-height"},
-      {"collection": "Breakpoint", "token": "type/body/line-height"},
-      {"collection": "Interface", "token": "border/default"},
-      {"collection": "Interface", "token": "border/disabled"},
-      {"collection": "Interface", "token": "border/error-strong"},
-      {"collection": "Interface", "token": "border/focus"},
-      {"collection": "Interface", "token": "border/strong"},
-      {"collection": "Interface", "token": "border/subtle"},
-      {"collection": "Interface", "token": "icon/disabled"},
-      {"collection": "Interface", "token": "icon/interactive"},
-      {"collection": "Interface", "token": "icon/placeholder"},
-      {"collection": "Interface", "token": "icon/secondary"},
-      {"collection": "Interface", "token": "icon/tertiary"},
-      {"collection": "Interface", "token": "surface/default"},
-      {"collection": "Interface", "token": "surface/disabled"},
-      {"collection": "Interface", "token": "surface/page"},
-      {"collection": "Interface", "token": "text/disabled"},
-      {"collection": "Interface", "token": "text/placeholder"},
-      {"collection": "Interface", "token": "text/secondary"},
-      {"collection": "Interface", "token": "text/tertiary"},
-      {"collection": "Primitives", "token": "font/family/host-grotesk"},
-      {"collection": "Primitives", "token": "font/weight/400"},
-      {"collection": "Primitives", "token": "spacing/12"},
-      {"collection": "Primitives", "token": "spacing/16"},
-      {"collection": "Primitives", "token": "spacing/6"},
-      {"collection": "Primitives", "token": "spacing/8"},
-      {"collection": "Semantics", "token": "border-width/default"},
-      {"collection": "Semantics", "token": "border-width/thick"},
-      {"collection": "Semantics", "token": "font/family/sans"},
-      {"collection": "Semantics", "token": "font/weight/regular"},
-      {"collection": "Semantics", "token": "radius/md"},
-      {"collection": "Semantics", "token": "radius/sm"}
+      {
+        "collection": "Breakpoint",
+        "token": "type/body"
+      },
+      {
+        "collection": "Breakpoint",
+        "token": "type/body-sm"
+      },
+      {
+        "collection": "Breakpoint",
+        "token": "type/body-sm/line-height"
+      },
+      {
+        "collection": "Breakpoint",
+        "token": "type/body/line-height"
+      },
+      {
+        "collection": "Interface",
+        "token": "border/default"
+      },
+      {
+        "collection": "Interface",
+        "token": "border/disabled"
+      },
+      {
+        "collection": "Interface",
+        "token": "border/error-strong"
+      },
+      {
+        "collection": "Interface",
+        "token": "border/focus"
+      },
+      {
+        "collection": "Interface",
+        "token": "border/strong"
+      },
+      {
+        "collection": "Interface",
+        "token": "border/subtle"
+      },
+      {
+        "collection": "Interface",
+        "token": "icon/disabled"
+      },
+      {
+        "collection": "Interface",
+        "token": "icon/interactive"
+      },
+      {
+        "collection": "Interface",
+        "token": "icon/placeholder"
+      },
+      {
+        "collection": "Interface",
+        "token": "icon/secondary"
+      },
+      {
+        "collection": "Interface",
+        "token": "icon/tertiary"
+      },
+      {
+        "collection": "Interface",
+        "token": "surface/default"
+      },
+      {
+        "collection": "Interface",
+        "token": "surface/disabled"
+      },
+      {
+        "collection": "Interface",
+        "token": "surface/page"
+      },
+      {
+        "collection": "Interface",
+        "token": "text/disabled"
+      },
+      {
+        "collection": "Interface",
+        "token": "text/placeholder"
+      },
+      {
+        "collection": "Interface",
+        "token": "text/secondary"
+      },
+      {
+        "collection": "Interface",
+        "token": "text/tertiary"
+      },
+      {
+        "collection": "Primitives",
+        "token": "spacing/12"
+      },
+      {
+        "collection": "Primitives",
+        "token": "spacing/16"
+      },
+      {
+        "collection": "Primitives",
+        "token": "spacing/6"
+      },
+      {
+        "collection": "Primitives",
+        "token": "spacing/8"
+      },
+      {
+        "collection": "Semantics",
+        "token": "border-width/default"
+      },
+      {
+        "collection": "Semantics",
+        "token": "border-width/thick"
+      },
+      {
+        "collection": "Semantics",
+        "token": "font/family/sans"
+      },
+      {
+        "collection": "Semantics",
+        "token": "font/weight/regular"
+      },
+      {
+        "collection": "Semantics",
+        "token": "radius/md"
+      },
+      {
+        "collection": "Semantics",
+        "token": "radius/sm"
+      }
     ],
     "Input/Form Field": [
-      {"collection": "Breakpoint", "token": "type/body"},
-      {"collection": "Breakpoint", "token": "type/body-sm"},
-      {"collection": "Breakpoint", "token": "type/body-sm/line-height"},
-      {"collection": "Breakpoint", "token": "type/body/line-height"},
-      {"collection": "Interface", "token": "border/default"},
-      {"collection": "Interface", "token": "border/disabled"},
-      {"collection": "Interface", "token": "border/error-strong"},
-      {"collection": "Interface", "token": "border/strong"},
-      {"collection": "Interface", "token": "icon/disabled"},
-      {"collection": "Interface", "token": "icon/interactive"},
-      {"collection": "Interface", "token": "icon/placeholder"},
-      {"collection": "Interface", "token": "icon/tertiary"},
-      {"collection": "Interface", "token": "surface/default"},
-      {"collection": "Interface", "token": "surface/disabled"},
-      {"collection": "Interface", "token": "text/disabled"},
-      {"collection": "Interface", "token": "text/error"},
-      {"collection": "Interface", "token": "text/placeholder"},
-      {"collection": "Interface", "token": "text/secondary"},
-      {"collection": "Interface", "token": "text/tertiary"},
-      {"collection": "Primitives", "token": "font/family/host-grotesk"},
-      {"collection": "Primitives", "token": "font/weight/400"},
-      {"collection": "Primitives", "token": "font/weight/500"},
-      {"collection": "Primitives", "token": "spacing/12"},
-      {"collection": "Primitives", "token": "spacing/6"},
-      {"collection": "Primitives", "token": "spacing/8"},
-      {"collection": "Semantics", "token": "border-width/default"},
-      {"collection": "Semantics", "token": "border-width/thick"},
-      {"collection": "Semantics", "token": "font/family/sans"},
-      {"collection": "Semantics", "token": "font/weight/medium"},
-      {"collection": "Semantics", "token": "font/weight/regular"},
-      {"collection": "Semantics", "token": "radius/md"}
+      {
+        "collection": "Breakpoint",
+        "token": "type/body"
+      },
+      {
+        "collection": "Breakpoint",
+        "token": "type/body-sm"
+      },
+      {
+        "collection": "Breakpoint",
+        "token": "type/body-sm/line-height"
+      },
+      {
+        "collection": "Breakpoint",
+        "token": "type/body/line-height"
+      },
+      {
+        "collection": "Interface",
+        "token": "border/default"
+      },
+      {
+        "collection": "Interface",
+        "token": "border/disabled"
+      },
+      {
+        "collection": "Interface",
+        "token": "border/error-strong"
+      },
+      {
+        "collection": "Interface",
+        "token": "border/strong"
+      },
+      {
+        "collection": "Interface",
+        "token": "icon/disabled"
+      },
+      {
+        "collection": "Interface",
+        "token": "icon/interactive"
+      },
+      {
+        "collection": "Interface",
+        "token": "icon/placeholder"
+      },
+      {
+        "collection": "Interface",
+        "token": "icon/tertiary"
+      },
+      {
+        "collection": "Interface",
+        "token": "surface/default"
+      },
+      {
+        "collection": "Interface",
+        "token": "surface/disabled"
+      },
+      {
+        "collection": "Interface",
+        "token": "text/disabled"
+      },
+      {
+        "collection": "Interface",
+        "token": "text/error"
+      },
+      {
+        "collection": "Interface",
+        "token": "text/placeholder"
+      },
+      {
+        "collection": "Interface",
+        "token": "text/secondary"
+      },
+      {
+        "collection": "Interface",
+        "token": "text/tertiary"
+      },
+      {
+        "collection": "Primitives",
+        "token": "spacing/12"
+      },
+      {
+        "collection": "Primitives",
+        "token": "spacing/6"
+      },
+      {
+        "collection": "Primitives",
+        "token": "spacing/8"
+      },
+      {
+        "collection": "Semantics",
+        "token": "border-width/default"
+      },
+      {
+        "collection": "Semantics",
+        "token": "border-width/thick"
+      },
+      {
+        "collection": "Semantics",
+        "token": "font/family/sans"
+      },
+      {
+        "collection": "Semantics",
+        "token": "font/weight/medium"
+      },
+      {
+        "collection": "Semantics",
+        "token": "font/weight/regular"
+      },
+      {
+        "collection": "Semantics",
+        "token": "radius/md"
+      }
     ],
     "Input/Input/Phone": [
-      {"collection": "Breakpoint", "token": "type/body"},
-      {"collection": "Breakpoint", "token": "type/body-sm"},
-      {"collection": "Breakpoint", "token": "type/body-sm/line-height"},
-      {"collection": "Breakpoint", "token": "type/body/line-height"},
-      {"collection": "Interface", "token": "border/default"},
-      {"collection": "Interface", "token": "border/strong"},
-      {"collection": "Interface", "token": "icon/interactive"},
-      {"collection": "Interface", "token": "icon/placeholder"},
-      {"collection": "Interface", "token": "icon/tertiary"},
-      {"collection": "Interface", "token": "surface/default"},
-      {"collection": "Interface", "token": "surface/page"},
-      {"collection": "Interface", "token": "text/placeholder"},
-      {"collection": "Interface", "token": "text/secondary"},
-      {"collection": "Primitives", "token": "font/family/host-grotesk"},
-      {"collection": "Primitives", "token": "font/weight/400"},
-      {"collection": "Primitives", "token": "spacing/12"},
-      {"collection": "Primitives", "token": "spacing/16"},
-      {"collection": "Primitives", "token": "spacing/4"},
-      {"collection": "Primitives", "token": "spacing/6"},
-      {"collection": "Primitives", "token": "spacing/8"},
-      {"collection": "Semantics", "token": "border-width/default"},
-      {"collection": "Semantics", "token": "font/family/sans"},
-      {"collection": "Semantics", "token": "font/weight/regular"},
-      {"collection": "Semantics", "token": "radius/md"},
-      {"collection": "Semantics", "token": "radius/sm"}
+      {
+        "collection": "Breakpoint",
+        "token": "type/body"
+      },
+      {
+        "collection": "Breakpoint",
+        "token": "type/body-sm"
+      },
+      {
+        "collection": "Breakpoint",
+        "token": "type/body-sm/line-height"
+      },
+      {
+        "collection": "Breakpoint",
+        "token": "type/body/line-height"
+      },
+      {
+        "collection": "Interface",
+        "token": "border/default"
+      },
+      {
+        "collection": "Interface",
+        "token": "border/strong"
+      },
+      {
+        "collection": "Interface",
+        "token": "icon/interactive"
+      },
+      {
+        "collection": "Interface",
+        "token": "icon/placeholder"
+      },
+      {
+        "collection": "Interface",
+        "token": "icon/tertiary"
+      },
+      {
+        "collection": "Interface",
+        "token": "surface/default"
+      },
+      {
+        "collection": "Interface",
+        "token": "surface/page"
+      },
+      {
+        "collection": "Interface",
+        "token": "text/placeholder"
+      },
+      {
+        "collection": "Interface",
+        "token": "text/secondary"
+      },
+      {
+        "collection": "Primitives",
+        "token": "spacing/12"
+      },
+      {
+        "collection": "Primitives",
+        "token": "spacing/16"
+      },
+      {
+        "collection": "Primitives",
+        "token": "spacing/4"
+      },
+      {
+        "collection": "Primitives",
+        "token": "spacing/6"
+      },
+      {
+        "collection": "Primitives",
+        "token": "spacing/8"
+      },
+      {
+        "collection": "Semantics",
+        "token": "border-width/default"
+      },
+      {
+        "collection": "Semantics",
+        "token": "font/family/sans"
+      },
+      {
+        "collection": "Semantics",
+        "token": "font/weight/regular"
+      },
+      {
+        "collection": "Semantics",
+        "token": "radius/md"
+      },
+      {
+        "collection": "Semantics",
+        "token": "radius/sm"
+      }
     ],
     "Menu/Menu Item": [
-      {"collection": "Breakpoint", "token": "type/body"},
-      {"collection": "Breakpoint", "token": "type/body/line-height"},
-      {"collection": "Interface", "token": "border/strong"},
-      {"collection": "Interface", "token": "icon/default"},
-      {"collection": "Interface", "token": "icon/disabled"},
-      {"collection": "Interface", "token": "icon/primary"},
-      {"collection": "Interface", "token": "surface/default"},
-      {"collection": "Interface", "token": "surface/hover"},
-      {"collection": "Interface", "token": "surface/primary-subtle"},
-      {"collection": "Interface", "token": "text/disabled"},
-      {"collection": "Interface", "token": "text/primary"},
-      {"collection": "Interface", "token": "text/secondary"},
-      {"collection": "Primitives", "token": "font/family/host-grotesk"},
-      {"collection": "Primitives", "token": "font/weight/400"},
-      {"collection": "Primitives", "token": "spacing/12"},
-      {"collection": "Primitives", "token": "spacing/8"},
-      {"collection": "Semantics", "token": "font/family/sans"},
-      {"collection": "Semantics", "token": "font/weight/regular"},
-      {"collection": "Semantics", "token": "radius/sm"}
+      {
+        "collection": "Breakpoint",
+        "token": "type/body"
+      },
+      {
+        "collection": "Breakpoint",
+        "token": "type/body/line-height"
+      },
+      {
+        "collection": "Interface",
+        "token": "border/strong"
+      },
+      {
+        "collection": "Interface",
+        "token": "icon/default"
+      },
+      {
+        "collection": "Interface",
+        "token": "icon/disabled"
+      },
+      {
+        "collection": "Interface",
+        "token": "icon/primary"
+      },
+      {
+        "collection": "Interface",
+        "token": "surface/default"
+      },
+      {
+        "collection": "Interface",
+        "token": "surface/hover"
+      },
+      {
+        "collection": "Interface",
+        "token": "surface/primary-subtle"
+      },
+      {
+        "collection": "Interface",
+        "token": "text/disabled"
+      },
+      {
+        "collection": "Interface",
+        "token": "text/primary"
+      },
+      {
+        "collection": "Interface",
+        "token": "text/secondary"
+      },
+      {
+        "collection": "Primitives",
+        "token": "spacing/12"
+      },
+      {
+        "collection": "Primitives",
+        "token": "spacing/8"
+      },
+      {
+        "collection": "Semantics",
+        "token": "font/family/sans"
+      },
+      {
+        "collection": "Semantics",
+        "token": "font/weight/regular"
+      },
+      {
+        "collection": "Semantics",
+        "token": "radius/sm"
+      }
     ],
     "Menu/Menu": [
-      {"collection": "Breakpoint", "token": "type/body"},
-      {"collection": "Breakpoint", "token": "type/body/line-height"},
-      {"collection": "Interface", "token": "border/strong"},
-      {"collection": "Interface", "token": "border/subtle"},
-      {"collection": "Interface", "token": "icon/default"},
-      {"collection": "Interface", "token": "icon/primary"},
-      {"collection": "Interface", "token": "surface/default"},
-      {"collection": "Interface", "token": "surface/hover"},
-      {"collection": "Interface", "token": "surface/primary-subtle"},
-      {"collection": "Interface", "token": "text/primary"},
-      {"collection": "Interface", "token": "text/secondary"},
-      {"collection": "Primitives", "token": "font/family/host-grotesk"},
-      {"collection": "Primitives", "token": "font/weight/400"},
-      {"collection": "Primitives", "token": "spacing/12"},
-      {"collection": "Primitives", "token": "spacing/2"},
-      {"collection": "Primitives", "token": "spacing/6"},
-      {"collection": "Primitives", "token": "spacing/8"},
-      {"collection": "Semantics", "token": "border-width/default"},
-      {"collection": "Semantics", "token": "font/family/sans"},
-      {"collection": "Semantics", "token": "font/weight/regular"},
-      {"collection": "Semantics", "token": "radius/sm"},
-      {"collection": "Semantics", "token": "radius/xl"}
+      {
+        "collection": "Breakpoint",
+        "token": "type/body"
+      },
+      {
+        "collection": "Breakpoint",
+        "token": "type/body/line-height"
+      },
+      {
+        "collection": "Interface",
+        "token": "border/strong"
+      },
+      {
+        "collection": "Interface",
+        "token": "border/subtle"
+      },
+      {
+        "collection": "Interface",
+        "token": "icon/default"
+      },
+      {
+        "collection": "Interface",
+        "token": "icon/primary"
+      },
+      {
+        "collection": "Interface",
+        "token": "surface/default"
+      },
+      {
+        "collection": "Interface",
+        "token": "surface/hover"
+      },
+      {
+        "collection": "Interface",
+        "token": "surface/primary-subtle"
+      },
+      {
+        "collection": "Interface",
+        "token": "text/primary"
+      },
+      {
+        "collection": "Interface",
+        "token": "text/secondary"
+      },
+      {
+        "collection": "Primitives",
+        "token": "spacing/12"
+      },
+      {
+        "collection": "Primitives",
+        "token": "spacing/2"
+      },
+      {
+        "collection": "Primitives",
+        "token": "spacing/6"
+      },
+      {
+        "collection": "Primitives",
+        "token": "spacing/8"
+      },
+      {
+        "collection": "Semantics",
+        "token": "border-width/default"
+      },
+      {
+        "collection": "Semantics",
+        "token": "font/family/sans"
+      },
+      {
+        "collection": "Semantics",
+        "token": "font/weight/regular"
+      },
+      {
+        "collection": "Semantics",
+        "token": "radius/sm"
+      },
+      {
+        "collection": "Semantics",
+        "token": "radius/xl"
+      }
     ],
     "Side Menu/Menu Item": [
-      {"collection": "Breakpoint", "token": "type/body-sm"},
-      {"collection": "Breakpoint", "token": "type/body-sm/line-height"},
-      {"collection": "Interface", "token": "icon/default"},
-      {"collection": "Interface", "token": "icon/primary"},
-      {"collection": "Interface", "token": "icon/tertiary"},
-      {"collection": "Interface", "token": "surface/selected"},
-      {"collection": "Interface", "token": "surface/sunken"},
-      {"collection": "Interface", "token": "text/default"},
-      {"collection": "Interface", "token": "text/primary"},
-      {"collection": "Interface", "token": "text/tertiary"},
-      {"collection": "Primitives", "token": "font/family/host-grotesk"},
-      {"collection": "Primitives", "token": "font/weight/400"},
-      {"collection": "Primitives", "token": "font/weight/500"},
-      {"collection": "Primitives", "token": "spacing/12"},
-      {"collection": "Primitives", "token": "spacing/6"},
-      {"collection": "Semantics", "token": "icon-size/sm"},
-      {"collection": "Semantics", "token": "radius/md"}
+      {
+        "collection": "Breakpoint",
+        "token": "type/body-sm"
+      },
+      {
+        "collection": "Breakpoint",
+        "token": "type/body-sm/line-height"
+      },
+      {
+        "collection": "Interface",
+        "token": "icon/default"
+      },
+      {
+        "collection": "Interface",
+        "token": "icon/primary"
+      },
+      {
+        "collection": "Interface",
+        "token": "icon/tertiary"
+      },
+      {
+        "collection": "Interface",
+        "token": "surface/selected"
+      },
+      {
+        "collection": "Interface",
+        "token": "surface/sunken"
+      },
+      {
+        "collection": "Interface",
+        "token": "text/default"
+      },
+      {
+        "collection": "Interface",
+        "token": "text/primary"
+      },
+      {
+        "collection": "Interface",
+        "token": "text/tertiary"
+      },
+      {
+        "collection": "Primitives",
+        "token": "spacing/12"
+      },
+      {
+        "collection": "Primitives",
+        "token": "spacing/6"
+      },
+      {
+        "collection": "Semantics",
+        "token": "font/family/sans"
+      },
+      {
+        "collection": "Semantics",
+        "token": "font/weight/medium"
+      },
+      {
+        "collection": "Semantics",
+        "token": "font/weight/regular"
+      },
+      {
+        "collection": "Semantics",
+        "token": "icon-size/sm"
+      },
+      {
+        "collection": "Semantics",
+        "token": "radius/md"
+      }
     ],
     "Side Menu/Menu Section Title": [
-      {"collection": "Breakpoint", "token": "type/caption"},
-      {"collection": "Breakpoint", "token": "type/caption/line-height"},
-      {"collection": "Interface", "token": "border/strong"},
-      {"collection": "Interface", "token": "text/tertiary"},
-      {"collection": "Primitives", "token": "font/family/host-grotesk"},
-      {"collection": "Semantics", "token": "font/weight/regular"}
+      {
+        "collection": "Breakpoint",
+        "token": "type/caption"
+      },
+      {
+        "collection": "Breakpoint",
+        "token": "type/caption/line-height"
+      },
+      {
+        "collection": "Interface",
+        "token": "border/strong"
+      },
+      {
+        "collection": "Interface",
+        "token": "text/tertiary"
+      },
+      {
+        "collection": "Semantics",
+        "token": "font/family/sans"
+      },
+      {
+        "collection": "Semantics",
+        "token": "font/weight/regular"
+      }
     ],
     "Select/Select": [
-      {"collection": "Breakpoint", "token": "type/body"},
-      {"collection": "Breakpoint", "token": "type/body-sm"},
-      {"collection": "Breakpoint", "token": "type/body-sm/line-height"},
-      {"collection": "Breakpoint", "token": "type/body/line-height"},
-      {"collection": "Interface", "token": "border/default"},
-      {"collection": "Interface", "token": "border/disabled"},
-      {"collection": "Interface", "token": "border/error-strong"},
-      {"collection": "Interface", "token": "border/focus"},
-      {"collection": "Interface", "token": "border/strong"},
-      {"collection": "Interface", "token": "icon/disabled"},
-      {"collection": "Interface", "token": "icon/tertiary"},
-      {"collection": "Interface", "token": "surface/default"},
-      {"collection": "Interface", "token": "surface/disabled"},
-      {"collection": "Interface", "token": "text/disabled"},
-      {"collection": "Interface", "token": "text/secondary"},
-      {"collection": "Interface", "token": "text/tertiary"},
-      {"collection": "Primitives", "token": "font/family/host-grotesk"},
-      {"collection": "Primitives", "token": "font/weight/400"},
-      {"collection": "Primitives", "token": "spacing/12"},
-      {"collection": "Primitives", "token": "spacing/16"},
-      {"collection": "Primitives", "token": "spacing/6"},
-      {"collection": "Primitives", "token": "spacing/8"},
-      {"collection": "Semantics", "token": "border-width/default"},
-      {"collection": "Semantics", "token": "border-width/thick"},
-      {"collection": "Semantics", "token": "font/family/sans"},
-      {"collection": "Semantics", "token": "font/weight/regular"},
-      {"collection": "Semantics", "token": "radius/md"},
-      {"collection": "Semantics", "token": "radius/sm"}
+      {
+        "collection": "Breakpoint",
+        "token": "type/body"
+      },
+      {
+        "collection": "Breakpoint",
+        "token": "type/body-sm"
+      },
+      {
+        "collection": "Breakpoint",
+        "token": "type/body-sm/line-height"
+      },
+      {
+        "collection": "Breakpoint",
+        "token": "type/body/line-height"
+      },
+      {
+        "collection": "Interface",
+        "token": "border/default"
+      },
+      {
+        "collection": "Interface",
+        "token": "border/disabled"
+      },
+      {
+        "collection": "Interface",
+        "token": "border/error-strong"
+      },
+      {
+        "collection": "Interface",
+        "token": "border/focus"
+      },
+      {
+        "collection": "Interface",
+        "token": "border/strong"
+      },
+      {
+        "collection": "Interface",
+        "token": "icon/disabled"
+      },
+      {
+        "collection": "Interface",
+        "token": "icon/tertiary"
+      },
+      {
+        "collection": "Interface",
+        "token": "surface/default"
+      },
+      {
+        "collection": "Interface",
+        "token": "surface/disabled"
+      },
+      {
+        "collection": "Interface",
+        "token": "text/disabled"
+      },
+      {
+        "collection": "Interface",
+        "token": "text/secondary"
+      },
+      {
+        "collection": "Interface",
+        "token": "text/tertiary"
+      },
+      {
+        "collection": "Primitives",
+        "token": "spacing/12"
+      },
+      {
+        "collection": "Primitives",
+        "token": "spacing/16"
+      },
+      {
+        "collection": "Primitives",
+        "token": "spacing/6"
+      },
+      {
+        "collection": "Primitives",
+        "token": "spacing/8"
+      },
+      {
+        "collection": "Semantics",
+        "token": "border-width/default"
+      },
+      {
+        "collection": "Semantics",
+        "token": "border-width/thick"
+      },
+      {
+        "collection": "Semantics",
+        "token": "font/family/sans"
+      },
+      {
+        "collection": "Semantics",
+        "token": "font/weight/regular"
+      },
+      {
+        "collection": "Semantics",
+        "token": "radius/md"
+      },
+      {
+        "collection": "Semantics",
+        "token": "radius/sm"
+      }
     ],
     "Checkbox/Checkbox": [
-      {"collection": "Breakpoint", "token": "type/body"},
-      {"collection": "Breakpoint", "token": "type/body-sm"},
-      {"collection": "Breakpoint", "token": "type/body-sm/line-height"},
-      {"collection": "Breakpoint", "token": "type/body/line-height"},
-      {"collection": "Interface", "token": "border/disabled"},
-      {"collection": "Interface", "token": "border/error-strong"},
-      {"collection": "Interface", "token": "border/focus"},
-      {"collection": "Interface", "token": "border/inverse"},
-      {"collection": "Interface", "token": "border/primary-strong"},
-      {"collection": "Interface", "token": "border/strong"},
-      {"collection": "Interface", "token": "border/stronger"},
-      {"collection": "Interface", "token": "icon/disabled"},
-      {"collection": "Interface", "token": "icon/on-color"},
-      {"collection": "Interface", "token": "surface/default"},
-      {"collection": "Interface", "token": "surface/disabled"},
-      {"collection": "Interface", "token": "surface/error"},
-      {"collection": "Interface", "token": "surface/inverse"},
-      {"collection": "Interface", "token": "surface/primary"},
-      {"collection": "Interface", "token": "text/disabled"},
-      {"collection": "Interface", "token": "text/secondary"},
-      {"collection": "Primitives", "token": "font/family/host-grotesk"},
-      {"collection": "Primitives", "token": "font/weight/400"},
-      {"collection": "Primitives", "token": "spacing/12"},
-      {"collection": "Primitives", "token": "spacing/8"},
-      {"collection": "Semantics", "token": "border-width/default"},
-      {"collection": "Semantics", "token": "border-width/thick"},
-      {"collection": "Semantics", "token": "font/family/sans"},
-      {"collection": "Semantics", "token": "font/weight/regular"},
-      {"collection": "Semantics", "token": "radius/md"},
-      {"collection": "Semantics", "token": "radius/sm"},
-      {"collection": "Semantics", "token": "radius/xs"}
+      {
+        "collection": "Breakpoint",
+        "token": "type/body"
+      },
+      {
+        "collection": "Breakpoint",
+        "token": "type/body-sm"
+      },
+      {
+        "collection": "Breakpoint",
+        "token": "type/body-sm/line-height"
+      },
+      {
+        "collection": "Breakpoint",
+        "token": "type/body/line-height"
+      },
+      {
+        "collection": "Interface",
+        "token": "border/disabled"
+      },
+      {
+        "collection": "Interface",
+        "token": "border/error-strong"
+      },
+      {
+        "collection": "Interface",
+        "token": "border/focus"
+      },
+      {
+        "collection": "Interface",
+        "token": "border/inverse"
+      },
+      {
+        "collection": "Interface",
+        "token": "border/primary-strong"
+      },
+      {
+        "collection": "Interface",
+        "token": "border/strong"
+      },
+      {
+        "collection": "Interface",
+        "token": "border/stronger"
+      },
+      {
+        "collection": "Interface",
+        "token": "icon/disabled"
+      },
+      {
+        "collection": "Interface",
+        "token": "icon/on-color"
+      },
+      {
+        "collection": "Interface",
+        "token": "surface/default"
+      },
+      {
+        "collection": "Interface",
+        "token": "surface/disabled"
+      },
+      {
+        "collection": "Interface",
+        "token": "surface/error"
+      },
+      {
+        "collection": "Interface",
+        "token": "surface/inverse"
+      },
+      {
+        "collection": "Interface",
+        "token": "surface/primary"
+      },
+      {
+        "collection": "Interface",
+        "token": "text/disabled"
+      },
+      {
+        "collection": "Interface",
+        "token": "text/secondary"
+      },
+      {
+        "collection": "Primitives",
+        "token": "spacing/12"
+      },
+      {
+        "collection": "Primitives",
+        "token": "spacing/8"
+      },
+      {
+        "collection": "Semantics",
+        "token": "border-width/default"
+      },
+      {
+        "collection": "Semantics",
+        "token": "border-width/thick"
+      },
+      {
+        "collection": "Semantics",
+        "token": "font/family/sans"
+      },
+      {
+        "collection": "Semantics",
+        "token": "font/weight/regular"
+      },
+      {
+        "collection": "Semantics",
+        "token": "radius/md"
+      },
+      {
+        "collection": "Semantics",
+        "token": "radius/sm"
+      },
+      {
+        "collection": "Semantics",
+        "token": "radius/xs"
+      }
     ],
     "Card/Screen Frame": [
-      {"collection": "Interface", "token": "border/default"},
-      {"collection": "Interface", "token": "surface/default"},
-      {"collection": "Interface", "token": "surface/sunken"},
-      {"collection": "Semantics", "token": "radius/5xl"},
-      {"collection": "Semantics", "token": "radius/6xl"}
+      {
+        "collection": "Interface",
+        "token": "border/default"
+      },
+      {
+        "collection": "Interface",
+        "token": "surface/default"
+      },
+      {
+        "collection": "Interface",
+        "token": "surface/sunken"
+      },
+      {
+        "collection": "Semantics",
+        "token": "radius/5xl"
+      },
+      {
+        "collection": "Semantics",
+        "token": "radius/6xl"
+      }
     ],
     "Card/Full Card": [
-      {"collection": "Breakpoint", "token": "type/body-sm"},
-      {"collection": "Breakpoint", "token": "type/body-sm/line-height"},
-      {"collection": "Breakpoint", "token": "type/h3"},
-      {"collection": "Breakpoint", "token": "type/h3/line-height"},
-      {"collection": "Interface", "token": "border/default"},
-      {"collection": "Interface", "token": "border/strong"},
-      {"collection": "Interface", "token": "icon/interactive"},
-      {"collection": "Interface", "token": "surface/default"},
-      {"collection": "Interface", "token": "surface/muted"},
-      {"collection": "Interface", "token": "surface/page"},
-      {"collection": "Interface", "token": "surface/sunken"},
-      {"collection": "Interface", "token": "text/default"},
-      {"collection": "Interface", "token": "text/secondary"},
-      {"collection": "Primitives", "token": "font/family/host-grotesk"},
-      {"collection": "Primitives", "token": "font/weight/400"},
-      {"collection": "Primitives", "token": "font/weight/500"},
-      {"collection": "Primitives", "token": "font/weight/600"},
-      {"collection": "Primitives", "token": "spacing/12"},
-      {"collection": "Primitives", "token": "spacing/2"},
-      {"collection": "Primitives", "token": "spacing/24"},
-      {"collection": "Primitives", "token": "spacing/32"},
-      {"collection": "Primitives", "token": "spacing/4"},
-      {"collection": "Primitives", "token": "spacing/48"},
-      {"collection": "Primitives", "token": "spacing/6"},
-      {"collection": "Primitives", "token": "spacing/8"},
-      {"collection": "Semantics", "token": "border-width/default"},
-      {"collection": "Semantics", "token": "icon-size/sm"},
-      {"collection": "Semantics", "token": "radius/5xl"},
-      {"collection": "Semantics", "token": "radius/6xl"},
-      {"collection": "Semantics", "token": "radius/full"},
-      {"collection": "Semantics", "token": "radius/md"}
+      {
+        "collection": "Breakpoint",
+        "token": "type/body-sm"
+      },
+      {
+        "collection": "Breakpoint",
+        "token": "type/body-sm/line-height"
+      },
+      {
+        "collection": "Breakpoint",
+        "token": "type/h3"
+      },
+      {
+        "collection": "Breakpoint",
+        "token": "type/h3/line-height"
+      },
+      {
+        "collection": "Interface",
+        "token": "border/default"
+      },
+      {
+        "collection": "Interface",
+        "token": "border/strong"
+      },
+      {
+        "collection": "Interface",
+        "token": "icon/interactive"
+      },
+      {
+        "collection": "Interface",
+        "token": "surface/default"
+      },
+      {
+        "collection": "Interface",
+        "token": "surface/page"
+      },
+      {
+        "collection": "Interface",
+        "token": "surface/sunken"
+      },
+      {
+        "collection": "Interface",
+        "token": "text/default"
+      },
+      {
+        "collection": "Interface",
+        "token": "text/secondary"
+      },
+      {
+        "collection": "Primitives",
+        "token": "spacing/12"
+      },
+      {
+        "collection": "Primitives",
+        "token": "spacing/2"
+      },
+      {
+        "collection": "Primitives",
+        "token": "spacing/24"
+      },
+      {
+        "collection": "Primitives",
+        "token": "spacing/32"
+      },
+      {
+        "collection": "Primitives",
+        "token": "spacing/4"
+      },
+      {
+        "collection": "Primitives",
+        "token": "spacing/48"
+      },
+      {
+        "collection": "Primitives",
+        "token": "spacing/6"
+      },
+      {
+        "collection": "Primitives",
+        "token": "spacing/8"
+      },
+      {
+        "collection": "Semantics",
+        "token": "border-width/default"
+      },
+      {
+        "collection": "Semantics",
+        "token": "font/family/sans"
+      },
+      {
+        "collection": "Semantics",
+        "token": "font/weight/medium"
+      },
+      {
+        "collection": "Semantics",
+        "token": "font/weight/regular"
+      },
+      {
+        "collection": "Semantics",
+        "token": "font/weight/semibold"
+      },
+      {
+        "collection": "Semantics",
+        "token": "icon-size/xs"
+      },
+      {
+        "collection": "Semantics",
+        "token": "radius/5xl"
+      },
+      {
+        "collection": "Semantics",
+        "token": "radius/6xl"
+      },
+      {
+        "collection": "Semantics",
+        "token": "radius/full"
+      },
+      {
+        "collection": "Semantics",
+        "token": "radius/md"
+      }
     ],
     "Radio/Radio": [
-      {"collection": "Breakpoint", "token": "type/body"},
-      {"collection": "Breakpoint", "token": "type/body-sm"},
-      {"collection": "Breakpoint", "token": "type/body-sm/line-height"},
-      {"collection": "Breakpoint", "token": "type/body/line-height"},
-      {"collection": "Interface", "token": "border/error-strong"},
-      {"collection": "Interface", "token": "border/focus"},
-      {"collection": "Interface", "token": "border/inverse"},
-      {"collection": "Interface", "token": "border/primary-strong"},
-      {"collection": "Interface", "token": "border/strong"},
-      {"collection": "Interface", "token": "border/stronger"},
-      {"collection": "Interface", "token": "icon/on-color"},
-      {"collection": "Interface", "token": "surface/default"},
-      {"collection": "Interface", "token": "surface/error"},
-      {"collection": "Interface", "token": "surface/inverse"},
-      {"collection": "Interface", "token": "surface/primary"},
-      {"collection": "Interface", "token": "text/secondary"},
-      {"collection": "Primitives", "token": "font/family/host-grotesk"},
-      {"collection": "Primitives", "token": "font/weight/400"},
-      {"collection": "Primitives", "token": "spacing/12"},
-      {"collection": "Primitives", "token": "spacing/8"},
-      {"collection": "Semantics", "token": "border-width/default"},
-      {"collection": "Semantics", "token": "border-width/thick"},
-      {"collection": "Semantics", "token": "font/family/sans"},
-      {"collection": "Semantics", "token": "font/weight/regular"},
-      {"collection": "Semantics", "token": "radius/full"}
+      {
+        "collection": "Breakpoint",
+        "token": "type/body"
+      },
+      {
+        "collection": "Breakpoint",
+        "token": "type/body-sm"
+      },
+      {
+        "collection": "Breakpoint",
+        "token": "type/body-sm/line-height"
+      },
+      {
+        "collection": "Breakpoint",
+        "token": "type/body/line-height"
+      },
+      {
+        "collection": "Interface",
+        "token": "border/error-strong"
+      },
+      {
+        "collection": "Interface",
+        "token": "border/focus"
+      },
+      {
+        "collection": "Interface",
+        "token": "border/inverse"
+      },
+      {
+        "collection": "Interface",
+        "token": "border/primary-strong"
+      },
+      {
+        "collection": "Interface",
+        "token": "border/strong"
+      },
+      {
+        "collection": "Interface",
+        "token": "border/stronger"
+      },
+      {
+        "collection": "Interface",
+        "token": "icon/on-color"
+      },
+      {
+        "collection": "Interface",
+        "token": "surface/default"
+      },
+      {
+        "collection": "Interface",
+        "token": "surface/error"
+      },
+      {
+        "collection": "Interface",
+        "token": "surface/inverse"
+      },
+      {
+        "collection": "Interface",
+        "token": "surface/primary"
+      },
+      {
+        "collection": "Interface",
+        "token": "text/secondary"
+      },
+      {
+        "collection": "Primitives",
+        "token": "spacing/12"
+      },
+      {
+        "collection": "Primitives",
+        "token": "spacing/8"
+      },
+      {
+        "collection": "Semantics",
+        "token": "border-width/default"
+      },
+      {
+        "collection": "Semantics",
+        "token": "border-width/thick"
+      },
+      {
+        "collection": "Semantics",
+        "token": "font/family/sans"
+      },
+      {
+        "collection": "Semantics",
+        "token": "font/weight/regular"
+      },
+      {
+        "collection": "Semantics",
+        "token": "radius/full"
+      }
     ],
     "Toggle/Toggle": [
-      {"collection": "Breakpoint", "token": "type/body"},
-      {"collection": "Breakpoint", "token": "type/body-sm"},
-      {"collection": "Breakpoint", "token": "type/body-sm/line-height"},
-      {"collection": "Breakpoint", "token": "type/body/line-height"},
-      {"collection": "Interface", "token": "border/focus"},
-      {"collection": "Interface", "token": "border/strong"},
-      {"collection": "Interface", "token": "surface/default"},
-      {"collection": "Interface", "token": "surface/error"},
-      {"collection": "Interface", "token": "surface/inverse"},
-      {"collection": "Interface", "token": "surface/muted"},
-      {"collection": "Interface", "token": "surface/primary"},
-      {"collection": "Interface", "token": "text/secondary"},
-      {"collection": "Primitives", "token": "font/family/host-grotesk"},
-      {"collection": "Primitives", "token": "font/weight/400"},
-      {"collection": "Primitives", "token": "spacing/12"},
-      {"collection": "Primitives", "token": "spacing/2"},
-      {"collection": "Primitives", "token": "spacing/8"},
-      {"collection": "Semantics", "token": "border-width/default"},
-      {"collection": "Semantics", "token": "border-width/thick"},
-      {"collection": "Semantics", "token": "font/family/sans"},
-      {"collection": "Semantics", "token": "font/weight/regular"},
-      {"collection": "Semantics", "token": "radius/full"}
+      {
+        "collection": "Breakpoint",
+        "token": "type/body"
+      },
+      {
+        "collection": "Breakpoint",
+        "token": "type/body-sm"
+      },
+      {
+        "collection": "Breakpoint",
+        "token": "type/body-sm/line-height"
+      },
+      {
+        "collection": "Breakpoint",
+        "token": "type/body/line-height"
+      },
+      {
+        "collection": "Interface",
+        "token": "border/focus"
+      },
+      {
+        "collection": "Interface",
+        "token": "border/strong"
+      },
+      {
+        "collection": "Interface",
+        "token": "surface/default"
+      },
+      {
+        "collection": "Interface",
+        "token": "surface/error"
+      },
+      {
+        "collection": "Interface",
+        "token": "surface/inverse"
+      },
+      {
+        "collection": "Interface",
+        "token": "surface/muted"
+      },
+      {
+        "collection": "Interface",
+        "token": "surface/primary"
+      },
+      {
+        "collection": "Interface",
+        "token": "text/secondary"
+      },
+      {
+        "collection": "Primitives",
+        "token": "spacing/12"
+      },
+      {
+        "collection": "Primitives",
+        "token": "spacing/2"
+      },
+      {
+        "collection": "Primitives",
+        "token": "spacing/8"
+      },
+      {
+        "collection": "Semantics",
+        "token": "border-width/default"
+      },
+      {
+        "collection": "Semantics",
+        "token": "border-width/thick"
+      },
+      {
+        "collection": "Semantics",
+        "token": "font/family/sans"
+      },
+      {
+        "collection": "Semantics",
+        "token": "font/weight/regular"
+      },
+      {
+        "collection": "Semantics",
+        "token": "radius/full"
+      }
     ],
     "Divider/Border": [
-      {"collection": "Interface", "token": "border/strong"},
-      {"collection": "Interface", "token": "border/stronger"},
-      {"collection": "Interface", "token": "surface/default"}
+      {
+        "collection": "Interface",
+        "token": "border/strong"
+      },
+      {
+        "collection": "Interface",
+        "token": "surface/default"
+      }
     ],
     "Header/Header": [
-      {"collection": "Interface", "token": "border/default"},
-      {"collection": "Interface", "token": "border/strong"},
-      {"collection": "Interface", "token": "border/stronger"},
-      {"collection": "Interface", "token": "icon/default"},
-      {"collection": "Interface", "token": "surface/default"},
-      {"collection": "Primitives", "token": "spacing/12"},
-      {"collection": "Primitives", "token": "spacing/16"},
-      {"collection": "Primitives", "token": "spacing/24"},
-      {"collection": "Primitives", "token": "spacing/32"},
-      {"collection": "Primitives", "token": "spacing/4"},
-      {"collection": "Primitives", "token": "spacing/6"},
-      {"collection": "Primitives", "token": "spacing/64"},
-      {"collection": "Primitives", "token": "spacing/8"},
-      {"collection": "Semantics", "token": "border-width/default"},
-      {"collection": "Semantics", "token": "icon-size/sm"},
-      {"collection": "Semantics", "token": "radius/md"},
-      {"collection": "Semantics", "token": "radius/sm"}
-    ],
-    "Dev/.Designer": [
-      {"collection": "Breakpoint", "token": "type/h5"},
-      {"collection": "Breakpoint", "token": "type/h5/line-height"},
-      {"collection": "Interface", "token": "border/strong"},
-      {"collection": "Interface", "token": "surface/muted"},
-      {"collection": "Interface", "token": "text/default"},
-      {"collection": "Interface", "token": "text/tertiary"},
-      {"collection": "Primitives", "token": "font/family/host-grotesk"},
-      {"collection": "Primitives", "token": "font/weight/500"},
-      {"collection": "Primitives", "token": "font/weight/600"},
-      {"collection": "Primitives", "token": "spacing/12"},
-      {"collection": "Semantics", "token": "border-width/default"},
-      {"collection": "Semantics", "token": "radius/full"}
-    ],
-    "Dev/.Status Design": [
-      {"collection": "Breakpoint", "token": "type/h4"},
-      {"collection": "Breakpoint", "token": "type/h4/line-height"},
-      {"collection": "Interface", "token": "icon/information"},
-      {"collection": "Interface", "token": "icon/primary"},
-      {"collection": "Interface", "token": "icon/secondary"},
-      {"collection": "Interface", "token": "icon/success"},
-      {"collection": "Interface", "token": "icon/warning"},
-      {"collection": "Interface", "token": "text/information"},
-      {"collection": "Interface", "token": "text/primary"},
-      {"collection": "Interface", "token": "text/secondary"},
-      {"collection": "Interface", "token": "text/success"},
-      {"collection": "Interface", "token": "text/warning"},
-      {"collection": "Primitives", "token": "font/family/host-grotesk"},
-      {"collection": "Primitives", "token": "font/weight/600"},
-      {"collection": "Primitives", "token": "spacing/16"},
-      {"collection": "Semantics", "token": "icon-size/xl"}
-    ],
-    "Dev/Status": [
-      {"collection": "Breakpoint", "token": "type/h4"},
-      {"collection": "Breakpoint", "token": "type/h4/line-height"},
-      {"collection": "Breakpoint", "token": "type/h5"},
-      {"collection": "Breakpoint", "token": "type/h5/line-height"},
-      {"collection": "Interface", "token": "border/information"},
-      {"collection": "Interface", "token": "border/primary"},
-      {"collection": "Interface", "token": "border/stronger"},
-      {"collection": "Interface", "token": "border/success"},
-      {"collection": "Interface", "token": "border/warning"},
-      {"collection": "Interface", "token": "icon/information"},
-      {"collection": "Interface", "token": "icon/primary"},
-      {"collection": "Interface", "token": "icon/secondary"},
-      {"collection": "Interface", "token": "icon/success"},
-      {"collection": "Interface", "token": "icon/warning"},
-      {"collection": "Interface", "token": "surface/information-subtle"},
-      {"collection": "Interface", "token": "surface/primary-subtle"},
-      {"collection": "Interface", "token": "surface/success-subtle"},
-      {"collection": "Interface", "token": "surface/sunken"},
-      {"collection": "Interface", "token": "surface/warning-subtle"},
-      {"collection": "Interface", "token": "text/default"},
-      {"collection": "Interface", "token": "text/information"},
-      {"collection": "Interface", "token": "text/primary"},
-      {"collection": "Interface", "token": "text/secondary"},
-      {"collection": "Interface", "token": "text/success"},
-      {"collection": "Interface", "token": "text/warning"},
-      {"collection": "Primitives", "token": "font/family/host-grotesk"},
-      {"collection": "Primitives", "token": "font/weight/600"},
-      {"collection": "Primitives", "token": "spacing/12"},
-      {"collection": "Primitives", "token": "spacing/16"},
-      {"collection": "Primitives", "token": "spacing/32"},
-      {"collection": "Primitives", "token": "spacing/40"},
-      {"collection": "Semantics", "token": "icon-size/xl"},
-      {"collection": "Semantics", "token": "radius/5xl"}
-    ],
-    "Nav Item/Nav Item": [
-      {"collection": "Breakpoint", "token": "type/body-sm"},
-      {"collection": "Breakpoint", "token": "type/body-sm/line-height"},
-      {"collection": "Interface", "token": "icon/interactive/hover"},
-      {"collection": "Interface", "token": "icon/tertiary"},
-      {"collection": "Interface", "token": "text/interactive/hover"},
-      {"collection": "Interface", "token": "text/secondary"},
-      {"collection": "Primitives", "token": "font/family/host-grotesk"},
-      {"collection": "Primitives", "token": "font/weight/500"},
-      {"collection": "Primitives", "token": "spacing/4"},
-      {"collection": "Primitives", "token": "spacing/8"},
-      {"collection": "Semantics", "token": "font/family/sans"},
-      {"collection": "Semantics", "token": "font/weight/medium"},
-      {"collection": "Semantics", "token": "radius/sm"}
-    ],
-    "Badge/Badge": [
-      {"collection": "Breakpoint", "token": "type/body-sm"},
-      {"collection": "Breakpoint", "token": "type/body-sm/line-height"},
-      {"collection": "Breakpoint", "token": "type/caption"},
-      {"collection": "Breakpoint", "token": "type/caption/line-height"},
-      {"collection": "Interface", "token": "border/default"},
-      {"collection": "Interface", "token": "border/error-subtle"},
-      {"collection": "Interface", "token": "border/information-subtle"},
-      {"collection": "Interface", "token": "border/primary-subtle"},
-      {"collection": "Interface", "token": "border/success-subtle"},
-      {"collection": "Interface", "token": "border/warning-subtle"},
-      {"collection": "Interface", "token": "icon/error"},
-      {"collection": "Interface", "token": "icon/information"},
-      {"collection": "Interface", "token": "icon/interactive"},
-      {"collection": "Interface", "token": "icon/primary"},
-      {"collection": "Interface", "token": "icon/secondary"},
-      {"collection": "Interface", "token": "icon/success"},
-      {"collection": "Interface", "token": "icon/warning"},
-      {"collection": "Interface", "token": "surface/default"},
-      {"collection": "Interface", "token": "surface/error-subtle"},
-      {"collection": "Interface", "token": "surface/information-subtle"},
-      {"collection": "Interface", "token": "surface/muted"},
-      {"collection": "Interface", "token": "surface/primary-subtle"},
-      {"collection": "Interface", "token": "surface/success-subtle"},
-      {"collection": "Interface", "token": "surface/warning-subtle"},
-      {"collection": "Interface", "token": "text/error"},
-      {"collection": "Interface", "token": "text/information"},
-      {"collection": "Interface", "token": "text/link"},
-      {"collection": "Interface", "token": "text/secondary"},
-      {"collection": "Interface", "token": "text/success"},
-      {"collection": "Interface", "token": "text/warning"},
-      {"collection": "Primitives", "token": "font/family/host-grotesk"},
-      {"collection": "Primitives", "token": "font/weight/500"},
-      {"collection": "Primitives", "token": "spacing/2"},
-      {"collection": "Primitives", "token": "spacing/20"},
-      {"collection": "Primitives", "token": "spacing/24"},
-      {"collection": "Primitives", "token": "spacing/32"},
-      {"collection": "Primitives", "token": "spacing/4"},
-      {"collection": "Primitives", "token": "spacing/6"},
-      {"collection": "Semantics", "token": "border-width/default"},
-      {"collection": "Semantics", "token": "icon-size/2xs"},
-      {"collection": "Semantics", "token": "icon-size/md"},
-      {"collection": "Semantics", "token": "icon-size/sm"},
-      {"collection": "Semantics", "token": "radius/full"},
-      {"collection": "Semantics", "token": "radius/md"},
-      {"collection": "Semantics", "token": "radius/sm"},
-      {"collection": "Semantics", "token": "radius/xs"}
-    ],
-    "Tabs/Tabs Item": [
-      {"collection": "Breakpoint", "token": "type/body"},
-      {"collection": "Breakpoint", "token": "type/body-lg"},
-      {"collection": "Breakpoint", "token": "type/body-lg/line-height"},
-      {"collection": "Breakpoint", "token": "type/body-sm"},
-      {"collection": "Breakpoint", "token": "type/body-sm/line-height"},
-      {"collection": "Breakpoint", "token": "type/body/line-height"},
-      {"collection": "Interface", "token": "border/focus"},
-      {"collection": "Interface", "token": "border/primary"},
-      {"collection": "Interface", "token": "icon/disabled"},
-      {"collection": "Interface", "token": "icon/interactive/hover"},
-      {"collection": "Interface", "token": "icon/tertiary"},
-      {"collection": "Interface", "token": "surface/default"},
-      {"collection": "Interface", "token": "surface/hover"},
-      {"collection": "Interface", "token": "surface/page"},
-      {"collection": "Interface", "token": "text/default"},
-      {"collection": "Interface", "token": "text/disabled"},
-      {"collection": "Interface", "token": "text/tertiary"},
-      {"collection": "Primitives", "token": "font/family/host-grotesk"},
-      {"collection": "Primitives", "token": "font/weight/500"},
-      {"collection": "Primitives", "token": "spacing/12"},
-      {"collection": "Primitives", "token": "spacing/16"},
-      {"collection": "Primitives", "token": "spacing/20"},
-      {"collection": "Primitives", "token": "spacing/6"},
-      {"collection": "Primitives", "token": "spacing/8"},
-      {"collection": "Semantics", "token": "border-width/thick"},
-      {"collection": "Semantics", "token": "font/family/sans"},
-      {"collection": "Semantics", "token": "font/weight/medium"},
-      {"collection": "Semantics", "token": "icon-size/sm"},
-      {"collection": "Semantics", "token": "radius/full"},
-      {"collection": "Semantics", "token": "radius/md"}
-    ],
-    "Tabs/Tabs": [
-      {"collection": "Breakpoint", "token": "type/body"},
-      {"collection": "Breakpoint", "token": "type/body/line-height"},
-      {"collection": "Interface", "token": "border/default"},
-      {"collection": "Interface", "token": "border/primary"},
-      {"collection": "Interface", "token": "icon/interactive/hover"},
-      {"collection": "Interface", "token": "icon/tertiary"},
-      {"collection": "Interface", "token": "surface/default"},
-      {"collection": "Interface", "token": "surface/muted"},
-      {"collection": "Interface", "token": "text/default"},
-      {"collection": "Interface", "token": "text/tertiary"},
-      {"collection": "Primitives", "token": "font/family/host-grotesk"},
-      {"collection": "Primitives", "token": "font/weight/500"},
-      {"collection": "Primitives", "token": "spacing/16"},
-      {"collection": "Primitives", "token": "spacing/2"},
-      {"collection": "Primitives", "token": "spacing/20"},
-      {"collection": "Primitives", "token": "spacing/4"},
-      {"collection": "Primitives", "token": "spacing/8"},
-      {"collection": "Semantics", "token": "border-width/default"},
-      {"collection": "Semantics", "token": "border-width/thick"},
-      {"collection": "Semantics", "token": "font/family/sans"},
-      {"collection": "Semantics", "token": "font/weight/medium"},
-      {"collection": "Semantics", "token": "radius/full"},
-      {"collection": "Semantics", "token": "radius/md"}
-    ],
-    "Scroll Progress/Line": [
-      {"collection": "Interface", "token": "border/strong"},
-      {"collection": "Interface", "token": "border/stronger"},
-      {"collection": "Interface", "token": "surface/default"},
-      {"collection": "Semantics", "token": "border-width/thick"}
-    ],
-    "Scroll Progress/Progress": [
-      {"collection": "Breakpoint", "token": "type/body-sm"},
-      {"collection": "Breakpoint", "token": "type/body-sm/line-height"},
-      {"collection": "Breakpoint", "token": "type/caption"},
-      {"collection": "Breakpoint", "token": "type/caption/line-height"},
-      {"collection": "Interface", "token": "border/default"},
-      {"collection": "Interface", "token": "border/strong"},
-      {"collection": "Interface", "token": "border/stronger"},
-      {"collection": "Interface", "token": "surface/default"},
-      {"collection": "Interface", "token": "surface/muted"},
-      {"collection": "Interface", "token": "text/secondary"},
-      {"collection": "Interface", "token": "text/tertiary"},
-      {"collection": "Primitives", "token": "font/family/host-grotesk"},
-      {"collection": "Primitives", "token": "font/weight/400"},
-      {"collection": "Primitives", "token": "spacing/12"},
-      {"collection": "Primitives", "token": "spacing/4"},
-      {"collection": "Primitives", "token": "spacing/6"},
-      {"collection": "Primitives", "token": "spacing/8"},
-      {"collection": "Semantics", "token": "border-width/default"},
-      {"collection": "Semantics", "token": "border-width/thick"},
-      {"collection": "Semantics", "token": "font/family/sans"},
-      {"collection": "Semantics", "token": "font/weight/medium"},
-      {"collection": "Semantics", "token": "font/weight/regular"},
-      {"collection": "Semantics", "token": "radius/md"}
-    ],
-    "Scroll Progress/Progress Heading": [
-      {"collection": "Breakpoint", "token": "type/body-sm"},
-      {"collection": "Breakpoint", "token": "type/body-sm/line-height"},
-      {"collection": "Interface", "token": "border/strong"},
-      {"collection": "Interface", "token": "border/stronger"},
-      {"collection": "Interface", "token": "surface/default"},
-      {"collection": "Interface", "token": "surface/muted"},
-      {"collection": "Interface", "token": "text/secondary"},
-      {"collection": "Primitives", "token": "font/family/host-grotesk"},
-      {"collection": "Primitives", "token": "font/weight/400"},
-      {"collection": "Primitives", "token": "spacing/6"},
-      {"collection": "Primitives", "token": "spacing/8"},
-      {"collection": "Semantics", "token": "border-width/default"},
-      {"collection": "Semantics", "token": "font/family/sans"},
-      {"collection": "Semantics", "token": "font/weight/regular"},
-      {"collection": "Semantics", "token": "radius/md"}
-    ],
-    "Table/Table/Cell Text": [
-      {"collection": "Breakpoint", "token": "type/body"},
-      {"collection": "Breakpoint", "token": "type/body-sm"},
-      {"collection": "Breakpoint", "token": "type/body-sm/line-height"},
-      {"collection": "Breakpoint", "token": "type/body/line-height"},
-      {"collection": "Interface", "token": "icon/interactive"},
-      {"collection": "Interface", "token": "icon/primary"},
-      {"collection": "Interface", "token": "icon/secondary"},
-      {"collection": "Interface", "token": "icon/tertiary"},
-      {"collection": "Interface", "token": "surface/default"},
-      {"collection": "Interface", "token": "text/default"},
-      {"collection": "Interface", "token": "text/link"},
-      {"collection": "Interface", "token": "text/secondary"},
-      {"collection": "Primitives", "token": "font/family/host-grotesk"},
-      {"collection": "Primitives", "token": "font/weight/400"},
-      {"collection": "Primitives", "token": "font/weight/500"},
-      {"collection": "Primitives", "token": "spacing/6"},
-      {"collection": "Semantics", "token": "font/family/sans"},
-      {"collection": "Semantics", "token": "font/weight/medium"},
-      {"collection": "Semantics", "token": "font/weight/regular"}
-    ],
-    "Table/Table Cell": [
-      {"collection": "Breakpoint", "token": "type/body-sm"},
-      {"collection": "Breakpoint", "token": "type/body-sm/line-height"},
-      {"collection": "Interface", "token": "border/default"},
-      {"collection": "Interface", "token": "icon/interactive"},
-      {"collection": "Interface", "token": "icon/secondary"},
-      {"collection": "Interface", "token": "surface/default"},
-      {"collection": "Interface", "token": "surface/page"},
-      {"collection": "Interface", "token": "text/secondary"},
-      {"collection": "Primitives", "token": "font/family/host-grotesk"},
-      {"collection": "Primitives", "token": "font/weight/500"},
-      {"collection": "Primitives", "token": "spacing/16"},
-      {"collection": "Primitives", "token": "spacing/20"},
-      {"collection": "Primitives", "token": "spacing/6"},
-      {"collection": "Primitives", "token": "spacing/8"},
-      {"collection": "Semantics", "token": "font/family/sans"},
-      {"collection": "Semantics", "token": "font/weight/medium"}
-    ],
-    "Table/Table Row": [
-      {"collection": "Breakpoint", "token": "type/body-sm"},
-      {"collection": "Breakpoint", "token": "type/body-sm/line-height"},
-      {"collection": "Interface", "token": "border/default"},
-      {"collection": "Interface", "token": "border/stronger"},
-      {"collection": "Interface", "token": "icon/interactive"},
-      {"collection": "Interface", "token": "icon/secondary"},
-      {"collection": "Interface", "token": "surface/default"},
-      {"collection": "Interface", "token": "surface/hover"},
-      {"collection": "Interface", "token": "surface/primary-subtle"},
-      {"collection": "Interface", "token": "text/secondary"},
-      {"collection": "Primitives", "token": "font/family/host-grotesk"},
-      {"collection": "Primitives", "token": "font/weight/400"},
-      {"collection": "Primitives", "token": "font/weight/500"},
-      {"collection": "Primitives", "token": "spacing/16"},
-      {"collection": "Primitives", "token": "spacing/20"},
-      {"collection": "Primitives", "token": "spacing/6"},
-      {"collection": "Primitives", "token": "spacing/8"},
-      {"collection": "Semantics", "token": "border-width/thick"},
-      {"collection": "Semantics", "token": "font/family/sans"},
-      {"collection": "Semantics", "token": "font/weight/medium"},
-      {"collection": "Semantics", "token": "font/weight/regular"},
-      {"collection": "Semantics", "token": "radius/xs"}
+      {
+        "collection": "Interface",
+        "token": "border/default"
+      },
+      {
+        "collection": "Interface",
+        "token": "border/strong"
+      },
+      {
+        "collection": "Interface",
+        "token": "border/stronger"
+      },
+      {
+        "collection": "Interface",
+        "token": "icon/default"
+      },
+      {
+        "collection": "Interface",
+        "token": "surface/default"
+      },
+      {
+        "collection": "Primitives",
+        "token": "spacing/12"
+      },
+      {
+        "collection": "Primitives",
+        "token": "spacing/16"
+      },
+      {
+        "collection": "Primitives",
+        "token": "spacing/24"
+      },
+      {
+        "collection": "Primitives",
+        "token": "spacing/32"
+      },
+      {
+        "collection": "Primitives",
+        "token": "spacing/4"
+      },
+      {
+        "collection": "Primitives",
+        "token": "spacing/6"
+      },
+      {
+        "collection": "Primitives",
+        "token": "spacing/64"
+      },
+      {
+        "collection": "Primitives",
+        "token": "spacing/8"
+      },
+      {
+        "collection": "Semantics",
+        "token": "border-width/default"
+      },
+      {
+        "collection": "Semantics",
+        "token": "icon-size/sm"
+      },
+      {
+        "collection": "Semantics",
+        "token": "radius/md"
+      },
+      {
+        "collection": "Semantics",
+        "token": "radius/sm"
+      }
     ],
     "Icon/Icon": [
-      {"collection": "Interface", "token": "icon/default"},
-      {"collection": "Semantics", "token": "icon-size/2xs"},
-      {"collection": "Semantics", "token": "icon-size/lg"},
-      {"collection": "Semantics", "token": "icon-size/md"},
-      {"collection": "Semantics", "token": "icon-size/sm"},
-      {"collection": "Semantics", "token": "icon-size/xl"},
-      {"collection": "Semantics", "token": "icon-size/xs"}
+      {
+        "collection": "Interface",
+        "token": "icon/default"
+      },
+      {
+        "collection": "Semantics",
+        "token": "icon-size/2xs"
+      },
+      {
+        "collection": "Semantics",
+        "token": "icon-size/lg"
+      },
+      {
+        "collection": "Semantics",
+        "token": "icon-size/md"
+      },
+      {
+        "collection": "Semantics",
+        "token": "icon-size/sm"
+      },
+      {
+        "collection": "Semantics",
+        "token": "icon-size/xl"
+      },
+      {
+        "collection": "Semantics",
+        "token": "icon-size/xs"
+      }
+    ],
+    "Dev/.Designer": [
+      {
+        "collection": "Breakpoint",
+        "token": "type/h5"
+      },
+      {
+        "collection": "Breakpoint",
+        "token": "type/h5/line-height"
+      },
+      {
+        "collection": "Interface",
+        "token": "border/strong"
+      },
+      {
+        "collection": "Interface",
+        "token": "surface/muted"
+      },
+      {
+        "collection": "Interface",
+        "token": "text/default"
+      },
+      {
+        "collection": "Interface",
+        "token": "text/tertiary"
+      },
+      {
+        "collection": "Primitives",
+        "token": "spacing/12"
+      },
+      {
+        "collection": "Semantics",
+        "token": "border-width/default"
+      },
+      {
+        "collection": "Semantics",
+        "token": "font/family/sans"
+      },
+      {
+        "collection": "Semantics",
+        "token": "font/weight/medium"
+      },
+      {
+        "collection": "Semantics",
+        "token": "font/weight/semibold"
+      },
+      {
+        "collection": "Semantics",
+        "token": "radius/full"
+      }
+    ],
+    "Dev/.Status Design": [
+      {
+        "collection": "Breakpoint",
+        "token": "type/h4"
+      },
+      {
+        "collection": "Breakpoint",
+        "token": "type/h4/line-height"
+      },
+      {
+        "collection": "Interface",
+        "token": "icon/information"
+      },
+      {
+        "collection": "Interface",
+        "token": "icon/primary"
+      },
+      {
+        "collection": "Interface",
+        "token": "icon/secondary"
+      },
+      {
+        "collection": "Interface",
+        "token": "icon/success"
+      },
+      {
+        "collection": "Interface",
+        "token": "icon/warning"
+      },
+      {
+        "collection": "Interface",
+        "token": "text/information"
+      },
+      {
+        "collection": "Interface",
+        "token": "text/primary"
+      },
+      {
+        "collection": "Interface",
+        "token": "text/secondary"
+      },
+      {
+        "collection": "Interface",
+        "token": "text/success"
+      },
+      {
+        "collection": "Interface",
+        "token": "text/warning"
+      },
+      {
+        "collection": "Primitives",
+        "token": "spacing/16"
+      },
+      {
+        "collection": "Semantics",
+        "token": "font/family/sans"
+      },
+      {
+        "collection": "Semantics",
+        "token": "font/weight/semibold"
+      },
+      {
+        "collection": "Semantics",
+        "token": "icon-size/xl"
+      }
+    ],
+    "Dev/Status": [
+      {
+        "collection": "Breakpoint",
+        "token": "type/h4"
+      },
+      {
+        "collection": "Breakpoint",
+        "token": "type/h4/line-height"
+      },
+      {
+        "collection": "Breakpoint",
+        "token": "type/h5"
+      },
+      {
+        "collection": "Breakpoint",
+        "token": "type/h5/line-height"
+      },
+      {
+        "collection": "Interface",
+        "token": "border/information"
+      },
+      {
+        "collection": "Interface",
+        "token": "border/primary"
+      },
+      {
+        "collection": "Interface",
+        "token": "border/stronger"
+      },
+      {
+        "collection": "Interface",
+        "token": "border/success"
+      },
+      {
+        "collection": "Interface",
+        "token": "border/warning"
+      },
+      {
+        "collection": "Interface",
+        "token": "icon/information"
+      },
+      {
+        "collection": "Interface",
+        "token": "icon/primary"
+      },
+      {
+        "collection": "Interface",
+        "token": "icon/secondary"
+      },
+      {
+        "collection": "Interface",
+        "token": "icon/success"
+      },
+      {
+        "collection": "Interface",
+        "token": "icon/warning"
+      },
+      {
+        "collection": "Interface",
+        "token": "surface/information-subtle"
+      },
+      {
+        "collection": "Interface",
+        "token": "surface/primary-subtle"
+      },
+      {
+        "collection": "Interface",
+        "token": "surface/success-subtle"
+      },
+      {
+        "collection": "Interface",
+        "token": "surface/sunken"
+      },
+      {
+        "collection": "Interface",
+        "token": "surface/warning-subtle"
+      },
+      {
+        "collection": "Interface",
+        "token": "text/default"
+      },
+      {
+        "collection": "Interface",
+        "token": "text/information"
+      },
+      {
+        "collection": "Interface",
+        "token": "text/primary"
+      },
+      {
+        "collection": "Interface",
+        "token": "text/secondary"
+      },
+      {
+        "collection": "Interface",
+        "token": "text/success"
+      },
+      {
+        "collection": "Interface",
+        "token": "text/warning"
+      },
+      {
+        "collection": "Primitives",
+        "token": "spacing/12"
+      },
+      {
+        "collection": "Primitives",
+        "token": "spacing/16"
+      },
+      {
+        "collection": "Primitives",
+        "token": "spacing/32"
+      },
+      {
+        "collection": "Primitives",
+        "token": "spacing/40"
+      },
+      {
+        "collection": "Semantics",
+        "token": "font/family/sans"
+      },
+      {
+        "collection": "Semantics",
+        "token": "font/weight/semibold"
+      },
+      {
+        "collection": "Semantics",
+        "token": "icon-size/xl"
+      },
+      {
+        "collection": "Semantics",
+        "token": "radius/5xl"
+      }
+    ],
+    "Nav Item/Nav Item": [
+      {
+        "collection": "Breakpoint",
+        "token": "type/body-sm"
+      },
+      {
+        "collection": "Breakpoint",
+        "token": "type/body-sm/line-height"
+      },
+      {
+        "collection": "Interface",
+        "token": "icon/interactive/hover"
+      },
+      {
+        "collection": "Interface",
+        "token": "icon/tertiary"
+      },
+      {
+        "collection": "Interface",
+        "token": "text/interactive/hover"
+      },
+      {
+        "collection": "Interface",
+        "token": "text/secondary"
+      },
+      {
+        "collection": "Primitives",
+        "token": "spacing/4"
+      },
+      {
+        "collection": "Primitives",
+        "token": "spacing/8"
+      },
+      {
+        "collection": "Semantics",
+        "token": "font/family/sans"
+      },
+      {
+        "collection": "Semantics",
+        "token": "font/weight/medium"
+      },
+      {
+        "collection": "Semantics",
+        "token": "radius/sm"
+      }
+    ],
+    "Badge/Badge": [
+      {
+        "collection": "Breakpoint",
+        "token": "type/body-sm"
+      },
+      {
+        "collection": "Breakpoint",
+        "token": "type/body-sm/line-height"
+      },
+      {
+        "collection": "Breakpoint",
+        "token": "type/caption"
+      },
+      {
+        "collection": "Breakpoint",
+        "token": "type/caption/line-height"
+      },
+      {
+        "collection": "Interface",
+        "token": "border/default"
+      },
+      {
+        "collection": "Interface",
+        "token": "border/error-subtle"
+      },
+      {
+        "collection": "Interface",
+        "token": "border/information-subtle"
+      },
+      {
+        "collection": "Interface",
+        "token": "border/primary-subtle"
+      },
+      {
+        "collection": "Interface",
+        "token": "border/success-subtle"
+      },
+      {
+        "collection": "Interface",
+        "token": "border/warning-subtle"
+      },
+      {
+        "collection": "Interface",
+        "token": "icon/error"
+      },
+      {
+        "collection": "Interface",
+        "token": "icon/information"
+      },
+      {
+        "collection": "Interface",
+        "token": "icon/interactive"
+      },
+      {
+        "collection": "Interface",
+        "token": "icon/primary"
+      },
+      {
+        "collection": "Interface",
+        "token": "icon/secondary"
+      },
+      {
+        "collection": "Interface",
+        "token": "icon/success"
+      },
+      {
+        "collection": "Interface",
+        "token": "icon/warning"
+      },
+      {
+        "collection": "Interface",
+        "token": "surface/default"
+      },
+      {
+        "collection": "Interface",
+        "token": "surface/error-subtle"
+      },
+      {
+        "collection": "Interface",
+        "token": "surface/information-subtle"
+      },
+      {
+        "collection": "Interface",
+        "token": "surface/page"
+      },
+      {
+        "collection": "Interface",
+        "token": "surface/primary-subtle"
+      },
+      {
+        "collection": "Interface",
+        "token": "surface/success-subtle"
+      },
+      {
+        "collection": "Interface",
+        "token": "surface/warning-subtle"
+      },
+      {
+        "collection": "Interface",
+        "token": "text/error"
+      },
+      {
+        "collection": "Interface",
+        "token": "text/information"
+      },
+      {
+        "collection": "Interface",
+        "token": "text/link"
+      },
+      {
+        "collection": "Interface",
+        "token": "text/secondary"
+      },
+      {
+        "collection": "Interface",
+        "token": "text/success"
+      },
+      {
+        "collection": "Interface",
+        "token": "text/warning"
+      },
+      {
+        "collection": "Primitives",
+        "token": "spacing/2"
+      },
+      {
+        "collection": "Primitives",
+        "token": "spacing/20"
+      },
+      {
+        "collection": "Primitives",
+        "token": "spacing/24"
+      },
+      {
+        "collection": "Primitives",
+        "token": "spacing/32"
+      },
+      {
+        "collection": "Primitives",
+        "token": "spacing/4"
+      },
+      {
+        "collection": "Primitives",
+        "token": "spacing/6"
+      },
+      {
+        "collection": "Semantics",
+        "token": "border-width/default"
+      },
+      {
+        "collection": "Semantics",
+        "token": "font/family/sans"
+      },
+      {
+        "collection": "Semantics",
+        "token": "font/weight/medium"
+      },
+      {
+        "collection": "Semantics",
+        "token": "icon-size/2xs"
+      },
+      {
+        "collection": "Semantics",
+        "token": "icon-size/md"
+      },
+      {
+        "collection": "Semantics",
+        "token": "icon-size/sm"
+      },
+      {
+        "collection": "Semantics",
+        "token": "radius/full"
+      },
+      {
+        "collection": "Semantics",
+        "token": "radius/md"
+      },
+      {
+        "collection": "Semantics",
+        "token": "radius/sm"
+      },
+      {
+        "collection": "Semantics",
+        "token": "radius/xs"
+      }
+    ],
+    "Tabs/Tabs Item": [
+      {
+        "collection": "Breakpoint",
+        "token": "type/body"
+      },
+      {
+        "collection": "Breakpoint",
+        "token": "type/body-lg"
+      },
+      {
+        "collection": "Breakpoint",
+        "token": "type/body-lg/line-height"
+      },
+      {
+        "collection": "Breakpoint",
+        "token": "type/body-sm"
+      },
+      {
+        "collection": "Breakpoint",
+        "token": "type/body-sm/line-height"
+      },
+      {
+        "collection": "Breakpoint",
+        "token": "type/body/line-height"
+      },
+      {
+        "collection": "Interface",
+        "token": "border/focus"
+      },
+      {
+        "collection": "Interface",
+        "token": "border/primary"
+      },
+      {
+        "collection": "Interface",
+        "token": "icon/disabled"
+      },
+      {
+        "collection": "Interface",
+        "token": "icon/interactive/hover"
+      },
+      {
+        "collection": "Interface",
+        "token": "icon/tertiary"
+      },
+      {
+        "collection": "Interface",
+        "token": "surface/default"
+      },
+      {
+        "collection": "Interface",
+        "token": "surface/hover"
+      },
+      {
+        "collection": "Interface",
+        "token": "surface/page"
+      },
+      {
+        "collection": "Interface",
+        "token": "text/default"
+      },
+      {
+        "collection": "Interface",
+        "token": "text/disabled"
+      },
+      {
+        "collection": "Interface",
+        "token": "text/tertiary"
+      },
+      {
+        "collection": "Primitives",
+        "token": "spacing/12"
+      },
+      {
+        "collection": "Primitives",
+        "token": "spacing/16"
+      },
+      {
+        "collection": "Primitives",
+        "token": "spacing/20"
+      },
+      {
+        "collection": "Primitives",
+        "token": "spacing/6"
+      },
+      {
+        "collection": "Primitives",
+        "token": "spacing/8"
+      },
+      {
+        "collection": "Semantics",
+        "token": "border-width/thick"
+      },
+      {
+        "collection": "Semantics",
+        "token": "font/family/sans"
+      },
+      {
+        "collection": "Semantics",
+        "token": "font/weight/medium"
+      },
+      {
+        "collection": "Semantics",
+        "token": "icon-size/sm"
+      },
+      {
+        "collection": "Semantics",
+        "token": "radius/full"
+      },
+      {
+        "collection": "Semantics",
+        "token": "radius/md"
+      }
+    ],
+    "Tabs/Tabs": [
+      {
+        "collection": "Breakpoint",
+        "token": "type/body"
+      },
+      {
+        "collection": "Breakpoint",
+        "token": "type/body/line-height"
+      },
+      {
+        "collection": "Interface",
+        "token": "border/default"
+      },
+      {
+        "collection": "Interface",
+        "token": "border/primary"
+      },
+      {
+        "collection": "Interface",
+        "token": "icon/interactive/hover"
+      },
+      {
+        "collection": "Interface",
+        "token": "icon/tertiary"
+      },
+      {
+        "collection": "Interface",
+        "token": "surface/default"
+      },
+      {
+        "collection": "Interface",
+        "token": "surface/muted"
+      },
+      {
+        "collection": "Interface",
+        "token": "text/default"
+      },
+      {
+        "collection": "Interface",
+        "token": "text/tertiary"
+      },
+      {
+        "collection": "Primitives",
+        "token": "spacing/16"
+      },
+      {
+        "collection": "Primitives",
+        "token": "spacing/2"
+      },
+      {
+        "collection": "Primitives",
+        "token": "spacing/20"
+      },
+      {
+        "collection": "Primitives",
+        "token": "spacing/4"
+      },
+      {
+        "collection": "Primitives",
+        "token": "spacing/8"
+      },
+      {
+        "collection": "Semantics",
+        "token": "border-width/default"
+      },
+      {
+        "collection": "Semantics",
+        "token": "border-width/thick"
+      },
+      {
+        "collection": "Semantics",
+        "token": "font/family/sans"
+      },
+      {
+        "collection": "Semantics",
+        "token": "font/weight/medium"
+      },
+      {
+        "collection": "Semantics",
+        "token": "radius/full"
+      },
+      {
+        "collection": "Semantics",
+        "token": "radius/md"
+      }
+    ],
+    "Scroll Progress/Line": [
+      {
+        "collection": "Interface",
+        "token": "border/strong"
+      },
+      {
+        "collection": "Interface",
+        "token": "border/stronger"
+      },
+      {
+        "collection": "Interface",
+        "token": "surface/default"
+      },
+      {
+        "collection": "Semantics",
+        "token": "border-width/thick"
+      }
+    ],
+    "Scroll Progress/Progress": [
+      {
+        "collection": "Breakpoint",
+        "token": "type/body-sm"
+      },
+      {
+        "collection": "Breakpoint",
+        "token": "type/body-sm/line-height"
+      },
+      {
+        "collection": "Breakpoint",
+        "token": "type/caption"
+      },
+      {
+        "collection": "Breakpoint",
+        "token": "type/caption/line-height"
+      },
+      {
+        "collection": "Interface",
+        "token": "border/default"
+      },
+      {
+        "collection": "Interface",
+        "token": "border/strong"
+      },
+      {
+        "collection": "Interface",
+        "token": "border/stronger"
+      },
+      {
+        "collection": "Interface",
+        "token": "surface/default"
+      },
+      {
+        "collection": "Interface",
+        "token": "surface/muted"
+      },
+      {
+        "collection": "Interface",
+        "token": "text/default"
+      },
+      {
+        "collection": "Interface",
+        "token": "text/tertiary"
+      },
+      {
+        "collection": "Primitives",
+        "token": "spacing/4"
+      },
+      {
+        "collection": "Primitives",
+        "token": "spacing/6"
+      },
+      {
+        "collection": "Primitives",
+        "token": "spacing/8"
+      },
+      {
+        "collection": "Semantics",
+        "token": "border-width/default"
+      },
+      {
+        "collection": "Semantics",
+        "token": "border-width/thick"
+      },
+      {
+        "collection": "Semantics",
+        "token": "font/family/sans"
+      },
+      {
+        "collection": "Semantics",
+        "token": "font/weight/medium"
+      },
+      {
+        "collection": "Semantics",
+        "token": "font/weight/regular"
+      },
+      {
+        "collection": "Semantics",
+        "token": "radius/md"
+      }
+    ],
+    "Scroll Progress/Progress Heading": [
+      {
+        "collection": "Breakpoint",
+        "token": "type/body-sm"
+      },
+      {
+        "collection": "Breakpoint",
+        "token": "type/body-sm/line-height"
+      },
+      {
+        "collection": "Interface",
+        "token": "border/strong"
+      },
+      {
+        "collection": "Interface",
+        "token": "border/stronger"
+      },
+      {
+        "collection": "Interface",
+        "token": "surface/default"
+      },
+      {
+        "collection": "Interface",
+        "token": "surface/muted"
+      },
+      {
+        "collection": "Interface",
+        "token": "text/default"
+      },
+      {
+        "collection": "Interface",
+        "token": "text/secondary"
+      },
+      {
+        "collection": "Interface",
+        "token": "text/tertiary"
+      },
+      {
+        "collection": "Primitives",
+        "token": "spacing/6"
+      },
+      {
+        "collection": "Primitives",
+        "token": "spacing/8"
+      },
+      {
+        "collection": "Semantics",
+        "token": "border-width/default"
+      },
+      {
+        "collection": "Semantics",
+        "token": "font/family/sans"
+      },
+      {
+        "collection": "Semantics",
+        "token": "font/weight/regular"
+      },
+      {
+        "collection": "Semantics",
+        "token": "radius/md"
+      }
+    ],
+    "Table/Table/Cell Text": [
+      {
+        "collection": "Breakpoint",
+        "token": "type/body"
+      },
+      {
+        "collection": "Breakpoint",
+        "token": "type/body-sm"
+      },
+      {
+        "collection": "Breakpoint",
+        "token": "type/body-sm/line-height"
+      },
+      {
+        "collection": "Breakpoint",
+        "token": "type/body/line-height"
+      },
+      {
+        "collection": "Interface",
+        "token": "icon/interactive"
+      },
+      {
+        "collection": "Interface",
+        "token": "icon/primary"
+      },
+      {
+        "collection": "Interface",
+        "token": "icon/secondary"
+      },
+      {
+        "collection": "Interface",
+        "token": "icon/tertiary"
+      },
+      {
+        "collection": "Interface",
+        "token": "surface/default"
+      },
+      {
+        "collection": "Interface",
+        "token": "text/default"
+      },
+      {
+        "collection": "Interface",
+        "token": "text/link"
+      },
+      {
+        "collection": "Interface",
+        "token": "text/secondary"
+      },
+      {
+        "collection": "Primitives",
+        "token": "spacing/6"
+      },
+      {
+        "collection": "Semantics",
+        "token": "font/family/sans"
+      },
+      {
+        "collection": "Semantics",
+        "token": "font/weight/medium"
+      },
+      {
+        "collection": "Semantics",
+        "token": "font/weight/regular"
+      }
+    ],
+    "Table/Table Cell": [
+      {
+        "collection": "Breakpoint",
+        "token": "type/body-sm"
+      },
+      {
+        "collection": "Breakpoint",
+        "token": "type/body-sm/line-height"
+      },
+      {
+        "collection": "Interface",
+        "token": "border/default"
+      },
+      {
+        "collection": "Interface",
+        "token": "icon/interactive"
+      },
+      {
+        "collection": "Interface",
+        "token": "icon/secondary"
+      },
+      {
+        "collection": "Interface",
+        "token": "surface/default"
+      },
+      {
+        "collection": "Interface",
+        "token": "surface/page"
+      },
+      {
+        "collection": "Interface",
+        "token": "text/secondary"
+      },
+      {
+        "collection": "Primitives",
+        "token": "spacing/16"
+      },
+      {
+        "collection": "Primitives",
+        "token": "spacing/20"
+      },
+      {
+        "collection": "Primitives",
+        "token": "spacing/6"
+      },
+      {
+        "collection": "Primitives",
+        "token": "spacing/8"
+      },
+      {
+        "collection": "Semantics",
+        "token": "font/family/sans"
+      },
+      {
+        "collection": "Semantics",
+        "token": "font/weight/medium"
+      }
+    ],
+    "Table/Table Row": [
+      {
+        "collection": "Breakpoint",
+        "token": "type/body-sm"
+      },
+      {
+        "collection": "Breakpoint",
+        "token": "type/body-sm/line-height"
+      },
+      {
+        "collection": "Interface",
+        "token": "border/default"
+      },
+      {
+        "collection": "Interface",
+        "token": "border/stronger"
+      },
+      {
+        "collection": "Interface",
+        "token": "icon/interactive"
+      },
+      {
+        "collection": "Interface",
+        "token": "icon/secondary"
+      },
+      {
+        "collection": "Interface",
+        "token": "surface/default"
+      },
+      {
+        "collection": "Interface",
+        "token": "surface/hover"
+      },
+      {
+        "collection": "Interface",
+        "token": "surface/primary-subtle"
+      },
+      {
+        "collection": "Interface",
+        "token": "text/secondary"
+      },
+      {
+        "collection": "Primitives",
+        "token": "spacing/16"
+      },
+      {
+        "collection": "Primitives",
+        "token": "spacing/20"
+      },
+      {
+        "collection": "Primitives",
+        "token": "spacing/6"
+      },
+      {
+        "collection": "Primitives",
+        "token": "spacing/8"
+      },
+      {
+        "collection": "Semantics",
+        "token": "border-width/thick"
+      },
+      {
+        "collection": "Semantics",
+        "token": "font/family/sans"
+      },
+      {
+        "collection": "Semantics",
+        "token": "font/weight/medium"
+      },
+      {
+        "collection": "Semantics",
+        "token": "font/weight/regular"
+      },
+      {
+        "collection": "Semantics",
+        "token": "radius/xs"
+      }
     ],
     "Link/Link": [
-      {"collection": "Breakpoint", "token": "type/body"},
-      {"collection": "Breakpoint", "token": "type/body/line-height"},
-      {"collection": "Interface", "token": "border/strong"},
-      {"collection": "Interface", "token": "ring/focus"},
-      {"collection": "Interface", "token": "surface/default"},
-      {"collection": "Interface", "token": "text/disabled"},
-      {"collection": "Interface", "token": "text/link"},
-      {"collection": "Interface", "token": "text/link/hover"},
-      {"collection": "Interface", "token": "text/link/visited"},
-      {"collection": "Primitives", "token": "spacing/4"},
-      {"collection": "Semantics", "token": "border-width/thick"},
-      {"collection": "Semantics", "token": "font/family/sans"},
-      {"collection": "Semantics", "token": "font/weight/regular"},
-      {"collection": "Semantics", "token": "icon-size/sm"},
-      {"collection": "Semantics", "token": "radius/xs"}
+      {
+        "collection": "Breakpoint",
+        "token": "type/body"
+      },
+      {
+        "collection": "Breakpoint",
+        "token": "type/body/line-height"
+      },
+      {
+        "collection": "Interface",
+        "token": "border/strong"
+      },
+      {
+        "collection": "Interface",
+        "token": "ring/focus"
+      },
+      {
+        "collection": "Interface",
+        "token": "surface/default"
+      },
+      {
+        "collection": "Interface",
+        "token": "text/disabled"
+      },
+      {
+        "collection": "Interface",
+        "token": "text/link"
+      },
+      {
+        "collection": "Interface",
+        "token": "text/link/hover"
+      },
+      {
+        "collection": "Interface",
+        "token": "text/link/visited"
+      },
+      {
+        "collection": "Primitives",
+        "token": "spacing/4"
+      },
+      {
+        "collection": "Semantics",
+        "token": "border-width/thick"
+      },
+      {
+        "collection": "Semantics",
+        "token": "font/family/sans"
+      },
+      {
+        "collection": "Semantics",
+        "token": "font/weight/regular"
+      },
+      {
+        "collection": "Semantics",
+        "token": "icon-size/sm"
+      },
+      {
+        "collection": "Semantics",
+        "token": "radius/xs"
+      }
     ],
     "Modal/Modal": [
-      {"collection": "Breakpoint", "token": "type/body"},
-      {"collection": "Breakpoint", "token": "type/body/line-height"},
-      {"collection": "Breakpoint", "token": "type/h5"},
-      {"collection": "Breakpoint", "token": "type/h5/line-height"},
-      {"collection": "Interface", "token": "border/primary-strong"},
-      {"collection": "Interface", "token": "border/strong"},
-      {"collection": "Interface", "token": "border/subtle"},
-      {"collection": "Interface", "token": "icon/primary"},
-      {"collection": "Interface", "token": "icon/secondary"},
-      {"collection": "Interface", "token": "surface/default"},
-      {"collection": "Interface", "token": "surface/overlay"},
-      {"collection": "Interface", "token": "surface/primary"},
-      {"collection": "Interface", "token": "surface/primary-subtle"},
-      {"collection": "Interface", "token": "text/default"},
-      {"collection": "Interface", "token": "text/on-color"},
-      {"collection": "Interface", "token": "text/secondary"},
-      {"collection": "Primitives", "token": "spacing/12"},
-      {"collection": "Primitives", "token": "spacing/16"},
-      {"collection": "Primitives", "token": "spacing/20"},
-      {"collection": "Primitives", "token": "spacing/24"},
-      {"collection": "Primitives", "token": "spacing/32"},
-      {"collection": "Primitives", "token": "spacing/40"},
-      {"collection": "Primitives", "token": "spacing/48"},
-      {"collection": "Primitives", "token": "spacing/8"},
-      {"collection": "Semantics", "token": "border-width/default"},
-      {"collection": "Semantics", "token": "font/family/sans"},
-      {"collection": "Semantics", "token": "font/weight/medium"},
-      {"collection": "Semantics", "token": "font/weight/regular"},
-      {"collection": "Semantics", "token": "font/weight/semibold"},
-      {"collection": "Semantics", "token": "icon-size/lg"},
-      {"collection": "Semantics", "token": "icon-size/md"},
-      {"collection": "Semantics", "token": "radius/full"},
-      {"collection": "Semantics", "token": "radius/md"},
-      {"collection": "Semantics", "token": "radius/xl"}
+      {
+        "collection": "Breakpoint",
+        "token": "type/body"
+      },
+      {
+        "collection": "Breakpoint",
+        "token": "type/body/line-height"
+      },
+      {
+        "collection": "Breakpoint",
+        "token": "type/h5"
+      },
+      {
+        "collection": "Breakpoint",
+        "token": "type/h5/line-height"
+      },
+      {
+        "collection": "Interface",
+        "token": "border/primary-strong"
+      },
+      {
+        "collection": "Interface",
+        "token": "border/strong"
+      },
+      {
+        "collection": "Interface",
+        "token": "border/subtle"
+      },
+      {
+        "collection": "Interface",
+        "token": "icon/secondary"
+      },
+      {
+        "collection": "Interface",
+        "token": "surface/default"
+      },
+      {
+        "collection": "Interface",
+        "token": "surface/overlay"
+      },
+      {
+        "collection": "Interface",
+        "token": "surface/primary"
+      },
+      {
+        "collection": "Interface",
+        "token": "surface/primary-subtle"
+      },
+      {
+        "collection": "Interface",
+        "token": "text/default"
+      },
+      {
+        "collection": "Interface",
+        "token": "text/on-color"
+      },
+      {
+        "collection": "Interface",
+        "token": "text/secondary"
+      },
+      {
+        "collection": "Primitives",
+        "token": "spacing/12"
+      },
+      {
+        "collection": "Primitives",
+        "token": "spacing/16"
+      },
+      {
+        "collection": "Primitives",
+        "token": "spacing/20"
+      },
+      {
+        "collection": "Primitives",
+        "token": "spacing/24"
+      },
+      {
+        "collection": "Primitives",
+        "token": "spacing/32"
+      },
+      {
+        "collection": "Primitives",
+        "token": "spacing/40"
+      },
+      {
+        "collection": "Primitives",
+        "token": "spacing/48"
+      },
+      {
+        "collection": "Primitives",
+        "token": "spacing/8"
+      },
+      {
+        "collection": "Semantics",
+        "token": "border-width/default"
+      },
+      {
+        "collection": "Semantics",
+        "token": "font/family/sans"
+      },
+      {
+        "collection": "Semantics",
+        "token": "font/weight/medium"
+      },
+      {
+        "collection": "Semantics",
+        "token": "font/weight/regular"
+      },
+      {
+        "collection": "Semantics",
+        "token": "font/weight/semibold"
+      },
+      {
+        "collection": "Semantics",
+        "token": "icon-size/lg"
+      },
+      {
+        "collection": "Semantics",
+        "token": "icon-size/md"
+      },
+      {
+        "collection": "Semantics",
+        "token": "radius/full"
+      },
+      {
+        "collection": "Semantics",
+        "token": "radius/md"
+      },
+      {
+        "collection": "Semantics",
+        "token": "radius/xl"
+      }
     ],
     "Tooltip/Tooltip": [
-      {"collection": "Breakpoint", "token": "type/body-sm"},
-      {"collection": "Breakpoint", "token": "type/body-sm/line-height"},
-      {"collection": "Interface", "token": "surface/inverse"},
-      {"collection": "Interface", "token": "text/inverse"},
-      {"collection": "Primitives", "token": "spacing/12"},
-      {"collection": "Primitives", "token": "spacing/4"},
-      {"collection": "Primitives", "token": "spacing/8"},
-      {"collection": "Semantics", "token": "font/family/sans"},
-      {"collection": "Semantics", "token": "font/weight/medium"},
-      {"collection": "Semantics", "token": "font/weight/regular"},
-      {"collection": "Semantics", "token": "radius/sm"}
+      {
+        "collection": "Breakpoint",
+        "token": "type/body-sm"
+      },
+      {
+        "collection": "Breakpoint",
+        "token": "type/body-sm/line-height"
+      },
+      {
+        "collection": "Interface",
+        "token": "border/strong"
+      },
+      {
+        "collection": "Interface",
+        "token": "surface/default"
+      },
+      {
+        "collection": "Interface",
+        "token": "surface/inverse"
+      },
+      {
+        "collection": "Interface",
+        "token": "text/inverse"
+      },
+      {
+        "collection": "Primitives",
+        "token": "spacing/12"
+      },
+      {
+        "collection": "Primitives",
+        "token": "spacing/4"
+      },
+      {
+        "collection": "Primitives",
+        "token": "spacing/8"
+      },
+      {
+        "collection": "Semantics",
+        "token": "font/family/sans"
+      },
+      {
+        "collection": "Semantics",
+        "token": "font/weight/medium"
+      },
+      {
+        "collection": "Semantics",
+        "token": "font/weight/regular"
+      },
+      {
+        "collection": "Semantics",
+        "token": "radius/sm"
+      }
     ],
     "Alert/Alert": [
-      {"collection": "Breakpoint", "token": "type/body"},
-      {"collection": "Breakpoint", "token": "type/body/line-height"},
-      {"collection": "Interface", "token": "border/default"},
-      {"collection": "Interface", "token": "border/error-strong"},
-      {"collection": "Interface", "token": "border/error-subtle"},
-      {"collection": "Interface", "token": "border/information-strong"},
-      {"collection": "Interface", "token": "border/information-subtle"},
-      {"collection": "Interface", "token": "border/inverse"},
-      {"collection": "Interface", "token": "border/primary-strong"},
-      {"collection": "Interface", "token": "border/primary-subtle"},
-      {"collection": "Interface", "token": "border/strong"},
-      {"collection": "Interface", "token": "border/success-strong"},
-      {"collection": "Interface", "token": "border/success-subtle"},
-      {"collection": "Interface", "token": "border/warning-strong"},
-      {"collection": "Interface", "token": "border/warning-subtle"},
-      {"collection": "Interface", "token": "icon/error"},
-      {"collection": "Interface", "token": "icon/information"},
-      {"collection": "Interface", "token": "icon/on-color"},
-      {"collection": "Interface", "token": "icon/primary"},
-      {"collection": "Interface", "token": "icon/secondary"},
-      {"collection": "Interface", "token": "icon/success"},
-      {"collection": "Interface", "token": "icon/warning"},
-      {"collection": "Interface", "token": "surface/default"},
-      {"collection": "Interface", "token": "surface/error"},
-      {"collection": "Interface", "token": "surface/error-subtle"},
-      {"collection": "Interface", "token": "surface/information"},
-      {"collection": "Interface", "token": "surface/information-subtle"},
-      {"collection": "Interface", "token": "surface/inverse"},
-      {"collection": "Interface", "token": "surface/muted"},
-      {"collection": "Interface", "token": "surface/primary"},
-      {"collection": "Interface", "token": "surface/primary-subtle"},
-      {"collection": "Interface", "token": "surface/success"},
-      {"collection": "Interface", "token": "surface/success-subtle"},
-      {"collection": "Interface", "token": "surface/warning"},
-      {"collection": "Interface", "token": "surface/warning-subtle"},
-      {"collection": "Interface", "token": "text/error"},
-      {"collection": "Interface", "token": "text/information"},
-      {"collection": "Interface", "token": "text/link"},
-      {"collection": "Interface", "token": "text/on-color"},
-      {"collection": "Interface", "token": "text/secondary"},
-      {"collection": "Interface", "token": "text/success"},
-      {"collection": "Interface", "token": "text/warning"},
-      {"collection": "Primitives", "token": "spacing/12"},
-      {"collection": "Primitives", "token": "spacing/16"},
-      {"collection": "Primitives", "token": "spacing/32"},
-      {"collection": "Primitives", "token": "spacing/40"},
-      {"collection": "Primitives", "token": "spacing/8"},
-      {"collection": "Semantics", "token": "border-width/default"},
-      {"collection": "Semantics", "token": "font/family/sans"},
-      {"collection": "Semantics", "token": "font/weight/medium"},
-      {"collection": "Semantics", "token": "font/weight/regular"},
-      {"collection": "Semantics", "token": "icon-size/md"},
-      {"collection": "Semantics", "token": "radius/md"}
+      {
+        "collection": "Breakpoint",
+        "token": "type/body"
+      },
+      {
+        "collection": "Breakpoint",
+        "token": "type/body/line-height"
+      },
+      {
+        "collection": "Interface",
+        "token": "border/default"
+      },
+      {
+        "collection": "Interface",
+        "token": "border/error-strong"
+      },
+      {
+        "collection": "Interface",
+        "token": "border/error-subtle"
+      },
+      {
+        "collection": "Interface",
+        "token": "border/information-strong"
+      },
+      {
+        "collection": "Interface",
+        "token": "border/information-subtle"
+      },
+      {
+        "collection": "Interface",
+        "token": "border/inverse"
+      },
+      {
+        "collection": "Interface",
+        "token": "border/primary-strong"
+      },
+      {
+        "collection": "Interface",
+        "token": "border/primary-subtle"
+      },
+      {
+        "collection": "Interface",
+        "token": "border/strong"
+      },
+      {
+        "collection": "Interface",
+        "token": "border/success-strong"
+      },
+      {
+        "collection": "Interface",
+        "token": "border/success-subtle"
+      },
+      {
+        "collection": "Interface",
+        "token": "border/warning-strong"
+      },
+      {
+        "collection": "Interface",
+        "token": "border/warning-subtle"
+      },
+      {
+        "collection": "Interface",
+        "token": "icon/error"
+      },
+      {
+        "collection": "Interface",
+        "token": "icon/information"
+      },
+      {
+        "collection": "Interface",
+        "token": "icon/on-color"
+      },
+      {
+        "collection": "Interface",
+        "token": "icon/primary"
+      },
+      {
+        "collection": "Interface",
+        "token": "icon/secondary"
+      },
+      {
+        "collection": "Interface",
+        "token": "icon/success"
+      },
+      {
+        "collection": "Interface",
+        "token": "icon/warning"
+      },
+      {
+        "collection": "Interface",
+        "token": "surface/default"
+      },
+      {
+        "collection": "Interface",
+        "token": "surface/error"
+      },
+      {
+        "collection": "Interface",
+        "token": "surface/error-subtle"
+      },
+      {
+        "collection": "Interface",
+        "token": "surface/information"
+      },
+      {
+        "collection": "Interface",
+        "token": "surface/information-subtle"
+      },
+      {
+        "collection": "Interface",
+        "token": "surface/inverse"
+      },
+      {
+        "collection": "Interface",
+        "token": "surface/muted"
+      },
+      {
+        "collection": "Interface",
+        "token": "surface/primary"
+      },
+      {
+        "collection": "Interface",
+        "token": "surface/primary-subtle"
+      },
+      {
+        "collection": "Interface",
+        "token": "surface/success"
+      },
+      {
+        "collection": "Interface",
+        "token": "surface/success-subtle"
+      },
+      {
+        "collection": "Interface",
+        "token": "surface/warning"
+      },
+      {
+        "collection": "Interface",
+        "token": "surface/warning-subtle"
+      },
+      {
+        "collection": "Interface",
+        "token": "text/error"
+      },
+      {
+        "collection": "Interface",
+        "token": "text/information"
+      },
+      {
+        "collection": "Interface",
+        "token": "text/link"
+      },
+      {
+        "collection": "Interface",
+        "token": "text/on-color"
+      },
+      {
+        "collection": "Interface",
+        "token": "text/secondary"
+      },
+      {
+        "collection": "Interface",
+        "token": "text/success"
+      },
+      {
+        "collection": "Interface",
+        "token": "text/warning"
+      },
+      {
+        "collection": "Primitives",
+        "token": "spacing/12"
+      },
+      {
+        "collection": "Primitives",
+        "token": "spacing/16"
+      },
+      {
+        "collection": "Primitives",
+        "token": "spacing/32"
+      },
+      {
+        "collection": "Primitives",
+        "token": "spacing/40"
+      },
+      {
+        "collection": "Primitives",
+        "token": "spacing/8"
+      },
+      {
+        "collection": "Semantics",
+        "token": "border-width/default"
+      },
+      {
+        "collection": "Semantics",
+        "token": "font/family/sans"
+      },
+      {
+        "collection": "Semantics",
+        "token": "font/weight/medium"
+      },
+      {
+        "collection": "Semantics",
+        "token": "font/weight/regular"
+      },
+      {
+        "collection": "Semantics",
+        "token": "icon-size/md"
+      },
+      {
+        "collection": "Semantics",
+        "token": "radius/md"
+      }
     ],
     "Toast/Toast": [
-      {"collection": "Breakpoint", "token": "type/body"},
-      {"collection": "Breakpoint", "token": "type/body-sm"},
-      {"collection": "Breakpoint", "token": "type/body-sm/line-height"},
-      {"collection": "Breakpoint", "token": "type/body/line-height"},
-      {"collection": "Interface", "token": "border/subtle"},
-      {"collection": "Interface", "token": "icon/error"},
-      {"collection": "Interface", "token": "icon/information"},
-      {"collection": "Interface", "token": "icon/primary"},
-      {"collection": "Interface", "token": "icon/secondary"},
-      {"collection": "Interface", "token": "icon/success"},
-      {"collection": "Interface", "token": "icon/warning"},
-      {"collection": "Interface", "token": "surface/raised"},
-      {"collection": "Interface", "token": "text/default"},
-      {"collection": "Interface", "token": "text/secondary"},
-      {"collection": "Primitives", "token": "spacing/12"},
-      {"collection": "Primitives", "token": "spacing/16"},
-      {"collection": "Primitives", "token": "spacing/32"},
-      {"collection": "Primitives", "token": "spacing/4"},
-      {"collection": "Primitives", "token": "spacing/6"},
-      {"collection": "Semantics", "token": "border-width/default"},
-      {"collection": "Semantics", "token": "font/family/sans"},
-      {"collection": "Semantics", "token": "font/weight/medium"},
-      {"collection": "Semantics", "token": "font/weight/regular"},
-      {"collection": "Semantics", "token": "icon-size/md"},
-      {"collection": "Semantics", "token": "radius/md"}
+      {
+        "collection": "Breakpoint",
+        "token": "type/body"
+      },
+      {
+        "collection": "Breakpoint",
+        "token": "type/body-sm"
+      },
+      {
+        "collection": "Breakpoint",
+        "token": "type/body-sm/line-height"
+      },
+      {
+        "collection": "Breakpoint",
+        "token": "type/body/line-height"
+      },
+      {
+        "collection": "Interface",
+        "token": "border/subtle"
+      },
+      {
+        "collection": "Interface",
+        "token": "icon/error"
+      },
+      {
+        "collection": "Interface",
+        "token": "icon/information"
+      },
+      {
+        "collection": "Interface",
+        "token": "icon/primary"
+      },
+      {
+        "collection": "Interface",
+        "token": "icon/secondary"
+      },
+      {
+        "collection": "Interface",
+        "token": "icon/success"
+      },
+      {
+        "collection": "Interface",
+        "token": "icon/warning"
+      },
+      {
+        "collection": "Interface",
+        "token": "surface/raised"
+      },
+      {
+        "collection": "Interface",
+        "token": "text/default"
+      },
+      {
+        "collection": "Interface",
+        "token": "text/secondary"
+      },
+      {
+        "collection": "Primitives",
+        "token": "spacing/12"
+      },
+      {
+        "collection": "Primitives",
+        "token": "spacing/16"
+      },
+      {
+        "collection": "Primitives",
+        "token": "spacing/32"
+      },
+      {
+        "collection": "Primitives",
+        "token": "spacing/4"
+      },
+      {
+        "collection": "Primitives",
+        "token": "spacing/6"
+      },
+      {
+        "collection": "Semantics",
+        "token": "border-width/default"
+      },
+      {
+        "collection": "Semantics",
+        "token": "font/family/sans"
+      },
+      {
+        "collection": "Semantics",
+        "token": "font/weight/medium"
+      },
+      {
+        "collection": "Semantics",
+        "token": "font/weight/regular"
+      },
+      {
+        "collection": "Semantics",
+        "token": "icon-size/md"
+      },
+      {
+        "collection": "Semantics",
+        "token": "radius/md"
+      }
     ],
     "Popover/Popover": [
-      {"collection": "Breakpoint", "token": "type/body"},
-      {"collection": "Breakpoint", "token": "type/body-sm"},
-      {"collection": "Breakpoint", "token": "type/body-sm/line-height"},
-      {"collection": "Breakpoint", "token": "type/body/line-height"},
-      {"collection": "Interface", "token": "border/primary-strong"},
-      {"collection": "Interface", "token": "border/subtle"},
-      {"collection": "Interface", "token": "icon/secondary"},
-      {"collection": "Interface", "token": "surface/primary"},
-      {"collection": "Interface", "token": "surface/raised"},
-      {"collection": "Interface", "token": "text/default"},
-      {"collection": "Interface", "token": "text/on-color"},
-      {"collection": "Interface", "token": "text/secondary"},
-      {"collection": "Primitives", "token": "spacing/12"},
-      {"collection": "Primitives", "token": "spacing/16"},
-      {"collection": "Primitives", "token": "spacing/32"},
-      {"collection": "Primitives", "token": "spacing/40"},
-      {"collection": "Primitives", "token": "spacing/6"},
-      {"collection": "Primitives", "token": "spacing/8"},
-      {"collection": "Semantics", "token": "border-width/default"},
-      {"collection": "Semantics", "token": "font/family/sans"},
-      {"collection": "Semantics", "token": "font/weight/medium"},
-      {"collection": "Semantics", "token": "font/weight/regular"},
-      {"collection": "Semantics", "token": "icon-size/md"},
-      {"collection": "Semantics", "token": "radius/md"}
+      {
+        "collection": "Breakpoint",
+        "token": "type/body"
+      },
+      {
+        "collection": "Breakpoint",
+        "token": "type/body-sm"
+      },
+      {
+        "collection": "Breakpoint",
+        "token": "type/body-sm/line-height"
+      },
+      {
+        "collection": "Breakpoint",
+        "token": "type/body/line-height"
+      },
+      {
+        "collection": "Interface",
+        "token": "border/primary-strong"
+      },
+      {
+        "collection": "Interface",
+        "token": "border/subtle"
+      },
+      {
+        "collection": "Interface",
+        "token": "icon/secondary"
+      },
+      {
+        "collection": "Interface",
+        "token": "surface/primary"
+      },
+      {
+        "collection": "Interface",
+        "token": "surface/raised"
+      },
+      {
+        "collection": "Interface",
+        "token": "text/default"
+      },
+      {
+        "collection": "Interface",
+        "token": "text/on-color"
+      },
+      {
+        "collection": "Interface",
+        "token": "text/secondary"
+      },
+      {
+        "collection": "Primitives",
+        "token": "spacing/12"
+      },
+      {
+        "collection": "Primitives",
+        "token": "spacing/16"
+      },
+      {
+        "collection": "Primitives",
+        "token": "spacing/32"
+      },
+      {
+        "collection": "Primitives",
+        "token": "spacing/40"
+      },
+      {
+        "collection": "Primitives",
+        "token": "spacing/6"
+      },
+      {
+        "collection": "Primitives",
+        "token": "spacing/8"
+      },
+      {
+        "collection": "Semantics",
+        "token": "border-width/default"
+      },
+      {
+        "collection": "Semantics",
+        "token": "font/family/sans"
+      },
+      {
+        "collection": "Semantics",
+        "token": "font/weight/medium"
+      },
+      {
+        "collection": "Semantics",
+        "token": "font/weight/regular"
+      },
+      {
+        "collection": "Semantics",
+        "token": "icon-size/md"
+      },
+      {
+        "collection": "Semantics",
+        "token": "radius/md"
+      }
+    ],
+    "Agent Stop/Agent Stop": [
+      {
+        "collection": "Breakpoint",
+        "token": "type/body"
+      },
+      {
+        "collection": "Breakpoint",
+        "token": "type/body-md"
+      },
+      {
+        "collection": "Breakpoint",
+        "token": "type/body-md/line-height"
+      },
+      {
+        "collection": "Breakpoint",
+        "token": "type/body-sm"
+      },
+      {
+        "collection": "Breakpoint",
+        "token": "type/body-sm/line-height"
+      },
+      {
+        "collection": "Breakpoint",
+        "token": "type/body/line-height"
+      },
+      {
+        "collection": "Interface",
+        "token": "border/default"
+      },
+      {
+        "collection": "Interface",
+        "token": "border/error"
+      },
+      {
+        "collection": "Interface",
+        "token": "border/focus"
+      },
+      {
+        "collection": "Interface",
+        "token": "border/strong"
+      },
+      {
+        "collection": "Interface",
+        "token": "surface/default"
+      },
+      {
+        "collection": "Interface",
+        "token": "surface/error-subtle"
+      },
+      {
+        "collection": "Interface",
+        "token": "surface/muted"
+      },
+      {
+        "collection": "Interface",
+        "token": "text/default"
+      },
+      {
+        "collection": "Interface",
+        "token": "text/error"
+      },
+      {
+        "collection": "Interface",
+        "token": "text/secondary"
+      },
+      {
+        "collection": "Primitives",
+        "token": "spacing/12"
+      },
+      {
+        "collection": "Primitives",
+        "token": "spacing/16"
+      },
+      {
+        "collection": "Primitives",
+        "token": "spacing/20"
+      },
+      {
+        "collection": "Primitives",
+        "token": "spacing/32"
+      },
+      {
+        "collection": "Primitives",
+        "token": "spacing/40"
+      },
+      {
+        "collection": "Primitives",
+        "token": "spacing/48"
+      },
+      {
+        "collection": "Primitives",
+        "token": "spacing/8"
+      },
+      {
+        "collection": "Semantics",
+        "token": "border-width/default"
+      },
+      {
+        "collection": "Semantics",
+        "token": "border-width/thick"
+      },
+      {
+        "collection": "Semantics",
+        "token": "font/family/sans"
+      },
+      {
+        "collection": "Semantics",
+        "token": "font/weight/medium"
+      },
+      {
+        "collection": "Semantics",
+        "token": "icon-size/md"
+      },
+      {
+        "collection": "Semantics",
+        "token": "icon-size/sm"
+      },
+      {
+        "collection": "Semantics",
+        "token": "icon-size/xs"
+      },
+      {
+        "collection": "Semantics",
+        "token": "radius/md"
+      }
+    ],
+    "Approval Gate/Approval Gate": [
+      {
+        "collection": "Breakpoint",
+        "token": "type/body"
+      },
+      {
+        "collection": "Breakpoint",
+        "token": "type/body-sm"
+      },
+      {
+        "collection": "Breakpoint",
+        "token": "type/body-sm/line-height"
+      },
+      {
+        "collection": "Breakpoint",
+        "token": "type/body/line-height"
+      },
+      {
+        "collection": "Interface",
+        "token": "border/default"
+      },
+      {
+        "collection": "Interface",
+        "token": "border/information"
+      },
+      {
+        "collection": "Interface",
+        "token": "border/strong"
+      },
+      {
+        "collection": "Interface",
+        "token": "border/success"
+      },
+      {
+        "collection": "Interface",
+        "token": "border/warning-strong"
+      },
+      {
+        "collection": "Interface",
+        "token": "icon/information"
+      },
+      {
+        "collection": "Interface",
+        "token": "icon/secondary"
+      },
+      {
+        "collection": "Interface",
+        "token": "icon/success"
+      },
+      {
+        "collection": "Interface",
+        "token": "icon/tertiary"
+      },
+      {
+        "collection": "Interface",
+        "token": "icon/warning"
+      },
+      {
+        "collection": "Interface",
+        "token": "surface/default"
+      },
+      {
+        "collection": "Interface",
+        "token": "surface/information-subtle"
+      },
+      {
+        "collection": "Interface",
+        "token": "surface/muted"
+      },
+      {
+        "collection": "Interface",
+        "token": "surface/primary"
+      },
+      {
+        "collection": "Interface",
+        "token": "surface/warning-subtle"
+      },
+      {
+        "collection": "Interface",
+        "token": "text/default"
+      },
+      {
+        "collection": "Interface",
+        "token": "text/information"
+      },
+      {
+        "collection": "Interface",
+        "token": "text/on-color"
+      },
+      {
+        "collection": "Interface",
+        "token": "text/secondary"
+      },
+      {
+        "collection": "Interface",
+        "token": "text/success"
+      },
+      {
+        "collection": "Interface",
+        "token": "text/warning"
+      },
+      {
+        "collection": "Primitives",
+        "token": "spacing/12"
+      },
+      {
+        "collection": "Primitives",
+        "token": "spacing/16"
+      },
+      {
+        "collection": "Primitives",
+        "token": "spacing/4"
+      },
+      {
+        "collection": "Primitives",
+        "token": "spacing/8"
+      },
+      {
+        "collection": "Semantics",
+        "token": "border-width/default"
+      },
+      {
+        "collection": "Semantics",
+        "token": "border-width/thicker"
+      },
+      {
+        "collection": "Semantics",
+        "token": "font/family/sans"
+      },
+      {
+        "collection": "Semantics",
+        "token": "font/weight/medium"
+      },
+      {
+        "collection": "Semantics",
+        "token": "font/weight/regular"
+      },
+      {
+        "collection": "Semantics",
+        "token": "font/weight/semibold"
+      },
+      {
+        "collection": "Semantics",
+        "token": "icon-size/md"
+      },
+      {
+        "collection": "Semantics",
+        "token": "radius/md"
+      },
+      {
+        "collection": "Semantics",
+        "token": "radius/sm"
+      }
+    ],
+    "Agent Activity/Agent Activity Step": [
+      {
+        "collection": "Breakpoint",
+        "token": "type/body-sm"
+      },
+      {
+        "collection": "Breakpoint",
+        "token": "type/body-sm/line-height"
+      },
+      {
+        "collection": "Breakpoint",
+        "token": "type/caption"
+      },
+      {
+        "collection": "Breakpoint",
+        "token": "type/caption/line-height"
+      },
+      {
+        "collection": "Interface",
+        "token": "icon/error"
+      },
+      {
+        "collection": "Interface",
+        "token": "icon/primary"
+      },
+      {
+        "collection": "Interface",
+        "token": "icon/success"
+      },
+      {
+        "collection": "Interface",
+        "token": "icon/tertiary"
+      },
+      {
+        "collection": "Interface",
+        "token": "text/default"
+      },
+      {
+        "collection": "Interface",
+        "token": "text/error"
+      },
+      {
+        "collection": "Interface",
+        "token": "text/secondary"
+      },
+      {
+        "collection": "Interface",
+        "token": "text/tertiary"
+      },
+      {
+        "collection": "Primitives",
+        "token": "spacing/2"
+      },
+      {
+        "collection": "Primitives",
+        "token": "spacing/8"
+      },
+      {
+        "collection": "Semantics",
+        "token": "font/family/sans"
+      },
+      {
+        "collection": "Semantics",
+        "token": "font/weight/regular"
+      },
+      {
+        "collection": "Semantics",
+        "token": "icon-size/sm"
+      }
+    ],
+    "Agent Activity/Agent Activity": [
+      {
+        "collection": "Breakpoint",
+        "token": "type/body-sm"
+      },
+      {
+        "collection": "Breakpoint",
+        "token": "type/body-sm/line-height"
+      },
+      {
+        "collection": "Breakpoint",
+        "token": "type/caption"
+      },
+      {
+        "collection": "Breakpoint",
+        "token": "type/caption/line-height"
+      },
+      {
+        "collection": "Interface",
+        "token": "icon/primary"
+      },
+      {
+        "collection": "Interface",
+        "token": "icon/success"
+      },
+      {
+        "collection": "Interface",
+        "token": "icon/tertiary"
+      },
+      {
+        "collection": "Interface",
+        "token": "text/default"
+      },
+      {
+        "collection": "Interface",
+        "token": "text/secondary"
+      },
+      {
+        "collection": "Interface",
+        "token": "text/tertiary"
+      },
+      {
+        "collection": "Primitives",
+        "token": "spacing/2"
+      },
+      {
+        "collection": "Primitives",
+        "token": "spacing/8"
+      },
+      {
+        "collection": "Semantics",
+        "token": "font/family/sans"
+      },
+      {
+        "collection": "Semantics",
+        "token": "font/weight/regular"
+      },
+      {
+        "collection": "Semantics",
+        "token": "icon-size/sm"
+      }
+    ],
+    "Streaming Text/Streaming Text": [
+      {
+        "collection": "Breakpoint",
+        "token": "type/body"
+      },
+      {
+        "collection": "Breakpoint",
+        "token": "type/body/line-height"
+      },
+      {
+        "collection": "Interface",
+        "token": "text/default"
+      },
+      {
+        "collection": "Interface",
+        "token": "text/tertiary"
+      },
+      {
+        "collection": "Semantics",
+        "token": "font/family/sans"
+      },
+      {
+        "collection": "Semantics",
+        "token": "font/weight/regular"
+      }
+    ],
+    "Citation/Citation": [
+      {
+        "collection": "Breakpoint",
+        "token": "type/caption"
+      },
+      {
+        "collection": "Breakpoint",
+        "token": "type/caption/line-height"
+      },
+      {
+        "collection": "Interface",
+        "token": "border/focus"
+      },
+      {
+        "collection": "Interface",
+        "token": "surface/primary-subtle"
+      },
+      {
+        "collection": "Interface",
+        "token": "surface/primary-subtle/hover"
+      },
+      {
+        "collection": "Interface",
+        "token": "text/link"
+      },
+      {
+        "collection": "Primitives",
+        "token": "spacing/16"
+      },
+      {
+        "collection": "Primitives",
+        "token": "spacing/4"
+      },
+      {
+        "collection": "Semantics",
+        "token": "border-width/thick"
+      },
+      {
+        "collection": "Semantics",
+        "token": "font/family/sans"
+      },
+      {
+        "collection": "Semantics",
+        "token": "font/weight/medium"
+      },
+      {
+        "collection": "Semantics",
+        "token": "radius/xs"
+      }
+    ],
+    "Citation/Citation List Item": [
+      {
+        "collection": "Breakpoint",
+        "token": "type/body-sm"
+      },
+      {
+        "collection": "Breakpoint",
+        "token": "type/body-sm/line-height"
+      },
+      {
+        "collection": "Breakpoint",
+        "token": "type/caption"
+      },
+      {
+        "collection": "Breakpoint",
+        "token": "type/caption/line-height"
+      },
+      {
+        "collection": "Interface",
+        "token": "text/link"
+      },
+      {
+        "collection": "Interface",
+        "token": "text/tertiary"
+      },
+      {
+        "collection": "Primitives",
+        "token": "spacing/16"
+      },
+      {
+        "collection": "Primitives",
+        "token": "spacing/2"
+      },
+      {
+        "collection": "Primitives",
+        "token": "spacing/8"
+      },
+      {
+        "collection": "Semantics",
+        "token": "font/family/sans"
+      },
+      {
+        "collection": "Semantics",
+        "token": "font/weight/regular"
+      }
+    ],
+    "Citation/Citation List": [
+      {
+        "collection": "Breakpoint",
+        "token": "type/body-sm"
+      },
+      {
+        "collection": "Breakpoint",
+        "token": "type/body-sm/line-height"
+      },
+      {
+        "collection": "Breakpoint",
+        "token": "type/caption"
+      },
+      {
+        "collection": "Breakpoint",
+        "token": "type/caption/line-height"
+      },
+      {
+        "collection": "Interface",
+        "token": "text/link"
+      },
+      {
+        "collection": "Interface",
+        "token": "text/tertiary"
+      },
+      {
+        "collection": "Primitives",
+        "token": "spacing/16"
+      },
+      {
+        "collection": "Primitives",
+        "token": "spacing/2"
+      },
+      {
+        "collection": "Primitives",
+        "token": "spacing/8"
+      },
+      {
+        "collection": "Semantics",
+        "token": "font/family/sans"
+      },
+      {
+        "collection": "Semantics",
+        "token": "font/weight/regular"
+      },
+      {
+        "collection": "Semantics",
+        "token": "font/weight/semibold"
+      }
+    ],
+    "Confidence Indicator/Confidence Indicator": [
+      {
+        "collection": "Breakpoint",
+        "token": "type/caption"
+      },
+      {
+        "collection": "Breakpoint",
+        "token": "type/caption/line-height"
+      },
+      {
+        "collection": "Interface",
+        "token": "icon/information"
+      },
+      {
+        "collection": "Interface",
+        "token": "icon/success"
+      },
+      {
+        "collection": "Interface",
+        "token": "icon/tertiary"
+      },
+      {
+        "collection": "Interface",
+        "token": "icon/warning"
+      },
+      {
+        "collection": "Interface",
+        "token": "text/default"
+      },
+      {
+        "collection": "Interface",
+        "token": "text/tertiary"
+      },
+      {
+        "collection": "Primitives",
+        "token": "spacing/12"
+      },
+      {
+        "collection": "Primitives",
+        "token": "spacing/16"
+      },
+      {
+        "collection": "Primitives",
+        "token": "spacing/2"
+      },
+      {
+        "collection": "Primitives",
+        "token": "spacing/4"
+      },
+      {
+        "collection": "Primitives",
+        "token": "spacing/8"
+      },
+      {
+        "collection": "Semantics",
+        "token": "border-width/default"
+      },
+      {
+        "collection": "Semantics",
+        "token": "font/family/sans"
+      },
+      {
+        "collection": "Semantics",
+        "token": "font/weight/medium"
+      },
+      {
+        "collection": "Semantics",
+        "token": "font/weight/regular"
+      },
+      {
+        "collection": "Semantics",
+        "token": "radius/2xs"
+      }
     ]
   }
 }

@@ -104,6 +104,7 @@ export const SEMANTIC_GROUPS = new Set([
   'error',
   'information',
   'chart',
+  'palette',
   'base',
   'alpha',
   'radius',

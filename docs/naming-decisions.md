@@ -8,6 +8,105 @@ Newest first.
 
 ---
 
+## 2026-09-03 (later) — two gates existed, nothing ran them, and one was lying
+
+**`palette` joins the Semantics groups (107 -> 114 variables, 384 -> 391).
+`verify-bindings` loses its `font/*` carve-out and gains a per-component one.
+`tokens:gate` now runs in CI.**
+
+`tokens:bindings` and `tokens:geometry` live in `tokens:gate`, and `tokens:gate`
+was in no workflow. `pnpm build` runs `tokens:audit`, `tokens:tier` and
+`tokens:verify` — the three that read the variable export — and neither of the
+two that read `bindings.json`. So the checks that answer "what do the components
+actually bind" ran only when someone remembered to run them, which turned out to
+be 2026-08-07.
+
+Everything below was found in the half-hour after running them.
+
+### The snapshot was a month stale, and stale looks exactly like clean
+
+`bindings.json` described 40 components. The file has 51. It predated the
+agentic tier, `Avatar Gradient`, and the text-style rebind — so it reported font
+primitives on 27 components that had been repaired weeks earlier, and reported
+nothing at all about the components that did not exist yet.
+
+A stale snapshot does not fail loudly. It agrees with whatever it last saw.
+
+### The `font/*` carve-out outlived its reason by a month
+
+`verify-bindings.mjs` sanctioned two primitive families: `spacing/*`, and
+`font/*`. The header explained the second — text styles bound primitives, so
+flagging font would have failed the build for something no component author
+could fix.
+
+That was true when it was written and false by 2026-08-03, which is the entry
+directly below this one: every text style now binds the Semantics aliases. The
+reason was repaired; the carve-out was not. And it went on hiding the case it
+was never meant to cover — a text NODE with no style at all, binding
+`font/weight/600` straight from Primitives. `Full Card` and `Badge` were doing
+exactly that across 40 nodes. Both now carry text styles.
+
+**A carve-out is only as good as the reason written beside it. When the reason
+is repaired, the carve-out is the next defect.** It is worth grepping for the
+others: `contrast-exceptions.json`, the deferred dark-mode pairings, and
+`known-defects.json` are all the same shape.
+
+### `Avatar Gradient` is an exemption, not a family
+
+Removing `font/*` left one component binding raw `color/*`: `Avatar Gradient`,
+which does it on purpose. Its disc is built from the hue ramp because the
+gradient does not theme, so a semantic foreground over it flips in dark mode and
+leaves the background alone — an earlier draft did exactly that and the contrast
+gate caught it at 1.05:1. The reasoning is written at the point of the
+declaration in `avatar-gradient.css` under "NOT AN OVERSIGHT".
+
+So it is exempt — but as `COMPONENT_EXEMPT['Avatar/Avatar Gradient']`, not as a
+blanket `color/*` allowance. A family-wide carve-out is how the `font/*` one
+grew to cover cases nobody had considered. Scoping it to the one component that
+earned it means the next component to bind a raw colour still fails.
+
+### `palette/1..7` were real in Figma and fictional in the repo
+
+With the tier check honest, the ghost check fired: seven bindings to variables
+in no collection. They were not deleted — they had never been exported.
+`avatar-gradient.css` predicted this in a comment ("a `palette/1`..`palette/7`
+collection the token export does not yet cover"), which is the only reason it
+took a minute rather than an afternoon.
+
+The drift was exactly seven names, verified by diffing all 391 Figma variables
+against the 384 in the repo before changing anything — worth doing, because
+"re-export the collection" is a much larger action than "add seven aliases" and
+they are indistinguishable until you look.
+
+`palette` sits beside `chart`: an indexed set of categorical colours that does
+not belong on a semantic role ladder. `chart/*` answers "the eighth series in
+this graph"; `palette/*` answers "the fourth avatar in this list". Neither has a
+meaning to look up, which is the point — a role ladder that grew a rung per
+avatar colour would stop being a role ladder.
+
+Adding a Semantics group touches three lists, and missing any one of them fails
+in a different place:
+
+| List                        | File                             | Failure if missed                |
+| --------------------------- | -------------------------------- | -------------------------------- |
+| `SEMANTIC_GROUPS`           | `scripts/audit-names.mjs`        | name audit, 7 errors             |
+| `NOT_GEOMETRY`              | `scripts/verify-geometry.mjs`    | colour token checked as geometry |
+| `SEM_GROUPS` + the chip row | `docs/variable-naming-spec.html` | spec disagrees with the gate     |
+
+The spec carries the list twice — once as chips for a reader, once as an array
+for its own validator. Both, or the page contradicts itself.
+
+### Now it runs
+
+`tokens:gate` is a CI step. All five checks pass: 391 variables, 1,093 bindings
+across 51 components, 295 geometry bindings, no ghosts, no tier violations.
+
+The gate still checks the SNAPSHOT rather than Figma, so re-run
+`figma/export-bindings.js` after component work. A snapshot nobody refreshes
+passes while being wrong — which is the failure this entry is about.
+
+---
+
 ## 2026-09-03 — `Emphasis` is a name for Medium, so the second weight needed its own
 
 **Text styles 21 -> 23. `Body/Default Semibold`, `Caption Semibold`. One new
