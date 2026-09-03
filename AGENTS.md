@@ -451,6 +451,20 @@ confidence bars used `surface/muted`, which is **1.05:1** against the page.
 `icon/tertiary` now — 7.09:1 — which is also what the forced-colours block
 already did, so the two constructions no longer disagree.
 
+**The gate is also blind in the opposite direction: a component that sets a
+colour and no background is skipped entirely.** It pairs `color` against a
+`background` on the same rule, so a text-only component contributes zero
+pairings and passes by never being asked. `EmptyState` is the first component
+that is text-only from top to bottom — it draws no surface, because it sits on
+whatever region holds it — and its 36 pairings across three surfaces and both
+modes were measured by hand into `empty-state.css` instead. Worst case is
+`icon/primary` on `surface/muted` at 4.79:1 against a 3:1 minimum.
+
+This is a real hole, not a quirk. Closing it means assuming a backdrop for
+background-less rules, which is a decision about every component at once and is
+not made here. **When you add a text-only component, measure it by hand and
+record the grid in its stylesheet** — the gate will not tell you it skipped you.
+
 `.ion-visually-hidden` is in `styles/index.css` because both needed it. Do not
 write a third copy: `display: none` and `visibility: hidden` both drop the node
 from the accessibility tree, so an announcement placed in one is never made.

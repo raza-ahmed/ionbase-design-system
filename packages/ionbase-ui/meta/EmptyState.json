@@ -1,0 +1,125 @@
+{
+  "status": "stable",
+  "summary": "The state a region shows when it has nothing to show, and why — first run, no results, no access, or a failed fetch.",
+  "useWhen": [
+    "a list, table, panel or route has no content to render",
+    "a filter or search returns nothing",
+    "the account is not permitted to see what would be here",
+    "the request that would have filled the region failed"
+  ],
+  "useInstead": [
+    {
+      "when": "content exists and something went wrong beside it",
+      "use": "Alert",
+      "why": "an Alert sits with the content; an EmptyState replaces it. If there is a table on screen, the message about it is an Alert"
+    },
+    {
+      "when": "the message is transient and the content is unaffected",
+      "use": "Toast"
+    }
+  ],
+  "slots": {
+    "title": {
+      "accepts": "text",
+      "note": "required — it is the region's statement. Name the thing and the situation: \"No invoices match these filters\", not \"No results\""
+    },
+    "description": {
+      "accepts": "text",
+      "note": "one or two sentences: what would be here, and what puts it here"
+    },
+    "action": {
+      "accepts": "Button",
+      "note": "the action that RESOLVES this reason — clearing a filter for no-results, not creating a record"
+    },
+    "secondaryAction": {
+      "accepts": "Button or Link",
+      "note": "a lower-emphasis escape hatch — \"Contact an admin\""
+    },
+    "icon": {
+      "accepts": "Icon",
+      "note": "decorative only, rendered aria-hidden — the title already says what this is"
+    },
+    "children": {
+      "accepts": "any",
+      "note": "extra content between the description and the actions"
+    }
+  },
+  "variants": {
+    "reason": {
+      "first-run": {
+        "use": "nothing exists yet and the user has never created one",
+        "note": "the only reason where a create action is the right primary"
+      },
+      "no-results": {
+        "use": "records exist; the current filter or query matches none of them",
+        "note": "the action is clearing the filter. Offering \"Create\" here tells a user with 400 records and a typo that their data is gone"
+      },
+      "no-access": {
+        "use": "records exist and match, but this account may not see them",
+        "note": "name the permission or plan. \"Nothing here\" for a permissions problem sends the user to support with the wrong question"
+      },
+      "error": {
+        "use": "the request that would have filled the region failed",
+        "note": "the action is a retry. Never a create — offering one over a failed fetch invites a duplicate record"
+      }
+    },
+    "size": {
+      "inline": {
+        "use": "inside something that already has a frame — a table body, a card"
+      },
+      "panel": {
+        "use": "a region of a page. The default"
+      },
+      "page": {
+        "use": "a whole route with nothing in it"
+      }
+    }
+  },
+  "a11y": {
+    "guarantees": [
+      "the title renders as a real heading, so the region appears in the document outline",
+      "the icon is aria-hidden, so a screen reader is not told the same thing twice"
+    ],
+    "requires": [
+      "a `title` that states the situation, since it is what a screen-reader user hears in place of the missing content",
+      "`headingLevel` matching the surrounding outline — h3 is the default, but only the page knows its real level"
+    ],
+    "notes": [
+      "This is deliberately NOT a live region. An empty state replaces content, so it is what the user reads next rather than something announced over what they are reading — `role=\"status\"` here fires on every keystroke of a filter box. If a flow genuinely needs the announcement, pass `role` yourself.",
+      "`headingLevel` takes 2-6 and defaults to 3. It is a number rather than a variant because it is an outline decision, not a visual one — the size prop is what changes how the title looks.",
+      "`h1` is not available: an empty state describes a region, and the page's own title belongs to the page. Same call FullCard makes.",
+      "Under forced-colors the reason tint is discarded, so the region draws a border to stay distinguishable from the content it replaced."
+    ]
+  },
+  "antiPatterns": [
+    {
+      "dont": "using `first-run` for an empty filter result",
+      "do": "no-results",
+      "why": "it is the most common empty-state bug in enterprise software: a user with 400 invoices and a typo in their filter is told they have none, and offered a button to make one"
+    },
+    {
+      "dont": "\"No data\" or \"Nothing found\" as the title",
+      "why": "it names neither the thing nor the situation, so the user cannot tell whether to create a record, clear a filter, or ask for access"
+    },
+    {
+      "dont": "an EmptyState while the request is still in flight",
+      "why": "it asserts the data is absent before anything knows, then contradicts itself a moment later"
+    },
+    {
+      "dont": "a create action on `error`",
+      "why": "the fetch failed, so nobody knows whether the record already exists — this is how duplicates get made"
+    },
+    {
+      "dont": "an icon with its own `aria-label` or visible caption",
+      "why": "the slot is decorative and the title already carries the meaning; a labelled icon makes it announce twice"
+    },
+    {
+      "dont": "hiding the region entirely when it is empty",
+      "why": "a section that vanishes is indistinguishable from one that failed to render, and the user cannot tell that they are looking at everything there is"
+    },
+    {
+      "dont": "an EmptyState above a form nobody has filled in yet",
+      "why": "a form's empty state IS its initial state — see the Form pattern. A message saying the form is empty is noise on top of a form that is visibly empty"
+    }
+  ]
+}

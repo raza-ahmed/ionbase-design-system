@@ -1136,6 +1136,7 @@
     "Table": "Figma draws Table Row and Table Cell; the table itself is the caller assembling them. Density, the one property Table owns, is mapped on Table Cell.",
     "TableHead": "As Table — a code-side grouping element. Figma expresses a header row as a Table Row variant, not a separate component.",
     "TableBody": "As TableHead.",
-    "ToastProvider": "Figma draws Toast, which is mapped. The provider is placement, queueing and the live region — runtime behaviour with nothing to draw."
+    "ToastProvider": "Figma draws Toast, which is mapped. The provider is placement, queueing and the live region — runtime behaviour with nothing to draw.",
+    "EmptyState": "Not yet drawn in Figma. Repo-owned: the pattern tier demanded an empty state that the component tier did not ship, and it was built from that requirement rather than from a frame. Draw it and this line goes."
   }
 }

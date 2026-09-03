@@ -1,0 +1,169 @@
+/*
+ * EmptyState
+ *
+ * Repo-owned, not measured from Figma — there is no Empty State component in
+ * the file yet. Every value below is a token already on a ladder, so when one
+ * is drawn the two can be reconciled without moving anything underneath.
+ *
+ * REASON CHANGES THE ICON COLOUR AND NOTHING ELSE
+ *
+ * The four reasons are different situations, but they are the same shape on
+ * screen: a mark, a statement, a sentence, an action. Only the icon carries
+ * the difference, and only as a tint — `error` is not a red panel, because an
+ * empty result from a failed fetch is not an alert, it is a region that could
+ * not be filled. Alert exists for the other thing.
+ *
+ * That also keeps the intent tokens honest: this reuses `icon/*` roles at
+ * their existing rungs rather than growing an `empty-state/*` family, which
+ * would be the `control/<size>/*` mistake recorded in AGENTS.md one tier up.
+ *
+ * CONTRAST WAS MEASURED BY HAND, BECAUSE THE GATE CANNOT SEE THIS FILE
+ *
+ * verify-contrast.mjs pairs a `color` against a `background` found on the same
+ * rule. This component declares no background at all — it sits on whatever
+ * region holds it — so every rule here is skipped and the component
+ * contributes zero pairings. That is a structural property of the gate, not
+ * something wrong with this file, and it applies to any text-only component.
+ *
+ * So the pairings were measured directly, against all three surfaces an empty
+ * state can land on, in both modes. Worst case is `icon/primary` on
+ * `surface/muted` at 4.79:1 against the 3:1 that SC 1.4.11 asks of a non-text
+ * mark; every text pairing clears 4.5:1 with room to spare:
+ *
+ *              text/default  text/secondary  icon/tertiary  icon/primary
+ *   page       16.55 / 16.55  9.53 / 13.31   7.09 / 6.95    5.05 / 6.31
+ *   default    17.63 / 19.71 10.15 / 15.86   7.56 / 8.28    5.38 / 7.51
+ *   muted      15.71 / 14.14  9.04 / 11.38   6.73 / 5.94    4.79 / 5.39
+ *                                                        (Light / Dark)
+ *
+ * icon/warning and icon/error, the other two reason tints, sit between those
+ * columns: 5.30 to 8.08 across the same grid.
+ */
+.ion-empty-state {
+  --ion-empty-state-icon: var(--icon-tertiary);
+  --ion-empty-state-gap: var(--spacing-12);
+  --ion-empty-state-pad-block: var(--spacing-48);
+  --ion-empty-state-title: var(--type-h4);
+  --ion-empty-state-title-line-height: var(--type-h4-line-height);
+  --ion-empty-state-icon-size: var(--icon-size-xl);
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--ion-empty-state-gap);
+  padding: var(--ion-empty-state-pad-block) var(--spacing-24);
+  text-align: center;
+  font-family: var(--font-family-sans);
+  color: var(--text-secondary);
+
+  /*
+   * Centred within whatever holds it, and never wider than a comfortable
+   * measure. An empty state stretched across a 1440px table reads as a layout
+   * failure rather than a message.
+   */
+  margin-inline: auto;
+  max-width: 44ch;
+}
+
+/* --- Size: how much vertical room the situation deserves --- */
+
+/*
+ * `inline` sits inside something that already has a frame — a table body, a
+ * card. It gets no vertical padding of its own, because the container's
+ * padding is already there and doubling it pushes the message out of view.
+ */
+.ion-empty-state--inline {
+  --ion-empty-state-pad-block: var(--spacing-16);
+  --ion-empty-state-gap: var(--spacing-8);
+  --ion-empty-state-title: var(--type-body-md);
+  --ion-empty-state-title-line-height: var(--type-body-md-line-height);
+  --ion-empty-state-icon-size: var(--icon-size-md);
+}
+
+.ion-empty-state--page {
+  --ion-empty-state-pad-block: var(--spacing-64);
+  --ion-empty-state-gap: var(--spacing-16);
+  --ion-empty-state-title: var(--type-h3);
+  --ion-empty-state-title-line-height: var(--type-h3-line-height);
+}
+
+/* --- Reason: the icon tint, and only that --- */
+.ion-empty-state--first-run {
+  --ion-empty-state-icon: var(--icon-primary);
+}
+
+.ion-empty-state--no-results {
+  --ion-empty-state-icon: var(--icon-tertiary);
+}
+
+.ion-empty-state--no-access {
+  --ion-empty-state-icon: var(--icon-warning);
+}
+
+.ion-empty-state--error {
+  --ion-empty-state-icon: var(--icon-error);
+}
+
+/* --- Parts --- */
+.ion-empty-state__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--ion-empty-state-icon);
+}
+
+.ion-empty-state__icon svg {
+  width: var(--ion-empty-state-icon-size);
+  height: var(--ion-empty-state-icon-size);
+}
+
+.ion-empty-state__title {
+  margin: 0;
+  color: var(--text-default);
+  font-size: var(--ion-empty-state-title);
+  line-height: var(--ion-empty-state-title-line-height);
+  font-weight: var(--font-weight-medium);
+
+  /* A filter value or record id in the title must wrap, not widen the region. */
+  overflow-wrap: anywhere;
+}
+
+.ion-empty-state__description {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: var(--type-body);
+  line-height: var(--type-body-line-height);
+  overflow-wrap: anywhere;
+}
+
+/*
+ * `margin-top` rather than relying on the flex gap alone: the actions are a
+ * different kind of thing from the sentence above them, and the extra step
+ * separates the reading from the doing. Wraps, because two buttons and a long
+ * label do not fit an inline empty state in a narrow column.
+ */
+.ion-empty-state__actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: var(--spacing-8);
+  margin-top: var(--spacing-4);
+}
+
+/*
+ * Windows High Contrast. The icon tint is the only thing `reason` changes, and
+ * forced-colors throws every colour away — so the region gets a border to stay
+ * distinguishable from the content it replaced. Matches how index.css treats
+ * the control indicators.
+ */
+@media (forced-colors: active) {
+  .ion-empty-state {
+    border: 1px solid CanvasText;
+    border-radius: var(--radius-md);
+  }
+
+  .ion-empty-state__icon {
+    color: CanvasText;
+  }
+}
