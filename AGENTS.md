@@ -451,19 +451,41 @@ confidence bars used `surface/muted`, which is **1.05:1** against the page.
 `icon/tertiary` now — 7.09:1 — which is also what the forced-colours block
 already did, so the two constructions no longer disagree.
 
-**The gate is also blind in the opposite direction: a component that sets a
-colour and no background is skipped entirely.** It pairs `color` against a
-`background` on the same rule, so a text-only component contributes zero
-pairings and passes by never being asked. `EmptyState` is the first component
-that is text-only from top to bottom — it draws no surface, because it sits on
-whatever region holds it — and its 36 pairings across three surfaces and both
-modes were measured by hand into `empty-state.css` instead. Worst case is
-`icon/primary` on `surface/muted` at 4.79:1 against a 3:1 minimum.
+**The gate used to be blind in the opposite direction too, and that is closed.**
+It paired `color` against a `background` on the same rule, so a component that
+declared no background was skipped and passed by never being asked — 106 slots
+across 19 stylesheets, and `EmptyState`, the first component that is text-only
+from top to bottom, produced **zero pairings while the gate reported green**.
 
-This is a real hole, not a quirk. Closing it means assuming a backdrop for
-background-less rules, which is a decision about every component at once and is
-not made here. **When you add a text-only component, measure it by hand and
-record the grid in its stylesheet** — the gate will not tell you it skipped you.
+A background-less rule is now measured against all three neutral grounds a
+caller can place a region on:
+
+```
+--surface-page   --surface-default   --surface-muted
+```
+
+**All three, not one.** A component that is readable on the page and unreadable
+inside a card is not readable; assuming only `surface/page` would let that pass.
+Intent surfaces are deliberately excluded — a component inside a solid Alert
+inherits that Alert's text roles, so pairing an ordinary `text/secondary`
+against `surface/error` would report a combination nothing constructs. So are
+the `on-color` roles, whose entire meaning is "on a coloured surface": an
+on-colour checkmark is never drawn on the page.
+
+Coverage went from **173 pairings across 23 stylesheets to 446 across 31**.
+`EmptyState` alone went from 0 to 60.
+
+It found one real defect nothing had ever measured: **`text/link-visited` on
+`surface/muted` at 3.9:1 in Dark**. Link declares a colour and no background, so
+it had never been paired against anything. Only the muted ground fails — page
+and default clear 4.5:1 — which is why the fix is the visited purple, not the
+surface.
+
+The other eleven findings were all one pairing: `text/disabled` on
+`surface/muted` at 4.31:1, across seven components. That is the same SC 1.4.3
+exemption the file already carried for `text/disabled` on `surface/disabled`,
+reached from the other direction — the criterion exempts text in an inactive
+component regardless of what is behind it.
 
 `.ion-visually-hidden` is in `styles/index.css` because both needed it. Do not
 write a third copy: `display: none` and `visibility: hidden` both drop the node

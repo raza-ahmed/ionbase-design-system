@@ -1,5 +1,58 @@
 # Changelog
 
+## 0.38.0 — 2026-09-03
+
+### Fixed — the contrast gate skipped every component that draws no background
+
+`verify-contrast.mjs` paired a `color` against a `background` found on the same
+rule. A component that declares no background — because it sits on whatever
+region holds it — had no pairings to check, so it **passed by never being
+asked**. 106 slots across 19 stylesheets were in that position, and `EmptyState`
+in 0.37.0 was the first component text-only from top to bottom: it produced
+**zero pairings while the gate reported green**.
+
+A background-less rule is now measured against all three neutral grounds a
+caller can place a region on — `surface/page`, `surface/default`,
+`surface/muted` — and must clear every one. Assuming only `surface/page` would
+let a component be readable on the page and unreadable inside a card.
+
+Two exclusions, both deliberate:
+
+- **Intent surfaces.** A component inside a solid Alert inherits that Alert's
+  text roles. Pairing an ordinary `text/secondary` against `surface/error` would
+  report a combination nothing constructs.
+- **`on-color` roles.** `text/on-color` and `icon/on-color` mean "on a coloured
+  surface". An on-colour checkmark is never drawn on the page, so measuring it
+  there fabricates a failure rather than finding one.
+
+**Coverage: 173 pairings across 23 stylesheets → 446 across 31.** `EmptyState`
+alone went from 0 to 60.
+
+### Found — a real defect nothing had ever measured
+
+**`text/link-visited` on `surface/muted`, 3.9:1 in Dark.** `Link` declares a
+colour and no background, so in four months it had never been paired against
+anything at all. Only the muted ground fails; page and default clear 4.5:1,
+which is why the fix is the visited purple rather than the surface. Recorded in
+`contrast-exceptions.json` under the Dark deferral.
+
+The other eleven findings were all the same pairing — `text/disabled` on
+`surface/muted` at 4.31:1, across `Checkbox`, `Link`, `NavItem`, `Radio`, `Tabs`
+and `Toggle`. That is the SC 1.4.3 exemption the file already carried for
+`text/disabled` on `surface/disabled`, reached from the other direction: the
+criterion exempts text in an inactive user interface component regardless of
+what is behind it. Accepted as `wcag-exempt`, with the Dark equivalents recorded
+under the deferral.
+
+Light is clean: 446 enforced pairings, 0 unexpected, 0 outstanding defects.
+
+Four checks were verified by breaking them: a text-only component unreadable on
+a ground now fails (1:1, 1.05:1 and 1.12:1 caught across all three); removing
+the new exemption returns 11 unexpected failures and exit 1, so it is
+load-bearing; the stale-exception check still fires on an assumed-ground pairing
+that no longer fails; and `a11y.knownIssues` stays empty, correctly — the new
+Light findings are exempt and the new defect is Dark, which is deferred.
+
 ## 0.37.0 — 2026-09-03
 
 ### Added — `EmptyState`: the state five patterns required and none could render

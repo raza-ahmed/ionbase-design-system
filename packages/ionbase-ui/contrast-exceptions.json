@@ -91,6 +91,15 @@
       "ratio": 2.33,
       "reason": "Not a text pairing. `.ion-streaming-text__cursor` is an empty, aria-hidden <span> drawn as a block — deliberately not a text character, since some screen readers read a literal cursor glyph aloud. The gate pairs the paragraph's inherited colour against the cursor's background. Measured properly, the cursor is 7.09:1 against the page.",
       "affects": ["StreamingText"]
+    },
+    {
+      "fg": "--text-disabled",
+      "bg": "--surface-muted",
+      "mode": "Light",
+      "kind": "wcag-exempt",
+      "ratio": 4.31,
+      "reason": "The same SC 1.4.3 exemption as --text-disabled on --surface-disabled, reached from the other direction. A disabled label declares a colour and no background of its own, so from 3 Sep 2026 it is measured against the three neutral grounds it could sit on. Muted is the darkest of them and the only one it falls short against. The criterion exempts text that is part of an inactive user interface component regardless of what is behind it, and raising this would work against the requirement that disabled controls look unavailable.",
+      "affects": ["Checkbox", "Link", "NavItem", "Radio", "Tabs", "Toggle"]
     }
   ],
   "deferred": [
@@ -167,6 +176,47 @@
         "props": {
           "href": "set"
         }
+      }
+    },
+    {
+      "fg": "--text-disabled",
+      "bg": "--surface-muted",
+      "mode": "Dark",
+      "kind": "wcag-exempt",
+      "ratio": 3.12,
+      "reason": "SC 1.4.3 incidental text, inactive component — the same categorical exemption as Light. Listed per ground because a disabled label declares no background of its own and is measured against all three.",
+      "affects": ["Checkbox", "Link", "NavItem", "Radio", "Tabs", "Toggle"]
+    },
+    {
+      "fg": "--text-disabled",
+      "bg": "--surface-page",
+      "mode": "Dark",
+      "kind": "wcag-exempt",
+      "ratio": 3.65,
+      "reason": "SC 1.4.3 incidental text, inactive component — the same categorical exemption as Light. Listed per ground because a disabled label declares no background of its own and is measured against all three.",
+      "affects": ["Checkbox", "Link", "NavItem", "Radio", "Tabs", "Toggle"]
+    },
+    {
+      "fg": "--text-disabled",
+      "bg": "--surface-default",
+      "mode": "Dark",
+      "kind": "wcag-exempt",
+      "ratio": 4.34,
+      "reason": "SC 1.4.3 incidental text, inactive component — the same categorical exemption as Light. Listed per ground because a disabled label declares no background of its own and is measured against all three.",
+      "affects": ["Checkbox", "Link", "NavItem", "Radio", "Tabs", "Toggle"]
+    },
+    {
+      "fg": "--text-link-visited",
+      "bg": "--surface-muted",
+      "mode": "Dark",
+      "kind": "defect",
+      "ratio": 3.9,
+      "reason": "A visited Link on a muted surface. Found on 3 Sep 2026 by the assumed-ground change: Link declares a colour and no background, so it had never been measured against anything. Only the muted ground fails — page and default clear 4.5:1 — which is why it needs the visited purple moved rather than the surface changed.",
+      "affects": ["Link"],
+      "surfacedBy": "Link, :visited, on a muted surface",
+      "appliesTo": {
+        "component": "Link",
+        "props": {}
       }
     }
   ]
