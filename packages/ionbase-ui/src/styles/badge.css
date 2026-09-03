@@ -1,25 +1,36 @@
 /*
  * Badge
  *
- * Geometry measured from Figma `Badge` (152:73). Single size, six intents.
+ * Geometry measured from Figma `Badge` (152:73). Six intents x three sizes x
+ * two shapes.
  *
  * v2: Badge owns no tokens. Every value here is an Interface token, a Semantics
  * token, or a spacing primitive — the same ones the Figma component binds, so
- * the two cannot drift. Badge is 20px tall, below control/sm's 32px, so it is
- * not a control and does not read the control scale.
+ * the two cannot drift. Even Large, at 32px, is not a control: it has no hit
+ * target and no state, so it does not read the control scale.
+ *
+ * HEIGHT IS PINNED, NOT DERIVED. Figma binds each size's height to
+ * spacing/20|24|32, and the 2px vertical padding it also carries is inert
+ * because the pinned height already exceeds it. Reproducing that padding
+ * instead of the height is exactly how Button's ramp once landed 2px off on
+ * every size, so this reads the height token and pads the inline axis only.
+ *
+ * SMALL IS THE DEFAULT, matching Figma's default variant and the single size
+ * this component shipped with before the ramp existed.
  */
 .ion-badge {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  min-height: var(--spacing-20);
 
   /*
-   * Figma's 1px stroke is drawn INSIDE the box, so it does not add height. A CSS
-   * border does, so the vertical padding absorbs it — otherwise the badge
-   * renders 2px taller than the design. Same correction as the Tabs underline
-   * indicator. Badge is 22px: padding 2 + caption line-height 18 + padding 2.
+   * Figma's 1px stroke is drawn INSIDE the box; a CSS border sits outside the
+   * padding. Subtracting one border width keeps the label the same distance
+   * from the outer edge in both. Same correction as Checkbox and Radio, and
+   * only needed on the inline axis now that height is pinned.
    */
-  padding: calc(var(--spacing-2) - var(--border-width-default)) var(--spacing-8);
+  padding-inline: calc(var(--spacing-4) - var(--border-width-default));
   gap: var(--spacing-4);
   font-family: var(--font-family-sans);
 
@@ -55,12 +66,77 @@
  * error that is #dc2828 against the label's #ba1c1c. `@ionbase-ui/icons` renders
  * with `currentColor`, so each intent sets `color` on the svg directly.
  *
- * Icon size is deliberately not set here. Figma has it at 14px, which is not on
- * the spacing scale, so it is most likely a slip rather than a decision. Until
- * that is settled the icon inherits 1em, matching the 12px label.
+ * Icon size IS set now, and is on the ladder. The previous note here recorded
+ * Figma at a single off-scale 14px and declined to follow it, on the grounds
+ * that it looked like a slip. The retuned component reads icon-size/2xs, /sm
+ * and /md — 12, 16, 20 — one rung per size, so the slip is gone and there is
+ * something to follow.
  */
 .ion-badge svg {
   flex-shrink: 0;
+  width: var(--icon-size-2xs);
+  height: var(--icon-size-2xs);
+}
+
+/*
+ * The label carries its own inline padding, which is Figma's `Label Slot`
+ * frame. The dot and the icon are its siblings rather than its children, so
+ * they sit at the badge's own padding and only the text takes the extra inset.
+ * Collapsing the two into one padding would move the dot.
+ */
+.ion-badge__label {
+  padding-inline: var(--spacing-2);
+}
+
+/* Size modifiers — Small is the base. */
+
+.ion-badge--md {
+  min-height: var(--spacing-24);
+  font-size: var(--type-body-sm);
+  line-height: var(--type-body-sm-line-height);
+}
+
+.ion-badge--md .ion-badge__label {
+  padding-inline: var(--spacing-4);
+}
+
+.ion-badge--md svg {
+  width: var(--icon-size-sm);
+  height: var(--icon-size-sm);
+}
+
+.ion-badge--lg {
+  min-height: var(--spacing-32);
+  padding-inline: calc(var(--spacing-6) - var(--border-width-default));
+  gap: var(--spacing-6);
+  font-size: var(--type-body-sm);
+  line-height: var(--type-body-sm-line-height);
+}
+
+.ion-badge--lg .ion-badge__label {
+  padding-inline: var(--spacing-6);
+}
+
+.ion-badge--lg svg {
+  width: var(--icon-size-md);
+  height: var(--icon-size-md);
+}
+
+/*
+ * Shape. Pill is the base radius/full; Rounded steps with the size so the
+ * corner stays proportional — 4 / 6 / 8 against heights of 20 / 24 / 32.
+ */
+
+.ion-badge--rounded {
+  border-radius: var(--radius-xs);
+}
+
+.ion-badge--md.ion-badge--rounded {
+  border-radius: var(--radius-sm);
+}
+
+.ion-badge--lg.ion-badge--rounded {
+  border-radius: var(--radius-md);
 }
 
 /* Intent modifiers */

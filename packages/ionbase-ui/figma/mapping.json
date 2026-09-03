@@ -333,10 +333,19 @@
           "prop": "icon"
         },
         "Size": {
-          "ignore": "Figma draws three sizes; code has no size prop. Badge inherits its type from the text it labels — the same call Link makes."
+          "prop": "size",
+          "values": {
+            "Small": "sm",
+            "Medium": "md",
+            "Large": "lg"
+          }
         },
         "Shape": {
-          "ignore": "Pill and Rounded are one radius token apart and code ships the pill only. Add the prop when a real screen needs both, not before."
+          "prop": "shape",
+          "values": {
+            "Pill": "pill",
+            "Rounded": "rounded"
+          }
         }
       }
     },

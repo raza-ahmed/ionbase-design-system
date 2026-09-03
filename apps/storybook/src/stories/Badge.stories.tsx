@@ -20,14 +20,16 @@ const meta: Meta<typeof Badge> = {
         'information',
       ],
     },
+    size: { control: 'select', options: ['sm', 'md', 'lg'] },
+    shape: { control: 'select', options: ['pill', 'rounded'] },
     dot: { control: 'boolean' },
   },
-  args: { intent: 'neutral', children: 'Badge' },
+  args: { intent: 'neutral', size: 'sm', shape: 'pill', children: 'Badge' },
   parameters: {
     docs: {
       description: {
         component:
-          'Measured from Figma `Badge` (152:73). Single size, six intents. Badge is not a control — at 20px it sits below `control/sm` — so it has its own geometry tokens rather than reading the control scale.',
+          'Measured from Figma `Badge` (152:73). Six intents x three sizes x two shapes. Badge is not a control — it has no hit target and no state — so it does not read the control scale. Heights are pinned to `spacing/20|24|32` rather than derived from padding.',
       },
     },
   },
@@ -95,23 +97,93 @@ export const WithIcon: Story = {
 export const RenderedGeometryMatchesFigma: Story = {
   render: (args) => <Badge {...args}>Badge</Badge>,
   play: async ({ canvas }) => {
-    const badge = canvas.getByText('Badge');
+    const badge = canvas
+      .getByText('Badge')
+      .closest('.ion-badge') as HTMLElement;
     const cs = getComputedStyle(badge);
 
-    await expect(Math.round(badge.getBoundingClientRect().height)).toBe(22);
+    // Pinned, not derived. Figma binds this to spacing/20.
+    await expect(Math.round(badge.getBoundingClientRect().height)).toBe(20);
 
     /*
-     * Figma's padding is 2px with a 1px stroke drawn INSIDE the box. A CSS
-     * border sits outside the padding box, so padding renders as 1px and the
-     * border makes up the difference. The invariant that matches the design is
-     * the distance from the outer edge to the text: padding + border = 2px.
+     * Figma's 1px stroke is drawn INSIDE the box; a CSS border sits outside the
+     * padding box. The invariant that matches the design is the distance from
+     * the outer edge to the content: padding + border = Figma's 4px.
      */
-    const inset = parseFloat(cs.paddingTop) + parseFloat(cs.borderTopWidth);
-    await expect(inset).toBe(2);
-    await expect(cs.paddingLeft).toBe('8px');
+    const inset = parseFloat(cs.paddingLeft) + parseFloat(cs.borderLeftWidth);
+    await expect(inset).toBe(4);
     await expect(cs.columnGap).toBe('4px');
     // Figma's label is Medium (500); this was semibold in code until measured.
     await expect(cs.fontWeight).toBe('500');
+
+    /*
+     * The label's own inline padding is Figma's `Label Slot` frame, which the
+     * dot and icon do not get. Text therefore sits 4 + 2 = 6 from the edge.
+     */
+    const label = badge.querySelector('.ion-badge__label') as HTMLElement;
+    await expect(getComputedStyle(label).paddingLeft).toBe('2px');
+  },
+};
+
+/**
+ * Heights come from the height token, never from padding — the failure that
+ * left Button's ramp 2px off on every size.
+ */
+export const SizeRampIsPinned: Story = {
+  render: () => (
+    <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+      <Badge size="sm">Small</Badge>
+      <Badge size="md">Medium</Badge>
+      <Badge size="lg">Large</Badge>
+    </div>
+  ),
+  play: async ({ canvas }) => {
+    const expected: Array<[string, number, string]> = [
+      ['Small', 20, '2px'],
+      ['Medium', 24, '4px'],
+      ['Large', 32, '6px'],
+    ];
+    for (const [text, height, labelPad] of expected) {
+      const badge = canvas.getByText(text).closest('.ion-badge') as HTMLElement;
+      await expect(Math.round(badge.getBoundingClientRect().height)).toBe(
+        height,
+      );
+      const label = badge.querySelector('.ion-badge__label') as HTMLElement;
+      await expect(getComputedStyle(label).paddingLeft).toBe(labelPad);
+    }
+  },
+};
+
+/** Rounded steps its corner with the size; pill stays fully round. */
+export const ShapeStepsWithSize: Story = {
+  render: () => (
+    <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+      <Badge shape="rounded">Small</Badge>
+      <Badge shape="rounded" size="md">
+        Medium
+      </Badge>
+      <Badge shape="rounded" size="lg">
+        Large
+      </Badge>
+      <Badge>Pill</Badge>
+    </div>
+  ),
+  play: async ({ canvas }) => {
+    for (const [text, radius] of [
+      ['Small', 4],
+      ['Medium', 6],
+      ['Large', 8],
+    ] as Array<[string, number]>) {
+      const badge = canvas.getByText(text).closest('.ion-badge') as HTMLElement;
+      await expect(
+        parseFloat(getComputedStyle(badge).borderTopLeftRadius),
+      ).toBe(radius);
+    }
+    // The pill's radius is clamped by the browser to half the height, not 4/6/8.
+    const pill = canvas.getByText('Pill').closest('.ion-badge') as HTMLElement;
+    await expect(
+      parseFloat(getComputedStyle(pill).borderTopLeftRadius),
+    ).toBeGreaterThan(8);
   },
 };
 
@@ -123,7 +195,9 @@ export const DotInheritsIntentColour: Story = {
     </Badge>
   ),
   play: async ({ canvas }) => {
-    const badge = canvas.getByText('Failed');
+    const badge = canvas
+      .getByText('Failed')
+      .closest('.ion-badge') as HTMLElement;
     const dot = badge.querySelector('.ion-badge__dot') as HTMLElement;
     await expect(dot).toBeTruthy();
     await expect(getComputedStyle(dot).backgroundColor).toBe(

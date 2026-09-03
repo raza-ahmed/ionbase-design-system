@@ -1,5 +1,62 @@
 # Changelog
 
+## 0.33.0 — 2026-09-03
+
+### Added — Badge grows the Size and Shape axes Figma already had
+
+`Badge` gains `size` (`sm` | `md` | `lg`) and `shape` (`pill` | `rounded`),
+closing the gap 0.31.0 recorded: the Figma component had both axes and the code
+was single-size and always a pill.
+
+| Size | Height       | Inline pad  | Gap | Label pad | Type    | Icon            |
+| ---- | ------------ | ----------- | --- | --------- | ------- | --------------- |
+| `sm` | `spacing/20` | `spacing/4` | 4   | 2         | caption | `icon-size/2xs` |
+| `md` | `spacing/24` | `spacing/4` | 4   | 4         | body-sm | `icon-size/sm`  |
+| `lg` | `spacing/32` | `spacing/6` | 6   | 6         | body-sm | `icon-size/md`  |
+
+`sm` is the default and matches Figma's default variant, so existing call sites
+keep the size they had. `rounded` steps its corner with the size — `radius/xs`,
+`/sm`, `/md` against heights of 20, 24, 32 — so the corner stays proportional;
+`pill` is `radius/full` at every size.
+
+**THIS REVERSES A DELIBERATE DECISION, WHICH IS WORTH SAYING PLAINLY.**
+`figma/mapping.json` did not merely lack these props — it declined them, in
+writing: _"Pill and Rounded are one radius token apart and code ships the pill
+only. Add the prop when a real screen needs both, not before."_ and _"Badge
+inherits its type from the text it labels — the same call Link makes."_ That is
+a YAGNI position with a stated trigger, and the trigger has not obviously
+fired — no screen in this repo needs `rounded` today. It was reversed because
+the axes were asked for, not because the condition was met. If the two-axis
+Badge turns out to be unused in six months, this entry is the reason to look at
+removing it rather than assuming it was always wanted.
+
+### Fixed — height came from padding, and the label had no slot
+
+Two measurement errors surfaced while adding the ramp, both pre-existing.
+
+`min-height` now comes from the height token. Figma binds each size's height to
+`spacing/20|24|32` and the 2px vertical padding it also carries is inert,
+because the pinned height already exceeds it. The code reproduced the padding
+instead and computed 22px where Figma renders 20 — the same failure recorded in
+`button.css` ("deriving height from padding instead is what left all three
+sizes 2px off") and fixed in `agent-stop.css` in 0.32.0. Third occurrence; it is
+now the rule rather than three coincidences.
+
+Horizontal padding was `spacing/8`, where Figma is `spacing/4` on the badge plus
+a `Label Slot` frame carrying its own inline padding. The label is now wrapped
+in `.ion-badge__label` so the dot and icon stay at the badge's padding and only
+the text takes the extra inset — collapsing the two into one padding would move
+the dot. **Callers rendering `Badge` children now get a wrapping span**, which
+matters if you were selecting the text node directly.
+
+Icon size is set for the first time. The previous note in `badge.css` recorded
+Figma at a single off-scale 14px and declined to follow what looked like a slip;
+the retuned component reads 12 / 16 / 20 — `icon-size/2xs`, `/sm`, `/md`, one
+rung per size — so there is a ladder to follow now.
+
+No token values changed and no new contrast pairings exist: the six intents are
+untouched.
+
 ## 0.32.0 — 2026-09-03
 
 ### Added — the agentic tier is drawn in Figma
