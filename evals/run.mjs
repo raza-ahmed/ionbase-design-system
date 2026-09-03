@@ -30,7 +30,7 @@ import {
   mkdirSync,
   readdirSync,
 } from 'node:fs';
-import { execFileSync } from 'node:child_process';
+import { execFile } from 'node:child_process';
 import { join, dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { score, lint, typecheck } from './score/score.mjs';
@@ -86,6 +86,30 @@ const userPrompt = (task) =>
 
 /* ---------------------------------------------------------------- providers */
 
+/**
+ * The CLI, run without blocking the event loop, prompt on stdin.
+ *
+ * On failure execFile's own message is just the command line. The reason — a
+ * usage limit, a rate limit, an auth failure — is on stderr, and without it a
+ * failed run is undiagnosable.
+ */
+const claude = (args, input) =>
+  new Promise((ok, fail) => {
+    const child = execFile(
+      'claude',
+      args,
+      { encoding: 'utf8', maxBuffer: 32 * 1024 * 1024 },
+      (e, stdout, stderr) => {
+        if (!e) return ok(stdout);
+        const why = String(stderr || stdout || e.message)
+          .trim()
+          .slice(0, 400);
+        fail(new Error(why || 'claude exited non-zero with no output'));
+      },
+    );
+    child.stdin.end(input);
+  });
+
 const providers = {
   /** Score candidates already written to disk. */
   async files(task, pack) {
@@ -131,27 +155,15 @@ const providers = {
       'Return a single .tsx file implementing this.',
     ].join('\n');
 
-    let raw;
-    try {
-      raw = execFileSync(
-        'claude',
-        ['-p', '--model', model, '--allowedTools', ''],
-        {
-          input: prompt,
-          encoding: 'utf8',
-          maxBuffer: 32 * 1024 * 1024,
-          stdio: ['pipe', 'pipe', 'pipe'],
-        },
-      );
-    } catch (e) {
-      // execFileSync's message is just the command line. The reason — a usage
-      // limit, a rate limit, an auth failure — is on stderr, and without it a
-      // failed run is undiagnosable.
-      const why = String(e.stderr || e.stdout || e.message)
-        .trim()
-        .slice(0, 400);
-      throw new Error(why || 'claude exited non-zero with no output');
-    }
+    // MUST NOT be execFileSync. The runner spawns `concurrency` async workers,
+    // but a synchronous child blocks the single event loop, so all of them
+    // queue behind one call and --concurrency silently means 1. Measured at
+    // 7.4 minutes per generation serially: 11 hours for a 93-job run that takes
+    // under two when the flag does what it says.
+    const raw = await claude(
+      ['-p', '--model', model, '--allowedTools', ''],
+      prompt,
+    );
 
     const code = raw
       .replace(/^```(?:tsx?|typescript|jsx?)?\n/, '')
