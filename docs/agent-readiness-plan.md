@@ -533,6 +533,23 @@ Seven checks, all negative-tested on a deliberate break:
 | every state has a `why`                | a rule with no reason, which gets ignored            |
 | pattern cross-references resolve       | "use the Undo pattern" when there is no Undo pattern |
 
+**Three more, 3 Sep 2026: the agentic tier gets recipes.** The original six are
+the classic enterprise set, and not one of them composed a component from 4b.
+Nine components shipped for audience C with no documented composition — the tier
+the whole project exists for was the one tier with no recipes. `AgentRun`
+(activity log + streaming output + an always-present stop), `HumanApproval` (the
+gate in place, inside the run, with the evidence still visible), and
+`AssistantAnswer` (answer + inline citations + calibrated confidence). Same
+schema, same seven checks, no new components and no new tokens.
+
+The states are where these earn their keep. `AgentRun.partial` is the stopped
+run — every completed step kept, the interrupted one `skipped`, side effects left
+on screen, because a stopped agent has usually already changed something.
+`HumanApproval` adds a fourth, `expired`, whose rule is that silence defaults to
+not doing the thing. `AssistantAnswer.partial` is the answer built on half its
+sources, which looks identical to one built on all of them unless `basis` says
+so.
+
 Still open in 4a: no worked TSX example per pattern. The composition is
 described and every name in it is verified, but an agent still writes the JSX.
 Whether a full example earns its maintenance cost is a question for the eval

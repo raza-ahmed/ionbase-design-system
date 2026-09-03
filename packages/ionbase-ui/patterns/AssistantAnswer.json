@@ -1,0 +1,90 @@
+{
+  "summary": "A generated answer presented so the reader can check it: the text, what it was drawn from, and how far to trust it.",
+  "useWhen": [
+    "an answer is generated from sources the user could go and read",
+    "the answer will be acted on — a policy question, a number, a recommendation",
+    "the answer may be wrong in ways that are not visible from the text alone"
+  ],
+  "composes": [
+    "StreamingText",
+    "Citation",
+    "CitationList",
+    "CitationListItem",
+    "ConfidenceIndicator",
+    "Alert",
+    "Link"
+  ],
+  "structure": [
+    "The answer in a StreamingText, with inline Citation markers at the claims they support — not gathered at the end.",
+    "A CitationList below the answer, one CitationListItem per source, numbered to match the inline markers.",
+    "A ConfidenceIndicator beside the answer, with `basis` saying what the level is derived from.",
+    "An Alert only when the answer is degraded — sources unavailable, knowledge stale, question outside scope."
+  ],
+  "states": {
+    "loading": {
+      "must": "Stream the text with `isStreaming` and `minLines` set. Render no ConfidenceIndicator and no CitationList until the answer is complete.",
+      "why": "a confidence level attached to half an answer is a claim about text that does not exist yet, and citations that appear one by one move the reader's place on every token"
+    },
+    "empty": {
+      "must": "When there is no answer — no sources matched, the question was out of scope — say that in words and render neither an empty CitationList nor a ConfidenceIndicator.",
+      "why": "an answer with no sources and no confidence shown reads as a confident answer, which is the opposite of what an empty result means"
+    },
+    "error": {
+      "must": "Keep whatever text arrived, mark it plainly as incomplete with an Alert of `intent=\"warning\"`, and drop the ConfidenceIndicator entirely.",
+      "why": "a truncated answer that keeps its confidence badge is rated on evidence it never finished reading"
+    },
+    "partial": {
+      "must": "When some sources were unreachable, cite the ones that were, lower the `level`, and name the gap in `basis` — \"3 of 7 sources; 4 unavailable\".",
+      "why": "an answer built on half its evidence looks identical to one built on all of it, and `basis` is the only place that difference can be stated"
+    }
+  },
+  "propsUsed": {
+    "StreamingText": ["isStreaming", "minLines", "label"],
+    "Citation": ["index", "source", "href"],
+    "CitationList": ["label"],
+    "CitationListItem": ["index", "source", "href"],
+    "ConfidenceIndicator": ["level", "basis", "label"],
+    "Alert": ["intent", "title"],
+    "Link": ["variant", "href"]
+  },
+  "variantsUsed": {
+    "ConfidenceIndicator": { "level": ["low", "medium", "high"] },
+    "Alert": { "intent": ["warning", "information"] },
+    "Link": { "variant": ["standalone"] }
+  },
+  "a11y": {
+    "requires": [
+      "an `index` on every Citation that matches its CitationListItem — the number is how a screen-reader user connects the two",
+      "a `basis` on ConfidenceIndicator, which the component requires and which must describe evidence, not feeling",
+      "a `label` on StreamingText when no visible heading precedes the answer"
+    ],
+    "notes": [
+      "A Citation with no `href` renders as a note, not a dead link. Pass `href` only when the source is genuinely reachable by the reader.",
+      "Citation's accessible name is `Source <index>: <source>`, so the source string should name the document, not say \"link\" or \"here\".",
+      "StreamingText is not a live region. Announcing that the answer finished is the caller's decision — a thread with ten answers on screen does not want ten announcements."
+    ]
+  },
+  "antiPatterns": [
+    {
+      "dont": "a percentage — \"87% confident\"",
+      "do": "ConfidenceIndicator",
+      "why": "the number is not calibrated against anything, and a false precision is trusted more than the vague statement it replaced"
+    },
+    {
+      "dont": "citations gathered only at the end of the answer",
+      "why": "the reader cannot tell which claim each source supports, so the list documents that sources exist rather than what they establish"
+    },
+    {
+      "dont": "citing a source the reader cannot open",
+      "why": "an unreachable citation is decoration that raises trust without supplying any way to check it"
+    },
+    {
+      "dont": "a confidence level derived from the model's own token probabilities and presented as certainty about the world",
+      "why": "fluency and correctness are different quantities, and only one of them is being measured"
+    },
+    {
+      "dont": "hiding the sources behind a disclosure that defaults closed",
+      "why": "evidence that takes a click to reach is evidence nobody checks"
+    }
+  ]
+}

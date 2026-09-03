@@ -1,0 +1,91 @@
+{
+  "summary": "A single agent task from start to finish: what it is doing, what it produced, and a way to stop it at any point.",
+  "useWhen": [
+    "an agent performs work that takes long enough for the user to wonder whether it is still running",
+    "the work happens in steps the user would want to see — a tool call, a search, a write",
+    "the output arrives incrementally rather than all at once"
+  ],
+  "composes": [
+    "AgentActivity",
+    "AgentActivityStep",
+    "AgentStop",
+    "StreamingText",
+    "Alert",
+    "Badge"
+  ],
+  "structure": [
+    "A header row carrying the task name and the AgentStop control. The stop is the first thing on screen and it stays there for the whole run.",
+    "An AgentActivity list of AgentActivityStep, one per step, in the order they happened. Exactly one step is `active` at a time.",
+    "The result below the log, in a StreamingText with `isStreaming` true until the run ends.",
+    "An Alert only when the run fails or is stopped — not for ordinary progress, which the step log already carries."
+  ],
+  "states": {
+    "loading": {
+      "must": "Show the step log from the first step, not after the first result. Set `isStreaming` on the StreamingText and give it `minLines` so the region does not grow under the reader. AgentStop stays enabled the entire time.",
+      "why": "a spinner with no steps and no stop is indistinguishable from a hang, and the user's only remaining move is to reload the page and lose the run"
+    },
+    "empty": {
+      "must": "Before the first step exists, render the header and the AgentStop and nothing else. Do not render an empty AgentActivity list.",
+      "why": "an empty `<ol>` announces as a list of zero items, which tells a screen-reader user the run produced nothing rather than that it has not started"
+    },
+    "error": {
+      "must": "Mark the step that failed `status=\"failed\"`, leave every earlier step visible, and put an Alert with `intent=\"error\"` below the log naming which step failed and what it was doing. Clear `isStreaming`.",
+      "why": "replacing the log with an error message destroys the only record of how far the run got, which is the thing a user needs to decide whether to retry or start over"
+    },
+    "partial": {
+      "must": "When the user stops a run mid-flight, keep every completed step, mark the interrupted one `status=\"skipped\"`, and say plainly what was and was not done. Leave whatever the run already wrote on screen.",
+      "why": "a stopped agent has usually already changed something, and a UI that clears itself on stop hides the side effects the user stopped it to prevent"
+    }
+  },
+  "propsUsed": {
+    "AgentActivity": ["announceActive"],
+    "AgentActivityStep": ["status", "detail"],
+    "AgentStop": ["onStop", "isStopping", "label", "size", "stopOnEscape"],
+    "StreamingText": ["isStreaming", "minLines", "label", "hideCursor"],
+    "Alert": ["intent", "title"],
+    "Badge": ["intent", "size"]
+  },
+  "variantsUsed": {
+    "AgentActivityStep": {
+      "status": ["pending", "active", "done", "failed", "skipped"]
+    },
+    "AgentStop": { "size": ["sm", "md"] },
+    "Alert": { "intent": ["error", "warning"] },
+    "Badge": { "intent": ["neutral", "success", "error"] }
+  },
+  "a11y": {
+    "requires": [
+      "`announceActive` on AgentActivity when the run is unattended — it announces only the step that becomes active, once",
+      "an AgentStop that is reachable by keyboard without passing through the step log",
+      "a `label` on StreamingText when the output is not preceded by a visible heading"
+    ],
+    "notes": [
+      "StreamingText is deliberately NOT a live region. `aria-live=\"polite\"` on streaming output queues an announcement per token, so the answer is re-read and stuttered dozens of times. The step log is where progress is announced; the output is ordinary readable text.",
+      "Do not also wrap the step log in your own live region. AgentActivity owns one, and two announcing regions produce interleaved speech.",
+      "`stopOnEscape` is off by default on purpose. Turn it on only when the run owns the whole screen — inside a dialog, Escape must close the dialog."
+    ]
+  },
+  "antiPatterns": [
+    {
+      "dont": "a stop control that appears only after the run has been going for a few seconds",
+      "why": "the moment a user most wants to stop is the moment they realise the agent misunderstood, which is usually within the first second"
+    },
+    {
+      "dont": "removing the AgentStop while the stop is in progress",
+      "do": "AgentStop",
+      "why": "the control vanishing is read as the click having failed; `isStopping` keeps it in place and says what is happening"
+    },
+    {
+      "dont": "collapsing finished steps to a single \"Done\" line",
+      "why": "the log is the audit trail — it is what the user reads when the result is wrong, and it is worthless after the fact"
+    },
+    {
+      "dont": "raw tool names or JSON in the step text",
+      "why": "\"Calling search_documents({q: ...})\" describes the implementation; \"Searching your documents\" describes the work, and only one of them is useful to the person deciding whether to stop"
+    },
+    {
+      "dont": "more than one step marked `active`",
+      "why": "the status is what tells a screen-reader user where the run is, and two active steps make that unanswerable"
+    }
+  ]
+}

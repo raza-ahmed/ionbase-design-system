@@ -1,0 +1,102 @@
+{
+  "summary": "An agent stops and asks before doing something consequential, and a person approves, rejects or edits it.",
+  "useWhen": [
+    "the action spends money, sends something to a third party, deletes data, or changes access",
+    "the action is irreversible by the person who would have to undo it",
+    "a regulation or an internal policy requires a human decision on the record — the EU AI Act's human-oversight duty is the common case"
+  ],
+  "composes": [
+    "ApprovalGate",
+    "AgentActivity",
+    "AgentActivityStep",
+    "AgentStop",
+    "Alert"
+  ],
+  "structure": [
+    "The gate appears in place, where the run reached it — inside the step log, not in a dialog that covers it.",
+    "The AgentActivityStep that is waiting stays `active`; the ApprovalGate is its `detail`.",
+    "An ApprovalGate whose `title` names the action and its object, with the specifics — amount, recipient, record count — as `children`.",
+    "`risk` set from the consequence, not from the agent's confidence.",
+    "After the decision, `status` becomes `approved`, `rejected` or `expired` and `resolution` records who decided and when."
+  ],
+  "states": {
+    "loading": {
+      "must": "While the decision is being submitted, set `isSubmitting` — the gate keeps its buttons in place and disables them. Do not remove the gate or advance the step log until the server confirms.",
+      "why": "an optimistically-advanced run tells the user the action was approved before anything approved it, which is the one thing this pattern exists to prevent"
+    },
+    "empty": {
+      "must": "Render no ApprovalGate when nothing is waiting. A queue view with no pending items says so in words and does not render an empty gate shell.",
+      "why": "a gate with no action in it still shows Approve and Reject buttons, and a user who presses one has approved nothing while believing they approved something"
+    },
+    "error": {
+      "must": "If the decision fails to submit, keep `status=\"pending\"`, clear `isSubmitting`, and show an Alert with `intent=\"error\"` inside the gate. The action must not proceed.",
+      "why": "a failed approval that looks like a successful one is an unapproved action running with a human's name on it"
+    },
+    "expired": {
+      "must": "Set `status=\"expired\"` when the window closes, state what happened by default in `resolution`, and remove the decision buttons.",
+      "why": "a gate that sits pending forever hides that the agent already gave up, and buttons that no longer do anything are worse than no buttons"
+    }
+  },
+  "propsUsed": {
+    "ApprovalGate": [
+      "title",
+      "risk",
+      "status",
+      "onApprove",
+      "onReject",
+      "onEdit",
+      "approveLabel",
+      "rejectLabel",
+      "isSubmitting",
+      "resolution"
+    ],
+    "AgentActivity": ["announceActive"],
+    "AgentActivityStep": ["status", "detail"],
+    "AgentStop": ["onStop", "label", "size"],
+    "Alert": ["intent", "title"]
+  },
+  "variantsUsed": {
+    "ApprovalGate": {
+      "risk": ["low", "medium", "high"],
+      "status": ["pending", "approved", "rejected", "expired"]
+    },
+    "AgentActivityStep": { "status": ["active", "done", "skipped"] },
+    "Alert": { "intent": ["error", "warning"] },
+    "AgentStop": { "size": ["sm"] }
+  },
+  "a11y": {
+    "requires": [
+      "a `title` that names the action and the object — it is the gate's accessible name",
+      "`risk` set from consequence, so the level is the same for the same action every time",
+      "reject reachable before approve by keyboard, which the component's DOM order already guarantees"
+    ],
+    "notes": [
+      "ApprovalGate autofocuses nothing, deliberately. A dialog that focuses Approve turns Enter on an unread screen into consent.",
+      "Do not put the gate in a Modal that traps focus and hides the run behind it. The evidence for the decision is the step log, and a person cannot judge an action they can no longer see.",
+      "`risk` is a label on the consequence, not a colour scheme. Using `high` for emphasis on a routine action is how a team learns to ignore it."
+    ]
+  },
+  "antiPatterns": [
+    {
+      "dont": "\"The agent wants to continue. Approve?\"",
+      "why": "it names neither the action nor its object, so the only available answer is a reflex — and a reflex is not oversight"
+    },
+    {
+      "dont": "an approval that also acts as the progress indicator",
+      "do": "the AgentRun pattern",
+      "why": "conflating \"I am working\" with \"I need you\" teaches the user to dismiss both"
+    },
+    {
+      "dont": "approve-all across a queue of unrelated actions",
+      "why": "one click covering many consequences is indistinguishable from no gate at all, and it is the failure regulators look for"
+    },
+    {
+      "dont": "a countdown that approves on expiry",
+      "why": "silence is not consent; an expired gate must default to the safe outcome, which is not doing the thing"
+    },
+    {
+      "dont": "hiding the gate's earlier steps once a decision is made",
+      "why": "the record of what was approved, on what evidence, is the artefact an audit asks for"
+    }
+  ]
+}

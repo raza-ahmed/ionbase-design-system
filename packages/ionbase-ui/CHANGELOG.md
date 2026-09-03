@@ -1,5 +1,68 @@
 # Changelog
 
+## 0.34.0 — 2026-09-03
+
+### Added — the agentic tier gets recipes: `AgentRun`, `HumanApproval`, `AssistantAnswer`
+
+Nine components shipped in 0.24.0 and 0.25.0 for audience C. Not one of them
+appeared in a pattern. All six recipes — `DataTable`, `Form`, `PageShell`,
+`DestructiveConfirm`, `SettingsPanel`, `Wizard` — are the classic enterprise
+set, so the tier this system exists for was the only tier with no documented
+composition. An agent had nine contracts and no answer to "how do these go
+together".
+
+**`AgentRun`** — `AgentActivity` + `AgentActivityStep` + `StreamingText` +
+`AgentStop`. The stop is on screen from the first frame, not after a delay:
+the moment a user most wants to stop is the moment they realise the agent
+misunderstood, which is usually within the first second.
+
+**`HumanApproval`** — `ApprovalGate` in place, inside the step log, with the
+run still visible behind it. Not in a modal: the evidence for the decision is
+the log, and a person cannot judge an action they can no longer see. `risk` is
+set from consequence, never from the model's confidence.
+
+**`AssistantAnswer`** — `StreamingText` + `Citation` + `CitationList` +
+`ConfidenceIndicator`. Inline citations at the claims they support, not gathered
+at the end, where the list documents that sources exist rather than what they
+establish.
+
+**The states are the point of the tier, and these three have the ones nothing
+else names.** `AgentRun.partial` is the stopped run: every completed step kept,
+the interrupted one marked `skipped`, and whatever was already written left on
+screen — a stopped agent has usually already changed something, and a UI that
+clears itself hides the side effects the user stopped it to prevent.
+`HumanApproval` carries a fourth required state, `expired`, whose rule is that
+silence defaults to not doing the thing. `AssistantAnswer.partial` is the answer
+built on half its sources, which is indistinguishable from a complete one unless
+`basis` says "3 of 7 sources; 4 unavailable".
+
+No React code and no tokens — a pattern is a documented composition, and a tier
+that grows its own tokens has forked the tier below it. All five failure modes
+of the existing gate were re-tested against these files: a prop that is not a
+prop, a variant value not in the union, a prop on a component the recipe does
+not compose, a state with no `why`, and a reference to a pattern that does not
+exist.
+
+### Fixed — `typecheck` raced the build that rewrites its source files
+
+`ionbase-icons`' `generate.mjs` `rmSync`s `src/icons/` and rewrites all 1,753
+files; `ionbase-ui`'s `sync-tokens` writes into `src/tokens/`. `typecheck` had
+no `dependsOn`, so Turbo scheduled it alongside those builds and `tsc` read the
+directory mid-delete — `Cannot find module './icons/zodiac-pisces.js'` for a
+file that was on disk before the run and after it.
+
+It only surfaced from a cold cache, and only sometimes, which is the worst
+property a check can have: the same race can report success just as easily.
+`typecheck` now depends on its own package's build. Verified with three forced
+runs.
+
+### Fixed — the repo linted its own A/B candidates
+
+`evals/results/**` is model output under test, graded by `evals/score/score.mjs`
+against its own rule set. Held to the repo's ESLint config it failed the root
+`lint` task and — worse — invited someone to fix it, which is tampering with the
+measurement. Now ignored at the root config, next to the generated token data.
+
 ## 0.33.0 — 2026-09-03
 
 ### Added — Badge grows the Size and Shape axes Figma already had
