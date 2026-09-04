@@ -115,10 +115,12 @@
    * in the component that was not mirrored, which is precisely why Light failed
    * and Dark did not.
    *
-   * HAND-MEASURED, because the gate structurally cannot do it: the worst stop
-   * is 5.29 in Light (pink) and 5.31 in Dark (red). Re-measure both if any stop
-   * or either ink rung moves — the number the gate prints is the `to` end and
-   * will stay comfortably high whatever happens to the other two.
+   * THE GATE MEASURES ALL THREE STOPS NOW. It used to read only a flat
+   * `background-color`, which is what let this hide; `verify-contrast` parses
+   * `background-image` gradients as of 4 Sep 2026, so the worst stop is enforced
+   * rather than trusted — 5.29 in Light (pink) and 5.31 in Dark (red) as it
+   * stands. Negative-tested by putting the initials back on `/600`: ten
+   * pairings fail that the old gate passed.
    */
   background-color: var(--ion-avatar-gradient-to);
   background-image:

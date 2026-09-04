@@ -265,6 +265,8 @@ for (const file of files) {
     const slot = table.get(k) ?? { locals: {} };
     if (decls.color) slot.color = decls.color;
     if (decls['background-color']) slot.background = decls['background-color'];
+    if (decls['background-image'])
+      slot.backgroundImage = decls['background-image'];
     for (const [d, v] of Object.entries(decls)) {
       if (d.startsWith('--ion-')) slot.locals[d] = v;
     }
@@ -344,7 +346,7 @@ for (const file of files) {
     if (bg && !bgRef) continue;
     const assumed = !bg;
     if (assumed && ON_COLOR_ROLES.has(fgToken)) continue;
-    const bgTokens = assumed ? ASSUMED_GROUNDS : [bgRef.token];
+    const bgTokens = assumed ? [...ASSUMED_GROUNDS] : [bgRef.token];
 
     /*
      * Skip states the component cannot actually render.
@@ -377,6 +379,33 @@ for (const file of files) {
       baseBgRaw && baseBgRaw.trim() !== 'transparent'
         ? (deref(baseBgRaw, ctx, 'default', null)?.token ?? null)
         : null;
+
+    /*
+     * GRADIENT STOPS. A flat `background-color` is one colour; a gradient is
+     * three, and this gate could only see the flat one. AvatarGradient paints
+     * `from -> mid -> to` and declares `to` as the flat fallback, so `to` was
+     * the only stop ever measured — and it is the most flattering of the three
+     * for dark initials, because dark text is hardest against the DARKEST stop.
+     * Six of the seven hues were failing AA against `from` (blue 3.42, purple
+     * 3.58, pink 3.27, orange 3.72, green 3.10, red 3.35) while the build stayed
+     * green, and the stylesheet's own comment argued the measured stop was the
+     * strict one. Pair against every stop, not just the one that flatters.
+     *
+     * A gradient also carries vars that are not colours — the sheen's alpha is
+     * `rgb(255 255 255 / var(--ion-avatar-gradient-sheen))`, where the var is a
+     * percentage. Keeping only what resolves to a parseable colour drops those
+     * without needing to understand the gradient's grammar.
+     */
+    const bgImage = lookup('backgroundImage', ctx, state, ctx.element);
+    if (bgImage) {
+      for (const m of bgImage.raw.matchAll(/var\((--[a-z0-9-]+)/gi)) {
+        const ref = deref(`var(${m[1]})`, ctx, state, ctx.element);
+        if (!ref) continue;
+        const value = light[ref.token];
+        if (!value || !parseColor(value)) continue;
+        if (!bgTokens.includes(ref.token)) bgTokens.push(ref.token);
+      }
+    }
 
     for (const bgToken of bgTokens) {
       pairings.push({

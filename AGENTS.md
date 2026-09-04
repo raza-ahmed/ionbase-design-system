@@ -1146,10 +1146,14 @@ which is why Dark passed and Light did not. The initials are `/800` in Light now
 the true mirror of `/200`, and the worst stop reads 5.29 in Light and 5.31 in
 Dark — a symmetry that is itself the evidence.
 
-**The gate still cannot see it**, so those two numbers are hand-measured and
-recorded in `avatar-gradient.css`. The pairing the build prints is the `to` end
-and will stay comfortably high whatever happens to the other two stops. A gate
-that parsed gradient stops would have caught this years earlier than a person did.
+**The gate can see it now.** `verify-contrast` read only a flat
+`background-color`, so on a gradient it measured one stop of three — and the one
+it measured was the flattering one. It parses `background-image` gradients as of
+4 Sep 2026, keeping every `var()` that resolves to a colour and discarding the
+rest, which is how the sheen's `rgb(255 255 255 / var(--…-sheen))` alpha drops out
+without the gate needing to understand gradient grammar. 892 pairings became 936.
+Negative-tested by putting the initials back on `/600`: ten pairings fail that the
+old gate passed.
 
 ### `on-color` is for colour. `inverse` is for the inverse.
 
