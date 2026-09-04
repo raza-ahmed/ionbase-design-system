@@ -947,10 +947,23 @@ something the pipeline relies on.
 Run `figma/checksum.js` in Figma, then:
 
 ```bash
-node scripts/verify-export.mjs --expect <count> <checksum>
+node scripts/verify-export.mjs --expect <count> <names> <values>
 ```
 
 Do this after any Figma variable edit, and before trusting a build.
+
+**Two hashes, and the second one is the one that matters.** `names` is
+`name|codeSyntax` and catches a rename; `values` is
+`name|type|codeSyntax|mode=value` and catches an edited colour, which the name
+hash cannot see by construction. The two-argument form is refused rather than
+accepted-and-narrowed — a command that prints MATCH while blind to values is
+worse than no command.
+
+The snippet also returns a `perCollection` value hash and the collection list.
+Both exist because of real failures: value drift wants a blast radius before
+anything is rebuilt ("Primitives alone, the other three identical"), and a
+collection that exists in Figma and not in the export is invisible to every gate
+here, since all of them start from what was exported.
 
 ---
 
@@ -1268,20 +1281,23 @@ and re-read any component that names a primitive rung directly rather than a
 semantic token. Components that used semantic aliases were unaffected here,
 which is the argument for preferring them wherever the surface actually themes.
 
-### Figma has a `palette` collection the token export does not cover
+### Figma had a `palette` collection the export did not cover — closed 4 Sep 2026
 
-Found while re-reading `Avatar Gradient` on 2026-08-28: its initials are bound
+Found while re-reading `Avatar Gradient` on 2026-08-28: its initials were bound
 to variables named `palette/1` through `palette/7`, and nothing in
-`src/styles/tokens/` defines a `--palette-*`. Each one currently resolves to a
-`color/<hue>/600` primitive, so the component names those primitives directly
-and loses nothing today.
+`src/styles/tokens/` defined a `--palette-*`. Each resolved to a
+`color/<hue>/600` primitive, so the component named those primitives directly.
 
-It is still a gap, and it is the shape AGENTS.md already warns about under
-"Verifying repo ↔ Figma sync": a collection that exists in Figma and not in the
-export is invisible to every gate here, because all of them start from what was
-exported. Diff the collection list, not just the variable checksum, after any
-Figma session. If `palette` is meant to ship, export it and move
-`avatar-gradient.css` onto it.
+That is why the component could not theme — see "The palette tier". `palette.*`
+is a Semantics tier now and Interface aliases it (`surface/palette-1` is
+`{palette.1.300}` in Light and `{palette.1.700}` in Dark), so
+`avatar-gradient.css` binds roles rather than rungs.
+
+**Keep the general lesson, which is not about `palette`.** A collection that
+exists in Figma and not in the export is invisible to every gate here, because
+all of them start from what was exported — the variable checksum included, since
+it only hashes what it was given. `figma/checksum.js` returns the collection
+list for exactly this reason. Diff it, not just the hashes.
 
 It extracts real pairings from every stylesheet by resolving the cascade — BEM
 blocks, compound modifiers, state inheritance, component-local `--ion-*`
@@ -1355,20 +1371,33 @@ Measured after the change — all four Button sizes, both modes:
 **`surface/information` is the same shape of problem and takes the same fix** —
 move the purple primitives, not the role bindings.
 
-### Value drift needs its own checksum, and `verify-export.mjs` does not have one
+### Value drift has its own checksum now — 5 Sep 2026
 
-This section used to say "check both checksums". There is only one:
-`verify-export.mjs` hashes `name|codeSyntax`, so it is blind to an edited
-colour by construction — the green change above left it reading **944350191
-against 384 variables, unchanged and passing**, exactly as it would have if
-nothing had been touched.
+This section used to say "check both checksums" when there was only one, then
+said the second one did not exist. It exists. `verify-export.mjs` hashes
+`name|type|codeSyntax|mode=value` alongside the name hash, and
+`figma/checksum.js` returns both.
 
-Until a real gate exists (`verify-contrast.mjs`, see
-[docs/agent-readiness-plan.md](docs/agent-readiness-plan.md) phase 2c), diff
-values by hand after a Figma session: hash `name|mode|value` per collection on
-both sides and compare. The green edit showed as Primitives `1214013219` →
-`1811607948` with Breakpoint, Interface and Semantics all identical, which is
-what told us the blast radius was one collection before anything was rebuilt.
+The hole it closes was never theoretical. The name hash is blind to an edited
+colour by construction: the green ramp changed in Figma and this script went on
+reading **944350191 against 384 variables, unchanged and passing**, exactly as
+if nothing had been touched. `color/orange/50` drifted the same way later and
+nothing noticed then either. Every gate in the package starts from the committed
+export, so a value that only differs in Figma is invisible to all of them at
+once — the repo builds correct CSS from stale numbers, and every measurement
+downstream is describing a file nobody is looking at.
+
+The per-collection hashes are part of the output because the first question
+after a mismatch is always how much moved. The green edit showed as Primitives
+`1214013219` → `1811607948` with Breakpoint, Interface and Semantics identical,
+which scoped the blast radius to one collection before anything was rebuilt.
+
+**The two implementations are copies of each other and must stay that way.** The
+Figma side formats values with the same `hex` and `value` functions
+`export-variables.js` uses, because the rows have to be byte-identical for the
+hashes to agree. Change one, change the other in the same commit — otherwise
+every collection reports a mismatch that is not there, which is the failure mode
+that teaches people to ignore the gate.
 
 The old note claiming `surface/warning` has no passing dark pairing was stale
 and is removed: `{warning.500}` → `#ea5600` against `{base.black}` measures
