@@ -1,7 +1,7 @@
 {
   "name": "@ionbase-ui/tokens",
   "version": "0.1.0",
-  "description": "IonBase token pipeline — Figma export, gates and generators. Not published; its output is copied into ionbase-ui at build time.",
+  "description": "IonBase token pipeline \u2014 Figma export, gates and generators. Not published; its output is copied into ionbase-ui at build time.",
   "license": "MIT",
   "private": true,
   "type": "module",
@@ -45,8 +45,9 @@
     "tokens:elevation": "node scripts/build-elevation.mjs",
     "tokens:motion": "node scripts/build-motion.mjs",
     "tokens:tier": "node scripts/verify-tier.mjs",
+    "tokens:modes": "node scripts/verify-modes.mjs",
     "tokens:bindings": "node scripts/verify-bindings.mjs",
-    "tokens:gate": "pnpm run tokens:audit && pnpm run tokens:tier && pnpm run tokens:verify && pnpm run tokens:bindings && pnpm run tokens:geometry",
+    "tokens:gate": "pnpm run tokens:audit && pnpm run tokens:tier && pnpm run tokens:modes && pnpm run tokens:verify && pnpm run tokens:bindings && pnpm run tokens:geometry",
     "tokens:geometry": "node scripts/verify-geometry.mjs"
   },
   "devDependencies": {

@@ -102,8 +102,10 @@ or an MCP bridge if your editor or agent provides one.
    the variable export does not include them.
 2. Run [`figma/checksum.js`](./figma/checksum.js), then confirm the repo agrees:
    ```bash
-   node scripts/verify-export.mjs --expect <count> <checksum>
+   node scripts/verify-export.mjs --expect <count> <names> <values>
    ```
+   Both hashes, always. `names` catches a rename; `values` catches an edited
+   colour, which the name hash cannot see. The two-argument form is refused.
 3. `pnpm build`.
 
 If step 2 mismatches, the export is incomplete — most likely a collection was
@@ -130,7 +132,7 @@ from. So the map is always proven before it is applied.
 4. Mirror the change locally, then verify and build:
    ```bash
    node scripts/apply-renames-local.mjs
-   node scripts/verify-export.mjs --expect <count> <checksum>   # from figma/checksum.js
+   node scripts/verify-export.mjs --expect <count> <names> <values>  # figma/checksum.js
    pnpm build
    ```
 5. Empty out `renames.json` once it's applied.

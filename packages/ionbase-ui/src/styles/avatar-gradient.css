@@ -38,33 +38,56 @@
   --ion-avatar-gradient-font-weight: var(--font-weight-medium);
 
   /* Slate, which is also the block default — Figma's default variant. */
-  --ion-avatar-gradient-from: var(--color-gray-300);
-  --ion-avatar-gradient-mid: var(--color-gray-200);
-  --ion-avatar-gradient-to: var(--color-gray-50);
+  --ion-avatar-gradient-from: var(--surface-palette-1);
+  --ion-avatar-gradient-mid: var(--surface-palette-1-tint);
+  --ion-avatar-gradient-to: var(--surface-palette-1-subtle);
 
   /*
-   * The initials, from the primitive ramp rather than a semantic text token.
+   * The initials. THIS USED TO READ FROM THE PRIMITIVE RAMP, AND THE COMMENT
+   * HERE DEFENDED IT — correctly, on its own terms: the disc was primitives, so
+   * a semantic foreground would have flipped in the dark theme and left the
+   * background alone. An earlier draft did exactly that and the gate caught it
+   * at 1.05:1. A foreground has to theme exactly as much as the ground under it.
    *
-   * NOT AN OVERSIGHT, AND DO NOT "FIX" IT TO `--text-*`. The disc under this
-   * text is built from primitives, so it does not theme; a semantic foreground
-   * would flip in the dark theme and leave the background alone. An earlier
-   * draft did exactly that and the contrast gate caught it at 1.05:1. A
-   * foreground has to theme exactly as much as the background it sits on.
+   * That argument was right and the conclusion was wrong. It resolved the
+   * mismatch by theming NEITHER, which made the whole component theme-blind:
+   * seven near-white discs (luminance 0.89 to 0.98) rendered unchanged in the
+   * dark theme, because Primitives and Semantics each hold one mode and only
+   * Interface carries a Light/Dark axis. Nothing here was bound to Interface,
+   * so nothing here listened to the theme.
    *
-   * In Figma these are bound to a `palette/1`..`palette/7` collection the token
-   * export does not yet cover. Each one resolves to the primitive named here,
-   * so nothing is lost today — see AGENTS.md.
+   * Both ends now theme together, which is what the original argument actually
+   * asked for. See AGENTS.md for the ladder and the measurements.
    */
-  --ion-avatar-gradient-text: var(--color-gray-600);
+  --ion-avatar-gradient-text: var(--text-palette-1);
 
   /*
    * The sheen: a white radial highlight low and centre, over the linear
    * gradient. Identical in proportion at all four sizes — Figma expresses it as
    * a userSpaceOnUse radial scaled per size, and the ratios come out the same
-   * to three decimals, so it is written once as percentages.
+   * to three decimals, so the geometry is written once as percentages.
+   *
+   * THE ALPHA IS A TOKEN NOW, AND IT HAS TO BE. It was a raw `18%` in both
+   * themes, and the initials sit exactly where the gloss peaks: over the dark
+   * disc it lightened the ground under light text and dropped five of seven
+   * hues under AA — green 3.76, red 3.92, pink 4.08, orange 4.15, blue 4.23.
+   * `surface/sheen` is 20% in Light and 5% in Dark, which brings the worst hue
+   * back to 4.94. 10% would land exactly on 4.50, which is not a margin.
+   *
+   * THE GATE ENFORCES THAT NUMBER NOW. It used to composite a translucent
+   * ground over the component's flat `background-color` — the `to` stop — so it
+   * measured the gloss over the palest part of the disc and never over `from`,
+   * where the failure is; 4.94 was a hand measurement in this comment and
+   * nothing checked it. `verify-contrast` pairs each layer against every opaque
+   * ground beneath it as of 5 Sep 2026, so the sheen is measured over all three
+   * disc stops and reports 4.94 on red by itself. Putting 18% back fails five
+   * hues at the values above.
+   *
+   * The cross product is a bound, not a rendering: the gloss peaks low and
+   * centre, where the linear gradient is already near `to`, so full-strength
+   * sheen over `from` is not a pixel that exists. It is the strictest the
+   * composite could be, which is the right side to be wrong on for a floor.
    */
-  --ion-avatar-gradient-sheen: 18%;
-  --ion-avatar-gradient-sheen-mid: 3.6%;
 
   /*
    * Bevel. Two inner shadows and no drop shadow — the redesign dropped the
@@ -94,23 +117,37 @@
   color: var(--ion-avatar-gradient-text);
 
   /*
-   * The flat colour under the gradient is the `to` end, and that choice is
-   * load-bearing twice over. It is the fallback if `background-image` never
-   * paints, and it is the palest part of the disc — so it is also the worst
-   * case for the dark initials, which is what makes `verify-contrast` measure
-   * the pairing that actually needs measuring rather than a flattering one.
+   * The flat colour under the gradient is the `to` end. It is the fallback if
+   * `background-image` never paints, and that is the ONLY thing it is.
    *
-   * It was the `from` end before the redesign, for the same reason read the
-   * other way round: the text was white then, so its worst case was the
-   * lightest stop it sat on. Flip this if the disc is ever inverted again.
+   * THIS COMMENT USED TO CLAIM IT WAS ALSO THE WORST CASE FOR THE INITIALS, AND
+   * THAT WAS BACKWARDS. Dark text on a pale disc is hardest to read against the
+   * DARKEST stop, not the palest — `from`, not `to`. Because `verify-contrast`
+   * can only see a flat `background-color`, it was measuring the most flattering
+   * pairing of the three and calling it the strict one. Six of the seven hues
+   * were failing AA against the `from` stop the whole time — blue 3.42, purple
+   * 3.58, pink 3.27, orange 3.72, green 3.10, red 3.35 — and the build was green.
+   *
+   * The initials sit on `/800` in Light and `/200` in Dark, which mirror each
+   * other about the ramp exactly as the three disc stops do (300/200/50 against
+   * 700/800/900). They used to be `/600`, whose mirror is `/300` — the one rung
+   * in the component that was not mirrored, which is precisely why Light failed
+   * and Dark did not.
+   *
+   * THE GATE MEASURES ALL THREE STOPS NOW. It used to read only a flat
+   * `background-color`, which is what let this hide; `verify-contrast` parses
+   * `background-image` gradients as of 4 Sep 2026, so the worst stop is enforced
+   * rather than trusted — 5.29 in Light (pink) and 5.31 in Dark (red) as it
+   * stands. Negative-tested by putting the initials back on `/600`: ten
+   * pairings fail that the old gate passed.
    */
   background-color: var(--ion-avatar-gradient-to);
   background-image:
     radial-gradient(
       55.556% 64.103% at 50% 70.513%,
-      rgb(255 255 255 / var(--ion-avatar-gradient-sheen)) 0%,
-      rgb(255 255 255 / var(--ion-avatar-gradient-sheen-mid)) 60%,
-      rgb(255 255 255 / 0%) 100%
+      var(--surface-sheen) 0%,
+      var(--surface-sheen-subtle) 60%,
+      transparent 100%
     ),
     linear-gradient(
       180deg,
@@ -169,50 +206,50 @@
 }
 
 .ion-avatar-gradient--slate {
-  --ion-avatar-gradient-from: var(--color-gray-300);
-  --ion-avatar-gradient-mid: var(--color-gray-200);
-  --ion-avatar-gradient-to: var(--color-gray-50);
-  --ion-avatar-gradient-text: var(--color-gray-600);
+  --ion-avatar-gradient-from: var(--surface-palette-1);
+  --ion-avatar-gradient-mid: var(--surface-palette-1-tint);
+  --ion-avatar-gradient-to: var(--surface-palette-1-subtle);
+  --ion-avatar-gradient-text: var(--text-palette-1);
 }
 
 .ion-avatar-gradient--blue {
-  --ion-avatar-gradient-from: var(--color-blue-300);
-  --ion-avatar-gradient-mid: var(--color-blue-200);
-  --ion-avatar-gradient-to: var(--color-blue-50);
-  --ion-avatar-gradient-text: var(--color-blue-600);
+  --ion-avatar-gradient-from: var(--surface-palette-2);
+  --ion-avatar-gradient-mid: var(--surface-palette-2-tint);
+  --ion-avatar-gradient-to: var(--surface-palette-2-subtle);
+  --ion-avatar-gradient-text: var(--text-palette-2);
 }
 
 .ion-avatar-gradient--violet {
-  --ion-avatar-gradient-from: var(--color-purple-300);
-  --ion-avatar-gradient-mid: var(--color-purple-200);
-  --ion-avatar-gradient-to: var(--color-purple-50);
-  --ion-avatar-gradient-text: var(--color-purple-600);
+  --ion-avatar-gradient-from: var(--surface-palette-3);
+  --ion-avatar-gradient-mid: var(--surface-palette-3-tint);
+  --ion-avatar-gradient-to: var(--surface-palette-3-subtle);
+  --ion-avatar-gradient-text: var(--text-palette-3);
 }
 
 .ion-avatar-gradient--pink {
-  --ion-avatar-gradient-from: var(--color-pink-300);
-  --ion-avatar-gradient-mid: var(--color-pink-200);
-  --ion-avatar-gradient-to: var(--color-pink-50);
-  --ion-avatar-gradient-text: var(--color-pink-600);
+  --ion-avatar-gradient-from: var(--surface-palette-4);
+  --ion-avatar-gradient-mid: var(--surface-palette-4-tint);
+  --ion-avatar-gradient-to: var(--surface-palette-4-subtle);
+  --ion-avatar-gradient-text: var(--text-palette-4);
 }
 
 .ion-avatar-gradient--orange {
-  --ion-avatar-gradient-from: var(--color-orange-300);
-  --ion-avatar-gradient-mid: var(--color-orange-200);
-  --ion-avatar-gradient-to: var(--color-orange-50);
-  --ion-avatar-gradient-text: var(--color-orange-600);
+  --ion-avatar-gradient-from: var(--surface-palette-5);
+  --ion-avatar-gradient-mid: var(--surface-palette-5-tint);
+  --ion-avatar-gradient-to: var(--surface-palette-5-subtle);
+  --ion-avatar-gradient-text: var(--text-palette-5);
 }
 
 .ion-avatar-gradient--green {
-  --ion-avatar-gradient-from: var(--color-green-300);
-  --ion-avatar-gradient-mid: var(--color-green-200);
-  --ion-avatar-gradient-to: var(--color-green-50);
-  --ion-avatar-gradient-text: var(--color-green-600);
+  --ion-avatar-gradient-from: var(--surface-palette-6);
+  --ion-avatar-gradient-mid: var(--surface-palette-6-tint);
+  --ion-avatar-gradient-to: var(--surface-palette-6-subtle);
+  --ion-avatar-gradient-text: var(--text-palette-6);
 }
 
 .ion-avatar-gradient--red {
-  --ion-avatar-gradient-from: var(--color-red-300);
-  --ion-avatar-gradient-mid: var(--color-red-200);
-  --ion-avatar-gradient-to: var(--color-red-50);
-  --ion-avatar-gradient-text: var(--color-red-600);
+  --ion-avatar-gradient-from: var(--surface-palette-7);
+  --ion-avatar-gradient-mid: var(--surface-palette-7-tint);
+  --ion-avatar-gradient-to: var(--surface-palette-7-subtle);
+  --ion-avatar-gradient-text: var(--text-palette-7);
 }

@@ -27,7 +27,9 @@ ${cmd('figma/resync-code-syntax.js', 'rewrite codeSyntax from token paths')}
 TASK — re-export after changing variables in Figma
   1. figma/export-variables.js, once per collection (set COLLECTION at the top),
      saving each result over src/figma/<collection>.json verbatim
-  2. figma/checksum.js  ->  pnpm tokens:sync -- --expect <count> <checksum>
+  2. figma/checksum.js  ->  pnpm tokens:sync -- --expect <count> <names> <values>
+     Both hashes. The name hash cannot see an edited colour; the value hash is
+     the one that catches drift, and the two-arg form is refused.
   3. pnpm build
   A mismatch at step 2 means the export is incomplete. Do not build on it.
 
@@ -36,7 +38,7 @@ TASK — rename tokens
   2. pnpm tokens:renames        must print "Clean. Safe to apply to Figma."
   3. figma/apply-renames.js     never before step 2 passes
   4. node scripts/apply-renames-local.mjs
-     pnpm tokens:sync -- --expect <count> <checksum>
+     pnpm tokens:sync -- --expect <count> <names> <values>
   5. pnpm build, then empty renames.json
 
   A bad rename map cannot be undone — the old names stop existing. Step 2 is

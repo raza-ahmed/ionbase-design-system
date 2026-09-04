@@ -152,5 +152,5 @@ Re-verify sync after any Figma edit:
 
 ```
 node scripts/verify-export.mjs --snippet     # prints the Figma-side code
-node scripts/verify-export.mjs --expect <count> <checksum>
+node scripts/verify-export.mjs --expect <count> <names> <values>
 ```

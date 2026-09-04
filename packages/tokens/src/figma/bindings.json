@@ -3,7 +3,7 @@
     "What the Figma components actually BIND, as opposed to what variables exist.",
     "Produced by figma/export-bindings.js. Checked by scripts/verify-bindings.mjs.",
     "",
-    "File: gaLbGd0QNb1fUl6BjSpfBA   Exported: 2026-09-03   Variables: 384",
+    "File: gaLbGd0QNb1fUl6BjSpfBA   Exported: 2026-09-04   Variables: 391",
     "",
     "The exporter MUST use all three traversal rules or this file is a lie:",
     "  1. setCurrentPageAsync before reading - instance overrides are unreliable otherwise",
@@ -15,7 +15,7 @@
     "would triple the file for one repeated fact."
   ],
   "file": "gaLbGd0QNb1fUl6BjSpfBA",
-  "exported": "2026-09-03",
+  "exported": "2026-09-04",
   "components": {
     "Avatar/Avatar": [
       {
@@ -240,6 +240,10 @@
     "Avatar/.Status Indicator": [
       {
         "collection": "Interface",
+        "token": "icon/inverse"
+      },
+      {
+        "collection": "Interface",
         "token": "icon/on-color"
       },
       {
@@ -309,88 +313,124 @@
         "token": "type/caption/line-height"
       },
       {
-        "collection": "Primitives",
-        "token": "color/blue/200"
+        "collection": "Interface",
+        "token": "surface/palette-1"
       },
       {
-        "collection": "Primitives",
-        "token": "color/blue/300"
+        "collection": "Interface",
+        "token": "surface/palette-1-subtle"
       },
       {
-        "collection": "Primitives",
-        "token": "color/blue/50"
+        "collection": "Interface",
+        "token": "surface/palette-1-tint"
       },
       {
-        "collection": "Primitives",
-        "token": "color/gray/200"
+        "collection": "Interface",
+        "token": "surface/palette-2"
       },
       {
-        "collection": "Primitives",
-        "token": "color/gray/300"
+        "collection": "Interface",
+        "token": "surface/palette-2-subtle"
       },
       {
-        "collection": "Primitives",
-        "token": "color/gray/50"
+        "collection": "Interface",
+        "token": "surface/palette-2-tint"
       },
       {
-        "collection": "Primitives",
-        "token": "color/green/200"
+        "collection": "Interface",
+        "token": "surface/palette-3"
       },
       {
-        "collection": "Primitives",
-        "token": "color/green/300"
+        "collection": "Interface",
+        "token": "surface/palette-3-subtle"
       },
       {
-        "collection": "Primitives",
-        "token": "color/green/50"
+        "collection": "Interface",
+        "token": "surface/palette-3-tint"
       },
       {
-        "collection": "Primitives",
-        "token": "color/orange/200"
+        "collection": "Interface",
+        "token": "surface/palette-4"
       },
       {
-        "collection": "Primitives",
-        "token": "color/orange/300"
+        "collection": "Interface",
+        "token": "surface/palette-4-subtle"
       },
       {
-        "collection": "Primitives",
-        "token": "color/orange/50"
+        "collection": "Interface",
+        "token": "surface/palette-4-tint"
       },
       {
-        "collection": "Primitives",
-        "token": "color/pink/200"
+        "collection": "Interface",
+        "token": "surface/palette-5"
       },
       {
-        "collection": "Primitives",
-        "token": "color/pink/300"
+        "collection": "Interface",
+        "token": "surface/palette-5-subtle"
       },
       {
-        "collection": "Primitives",
-        "token": "color/pink/50"
+        "collection": "Interface",
+        "token": "surface/palette-5-tint"
       },
       {
-        "collection": "Primitives",
-        "token": "color/purple/200"
+        "collection": "Interface",
+        "token": "surface/palette-6"
       },
       {
-        "collection": "Primitives",
-        "token": "color/purple/300"
+        "collection": "Interface",
+        "token": "surface/palette-6-subtle"
       },
       {
-        "collection": "Primitives",
-        "token": "color/purple/50"
+        "collection": "Interface",
+        "token": "surface/palette-6-tint"
       },
       {
-        "collection": "Primitives",
-        "token": "color/red/200"
+        "collection": "Interface",
+        "token": "surface/palette-7"
       },
       {
-        "collection": "Primitives",
-        "token": "color/red/300"
+        "collection": "Interface",
+        "token": "surface/palette-7-subtle"
       },
       {
-        "collection": "Primitives",
-        "token": "color/red/50"
+        "collection": "Interface",
+        "token": "surface/palette-7-tint"
+      },
+      {
+        "collection": "Interface",
+        "token": "surface/sheen"
+      },
+      {
+        "collection": "Interface",
+        "token": "surface/sheen-subtle"
+      },
+      {
+        "collection": "Interface",
+        "token": "text/palette-1"
+      },
+      {
+        "collection": "Interface",
+        "token": "text/palette-2"
+      },
+      {
+        "collection": "Interface",
+        "token": "text/palette-3"
+      },
+      {
+        "collection": "Interface",
+        "token": "text/palette-4"
+      },
+      {
+        "collection": "Interface",
+        "token": "text/palette-5"
+      },
+      {
+        "collection": "Interface",
+        "token": "text/palette-6"
+      },
+      {
+        "collection": "Interface",
+        "token": "text/palette-7"
       },
       {
         "collection": "Semantics",
@@ -403,34 +443,6 @@
       {
         "collection": "Semantics",
         "token": "font/weight/regular"
-      },
-      {
-        "collection": "Semantics",
-        "token": "palette/1"
-      },
-      {
-        "collection": "Semantics",
-        "token": "palette/2"
-      },
-      {
-        "collection": "Semantics",
-        "token": "palette/3"
-      },
-      {
-        "collection": "Semantics",
-        "token": "palette/4"
-      },
-      {
-        "collection": "Semantics",
-        "token": "palette/5"
-      },
-      {
-        "collection": "Semantics",
-        "token": "palette/6"
-      },
-      {
-        "collection": "Semantics",
-        "token": "palette/7"
       }
     ],
     "Buttons/Button": [
@@ -512,6 +524,10 @@
       },
       {
         "collection": "Interface",
+        "token": "icon/inverse"
+      },
+      {
+        "collection": "Interface",
         "token": "icon/on-color"
       },
       {
@@ -589,6 +605,10 @@
       {
         "collection": "Interface",
         "token": "text/disabled"
+      },
+      {
+        "collection": "Interface",
+        "token": "text/inverse"
       },
       {
         "collection": "Interface",
@@ -715,6 +735,10 @@
       {
         "collection": "Interface",
         "token": "icon/disabled"
+      },
+      {
+        "collection": "Interface",
+        "token": "icon/inverse"
       },
       {
         "collection": "Interface",
@@ -3490,6 +3514,10 @@
       },
       {
         "collection": "Interface",
+        "token": "icon/inverse"
+      },
+      {
+        "collection": "Interface",
         "token": "icon/on-color"
       },
       {
@@ -3567,6 +3595,10 @@
       {
         "collection": "Interface",
         "token": "text/information"
+      },
+      {
+        "collection": "Interface",
+        "token": "text/inverse"
       },
       {
         "collection": "Interface",

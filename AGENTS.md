@@ -705,16 +705,23 @@ Reasoning: [docs/naming-decisions.md](docs/naming-decisions.md).
 ```
 Primitives   143  Value                value-keyed scales only
    ↓
-Semantics    107  IonBase              brand identity — ramps, radius, border-width, icon-size
+Semantics    156  IonBase              brand identity — ramps, radius, border-width, icon-size
    ↓
-Interface    104  Light / Dark         text · icon · surface · border · ring
+Interface    134  Light / Dark         text · icon · surface · border · ring · palette
    ↓
 components + CSS
 
 Breakpoint    30  Desktop/Tablet/Mobile   (parallel — type and grid only)
 ```
 
-Sync state: names `944350191`, 384 variables (re-exported 7 Aug 2026).
+Sync state: names `3716173117`, 463 variables (verified against Figma 4 Sep 2026
+— MATCH). Re-run `figma/checksum.js` + `scripts/verify-export.mjs` rather than
+trusting the numbers here; this line has been stale twice.
+
+**The name checksum does not see values.** It hashes names and `codeSyntax`, so a
+changed colour passes it silently — `color/orange/50` sat at `#fff4e5` in the repo
+against `#fff6ea` in Figma for an unknown stretch and every gate was green. Hash
+the full export payload on both sides when values matter.
 
 **Components bind Interface and Breakpoint for colour and type.** Interface may
 only alias Semantics; Semantics may only alias Primitives. `spacing/*` is the
@@ -738,10 +745,21 @@ on `spacing/*` or a ladder) and `figma/audit-geometry.js` (raw numbers in Figma,
 which no export can see — that is how a literal 10px padding and a whole
 component's unbound stroke weights both shipped).
 
-**384 variables, and that number does not grow with the component count.** A new
+**463 variables, and that number does not grow with the component count.** A new
 brand adds a _mode_, not tokens. So does a new theme. It grew by two on
 2026-08-06 — `spacing/14` and an `icon-size` rung — and that is the shape of
 growth to expect: a new _value_ the ladders did not carry, not a new component.
+
+**It grew by seventy on 2026-09-04, for one component, and that is worth being
+uncomfortable about.** `AvatarGradient` was the only component in the system that
+could not theme, because it bound Primitives and Semantics and neither carries a
+Light/Dark axis — see the palette section below. Making it theme cost 49 Semantics
+rungs and 28 Interface roles, less the 7 retired `palette/1`–`palette/7` leaves.
+That is a hue ladder, indexed by value, and a component picks an index; it is not
+a recipe. But it is still seventy names serving one component, and the honest
+reading is that the rule bent here rather than held. If a second component ever
+needs a categorical palette it must reuse this one — a `palette/*` per component
+is the `control/<size>/*` failure with a different prefix.
 
 Button's two new types on 2026-08-07 are the rule working: **Primary Soft and
 Success added seventy variants and zero tokens**, because v2 gives every accent
@@ -840,6 +858,37 @@ Before calling any component done — new, changed, or deleted:
 pnpm --filter @ionbase-ui/tokens tokens:gate
 ```
 
+Six checks: `audit` (names), `tier` (the alias chain), `modes` (below),
+`verify` (codeSyntax), `bindings` (no ghosts), `geometry`.
+
+### `tokens:modes` — a role that does not theme
+
+Interface is the only collection with a Light/Dark axis; Semantics and
+Primitives hold one mode each. So an Interface role whose two modes resolve to
+the same value does not theme, and every component binding it draws a
+light-mode colour in the dark theme.
+
+`icon/on-color` was `base/white` in both modes for as long as the role existed,
+while `text/on-color` was white in Light and black in Dark. `Button` and `Alert`
+bind both: in the dark theme a solid button had a black label beside a white
+icon. `Icon Button` binds only the icon role, so it drew a white glyph while the
+Button next to it drew a black label — two controls that are the same control.
+
+**Nothing caught it, and the contrast gate structurally could not.** That gate
+measures text pairings; an icon here is an empty `aria-hidden` element, so
+`icon/on-color` produced zero pairings out of 892. A role can be wrong in every
+component that binds it and never appear in one measurement. White also clears
+the 3:1 that non-text needs on all five Dark accent surfaces (3.6–4.59), so even
+a gate that did measure icons would have passed it. The defect was incoherence,
+and incoherence is not a ratio — which is why this check compares modes rather
+than measuring anything.
+
+Two roles are identical on purpose and declared in `SAME_ON_PURPOSE` with the
+argument: `text/disabled` and `icon/disabled`, one mid grey that has to read as
+unavailable against a light ground and a dark one. Adding to that list requires
+a reason, and an entry that stops applying fails the build — otherwise the list
+becomes a place bugs go to be permitted.
+
 ### Generated vs committed
 
 Committed and reviewed: `src/figma/*.json` (the export), `renames.json`,
@@ -898,10 +947,23 @@ something the pipeline relies on.
 Run `figma/checksum.js` in Figma, then:
 
 ```bash
-node scripts/verify-export.mjs --expect <count> <checksum>
+node scripts/verify-export.mjs --expect <count> <names> <values>
 ```
 
 Do this after any Figma variable edit, and before trusting a build.
+
+**Two hashes, and the second one is the one that matters.** `names` is
+`name|codeSyntax` and catches a rename; `values` is
+`name|type|codeSyntax|mode=value` and catches an edited colour, which the name
+hash cannot see by construction. The two-argument form is refused rather than
+accepted-and-narrowed — a command that prints MATCH while blind to values is
+worse than no command.
+
+The snippet also returns a `perCollection` value hash and the collection list.
+Both exist because of real failures: value drift wants a blast radius before
+anything is rebuilt ("Primitives alone, the other three identical"), and a
+collection that exists in Figma and not in the export is invisible to every gate
+here, since all of them start from what was exported.
 
 ---
 
@@ -971,23 +1033,200 @@ pnpm --filter ionbase-ui contrast        # runs in the build
 pnpm --filter ionbase-ui contrast:list   # every pairing, worst first
 ```
 
-### Dark is DEFERRED — read this before acting on a dark-mode finding
+### Dark was deferred, and is not any more — 4 Sep 2026
 
-`contrast-exceptions.json` carries `deferredModes: ["Dark"]`. The dark theme is
-not settled in Figma yet, so the gate **measures** Dark and prints the results
-but does not fail on them, does not write them into any component's
-`a11y.knownIssues`, and does not lint them.
+`contrast-exceptions.json` carries `deferredModes: []`. **Dark is enforced.** The
+gate measures every pairing in both modes and fails the build on either. Don't
+copy the count into prose — it moves every time the resolver learns something
+(892 -> 936 -> 1068 in eight days). `pnpm --filter ionbase-ui contrast` prints it.
 
-This was not a tidy-up. All three outstanding defects were Dark, they had
-shipped into `Button` and `Alert`'s contracts on npm, and
-`ionbase-ui/eslint-plugin` was telling consumers not to use
-`variant="primary-soft"` — warning a light-only app off a component that is
-fine. Measuring a theme while it is still being designed produces findings that
-are true of today's values and worthless as decisions.
+It was deferred from 18 Aug to 4 Sep 2026, and the reason was sound: the theme
+was still being designed, and measuring it mid-design produced findings that were
+true of that day's values and were being shipped anyway — into `Button` and
+`Alert`'s contracts on npm, and into `ionbase-ui/eslint-plugin`, which was
+telling consumers not to use `variant="primary-soft"` and so warning a light-only
+app off a component that was fine for it.
 
-**Remove `"Dark"` from `deferredModes` once the dark theme is final.** Every
-deferred result becomes a real finding again immediately; on today's values that
-is 3 defects, listed under `deferred` in the same file so nothing is lost.
+**What the five Dark defects turned out to be.** Not five problems. Two:
+
+- **Three accent text roles were on the wrong rung.** Every accent in Dark is
+  built the same way — `subtle` = 900, `subtle/hover` = `tint` = 800 — but
+  `text/error` and `text/information` had moved to the `/300` step while
+  `text/primary`, `text/success` and `text/warning` were still on `/400`. The two
+  that had moved cleared AA comfortably (5.73, 6.35); of the three left behind,
+  primary read 4.25 and success 3.79. All three now sit on `/300`.
+- **The purple ramp did not hold its slot.** Of the eight ramps, purple was the
+  only one whose luminance fell outside its siblings' range — at `/500`
+  (0.122 against 0.179–0.242) and again at `/400` (0.222 against 0.310–0.354). It
+  was consequently the only ramp that failed black text on a Dark solid surface,
+  and the only one that failed as Dark foreground on `surface/muted`. Lifted to
+  `#786cdd` and `#9a8ff4`, hue and saturation held.
+
+**`text/success` was a defect the gate could not see.** No component composes
+`text/success` on `surface/success-subtle/hover`, so the pairing was never among
+the measured set; it would have failed the day someone built a soft success
+button. It was found by comparing every accent against its siblings rather than
+by measuring what ships — worth remembering, because the gate is deliberately
+built to measure only real pairings, and that is exactly the blind spot the
+choice buys.
+
+**Two knock-ons the change forced, neither of them optional.** Lifting
+`purple/500` would have landed `chart/3` within 1.09 of `chart/1` in luminance —
+two adjacent hues at the same lightness, which is where a categorical palette
+stops being categorical. `chart/3` is re-pointed to `purple/600` (1.63, better
+separated than the 1.33 it had before). And `text/link` moving to `primary/300`
+collided with its own hover, so `text/link/hover` moved to `primary/200`.
+
+To defer a mode again, put its name back in `deferredModes`: the gate keeps
+measuring and printing it, and stops failing, contracting and linting on it.
+
+### The dark button is the light button — 4 Sep 2026
+
+Dark used to lighten a solid accent control: `surface/<accent>` at `/500` with
+the ladder running `/400` and `/300` on hover and press, against Light's
+`/600 -> /700 -> /800`. That is the whole reason `text/on-color` was black in
+Dark — white fails AA on four of the five lightened surfaces (success 3.69,
+warning 3.60, error 4.09, information 4.21). The measurement was right and the
+conclusion was wrong: the question to ask was not "which foreground survives
+this surface" but "why is the surface different at all".
+
+A solid accent control is the same control in both themes. Dark now takes the
+Light ladder exactly, so white clears every state from 5.24 to 13.23, and
+`surface/primary` and friends no longer appear in `theme-dark.css` at all —
+identical values need no override.
+
+**What themes is the rim, not the fill.** `border/<accent>-strong` is `/700` in
+Light and `/500` in Dark: a rim _lighter_ than its own fill, which carries the
+control boundary against the dark page at 3.84 to 4.89. It used to be `/600` in
+Dark — darker than the fill it surrounded — and `border/error-strong` was
+failing SC 1.4.11 at 2.96 against the page. That is fixed as a side effect.
+
+Hover has to darken rather than lighten. A lighter hover at `/500` puts white
+back under AA on success. There is no version of this where the dark control
+brightens on hover and stays legible.
+
+### The palette tier, and why AvatarGradient could not theme — 4 Sep 2026
+
+`AvatarGradient` rendered identically in both themes: seven near-white discs
+(luminance 0.89 to 0.98) sitting in a dark UI. Not a wrong dark value — **no**
+dark value. It bound 21 Primitives and `palette/1`–`palette/7` in Semantics, and
+those collections hold one mode each. Only Interface has a Light/Dark axis, and
+the component bound none of it, so nothing in it listened to the theme.
+
+The file defended this, and its argument was right on its own terms: an earlier
+draft themed only the initials and the gate caught it at 1.05:1, because a
+foreground has to theme exactly as much as the ground under it. The flaw was the
+conclusion — it resolved the mismatch by theming neither.
+
+**The ladder.** Seven hues, indexed, in both tiers:
+
+```
+Semantics   palette/<n>/<rung>        n = 1..7, rung = 50 200 300 600 700 800 900
+Interface   surface/palette-<n>        Light palette/<n>/300   Dark palette/<n>/700
+            surface/palette-<n>-tint   Light palette/<n>/200   Dark palette/<n>/800
+            surface/palette-<n>-subtle Light palette/<n>/50    Dark palette/<n>/900
+            text/palette-<n>           Light palette/<n>/800   Dark palette/<n>/200
+```
+
+`1..7` is `gray, blue, purple, pink, orange, green, red` — taken from the old
+`palette/1..7` aliases, not reassigned. Weights follow the accent vocabulary, so
+`-subtle` is the palest and bare is the deepest, and `audit-names.mjs` now knows
+`palette-<n>` as a role family alongside the five accents.
+
+**They are deliberately not accents.** An accent carries a meaning and moves when
+the brand's meaning moves. Binding an avatar to `error/*` would change a person's
+colour when the error red is re-branded, which is the same category error as
+`on-color` standing in for `inverse`. Pink also has no intent ramp at all, so six
+hues would have coupled and one would have needed its own anyway.
+
+Checked before committing to it: a single themed veil over the existing pale disc
+was two roles instead of seventy, and it collapsed the seven hues to a closest
+pair of dE 4.5 — gray `#1f1f20`, blue `#161e23`, purple `#181822`. The ladder
+holds them at dE 18.9 against today's 23.2.
+
+### The gloss was an accessibility control, not decoration
+
+`AvatarGradient`'s white sheen was a raw `18%` in both themes, and the initials
+sit exactly where it peaks. Over the pale Light disc it only helps — white on
+white raises contrast for dark ink. Over the dark disc it lightens the ground
+under _light_ ink, and it cost 1.4 to 3.4 points: green fell to 3.76, red 3.92,
+pink 4.08, orange 4.15, blue 4.23. Five of seven hues under AA, from a decoration.
+
+`surface/sheen` is a themed token now — 20% in Light, 5% in Dark — following
+`surface/scrim` and `surface/hover`, which are the same shape: a translucent wash
+whose alpha themes. 5% brings the worst hue back to 4.94. **10% lands on exactly
+4.50, which is not a margin**, so the step below it is the right one.
+
+`surface/sheen-subtle`, the falloff stop, is 5% in both themes and declared in
+`verify-modes.mjs`: the alpha ramp has no step below 5%, so in Dark the peak and
+the falloff coincide and the gloss fades between 60% and the transparent edge
+instead. A primitive below 5% would buy a difference nobody can see.
+
+**The gate enforces the worst case now.** It used to composite a translucent
+ground over the component's flat `background-color` — for this component the `to`
+stop — so the gloss was measured over the palest part of the disc and never over
+`from`, which is where it breaks. Reading every stop was only half the job: a
+translucent stop is not a colour until something is behind it, and the thing
+behind it was being guessed. `verify-contrast` splits `background-image` into
+layers and pairs each layer against every opaque ground beneath it as of
+5 Sep 2026, so `from` is one of the sheen's grounds and the gate reports the 4.94
+that used to be a hand measurement in a comment. 980 pairings became 1068.
+Negative-tested by putting 18% back: the five hues fail at 4.23, 4.13, 4.06,
+3.92, 3.77 — the hand-measured table, to rounding.
+
+The cross product is a **bound, not a rendering**. The gloss peaks low and
+centre, where the linear gradient is already near `to`, so full-strength sheen
+over `from` is not a pixel that exists. It is the strictest the composite could
+be, which is the right side to be wrong on for a floor. The dedup key carries the
+backdrop for the same reason the pairing does — without it, sheen-over-`from`
+collapses into sheen-over-`to` and the stricter row is the one that disappears.
+
+### Six of seven avatar hues were failing AA in Light, and the gate said green
+
+Found while checking the new dark values. `verify-contrast` can only read a flat
+`background-color`, so on a gradient it measures one stop and cannot see the other
+two. This file's own comment then argued the measured stop was the strict one —
+backwards. **Dark text on a pale disc is hardest against the darkest stop**, not
+the palest. Against `from`, blue read 3.42, purple 3.58, pink 3.27, orange 3.72,
+green 3.10 and red 3.35, all under the 4.5 they needed, for as long as the
+inverted design had shipped.
+
+The cause was one unmirrored rung. The disc mirrors cleanly — Light `300/200/50`
+against Dark `700/800/900` — but the initials were `/600` in Light and `/200` in
+Dark, and `/600`'s mirror is `/300`. Light was the theme with the wrong rung,
+which is why Dark passed and Light did not. The initials are `/800` in Light now,
+the true mirror of `/200`, and the worst stop reads 5.29 in Light and 5.31 in
+Dark — a symmetry that is itself the evidence.
+
+**The gate can see it now.** `verify-contrast` read only a flat
+`background-color`, so on a gradient it measured one stop of three — and the one
+it measured was the flattering one. It parses `background-image` gradients as of
+4 Sep 2026, keeping every `var()` that resolves to a colour and discarding the
+rest, which is how the sheen's `rgb(255 255 255 / var(--…-sheen))` alpha drops out
+without the gate needing to understand gradient grammar. 892 pairings became 936,
+and 1068 once translucent stops got their real backdrops. Negative-tested by
+putting the initials back on `/600`: pairings fail that the old gate passed.
+
+### `on-color` is for colour. `inverse` is for the inverse.
+
+Making `text/on-color` white in both modes broke three components at **1:1** —
+white on white, an invisible control — and the contrast gate caught all three:
+`Button` Primary Neutral, `Alert` solid Neutral, and Avatar's neutral status
+indicator. All three drew `text/on-color` over `surface/inverse`.
+
+That was a category error that had always been there. `surface/inverse` is a
+neutral that flips with the theme, not an accent; its foreground has to flip
+with it, which is `text/inverse`. It rendered correctly for as long as it did
+only because `text/on-color` happened to be the exact inverse of the inverse
+surface in both modes — white over a dark inverse in Light, black over a light
+inverse in Dark. The coincidence held until on-color settled on white for both.
+
+Fixed at source: 90 node bindings across `Button`, `Icon Button`, `Alert` and
+`.Status Indicator` moved from `on-color` to `inverse`, scoped by the rule
+"the fill under it binds `surface/inverse`" rather than by variant name. The 240
+bindings on genuinely coloured surfaces were left alone. `Tooltip` already
+paired `text/inverse` with `surface/inverse` and needed no change — it was the
+one that had it right.
 
 ### The gate has now moved a design, which is what it is for
 
@@ -1042,24 +1281,28 @@ and re-read any component that names a primitive rung directly rather than a
 semantic token. Components that used semantic aliases were unaffected here,
 which is the argument for preferring them wherever the surface actually themes.
 
-### Figma has a `palette` collection the token export does not cover
+### Figma had a `palette` collection the export did not cover — closed 4 Sep 2026
 
-Found while re-reading `Avatar Gradient` on 2026-08-28: its initials are bound
+Found while re-reading `Avatar Gradient` on 2026-08-28: its initials were bound
 to variables named `palette/1` through `palette/7`, and nothing in
-`src/styles/tokens/` defines a `--palette-*`. Each one currently resolves to a
-`color/<hue>/600` primitive, so the component names those primitives directly
-and loses nothing today.
+`src/styles/tokens/` defined a `--palette-*`. Each resolved to a
+`color/<hue>/600` primitive, so the component named those primitives directly.
 
-It is still a gap, and it is the shape AGENTS.md already warns about under
-"Verifying repo ↔ Figma sync": a collection that exists in Figma and not in the
-export is invisible to every gate here, because all of them start from what was
-exported. Diff the collection list, not just the variable checksum, after any
-Figma session. If `palette` is meant to ship, export it and move
-`avatar-gradient.css` onto it.
+That is why the component could not theme — see "The palette tier". `palette.*`
+is a Semantics tier now and Interface aliases it (`surface/palette-1` is
+`{palette.1.300}` in Light and `{palette.1.700}` in Dark), so
+`avatar-gradient.css` binds roles rather than rungs.
 
-It extracts 250 real pairings from 17 stylesheets by resolving the cascade —
-BEM blocks, compound modifiers, state inheritance, component-local `--ion-*`
-indirection, and alpha compositing for translucent hover overlays. Accepted
+**Keep the general lesson, which is not about `palette`.** A collection that
+exists in Figma and not in the export is invisible to every gate here, because
+all of them start from what was exported — the variable checksum included, since
+it only hashes what it was given. `figma/checksum.js` returns the collection
+list for exactly this reason. Diff it, not just the hashes.
+
+It extracts real pairings from every stylesheet by resolving the cascade — BEM
+blocks, compound modifiers, state inheritance, component-local `--ion-*`
+indirection, `background-image` gradient stops, and alpha compositing of a
+translucent layer over each opaque ground beneath it. Accepted
 results live in `contrast-exceptions.json`, which distinguishes `wcag-exempt`
 (SC 1.4.3 exempts inactive controls — this will never need fixing) from
 `defect` (real, unfixed, reported on every build and copied into the affected
@@ -1128,20 +1371,33 @@ Measured after the change — all four Button sizes, both modes:
 **`surface/information` is the same shape of problem and takes the same fix** —
 move the purple primitives, not the role bindings.
 
-### Value drift needs its own checksum, and `verify-export.mjs` does not have one
+### Value drift has its own checksum now — 5 Sep 2026
 
-This section used to say "check both checksums". There is only one:
-`verify-export.mjs` hashes `name|codeSyntax`, so it is blind to an edited
-colour by construction — the green change above left it reading **944350191
-against 384 variables, unchanged and passing**, exactly as it would have if
-nothing had been touched.
+This section used to say "check both checksums" when there was only one, then
+said the second one did not exist. It exists. `verify-export.mjs` hashes
+`name|type|codeSyntax|mode=value` alongside the name hash, and
+`figma/checksum.js` returns both.
 
-Until a real gate exists (`verify-contrast.mjs`, see
-[docs/agent-readiness-plan.md](docs/agent-readiness-plan.md) phase 2c), diff
-values by hand after a Figma session: hash `name|mode|value` per collection on
-both sides and compare. The green edit showed as Primitives `1214013219` →
-`1811607948` with Breakpoint, Interface and Semantics all identical, which is
-what told us the blast radius was one collection before anything was rebuilt.
+The hole it closes was never theoretical. The name hash is blind to an edited
+colour by construction: the green ramp changed in Figma and this script went on
+reading **944350191 against 384 variables, unchanged and passing**, exactly as
+if nothing had been touched. `color/orange/50` drifted the same way later and
+nothing noticed then either. Every gate in the package starts from the committed
+export, so a value that only differs in Figma is invisible to all of them at
+once — the repo builds correct CSS from stale numbers, and every measurement
+downstream is describing a file nobody is looking at.
+
+The per-collection hashes are part of the output because the first question
+after a mismatch is always how much moved. The green edit showed as Primitives
+`1214013219` → `1811607948` with Breakpoint, Interface and Semantics identical,
+which scoped the blast radius to one collection before anything was rebuilt.
+
+**The two implementations are copies of each other and must stay that way.** The
+Figma side formats values with the same `hex` and `value` functions
+`export-variables.js` uses, because the rows have to be byte-identical for the
+hashes to agree. Change one, change the other in the same commit — otherwise
+every collection reports a mismatch that is not there, which is the failure mode
+that teaches people to ignore the gate.
 
 The old note claiming `surface/warning` has no passing dark pairing was stale
 and is removed: `{warning.500}` → `#ea5600` against `{base.black}` measures

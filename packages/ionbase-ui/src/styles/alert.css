@@ -100,9 +100,15 @@
   --ion-alert-icon: var(--icon-on-color);
 }
 
+/* Neutral solid is not an accent: its ground is `surface/inverse`, which flips
+ * with the theme, so its foreground must flip too. See the note in avatar.css —
+ * `text/on-color` here was a category error that only rendered correctly while
+ * on-color happened to be the inverse of the inverse surface in both modes. */
 .ion-alert--solid.ion-alert--neutral {
   --ion-alert-surface: var(--surface-inverse);
   --ion-alert-border: var(--border-inverse);
+  --ion-alert-text: var(--text-inverse);
+  --ion-alert-icon: var(--icon-inverse);
 }
 
 .ion-alert--solid.ion-alert--primary {
