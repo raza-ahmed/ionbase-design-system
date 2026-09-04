@@ -1023,7 +1023,9 @@ pnpm --filter ionbase-ui contrast:list   # every pairing, worst first
 ### Dark was deferred, and is not any more — 4 Sep 2026
 
 `contrast-exceptions.json` carries `deferredModes: []`. **Dark is enforced.** The
-gate measures 892 pairings across both modes and fails the build on either.
+gate measures every pairing in both modes and fails the build on either. Don't
+copy the count into prose — it moves every time the resolver learns something
+(892 -> 936 -> 1068 in eight days). `pnpm --filter ionbase-ui contrast` prints it.
 
 It was deferred from 18 Aug to 4 Sep 2026, and the reason was sound: the theme
 was still being designed, and measuring it mid-design produced findings that were
@@ -1147,11 +1149,24 @@ whose alpha themes. 5% brings the worst hue back to 4.94. **10% lands on exactly
 the falloff coincide and the gloss fades between 60% and the transparent edge
 instead. A primitive below 5% would buy a difference nobody can see.
 
-**The gate sees the sheen but not its worst case.** A translucent ground is
-composited over the component's flat `background-color`, which is the `to` stop;
-the worst case is the sheen over `from`. That 4.94 is hand-measured and recorded
-in `avatar-gradient.css`. Compositing per gradient stop is the next thing this
-gate wants.
+**The gate enforces the worst case now.** It used to composite a translucent
+ground over the component's flat `background-color` — for this component the `to`
+stop — so the gloss was measured over the palest part of the disc and never over
+`from`, which is where it breaks. Reading every stop was only half the job: a
+translucent stop is not a colour until something is behind it, and the thing
+behind it was being guessed. `verify-contrast` splits `background-image` into
+layers and pairs each layer against every opaque ground beneath it as of
+5 Sep 2026, so `from` is one of the sheen's grounds and the gate reports the 4.94
+that used to be a hand measurement in a comment. 980 pairings became 1068.
+Negative-tested by putting 18% back: the five hues fail at 4.23, 4.13, 4.06,
+3.92, 3.77 — the hand-measured table, to rounding.
+
+The cross product is a **bound, not a rendering**. The gloss peaks low and
+centre, where the linear gradient is already near `to`, so full-strength sheen
+over `from` is not a pixel that exists. It is the strictest the composite could
+be, which is the right side to be wrong on for a floor. The dedup key carries the
+backdrop for the same reason the pairing does — without it, sheen-over-`from`
+collapses into sheen-over-`to` and the stricter row is the one that disappears.
 
 ### Six of seven avatar hues were failing AA in Light, and the gate said green
 
@@ -1175,9 +1190,9 @@ Dark — a symmetry that is itself the evidence.
 it measured was the flattering one. It parses `background-image` gradients as of
 4 Sep 2026, keeping every `var()` that resolves to a colour and discarding the
 rest, which is how the sheen's `rgb(255 255 255 / var(--…-sheen))` alpha drops out
-without the gate needing to understand gradient grammar. 892 pairings became 936.
-Negative-tested by putting the initials back on `/600`: ten pairings fail that the
-old gate passed.
+without the gate needing to understand gradient grammar. 892 pairings became 936,
+and 1068 once translucent stops got their real backdrops. Negative-tested by
+putting the initials back on `/600`: pairings fail that the old gate passed.
 
 ### `on-color` is for colour. `inverse` is for the inverse.
 
@@ -1268,9 +1283,10 @@ exported. Diff the collection list, not just the variable checksum, after any
 Figma session. If `palette` is meant to ship, export it and move
 `avatar-gradient.css` onto it.
 
-It extracts 250 real pairings from 17 stylesheets by resolving the cascade —
-BEM blocks, compound modifiers, state inheritance, component-local `--ion-*`
-indirection, and alpha compositing for translucent hover overlays. Accepted
+It extracts real pairings from every stylesheet by resolving the cascade — BEM
+blocks, compound modifiers, state inheritance, component-local `--ion-*`
+indirection, `background-image` gradient stops, and alpha compositing of a
+translucent layer over each opaque ground beneath it. Accepted
 results live in `contrast-exceptions.json`, which distinguishes `wcag-exempt`
 (SC 1.4.3 exempts inactive controls — this will never need fixing) from
 `defect` (real, unfixed, reported on every build and copied into the affected

@@ -44,7 +44,7 @@ const SAME_ON_PURPOSE = [
       'floor in both directions, and the accepted entries in ' +
       'ionbase-ui/contrast-exceptions.json are written against this one value. ' +
       'The two must also match each other — a disabled control with a themed ' +
-      'icon and an unthemed label is this gate\'s own bug, from the other side.',
+      "icon and an unthemed label is this gate's own bug, from the other side.",
   },
   {
     roles: [
@@ -78,7 +78,7 @@ const SAME_ON_PURPOSE = [
   {
     roles: ['surface/sheen-subtle'],
     reason:
-      "The gloss falloff stop is 5% in both themes because the alpha ramp has " +
+      'The gloss falloff stop is 5% in both themes because the alpha ramp has ' +
       'no step below it. In Light the sheen peaks at 20% and this is a real ' +
       'falloff; in Dark the peak is already 5% — forced there because at the ' +
       'authored 18% the white gloss lightens the disc under the initials and ' +
@@ -107,15 +107,21 @@ const byName = new Map(collections.map((c) => [c.collection, c]));
 const iface = byName.get('Interface');
 
 if (!iface) {
-  console.error('\nNo Interface collection. Expected one with Light and Dark modes.');
+  console.error(
+    '\nNo Interface collection. Expected one with Light and Dark modes.',
+  );
   process.exit(1);
 }
 
 const modes = iface.modes ?? [];
 for (const m of ['Light', 'Dark']) {
   if (!modes.includes(m)) {
-    console.error(`\nInterface has no "${m}" mode. It has: ${modes.join(', ')}.`);
-    console.error('If the theme axis was renamed in Figma, update this gate in the same commit.');
+    console.error(
+      `\nInterface has no "${m}" mode. It has: ${modes.join(', ')}.`,
+    );
+    console.error(
+      'If the theme axis was renamed in Figma, update this gate in the same commit.',
+    );
     process.exit(1);
   }
 }
@@ -152,13 +158,17 @@ for (const [name, token] of Object.entries(iface.variables)) {
     );
   }
   if (!identical && declared) {
-    staleExemptions.push(`${name}  now differs (${light} / ${dark}) — drop it from SAME_ON_PURPOSE`);
+    staleExemptions.push(
+      `${name}  now differs (${light} / ${dark}) — drop it from SAME_ON_PURPOSE`,
+    );
   }
 }
 
 for (const name of declaredReason.keys()) {
   if (!iface.variables[name]) {
-    staleExemptions.push(`${name}  is declared here but no longer exists in Interface`);
+    staleExemptions.push(
+      `${name}  is declared here but no longer exists in Interface`,
+    );
   }
 }
 

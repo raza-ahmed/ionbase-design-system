@@ -102,6 +102,40 @@ const dark = {
 };
 const MODES = { Light: light, Dark: dark };
 
+/**
+ * True if a token carries alpha in either mode. A translucent ground is not a
+ * colour until something is behind it, so this is what decides whether a
+ * gradient stop needs a backdrop or can serve as one.
+ */
+const translucent = (token) => {
+  for (const map of Object.values(MODES)) {
+    const c = parseColor(map[token]);
+    if (c && c.a < 1) return true;
+  }
+  return false;
+};
+
+/**
+ * `background-image` layers, split on top-level commas. First-listed paints on
+ * top, which is the order that decides what a translucent stop sits on.
+ */
+function splitLayers(value) {
+  const layers = [];
+  let depth = 0;
+  let start = 0;
+  for (let i = 0; i < value.length; i += 1) {
+    const ch = value[i];
+    if (ch === '(') depth += 1;
+    else if (ch === ')') depth -= 1;
+    else if (ch === ',' && depth === 0) {
+      layers.push(value.slice(start, i));
+      start = i + 1;
+    }
+  }
+  layers.push(value.slice(start));
+  return layers.map((l) => l.trim()).filter(Boolean);
+}
+
 const exFile = existsSync(EXCEPTIONS)
   ? JSON.parse(readFileSync(EXCEPTIONS, 'utf8'))
   : {};
@@ -346,7 +380,7 @@ for (const file of files) {
     if (bg && !bgRef) continue;
     const assumed = !bg;
     if (assumed && ON_COLOR_ROLES.has(fgToken)) continue;
-    const bgTokens = assumed ? [...ASSUMED_GROUNDS] : [bgRef.token];
+    const flatTokens = assumed ? [...ASSUMED_GROUNDS] : [bgRef.token];
 
     /*
      * Skip states the component cannot actually render.
@@ -381,8 +415,10 @@ for (const file of files) {
         : null;
 
     /*
-     * GRADIENT STOPS. A flat `background-color` is one colour; a gradient is
-     * three, and this gate could only see the flat one. AvatarGradient paints
+     * GRADIENT STOPS, AND WHAT EACH ONE SITS ON.
+     *
+     * A flat `background-color` is one colour; a gradient is three, and this
+     * gate could once see only the flat one. AvatarGradient paints
      * `from -> mid -> to` and declares `to` as the flat fallback, so `to` was
      * the only stop ever measured — and it is the most flattering of the three
      * for dark initials, because dark text is hardest against the DARKEST stop.
@@ -391,30 +427,68 @@ for (const file of files) {
      * green, and the stylesheet's own comment argued the measured stop was the
      * strict one. Pair against every stop, not just the one that flatters.
      *
-     * A gradient also carries vars that are not colours — the sheen's alpha is
+     * READING EVERY STOP WAS HALF OF IT. A translucent stop is not a colour
+     * until something is behind it, and the backdrop this gate reached for was
+     * the component's own `background-color` — for AvatarGradient, the `to`
+     * stop. So the white sheen was composited over the PALEST part of the disc,
+     * which is the case it is least likely to break, while the case that broke
+     * it — the same gloss over `from` — was measured by hand in a comment and
+     * enforced by nobody. A layer is now paired against every opaque ground
+     * beneath it, so the disc's darkest stop is one of the sheen's grounds.
+     *
+     * That cross product is a BOUND, not a rendering: the sheen peaks low and
+     * centre, where the linear gradient is already near `to`, so full-strength
+     * gloss over `from` is not a pixel that exists. It is the strictest thing
+     * the composite could be, which is the right side to be wrong on for a
+     * floor — and it is the same pairing the hand-measured 4.94 described.
+     *
+     * A gradient also carries vars that are not colours — the sheen's alpha was
      * `rgb(255 255 255 / var(--ion-avatar-gradient-sheen))`, where the var is a
      * percentage. Keeping only what resolves to a parseable colour drops those
      * without needing to understand the gradient's grammar.
      */
+    const grounds = flatTokens.map((token) => ({ token, over: backdrop }));
     const bgImage = lookup('backgroundImage', ctx, state, ctx.element);
     if (bgImage) {
-      for (const m of bgImage.raw.matchAll(/var\((--[a-z0-9-]+)/gi)) {
-        const ref = deref(`var(${m[1]})`, ctx, state, ctx.element);
-        if (!ref) continue;
-        const value = light[ref.token];
-        if (!value || !parseColor(value)) continue;
-        if (!bgTokens.includes(ref.token)) bgTokens.push(ref.token);
+      // Bottom-up: what is opaque so far is what the next layer paints onto.
+      const opaqueUnder = flatTokens.filter((t) => !translucent(t));
+      for (const layer of splitLayers(bgImage.raw).reverse()) {
+        const stops = [];
+        for (const m of layer.matchAll(/var\((--[a-z0-9-]+)/gi)) {
+          const ref = deref(`var(${m[1]})`, ctx, state, ctx.element);
+          if (!ref || !parseColor(light[ref.token])) continue;
+          if (!stops.includes(ref.token)) stops.push(ref.token);
+        }
+        const opaqueHere = [];
+        for (const token of stops) {
+          if (!translucent(token)) {
+            opaqueHere.push(token);
+            grounds.push({ token, over: backdrop });
+          } else if (opaqueUnder.length) {
+            for (const under of opaqueUnder)
+              grounds.push({ token, over: under });
+          } else {
+            // Nothing opaque anywhere below it. Keep it, so the measuring pass
+            // reports an unknown backdrop rather than dropping the stop.
+            grounds.push({ token, over: backdrop });
+          }
+        }
+        opaqueUnder.push(...opaqueHere);
       }
     }
 
-    for (const bgToken of bgTokens) {
+    const emitted = new Set();
+    for (const { token, over } of grounds) {
+      const k = `${token}|${over ?? ''}`;
+      if (emitted.has(k)) continue;
+      emitted.add(k);
       pairings.push({
         component: file.replace(/\.css$/, ''),
         context: ctx.element ? `${ctx.variant} ${ctx.element}` : ctx.variant,
         state,
         fg: fgToken,
-        bg: bgToken,
-        backdrop,
+        bg: token,
+        backdrop: over,
         kind: isText ? 'text' : 'non-text',
         ...(assumed ? { ground: 'assumed' } : {}),
       });
@@ -475,7 +549,9 @@ for (const p of pairings) {
 // De-duplicate: the same pair can be reached through several selectors.
 const seen = new Set();
 const unique = results.filter((r) => {
-  const k = `${r.component}|${r.context}|${r.state}|${r.mode}|${r.fg}|${r.bg}`;
+  const k =
+    `${r.component}|${r.context}|${r.state}|${r.mode}|${r.fg}|${r.bg}` +
+    `|${r.backdrop ?? ''}`;
   if (seen.has(k)) return false;
   seen.add(k);
   return true;
@@ -538,7 +614,7 @@ if (args.includes('--list')) {
     console.log(
       `${ok} ${String(r.ratio).padStart(6)}:1 (min ${r.min})  ${r.mode.padEnd(5)} ` +
         `${r.component.padEnd(14)} ${r.context.padEnd(34)} ${r.state.padEnd(8)} ` +
-        `${r.fg} on ${r.bg}`,
+        `${r.fg} on ${r.bg}${r.compositedOver ? ` over ${r.compositedOver}` : ''}`,
     );
   }
   console.log('');
@@ -547,7 +623,8 @@ if (args.includes('--list')) {
 for (const f of unexpected) {
   console.error(
     `  FAIL ${f.ratio}:1 (needs ${f.min})  ${f.mode} · ${f.component} · ${f.context} · ${f.state}\n` +
-      `       ${f.fg} ${f.fgHex} on ${f.bg} ${f.bgHex}`,
+      `       ${f.fg} ${f.fgHex} on ${f.bg} ${f.bgHex}` +
+      (f.compositedOver ? ` over ${f.compositedOver}` : ''),
   );
 }
 for (const e of unexplained) {
