@@ -136,6 +136,179 @@ function splitLayers(value) {
   return layers.map((l) => l.trim()).filter(Boolean);
 }
 
+/* ------------------------------------------------------- gradient geometry */
+
+/*
+ * ENOUGH GEOMETRY TO EVALUATE A LAYER AT A POINT, AND NOT ONE BIT MORE.
+ *
+ * The previous version paired a translucent stop against every opaque ground
+ * beneath it. That was a bound rather than a rendering, and it was loose in the
+ * one direction that matters: the sheen was measured at full strength over
+ * `from`, which is the TOP of the disc, while the gloss is centred at 70.5% of
+ * the height with a vertical radius of 64.1%. At y=0 the radial is 1.10 radii
+ * out — outside its own last stop, contributing exactly nothing. The gate was
+ * enforcing a pixel that does not exist.
+ *
+ * A bound erring strict is safe, but it is not free: it invents failures, and
+ * invented failures are how a threshold gets loosened or an exemption gets
+ * written for a defect nobody has. So the gradient is evaluated where it is
+ * actually painted.
+ *
+ * This also finds cases no stop-based reading can. Every colour BETWEEN two
+ * stops is a real pixel, and until now none of them were measured — only the
+ * three named rungs were. The worst point on a gradient is rarely a stop.
+ */
+
+/** `<color> <pos>%` — the colour may be a var(), `transparent`, or a literal. */
+function parseStops(parts) {
+  const stops = [];
+  for (const part of parts) {
+    const m = /^(.*?)\s+(-?[\d.]+)%$/.exec(part.trim());
+    if (!m) return null; // a stop without an explicit position: not our grammar
+    stops.push({ raw: m[1].trim(), pos: Number(m[2]) / 100 });
+  }
+  return stops.length >= 2 ? stops : null;
+}
+
+/**
+ * A `linear-gradient` or `radial-gradient` reduced to what `colorAt` needs.
+ * Anything else — conic, repeating, a stop without a position, an `at` clause
+ * in other units — returns null, and the caller falls back to per-stop pairing.
+ */
+function parseGradient(layer) {
+  const m = /^(linear|radial)-gradient\(([\s\S]*)\)$/i.exec(layer.trim());
+  if (!m) return null;
+  const kind = m[1].toLowerCase();
+  const parts = splitLayers(m[2]);
+  if (!parts.length) return null;
+
+  if (kind === 'linear') {
+    const angle = /^(-?[\d.]+)deg$/i.exec(parts[0].trim());
+    const stops = parseStops(angle ? parts.slice(1) : parts);
+    if (!stops) return null;
+    return { kind, angle: angle ? Number(angle[1]) : 180, stops };
+  }
+
+  const geo =
+    /^(-?[\d.]+)%\s+(-?[\d.]+)%\s+at\s+(-?[\d.]+)%\s+(-?[\d.]+)%$/i.exec(
+      parts[0].trim(),
+    );
+  if (!geo) return null;
+  const stops = parseStops(parts.slice(1));
+  if (!stops) return null;
+  return {
+    kind,
+    rx: Number(geo[1]) / 100,
+    ry: Number(geo[2]) / 100,
+    cx: Number(geo[3]) / 100,
+    cy: Number(geo[4]) / 100,
+    stops,
+  };
+}
+
+/**
+ * How far along its own gradient line the point (x, y) sits, both in 0..1 of
+ * the element box. Past either end is clamped, which is what CSS does.
+ *
+ * The box is treated as square. Every element this gate reads a gradient on is
+ * one, and the alternative is carrying pixel dimensions through a stylesheet
+ * parser to refine a number that only moves for a non-square gradient nothing
+ * here draws. If that changes, this is the assumption to revisit.
+ */
+function gradientT(g, x, y) {
+  if (g.kind === 'radial') {
+    const dx = (x - g.cx) / g.rx;
+    const dy = (y - g.cy) / g.ry;
+    return Math.sqrt(dx * dx + dy * dy);
+  }
+  // CSS angles run clockwise from "to top", and y grows downward here.
+  const rad = (g.angle * Math.PI) / 180;
+  const dx = Math.sin(rad);
+  const dy = -Math.cos(rad);
+  const len = Math.abs(dx) + Math.abs(dy); // unit square
+  return 0.5 + ((x - 0.5) * dx + (y - 0.5) * dy) / len;
+}
+
+/**
+ * The layer's colour at (x, y), or null where it paints nothing.
+ *
+ * Interpolation is premultiplied, as CSS specifies. It is not a detail: a naive
+ * lerp toward `transparent` — which is rgba(0,0,0,0) — drags every fade through
+ * black, and this gradient fades a white gloss to transparent. Unpremultiplied
+ * would report a dark halo that no browser draws.
+ */
+function colorAt(g, resolve, x, y) {
+  const t = gradientT(g, x, y);
+  const stops = g.stops;
+  if (t <= stops[0].pos) return resolve(stops[0].raw);
+  const last = stops[stops.length - 1];
+  if (t >= last.pos) return resolve(last.raw);
+
+  let i = 0;
+  while (i < stops.length - 2 && t > stops[i + 1].pos) i += 1;
+  const a = stops[i];
+  const b = stops[i + 1];
+  const ca = resolve(a.raw);
+  const cb = resolve(b.raw);
+  if (!ca || !cb) return null;
+  const span = b.pos - a.pos;
+  const f = span <= 0 ? 0 : (t - a.pos) / span;
+
+  const pa = ca.a;
+  const pb = cb.a;
+  const alpha = pa + (pb - pa) * f;
+  if (alpha <= 0) return { r: 0, g: 0, b: 0, a: 0 };
+  const chan = (ka, kb) => (ka * pa + (kb * pb - ka * pa) * f) / alpha;
+  return {
+    r: chan(ca.r, cb.r),
+    g: chan(ca.g, cb.g),
+    b: chan(ca.b, cb.b),
+    a: alpha,
+  };
+}
+
+/** Points to test: the visible disc when the element is round, else the box. */
+function* samples(round, steps = 32) {
+  for (let iy = 0; iy <= steps; iy += 1) {
+    const y = iy / steps;
+    for (let ix = 0; ix <= steps; ix += 1) {
+      const x = ix / steps;
+      // A rounded element clips its corners away. Measuring a pixel the browser
+      // never paints is the same mistake as measuring a stop it never paints.
+      if (round && (x - 0.5) ** 2 + (y - 0.5) ** 2 > 0.25) continue;
+      yield [x, y];
+    }
+  }
+}
+
+/**
+ * The worst ground the element actually paints, against this foreground.
+ *
+ * Layers are listed top-first, so they are composited in reverse onto the flat
+ * background-color and each sample is the colour a browser would show at that
+ * point. The answer is a real pixel, with the position it was found at.
+ */
+function worstGroundInGradient(layers, flat, resolve, fg, round) {
+  let worst = null;
+  for (const [x, y] of samples(round)) {
+    let c = flat;
+    for (let i = layers.length - 1; i >= 0; i -= 1) {
+      const above = colorAt(layers[i], resolve, x, y);
+      if (!above || above.a <= 0) continue;
+      c = above.a >= 1 ? { ...above, a: 1 } : composite(above, c);
+    }
+    const r = ratio(fg.a < 1 ? composite(fg, c) : fg, c);
+    if (!worst || r < worst.ratio) {
+      worst = {
+        ratio: r,
+        color: c,
+        at: `${Math.round(x * 100)}%,${Math.round(y * 100)}%`,
+      };
+    }
+  }
+  return worst;
+}
+
 const exFile = existsSync(EXCEPTIONS)
   ? JSON.parse(readFileSync(EXCEPTIONS, 'utf8'))
   : {};
@@ -154,6 +327,9 @@ const deferredModes = new Set(exFile.deferredModes ?? []);
 function parseColor(v) {
   if (typeof v !== 'string') return null;
   const s = v.trim();
+  // Not a nicety: `transparent` is the last stop of the sheen, and treating it
+  // as unparseable would drop the layer that makes the gloss a gloss.
+  if (s.toLowerCase() === 'transparent') return { r: 0, g: 0, b: 0, a: 0 };
   const hex = s.match(/^#([0-9a-f]{6})([0-9a-f]{2})?$/i);
   if (hex) {
     const n = hex[1];
@@ -301,6 +477,7 @@ for (const file of files) {
     if (decls['background-color']) slot.background = decls['background-color'];
     if (decls['background-image'])
       slot.backgroundImage = decls['background-image'];
+    if (decls['border-radius']) slot.radius = decls['border-radius'];
     for (const [d, v] of Object.entries(decls)) {
       if (d.startsWith('--ion-')) slot.locals[d] = v;
     }
@@ -449,37 +626,116 @@ for (const file of files) {
      */
     const grounds = flatTokens.map((token) => ({ token, over: backdrop }));
     const bgImage = lookup('backgroundImage', ctx, state, ctx.element);
+    let gradient = null;
+
     if (bgImage) {
-      // Bottom-up: what is opaque so far is what the next layer paints onto.
-      const opaqueUnder = flatTokens.filter((t) => !translucent(t));
-      for (const layer of splitLayers(bgImage.raw).reverse()) {
-        const stops = [];
-        for (const m of layer.matchAll(/var\((--[a-z0-9-]+)/gi)) {
-          const ref = deref(`var(${m[1]})`, ctx, state, ctx.element);
-          if (!ref || !parseColor(light[ref.token])) continue;
-          if (!stops.includes(ref.token)) stops.push(ref.token);
-        }
-        const opaqueHere = [];
-        for (const token of stops) {
-          if (!translucent(token)) {
-            opaqueHere.push(token);
-            grounds.push({ token, over: backdrop });
-          } else if (opaqueUnder.length) {
-            for (const under of opaqueUnder)
-              grounds.push({ token, over: under });
-          } else {
-            // Nothing opaque anywhere below it. Keep it, so the measuring pass
-            // reports an unknown backdrop rather than dropping the stop.
-            grounds.push({ token, over: backdrop });
+      const raw = splitLayers(bgImage.raw);
+      const parsed = raw.map(parseGradient);
+
+      /*
+       * Resolve each stop to a token name once, here, where the component's
+       * cascade and its `--ion-*` locals are still in scope. The measuring pass
+       * has neither, and it needs the same stops in both modes.
+       */
+      const asToken = (r) => {
+        const m = /^var\((--[a-z0-9-]+)/i.exec(r);
+        if (!m) return parseColor(r) ? r : null;
+        const ref = deref(`var(${m[1]})`, ctx, state, ctx.element);
+        return ref && parseColor(light[ref.token]) ? ref.token : null;
+      };
+
+      const usable =
+        parsed.length > 0 &&
+        parsed.every(
+          (g) => g && g.stops.every((st) => asToken(st.raw) !== null),
+        );
+
+      if (usable) {
+        /*
+         * The layers are evaluable, so the ground is whatever the element
+         * actually paints and there is nothing left to approximate. See the
+         * geometry block above for why the cross product had to go.
+         */
+        const radiusRaw = lookup('radius', ctx, state, ctx.element);
+        const round = /full|50%|9999px/i.test(radiusRaw?.raw ?? '');
+        gradient = {
+          round,
+          layers: parsed.map((g) => ({
+            ...g,
+            stops: g.stops.map((st) => ({ ...st, raw: asToken(st.raw) })),
+          })),
+        };
+        // Opaque stops stay as their own pairings. They are real tokens at real
+        // positions, they key the exceptions file, and a report that says
+        // `--surface-palette-7` is worth more than one that says "the gradient".
+        for (const g of parsed) {
+          for (const st of g.stops) {
+            const token = asToken(st.raw);
+            if (token?.startsWith('--') && !translucent(token)) {
+              grounds.push({ token, over: backdrop });
+            }
           }
         }
-        opaqueUnder.push(...opaqueHere);
+      } else {
+        /*
+         * A gradient this parser does not understand — conic, repeating, a stop
+         * without an explicit position, a var() that is not a colour. Fall back
+         * to the 0.45.0 behaviour: every stop, and a translucent one paired
+         * against each opaque ground beneath it. Strict, and never silent.
+         */
+        const opaqueUnder = flatTokens.filter((t) => !translucent(t));
+        for (const layer of raw.slice().reverse()) {
+          const stops = [];
+          for (const m of layer.matchAll(/var\((--[a-z0-9-]+)/gi)) {
+            const ref = deref(`var(${m[1]})`, ctx, state, ctx.element);
+            if (!ref || !parseColor(light[ref.token])) continue;
+            if (!stops.includes(ref.token)) stops.push(ref.token);
+          }
+          const opaqueHere = [];
+          for (const token of stops) {
+            if (!translucent(token)) {
+              opaqueHere.push(token);
+              grounds.push({ token, over: backdrop });
+            } else if (opaqueUnder.length) {
+              for (const under of opaqueUnder)
+                grounds.push({ token, over: under });
+            } else {
+              grounds.push({ token, over: backdrop });
+            }
+          }
+          opaqueUnder.push(...opaqueHere);
+        }
+      }
+    }
+
+    /*
+     * One composite pairing for the whole gradient, named for the translucent
+     * stop that peaks — that is the layer whose placement was being guessed,
+     * and it is what a reader needs to see in a failure line.
+     */
+    if (gradient) {
+      let peak = null;
+      for (const g of gradient.layers) {
+        for (const st of g.stops) {
+          if (!st.raw?.startsWith('--') || !translucent(st.raw)) continue;
+          const a = parseColor(light[st.raw])?.a ?? 0;
+          if (!peak || a > peak.a) peak = { token: st.raw, a };
+        }
+      }
+      if (peak) {
+        grounds.push({
+          token: peak.token,
+          over: backdrop,
+          gradient,
+          flat: flatTokens[0],
+        });
       }
     }
 
     const emitted = new Set();
-    for (const { token, over } of grounds) {
-      const k = `${token}|${over ?? ''}`;
+    for (const g of grounds) {
+      const { token, over } = g;
+      const k = `${token}|${over ?? ''}|${g.gradient ? 'composite' : ''}`;
       if (emitted.has(k)) continue;
       emitted.add(k);
       pairings.push({
@@ -491,6 +747,7 @@ for (const file of files) {
         backdrop: over,
         kind: isText ? 'text' : 'non-text',
         ...(assumed ? { ground: 'assumed' } : {}),
+        ...(g.gradient ? { gradient: g.gradient, flat: g.flat } : {}),
       });
     }
   }
@@ -514,6 +771,55 @@ for (const p of pairings) {
       unresolved.push({ ...p, mode, missing: !f ? p.fg : p.bg });
       continue;
     }
+    /*
+     * A gradient pairing does not have one ground, it has a field of them. The
+     * ratio is the worst point the element actually paints — see the geometry
+     * block. `b` above is only the flat colour the layers sit on.
+     */
+    if (p.gradient) {
+      let flat = parseColor(map[p.flat]);
+      if (flat && flat.a < 1) {
+        const back = p.backdrop ? parseColor(map[p.backdrop]) : null;
+        if (!back || back.a < 1) {
+          skipped.push({
+            ...p,
+            mode,
+            why: `${p.flat} is translucent under a gradient and its backdrop is unknown`,
+          });
+          continue;
+        }
+        flat = composite(flat, back);
+      }
+      if (!flat) {
+        unresolved.push({ ...p, mode, missing: p.flat });
+        continue;
+      }
+      const resolve = (raw) =>
+        raw?.startsWith('--') ? parseColor(map[raw]) : parseColor(raw);
+      const worst = worstGroundInGradient(
+        p.gradient.layers,
+        flat,
+        resolve,
+        f,
+        p.gradient.round,
+      );
+      if (!worst) {
+        unresolved.push({ ...p, mode, missing: `${p.bg} (gradient)` });
+        continue;
+      }
+      results.push({
+        ...p,
+        gradient: undefined,
+        mode,
+        fgHex: toHex(f.a < 1 ? composite(f, worst.color) : f),
+        bgHex: toHex(worst.color),
+        compositedOver: `gradient at ${worst.at}`,
+        ratio: Number(worst.ratio.toFixed(2)),
+        min: p.kind === 'text' ? TEXT_MIN : NONTEXT_MIN,
+      });
+      continue;
+    }
+
     let composited = false;
     if (b.a < 1) {
       const back = p.backdrop ? parseColor(map[p.backdrop]) : null;

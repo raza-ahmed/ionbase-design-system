@@ -1144,42 +1144,64 @@ was two roles instead of seventy, and it collapsed the seven hues to a closest
 pair of dE 4.5 — gray `#1f1f20`, blue `#161e23`, purple `#181822`. The ladder
 holds them at dE 18.9 against today's 23.2.
 
-### The gloss was an accessibility control, not decoration
+### The gloss was NOT an accessibility control, and this section said it was
 
-`AvatarGradient`'s white sheen was a raw `18%` in both themes, and the initials
-sit exactly where it peaks. Over the pale Light disc it only helps — white on
-white raises contrast for dark ink. Over the dark disc it lightens the ground
-under _light_ ink, and it cost 1.4 to 3.4 points: green fell to 3.76, red 3.92,
-pink 4.08, orange 4.15, blue 4.23. Five of seven hues under AA, from a decoration.
+`AvatarGradient`'s white sheen was a raw `18%` in both themes, hardcoded twice.
+That is a real problem — it is a place dark mode has to be fixed by hand, once
+per occurrence — and `surface/sheen` is a themed token now, 20% in Light and 5%
+in Dark, following `surface/scrim` and `surface/hover`: a translucent wash whose
+alpha themes.
 
-`surface/sheen` is a themed token now — 20% in Light, 5% in Dark — following
-`surface/scrim` and `surface/hover`, which are the same shape: a translucent wash
-whose alpha themes. 5% brings the worst hue back to 4.94. **10% lands on exactly
-4.50, which is not a margin**, so the step below it is the right one.
+**The measurement that chose 5% was wrong.** This section used to report that the
+gloss dropped five of seven hues under AA in Dark — green 3.76, red 3.92, pink
+4.08, orange 4.15, blue 4.23 — and every one of those came from compositing the
+sheen at full strength over the `from` stop. That pixel does not exist. `from` is
+the top of the disc; the radial is centred at 70.513% of the height with a
+vertical radius of 64.103%, so at y=0 it sits 1.10 radii out, past its own
+transparent stop. **The gloss and the darkest stop never meet.**
 
-`surface/sheen-subtle`, the falloff stop, is 5% in both themes and declared in
-`verify-modes.mjs`: the alpha ramp has no step below 5%, so in Dark the peak and
-the falloff coincide and the gloss fades between 60% and the transparent edge
-instead. A primitive below 5% would buy a difference nobody can see.
+With the gradient evaluated geometrically, the authored 18% floors at **5.07** in
+Dark — green, at 50%,69%, where the gloss actually peaks and the disc under it is
+already near `to`. Nothing was failing. The 5% stayed because it was reviewed in
+Figma and preferred; it is a design choice, and only the token is a requirement.
 
-**The gate enforces the worst case now.** It used to composite a translucent
-ground over the component's flat `background-color` — for this component the `to`
-stop — so the gloss was measured over the palest part of the disc and never over
-`from`, which is where it breaks. Reading every stop was only half the job: a
-translucent stop is not a colour until something is behind it, and the thing
-behind it was being guessed. `verify-contrast` splits `background-image` into
-layers and pairs each layer against every opaque ground beneath it as of
-5 Sep 2026, so `from` is one of the sheen's grounds and the gate reports the 4.94
-that used to be a hand measurement in a comment. 980 pairings became 1068.
-Negative-tested by putting 18% back: the five hues fail at 4.23, 4.13, 4.06,
-3.92, 3.77 — the hand-measured table, to rounding.
+The falloff stop `surface/sheen-subtle` is still 5% in both themes and still
+declared in `verify-modes.mjs`: the alpha ramp has no step below 5%, and a
+primitive below it would buy a difference nobody can see at 5% opacity. That
+argument never depended on the contrast claim.
 
-The cross product is a **bound, not a rendering**. The gloss peaks low and
-centre, where the linear gradient is already near `to`, so full-strength sheen
-over `from` is not a pixel that exists. It is the strictest the composite could
-be, which is the right side to be wrong on for a floor. The dedup key carries the
-backdrop for the same reason the pairing does — without it, sheen-over-`from`
-collapses into sheen-over-`to` and the stricter row is the one that disappears.
+**What this cost, and the lesson.** A bound erring strict looks free and is not.
+It invented five failures, and those five justified a design change, a token's
+value, a `SAME_ON_PURPOSE` reason and a paragraph here. Every one had to be
+corrected. A gate reporting a pixel the browser never draws is not being careful,
+it is being wrong in the direction nobody checks — because nobody audits a number
+that only looks too strict.
+
+**The gate evaluates the gradient now.** It went through three versions in two
+days and the middle one is the instructive failure. First it read only a flat
+`background-color`, so on a gradient it saw one stop of three — the flattering
+one. Then it read every stop and paired each translucent layer against every
+opaque ground beneath it, which sounded strict and was simply false: it
+composited the gloss over `from` at full strength, which the geometry forbids. It
+reported 4.94 with confidence and invented five failures at 18%.
+
+`verify-contrast` parses `linear-gradient` and `radial-gradient` geometry as of
+5 Sep 2026, samples the element — inside the inscribed circle when the element is
+round, because a clipped corner is not painted either — composites the layers at
+each point, and reports the worst pixel that actually exists. 1068 pairings
+became 958: fewer, and each one real. Colours BETWEEN two stops had never been
+measured at all, and the worst point on a gradient is rarely a stop. On this
+component it is the bare top of the disc, 5.29 Light and 5.31 Dark, where the
+sheen contributes nothing.
+
+Interpolation is premultiplied, as CSS specifies. Not a detail: a naive lerp
+toward `transparent` — which is `rgba(0,0,0,0)` — drags every fade through black,
+and this gradient fades a white gloss to transparent. Unpremultiplied would
+report a dark halo no browser draws, the same class of bug as the one above.
+
+A gradient the parser does not understand — conic, repeating, a stop with no
+explicit position — falls back to the per-stop cross product. Strict, and never
+silent.
 
 ### Six of seven avatar hues were failing AA in Light, and the gate said green
 
@@ -1204,8 +1226,9 @@ it measured was the flattering one. It parses `background-image` gradients as of
 4 Sep 2026, keeping every `var()` that resolves to a colour and discarding the
 rest, which is how the sheen's `rgb(255 255 255 / var(--…-sheen))` alpha drops out
 without the gate needing to understand gradient grammar. 892 pairings became 936,
-and 1068 once translucent stops got their real backdrops. Negative-tested by
-putting the initials back on `/600`: pairings fail that the old gate passed.
+then 1068, then 958 once the gradient was evaluated rather than read at its
+stops. Negative-tested by putting the initials back on `/600`: pink fails at 3.27
+where the old gate passed it.
 
 ### `on-color` is for colour. `inverse` is for the inverse.
 

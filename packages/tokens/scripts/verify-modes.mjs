@@ -80,13 +80,16 @@ const SAME_ON_PURPOSE = [
     reason:
       'The gloss falloff stop is 5% in both themes because the alpha ramp has ' +
       'no step below it. In Light the sheen peaks at 20% and this is a real ' +
-      'falloff; in Dark the peak is already 5% — forced there because at the ' +
-      'authored 18% the white gloss lightens the disc under the initials and ' +
-      'drops five of seven hues under AA — so the inner 60% is flat and the ' +
-      'falloff happens between 60% and the transparent edge instead. Adding an ' +
+      'falloff; in Dark the peak is already 5%, so the inner 60% is flat and ' +
+      'the gloss fades between 60% and the transparent edge instead. Adding an ' +
       'alpha primitive below 5% to give Dark a distinct mid would buy a ' +
       'difference nobody can see at 5% opacity. surface/sheen itself themes ' +
-      '20% against 5%, and if that ever stops being true this gate will say so.',
+      '20% against 5%, and if that ever stops being true this gate will say so. ' +
+      'NOTE: an earlier version of this reason said Dark was forced to 5% ' +
+      'because the authored 18% dropped five hues under AA. That was measured ' +
+      'by compositing the gloss over the disc top, where it does not reach — ' +
+      'verify-contrast evaluates the gradient geometrically now and 18% floors ' +
+      'at 5.07. The 5% is a design preference; only the token is a requirement.',
   },
 ];
 

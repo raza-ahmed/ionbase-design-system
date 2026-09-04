@@ -67,26 +67,30 @@
    * a userSpaceOnUse radial scaled per size, and the ratios come out the same
    * to three decimals, so the geometry is written once as percentages.
    *
-   * THE ALPHA IS A TOKEN NOW, AND IT HAS TO BE. It was a raw `18%` in both
-   * themes, and the initials sit exactly where the gloss peaks: over the dark
-   * disc it lightened the ground under light text and dropped five of seven
-   * hues under AA — green 3.76, red 3.92, pink 4.08, orange 4.15, blue 4.23.
-   * `surface/sheen` is 20% in Light and 5% in Dark, which brings the worst hue
-   * back to 4.94. 10% would land exactly on 4.50, which is not a margin.
+   * THE ALPHA IS A TOKEN NOW. It was a raw `18%` in both themes, hardcoded
+   * twice, which is a place dark mode has to be fixed by hand — the same reason
+   * the bevel below is a local. `surface/sheen` is 20% in Light and 5% in Dark,
+   * following `surface/scrim` and `surface/hover`: a translucent wash whose
+   * alpha themes.
    *
-   * THE GATE ENFORCES THAT NUMBER NOW. It used to composite a translucent
-   * ground over the component's flat `background-color` — the `to` stop — so it
-   * measured the gloss over the palest part of the disc and never over `from`,
-   * where the failure is; 4.94 was a hand measurement in this comment and
-   * nothing checked it. `verify-contrast` pairs each layer against every opaque
-   * ground beneath it as of 5 Sep 2026, so the sheen is measured over all three
-   * disc stops and reports 4.94 on red by itself. Putting 18% back fails five
-   * hues at the values above.
+   * THE ACCESSIBILITY ARGUMENT THAT PUT IT AT 5% WAS WRONG, AND THIS COMMENT
+   * USED TO MAKE IT. It claimed the gloss dropped five of seven hues under AA in
+   * Dark — green 3.76, red 3.92, pink 4.08, orange 4.15, blue 4.23. Those
+   * numbers came from compositing the sheen at FULL STRENGTH over the `from`
+   * stop, and that pixel does not exist. `from` is the top of the disc; the
+   * radial is centred at 70.513% of the height with a vertical radius of
+   * 64.103%, so at y=0 it is 1.10 radii out — past its own transparent stop,
+   * contributing nothing. The gloss and the darkest stop never meet.
    *
-   * The cross product is a bound, not a rendering: the gloss peaks low and
-   * centre, where the linear gradient is already near `to`, so full-strength
-   * sheen over `from` is not a pixel that exists. It is the strictest the
-   * composite could be, which is the right side to be wrong on for a floor.
+   * The gate evaluates the gradient geometrically as of 5 Sep 2026, and at the
+   * authored 18% the worst REAL point in Dark is 5.07 (green, at 50%,69%, where
+   * the gloss actually peaks and the disc beneath it is already near `to`).
+   * Nothing was ever failing. 5% is an aesthetic choice, not a fix, and it is
+   * only still here because it was reviewed in Figma and preferred.
+   *
+   * The worst point on this component is the bare top of the disc — 5.29 in
+   * Light (pink) and 5.31 in Dark (red), the same two numbers the stop comment
+   * below records, because the sheen never touches it.
    */
 
   /*
@@ -134,12 +138,14 @@
    * in the component that was not mirrored, which is precisely why Light failed
    * and Dark did not.
    *
-   * THE GATE MEASURES ALL THREE STOPS NOW. It used to read only a flat
-   * `background-color`, which is what let this hide; `verify-contrast` parses
-   * `background-image` gradients as of 4 Sep 2026, so the worst stop is enforced
-   * rather than trusted — 5.29 in Light (pink) and 5.31 in Dark (red) as it
-   * stands. Negative-tested by putting the initials back on `/600`: ten
-   * pairings fail that the old gate passed.
+   * THE GATE DOES NOT READ STOPS ANY MORE, IT EVALUATES THE GRADIENT. It began
+   * by reading only a flat `background-color`, which is what let this hide; then
+   * every stop; and as of 5 Sep 2026 it samples the disc, composites the layers
+   * at each point and reports the worst pixel the element actually paints —
+   * 5.29 in Light (pink) and 5.31 in Dark (red), both at 50%,0%, the bare top.
+   * Colours BETWEEN two stops are real pixels and none of them were measured
+   * before. Negative-tested by putting the initials back on `/600`: pink fails
+   * at 3.27 where the old gate passed it.
    */
   background-color: var(--ion-avatar-gradient-to);
   background-image:
