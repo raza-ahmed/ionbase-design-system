@@ -707,14 +707,14 @@ Primitives   143  Value                value-keyed scales only
    ↓
 Semantics    156  IonBase              brand identity — ramps, radius, border-width, icon-size
    ↓
-Interface    132  Light / Dark         text · icon · surface · border · ring · palette
+Interface    134  Light / Dark         text · icon · surface · border · ring · palette
    ↓
 components + CSS
 
 Breakpoint    30  Desktop/Tablet/Mobile   (parallel — type and grid only)
 ```
 
-Sync state: names `1664084925`, 461 variables (verified against Figma 4 Sep 2026
+Sync state: names `3716173117`, 463 variables (verified against Figma 4 Sep 2026
 — MATCH). Re-run `figma/checksum.js` + `scripts/verify-export.mjs` rather than
 trusting the numbers here; this line has been stale twice.
 
@@ -745,7 +745,7 @@ on `spacing/*` or a ladder) and `figma/audit-geometry.js` (raw numbers in Figma,
 which no export can see — that is how a literal 10px padding and a whole
 component's unbound stroke weights both shipped).
 
-**461 variables, and that number does not grow with the component count.** A new
+**463 variables, and that number does not grow with the component count.** A new
 brand adds a _mode_, not tokens. So does a new theme. It grew by two on
 2026-08-06 — `spacing/14` and an `icon-size` rung — and that is the shape of
 growth to expect: a new _value_ the ladders did not carry, not a new component.
@@ -1128,6 +1128,30 @@ Checked before committing to it: a single themed veil over the existing pale dis
 was two roles instead of seventy, and it collapsed the seven hues to a closest
 pair of dE 4.5 — gray `#1f1f20`, blue `#161e23`, purple `#181822`. The ladder
 holds them at dE 18.9 against today's 23.2.
+
+### The gloss was an accessibility control, not decoration
+
+`AvatarGradient`'s white sheen was a raw `18%` in both themes, and the initials
+sit exactly where it peaks. Over the pale Light disc it only helps — white on
+white raises contrast for dark ink. Over the dark disc it lightens the ground
+under _light_ ink, and it cost 1.4 to 3.4 points: green fell to 3.76, red 3.92,
+pink 4.08, orange 4.15, blue 4.23. Five of seven hues under AA, from a decoration.
+
+`surface/sheen` is a themed token now — 20% in Light, 5% in Dark — following
+`surface/scrim` and `surface/hover`, which are the same shape: a translucent wash
+whose alpha themes. 5% brings the worst hue back to 4.94. **10% lands on exactly
+4.50, which is not a margin**, so the step below it is the right one.
+
+`surface/sheen-subtle`, the falloff stop, is 5% in both themes and declared in
+`verify-modes.mjs`: the alpha ramp has no step below 5%, so in Dark the peak and
+the falloff coincide and the gloss fades between 60% and the transparent edge
+instead. A primitive below 5% would buy a difference nobody can see.
+
+**The gate sees the sheen but not its worst case.** A translucent ground is
+composited over the component's flat `background-color`, which is the `to` stop;
+the worst case is the sheen over `from`. That 4.94 is hand-measured and recorded
+in `avatar-gradient.css`. Compositing per gradient stop is the next thing this
+gate wants.
 
 ### Six of seven avatar hues were failing AA in Light, and the gate said green
 

@@ -75,6 +75,19 @@ const SAME_ON_PURPOSE = [
       'at 2.96. Those border roles still differ between modes and are not ' +
       'declared here; if one ever stops differing, this gate will say so.',
   },
+  {
+    roles: ['surface/sheen-subtle'],
+    reason:
+      "The gloss falloff stop is 5% in both themes because the alpha ramp has " +
+      'no step below it. In Light the sheen peaks at 20% and this is a real ' +
+      'falloff; in Dark the peak is already 5% — forced there because at the ' +
+      'authored 18% the white gloss lightens the disc under the initials and ' +
+      'drops five of seven hues under AA — so the inner 60% is flat and the ' +
+      'falloff happens between 60% and the transparent edge instead. Adding an ' +
+      'alpha primitive below 5% to give Dark a distinct mid would buy a ' +
+      'difference nobody can see at 5% opacity. surface/sheen itself themes ' +
+      '20% against 5%, and if that ever stops being true this gate will say so.',
+  },
 ];
 
 /** name -> reason, with a guard against the same role declared twice. */

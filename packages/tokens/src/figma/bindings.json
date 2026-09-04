@@ -398,6 +398,14 @@
       },
       {
         "collection": "Interface",
+        "token": "surface/sheen"
+      },
+      {
+        "collection": "Interface",
+        "token": "surface/sheen-subtle"
+      },
+      {
+        "collection": "Interface",
         "token": "text/palette-1"
       },
       {

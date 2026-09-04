@@ -51,6 +51,8 @@ export const NEUTRAL_ROLES = new Set([
   'inverse-subtle',
   'on-color',
   // interaction washes, which are roles at this position
+  'sheen',
+  'sheen-subtle',
   'hover',
   'pressed',
   'selected',

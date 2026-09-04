@@ -65,10 +65,19 @@
    * The sheen: a white radial highlight low and centre, over the linear
    * gradient. Identical in proportion at all four sizes — Figma expresses it as
    * a userSpaceOnUse radial scaled per size, and the ratios come out the same
-   * to three decimals, so it is written once as percentages.
+   * to three decimals, so the geometry is written once as percentages.
+   *
+   * THE ALPHA IS A TOKEN NOW, AND IT HAS TO BE. It was a raw `18%` in both
+   * themes, and the initials sit exactly where the gloss peaks: over the dark
+   * disc it lightened the ground under light text and dropped five of seven
+   * hues under AA — green 3.76, red 3.92, pink 4.08, orange 4.15, blue 4.23.
+   * `surface/sheen` is 20% in Light and 5% in Dark, which brings the worst hue
+   * back to 4.94. 10% would land exactly on 4.50, which is not a margin.
+   *
+   * The gate cannot see this pairing: it composites a translucent ground over
+   * the component's flat `background-color`, which is the `to` stop, whereas the
+   * worst case is the sheen over `from`. 4.94 is measured by hand.
    */
-  --ion-avatar-gradient-sheen: 18%;
-  --ion-avatar-gradient-sheen-mid: 3.6%;
 
   /*
    * Bevel. Two inner shadows and no drop shadow — the redesign dropped the
@@ -126,9 +135,9 @@
   background-image:
     radial-gradient(
       55.556% 64.103% at 50% 70.513%,
-      rgb(255 255 255 / var(--ion-avatar-gradient-sheen)) 0%,
-      rgb(255 255 255 / var(--ion-avatar-gradient-sheen-mid)) 60%,
-      rgb(255 255 255 / 0%) 100%
+      var(--surface-sheen) 0%,
+      var(--surface-sheen-subtle) 60%,
+      transparent 100%
     ),
     linear-gradient(
       180deg,

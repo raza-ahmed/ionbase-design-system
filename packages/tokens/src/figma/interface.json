@@ -138,6 +138,8 @@
     "surface/palette-7": {"type": "COLOR", "scopes": ["FRAME_FILL", "SHAPE_FILL"], "codeSyntax": "var(--surface-palette-7)", "values": {"Light": "{palette.7.300}", "Dark": "{palette.7.700}"}},
     "surface/palette-7-tint": {"type": "COLOR", "scopes": ["FRAME_FILL", "SHAPE_FILL"], "codeSyntax": "var(--surface-palette-7-tint)", "values": {"Light": "{palette.7.200}", "Dark": "{palette.7.800}"}},
     "surface/palette-7-subtle": {"type": "COLOR", "scopes": ["FRAME_FILL", "SHAPE_FILL"], "codeSyntax": "var(--surface-palette-7-subtle)", "values": {"Light": "{palette.7.50}", "Dark": "{palette.7.900}"}},
-    "text/palette-7": {"type": "COLOR", "scopes": ["TEXT_FILL"], "codeSyntax": "var(--text-palette-7)", "values": {"Light": "{palette.7.800}", "Dark": "{palette.7.200}"}}
+    "text/palette-7": {"type": "COLOR", "scopes": ["TEXT_FILL"], "codeSyntax": "var(--text-palette-7)", "values": {"Light": "{palette.7.800}", "Dark": "{palette.7.200}"}},
+    "surface/sheen": {"type": "COLOR", "scopes": ["FRAME_FILL", "SHAPE_FILL"], "codeSyntax": "var(--surface-sheen)", "values": {"Light": "{alpha.white-20}", "Dark": "{alpha.white-05}"}},
+    "surface/sheen-subtle": {"type": "COLOR", "scopes": ["FRAME_FILL", "SHAPE_FILL"], "codeSyntax": "var(--surface-sheen-subtle)", "values": {"Light": "{alpha.white-05}", "Dark": "{alpha.white-05}"}}
   }
 }
