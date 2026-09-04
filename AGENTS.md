@@ -705,20 +705,23 @@ Reasoning: [docs/naming-decisions.md](docs/naming-decisions.md).
 ```
 Primitives   143  Value                value-keyed scales only
    ↓
-Semantics    114  IonBase              brand identity — ramps, radius, border-width, icon-size
+Semantics    156  IonBase              brand identity — ramps, radius, border-width, icon-size
    ↓
-Interface    104  Light / Dark         text · icon · surface · border · ring
+Interface    132  Light / Dark         text · icon · surface · border · ring · palette
    ↓
 components + CSS
 
 Breakpoint    30  Desktop/Tablet/Mobile   (parallel — type and grid only)
 ```
 
-Sync state: names `2150110655`, 391 variables (verified against Figma 3 Sep 2026
-with `figma/checksum.js` + `scripts/verify-export.mjs` — MATCH). This line read
-`944350191` / 384 until then, which was the 7 Aug reading; the export itself was
-never out of sync, only this sentence. Re-run the two scripts rather than
-trusting the numbers here.
+Sync state: names `1664084925`, 461 variables (verified against Figma 4 Sep 2026
+— MATCH). Re-run `figma/checksum.js` + `scripts/verify-export.mjs` rather than
+trusting the numbers here; this line has been stale twice.
+
+**The name checksum does not see values.** It hashes names and `codeSyntax`, so a
+changed colour passes it silently — `color/orange/50` sat at `#fff4e5` in the repo
+against `#fff6ea` in Figma for an unknown stretch and every gate was green. Hash
+the full export payload on both sides when values matter.
 
 **Components bind Interface and Breakpoint for colour and type.** Interface may
 only alias Semantics; Semantics may only alias Primitives. `spacing/*` is the
@@ -742,12 +745,21 @@ on `spacing/*` or a ladder) and `figma/audit-geometry.js` (raw numbers in Figma,
 which no export can see — that is how a literal 10px padding and a whole
 component's unbound stroke weights both shipped).
 
-**391 variables, and that number does not grow with the component count.** A new
+**461 variables, and that number does not grow with the component count.** A new
 brand adds a _mode_, not tokens. So does a new theme. It grew by two on
 2026-08-06 — `spacing/14` and an `icon-size` rung — and that is the shape of
 growth to expect: a new _value_ the ladders did not carry, not a new component.
-It grew by seven more since: `palette/1`–`palette/7`, the AvatarGradient hues,
-each an alias of a `<hue>/600`. Seven values, zero components.
+
+**It grew by seventy on 2026-09-04, for one component, and that is worth being
+uncomfortable about.** `AvatarGradient` was the only component in the system that
+could not theme, because it bound Primitives and Semantics and neither carries a
+Light/Dark axis — see the palette section below. Making it theme cost 49 Semantics
+rungs and 28 Interface roles, less the 7 retired `palette/1`–`palette/7` leaves.
+That is a hue ladder, indexed by value, and a component picks an index; it is not
+a recipe. But it is still seventy names serving one component, and the honest
+reading is that the rule bent here rather than held. If a second component ever
+needs a categorical palette it must reuse this one — a `palette/*` per component
+is the `control/<size>/*` failure with a different prefix.
 
 Button's two new types on 2026-08-07 are the rule working: **Primary Soft and
 Success added seventy variants and zero tokens**, because v2 gives every accent
@@ -1077,6 +1089,67 @@ failing SC 1.4.11 at 2.96 against the page. That is fixed as a side effect.
 Hover has to darken rather than lighten. A lighter hover at `/500` puts white
 back under AA on success. There is no version of this where the dark control
 brightens on hover and stays legible.
+
+### The palette tier, and why AvatarGradient could not theme — 4 Sep 2026
+
+`AvatarGradient` rendered identically in both themes: seven near-white discs
+(luminance 0.89 to 0.98) sitting in a dark UI. Not a wrong dark value — **no**
+dark value. It bound 21 Primitives and `palette/1`–`palette/7` in Semantics, and
+those collections hold one mode each. Only Interface has a Light/Dark axis, and
+the component bound none of it, so nothing in it listened to the theme.
+
+The file defended this, and its argument was right on its own terms: an earlier
+draft themed only the initials and the gate caught it at 1.05:1, because a
+foreground has to theme exactly as much as the ground under it. The flaw was the
+conclusion — it resolved the mismatch by theming neither.
+
+**The ladder.** Seven hues, indexed, in both tiers:
+
+```
+Semantics   palette/<n>/<rung>        n = 1..7, rung = 50 200 300 600 700 800 900
+Interface   surface/palette-<n>        Light palette/<n>/300   Dark palette/<n>/700
+            surface/palette-<n>-tint   Light palette/<n>/200   Dark palette/<n>/800
+            surface/palette-<n>-subtle Light palette/<n>/50    Dark palette/<n>/900
+            text/palette-<n>           Light palette/<n>/800   Dark palette/<n>/200
+```
+
+`1..7` is `gray, blue, purple, pink, orange, green, red` — taken from the old
+`palette/1..7` aliases, not reassigned. Weights follow the accent vocabulary, so
+`-subtle` is the palest and bare is the deepest, and `audit-names.mjs` now knows
+`palette-<n>` as a role family alongside the five accents.
+
+**They are deliberately not accents.** An accent carries a meaning and moves when
+the brand's meaning moves. Binding an avatar to `error/*` would change a person's
+colour when the error red is re-branded, which is the same category error as
+`on-color` standing in for `inverse`. Pink also has no intent ramp at all, so six
+hues would have coupled and one would have needed its own anyway.
+
+Checked before committing to it: a single themed veil over the existing pale disc
+was two roles instead of seventy, and it collapsed the seven hues to a closest
+pair of dE 4.5 — gray `#1f1f20`, blue `#161e23`, purple `#181822`. The ladder
+holds them at dE 18.9 against today's 23.2.
+
+### Six of seven avatar hues were failing AA in Light, and the gate said green
+
+Found while checking the new dark values. `verify-contrast` can only read a flat
+`background-color`, so on a gradient it measures one stop and cannot see the other
+two. This file's own comment then argued the measured stop was the strict one —
+backwards. **Dark text on a pale disc is hardest against the darkest stop**, not
+the palest. Against `from`, blue read 3.42, purple 3.58, pink 3.27, orange 3.72,
+green 3.10 and red 3.35, all under the 4.5 they needed, for as long as the
+inverted design had shipped.
+
+The cause was one unmirrored rung. The disc mirrors cleanly — Light `300/200/50`
+against Dark `700/800/900` — but the initials were `/600` in Light and `/200` in
+Dark, and `/600`'s mirror is `/300`. Light was the theme with the wrong rung,
+which is why Dark passed and Light did not. The initials are `/800` in Light now,
+the true mirror of `/200`, and the worst stop reads 5.29 in Light and 5.31 in
+Dark — a symmetry that is itself the evidence.
+
+**The gate still cannot see it**, so those two numbers are hand-measured and
+recorded in `avatar-gradient.css`. The pairing the build prints is the `to` end
+and will stay comfortably high whatever happens to the other two stops. A gate
+that parsed gradient stops would have caught this years earlier than a person did.
 
 ### `on-color` is for colour. `inverse` is for the inverse.
 

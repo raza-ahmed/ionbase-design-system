@@ -77,6 +77,19 @@ export const ACCENTS = new Set([
 /** Weight suffixes an accent role may take, hyphenated into the role slot. */
 export const ACCENT_SUFFIXES = new Set(['strong', 'subtle', 'tint']);
 
+/**
+ * Categorical identity colour — seven hues that mean nothing except "not the
+ * other six". Deliberately NOT accents: an accent carries a meaning and moves
+ * when the brand's meaning moves, so binding an avatar's hue to `error` would
+ * make a person's colour change when the error red is re-branded. These are
+ * indexed rather than named, which keeps them a ladder — a component picks an
+ * index — rather than a recipe with an entry per usage.
+ *
+ * They take the same weight suffixes as accents, and the same weight meanings:
+ * bare is the deepest, `-tint` the middle, `-subtle` the palest.
+ */
+export const PALETTE_SIZE = 7;
+
 /** Third slot. `default` is implicit and never written. */
 export const STATE_ORDER = [
   'hover',
@@ -185,6 +198,14 @@ export function auditNames(collections) {
     return ACCENTS.has(s.slice(0, i)) && ACCENT_SUFFIXES.has(s.slice(i + 1));
   }
 
+  function isPaletteRole(s) {
+    const m = /^palette-(\d+)(?:-([a-z]+))?$/.exec(s);
+    if (!m) return false;
+    const n = Number(m[1]);
+    if (n < 1 || n > PALETTE_SIZE) return false;
+    return m[2] === undefined || ACCENT_SUFFIXES.has(m[2]);
+  }
+
   function isState(s) {
     if (STATES.has(s)) return true;
     const parts = s.split('-');
@@ -226,7 +247,11 @@ export function auditNames(collections) {
         `'${role}' was retired from the role slot in v2`,
         `use ${RETIRED_IN_INTERFACE_ROLE[role]}`,
       );
-    } else if (!NEUTRAL_ROLES.has(role) && !isAccentRole(role)) {
+    } else if (
+      !NEUTRAL_ROLES.has(role) &&
+      !isAccentRole(role) &&
+      !isPaletteRole(role)
+    ) {
       if (isState(role)) {
         report(
           'error',
@@ -242,7 +267,8 @@ export function auditNames(collections) {
           collection,
           'R-role',
           `'${role}' is not a role`,
-          `accents take -strong / -subtle / -tint; neutrals come from the closed list`,
+          `accents and palette-1..${PALETTE_SIZE} take -strong / -subtle / -tint; ` +
+            `neutrals come from the closed list`,
         );
       }
     }
