@@ -29,7 +29,7 @@
     "icon/tertiary": {"type": "COLOR", "scopes": ["FRAME_FILL", "SHAPE_FILL"], "codeSyntax": "var(--icon-tertiary)", "values": {"Light": "{neutral.600}", "Dark": "{neutral.400}"}},
     "icon/disabled": {"type": "COLOR", "scopes": ["FRAME_FILL", "SHAPE_FILL"], "codeSyntax": "var(--icon-disabled)", "values": {"Light": "{neutral.500}", "Dark": "{neutral.500}"}},
     "icon/placeholder": {"type": "COLOR", "scopes": ["FRAME_FILL", "SHAPE_FILL"], "codeSyntax": "var(--icon-placeholder)", "values": {"Light": "{neutral.400}", "Dark": "{neutral.600}"}},
-    "icon/on-color": {"type": "COLOR", "scopes": ["FRAME_FILL", "SHAPE_FILL"], "codeSyntax": "var(--icon-on-color)", "values": {"Light": "{base.white}", "Dark": "{base.white}"}},
+    "icon/on-color": {"type": "COLOR", "scopes": ["FRAME_FILL", "SHAPE_FILL"], "codeSyntax": "var(--icon-on-color)", "values": {"Light": "{base.white}", "Dark": "{base.black}"}},
     "icon/inverse": {"type": "COLOR", "scopes": ["FRAME_FILL", "SHAPE_FILL"], "codeSyntax": "var(--icon-inverse)", "values": {"Light": "{neutral.50}", "Dark": "{neutral.900}"}},
     "icon/primary": {"type": "COLOR", "scopes": ["FRAME_FILL", "SHAPE_FILL"], "codeSyntax": "var(--icon-primary)", "values": {"Light": "{primary.600}", "Dark": "{primary.400}"}},
     "icon/error": {"type": "COLOR", "scopes": ["FRAME_FILL", "SHAPE_FILL"], "codeSyntax": "var(--icon-error)", "values": {"Light": "{error.600}", "Dark": "{error.400}"}},

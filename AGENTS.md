@@ -846,6 +846,37 @@ Before calling any component done — new, changed, or deleted:
 pnpm --filter @ionbase-ui/tokens tokens:gate
 ```
 
+Six checks: `audit` (names), `tier` (the alias chain), `modes` (below),
+`verify` (codeSyntax), `bindings` (no ghosts), `geometry`.
+
+### `tokens:modes` — a role that does not theme
+
+Interface is the only collection with a Light/Dark axis; Semantics and
+Primitives hold one mode each. So an Interface role whose two modes resolve to
+the same value does not theme, and every component binding it draws a
+light-mode colour in the dark theme.
+
+`icon/on-color` was `base/white` in both modes for as long as the role existed,
+while `text/on-color` was white in Light and black in Dark. `Button` and `Alert`
+bind both: in the dark theme a solid button had a black label beside a white
+icon. `Icon Button` binds only the icon role, so it drew a white glyph while the
+Button next to it drew a black label — two controls that are the same control.
+
+**Nothing caught it, and the contrast gate structurally could not.** That gate
+measures text pairings; an icon here is an empty `aria-hidden` element, so
+`icon/on-color` produced zero pairings out of 892. A role can be wrong in every
+component that binds it and never appear in one measurement. White also clears
+the 3:1 that non-text needs on all five Dark accent surfaces (3.6–4.59), so even
+a gate that did measure icons would have passed it. The defect was incoherence,
+and incoherence is not a ratio — which is why this check compares modes rather
+than measuring anything.
+
+Two roles are identical on purpose and declared in `SAME_ON_PURPOSE` with the
+argument: `text/disabled` and `icon/disabled`, one mid grey that has to read as
+unavailable against a light ground and a dark one. Adding to that list requires
+a reason, and an entry that stops applying fails the build — otherwise the list
+becomes a place bugs go to be permitted.
+
 ### Generated vs committed
 
 Committed and reviewed: `src/figma/*.json` (the export), `renames.json`,
