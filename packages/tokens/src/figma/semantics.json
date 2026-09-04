@@ -68,7 +68,7 @@
     "information/900": {"type": "COLOR", "scopes": [], "codeSyntax": "var(--information-900)", "values": {"IonBase": "{color.purple.900}"}},
     "chart/1": {"type": "COLOR", "scopes": [], "codeSyntax": "var(--chart-1)", "values": {"IonBase": "{color.blue.500}"}},
     "chart/2": {"type": "COLOR", "scopes": [], "codeSyntax": "var(--chart-2)", "values": {"IonBase": "{color.green.500}"}},
-    "chart/3": {"type": "COLOR", "scopes": [], "codeSyntax": "var(--chart-3)", "values": {"IonBase": "{color.purple.500}"}},
+    "chart/3": {"type": "COLOR", "scopes": [], "codeSyntax": "var(--chart-3)", "values": {"IonBase": "{color.purple.600}"}},
     "chart/4": {"type": "COLOR", "scopes": [], "codeSyntax": "var(--chart-4)", "values": {"IonBase": "{color.orange.500}"}},
     "chart/5": {"type": "COLOR", "scopes": [], "codeSyntax": "var(--chart-5)", "values": {"IonBase": "{color.pink.500}"}},
     "chart/6": {"type": "COLOR", "scopes": [], "codeSyntax": "var(--chart-6)", "values": {"IonBase": "{color.yellow.600}"}},

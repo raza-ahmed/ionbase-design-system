@@ -139,7 +139,7 @@
       "scopes": [],
       "codeSyntax": "var(--color-purple-400)",
       "values": {
-        "Value": "#7e6ff1"
+        "Value": "#9a8ff4"
       }
     },
     "color/purple/500": {
@@ -147,7 +147,7 @@
       "scopes": [],
       "codeSyntax": "var(--color-purple-500)",
       "values": {
-        "Value": "#5a4cd6"
+        "Value": "#786cdd"
       }
     },
     "color/purple/600": {
@@ -267,7 +267,7 @@
       "scopes": [],
       "codeSyntax": "var(--color-orange-50)",
       "values": {
-        "Value": "#fff4e5"
+        "Value": "#fff6ea"
       }
     },
     "color/orange/100": {

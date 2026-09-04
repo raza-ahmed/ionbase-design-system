@@ -705,7 +705,7 @@ Reasoning: [docs/naming-decisions.md](docs/naming-decisions.md).
 ```
 Primitives   143  Value                value-keyed scales only
    ↓
-Semantics    107  IonBase              brand identity — ramps, radius, border-width, icon-size
+Semantics    114  IonBase              brand identity — ramps, radius, border-width, icon-size
    ↓
 Interface    104  Light / Dark         text · icon · surface · border · ring
    ↓
@@ -714,7 +714,11 @@ components + CSS
 Breakpoint    30  Desktop/Tablet/Mobile   (parallel — type and grid only)
 ```
 
-Sync state: names `944350191`, 384 variables (re-exported 7 Aug 2026).
+Sync state: names `2150110655`, 391 variables (verified against Figma 3 Sep 2026
+with `figma/checksum.js` + `scripts/verify-export.mjs` — MATCH). This line read
+`944350191` / 384 until then, which was the 7 Aug reading; the export itself was
+never out of sync, only this sentence. Re-run the two scripts rather than
+trusting the numbers here.
 
 **Components bind Interface and Breakpoint for colour and type.** Interface may
 only alias Semantics; Semantics may only alias Primitives. `spacing/*` is the
@@ -738,10 +742,12 @@ on `spacing/*` or a ladder) and `figma/audit-geometry.js` (raw numbers in Figma,
 which no export can see — that is how a literal 10px padding and a whole
 component's unbound stroke weights both shipped).
 
-**384 variables, and that number does not grow with the component count.** A new
+**391 variables, and that number does not grow with the component count.** A new
 brand adds a _mode_, not tokens. So does a new theme. It grew by two on
 2026-08-06 — `spacing/14` and an `icon-size` rung — and that is the shape of
 growth to expect: a new _value_ the ladders did not carry, not a new component.
+It grew by seven more since: `palette/1`–`palette/7`, the AvatarGradient hues,
+each an alias of a `<hue>/600`. Seven values, zero components.
 
 Button's two new types on 2026-08-07 are the rule working: **Primary Soft and
 Success added seventy variants and zero tokens**, because v2 gives every accent
@@ -971,23 +977,50 @@ pnpm --filter ionbase-ui contrast        # runs in the build
 pnpm --filter ionbase-ui contrast:list   # every pairing, worst first
 ```
 
-### Dark is DEFERRED — read this before acting on a dark-mode finding
+### Dark was deferred, and is not any more — 4 Sep 2026
 
-`contrast-exceptions.json` carries `deferredModes: ["Dark"]`. The dark theme is
-not settled in Figma yet, so the gate **measures** Dark and prints the results
-but does not fail on them, does not write them into any component's
-`a11y.knownIssues`, and does not lint them.
+`contrast-exceptions.json` carries `deferredModes: []`. **Dark is enforced.** The
+gate measures 892 pairings across both modes and fails the build on either.
 
-This was not a tidy-up. All three outstanding defects were Dark, they had
-shipped into `Button` and `Alert`'s contracts on npm, and
-`ionbase-ui/eslint-plugin` was telling consumers not to use
-`variant="primary-soft"` — warning a light-only app off a component that is
-fine. Measuring a theme while it is still being designed produces findings that
-are true of today's values and worthless as decisions.
+It was deferred from 18 Aug to 4 Sep 2026, and the reason was sound: the theme
+was still being designed, and measuring it mid-design produced findings that were
+true of that day's values and were being shipped anyway — into `Button` and
+`Alert`'s contracts on npm, and into `ionbase-ui/eslint-plugin`, which was
+telling consumers not to use `variant="primary-soft"` and so warning a light-only
+app off a component that was fine for it.
 
-**Remove `"Dark"` from `deferredModes` once the dark theme is final.** Every
-deferred result becomes a real finding again immediately; on today's values that
-is 3 defects, listed under `deferred` in the same file so nothing is lost.
+**What the five Dark defects turned out to be.** Not five problems. Two:
+
+- **Three accent text roles were on the wrong rung.** Every accent in Dark is
+  built the same way — `subtle` = 900, `subtle/hover` = `tint` = 800 — but
+  `text/error` and `text/information` had moved to the `/300` step while
+  `text/primary`, `text/success` and `text/warning` were still on `/400`. The two
+  that had moved cleared AA comfortably (5.73, 6.35); of the three left behind,
+  primary read 4.25 and success 3.79. All three now sit on `/300`.
+- **The purple ramp did not hold its slot.** Of the eight ramps, purple was the
+  only one whose luminance fell outside its siblings' range — at `/500`
+  (0.122 against 0.179–0.242) and again at `/400` (0.222 against 0.310–0.354). It
+  was consequently the only ramp that failed black text on a Dark solid surface,
+  and the only one that failed as Dark foreground on `surface/muted`. Lifted to
+  `#786cdd` and `#9a8ff4`, hue and saturation held.
+
+**`text/success` was a defect the gate could not see.** No component composes
+`text/success` on `surface/success-subtle/hover`, so the pairing was never among
+the measured set; it would have failed the day someone built a soft success
+button. It was found by comparing every accent against its siblings rather than
+by measuring what ships — worth remembering, because the gate is deliberately
+built to measure only real pairings, and that is exactly the blind spot the
+choice buys.
+
+**Two knock-ons the change forced, neither of them optional.** Lifting
+`purple/500` would have landed `chart/3` within 1.09 of `chart/1` in luminance —
+two adjacent hues at the same lightness, which is where a categorical palette
+stops being categorical. `chart/3` is re-pointed to `purple/600` (1.63, better
+separated than the 1.33 it had before). And `text/link` moving to `primary/300`
+collided with its own hover, so `text/link/hover` moved to `primary/200`.
+
+To defer a mode again, put its name back in `deferredModes`: the gate keeps
+measuring and printing it, and stops failing, contracting and linting on it.
 
 ### The gate has now moved a design, which is what it is for
 
