@@ -297,7 +297,12 @@
   --ion-button-pressed: var(--ion-shadow-inset-flush-lg);
 
   background-color: var(--surface-inverse);
-  color: var(--text-on-color);
+
+  /* `text/inverse`, not `text/on-color`. This type's ground is the inverse
+   * neutral, which flips with the theme; on-color is for accent grounds. The
+   * two coincided until on-color settled on white for both modes, at which
+   * point this button was white on white. */
+  color: var(--text-inverse);
   border-color: var(--border-inverse);
 }
 

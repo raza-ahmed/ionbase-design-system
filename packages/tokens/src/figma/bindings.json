@@ -3,7 +3,7 @@
     "What the Figma components actually BIND, as opposed to what variables exist.",
     "Produced by figma/export-bindings.js. Checked by scripts/verify-bindings.mjs.",
     "",
-    "File: gaLbGd0QNb1fUl6BjSpfBA   Exported: 2026-09-03   Variables: 384",
+    "File: gaLbGd0QNb1fUl6BjSpfBA   Exported: 2026-09-04   Variables: 391",
     "",
     "The exporter MUST use all three traversal rules or this file is a lie:",
     "  1. setCurrentPageAsync before reading - instance overrides are unreliable otherwise",
@@ -15,7 +15,7 @@
     "would triple the file for one repeated fact."
   ],
   "file": "gaLbGd0QNb1fUl6BjSpfBA",
-  "exported": "2026-09-03",
+  "exported": "2026-09-04",
   "components": {
     "Avatar/Avatar": [
       {
@@ -238,6 +238,10 @@
       }
     ],
     "Avatar/.Status Indicator": [
+      {
+        "collection": "Interface",
+        "token": "icon/inverse"
+      },
       {
         "collection": "Interface",
         "token": "icon/on-color"
@@ -512,6 +516,10 @@
       },
       {
         "collection": "Interface",
+        "token": "icon/inverse"
+      },
+      {
+        "collection": "Interface",
         "token": "icon/on-color"
       },
       {
@@ -589,6 +597,10 @@
       {
         "collection": "Interface",
         "token": "text/disabled"
+      },
+      {
+        "collection": "Interface",
+        "token": "text/inverse"
       },
       {
         "collection": "Interface",
@@ -715,6 +727,10 @@
       {
         "collection": "Interface",
         "token": "icon/disabled"
+      },
+      {
+        "collection": "Interface",
+        "token": "icon/inverse"
       },
       {
         "collection": "Interface",
@@ -3490,6 +3506,10 @@
       },
       {
         "collection": "Interface",
+        "token": "icon/inverse"
+      },
+      {
+        "collection": "Interface",
         "token": "icon/on-color"
       },
       {
@@ -3567,6 +3587,10 @@
       {
         "collection": "Interface",
         "token": "text/information"
+      },
+      {
+        "collection": "Interface",
+        "token": "text/inverse"
       },
       {
         "collection": "Interface",

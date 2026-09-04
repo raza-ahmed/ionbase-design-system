@@ -232,7 +232,6 @@
  * find on a different element resolves to the block's `--text-tertiary` and
  * measures a pairing that never renders.
  */
-.ion-avatar__indicator--neutral,
 .ion-avatar__indicator--primary,
 .ion-avatar__indicator--success,
 .ion-avatar__indicator--warning,
@@ -241,8 +240,15 @@
   color: var(--text-on-color);
 }
 
+/* Neutral is the odd one out: its ground is `surface/inverse`, a neutral that
+ * flips with the theme, not an accent. So its foreground has to flip with it —
+ * `text/inverse`, not `text/on-color`. Binding on-color here worked only by
+ * coincidence, while on-color happened to be the exact inverse of the inverse
+ * surface in both modes; the moment on-color settled on white for both, this
+ * pairing measured 1:1 and the indicator vanished. */
 .ion-avatar__indicator--neutral {
   background-color: var(--surface-inverse);
+  color: var(--text-inverse);
 }
 
 .ion-avatar__indicator--primary {

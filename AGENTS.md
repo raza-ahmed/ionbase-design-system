@@ -1053,6 +1053,52 @@ collided with its own hover, so `text/link/hover` moved to `primary/200`.
 To defer a mode again, put its name back in `deferredModes`: the gate keeps
 measuring and printing it, and stops failing, contracting and linting on it.
 
+### The dark button is the light button — 4 Sep 2026
+
+Dark used to lighten a solid accent control: `surface/<accent>` at `/500` with
+the ladder running `/400` and `/300` on hover and press, against Light's
+`/600 -> /700 -> /800`. That is the whole reason `text/on-color` was black in
+Dark — white fails AA on four of the five lightened surfaces (success 3.69,
+warning 3.60, error 4.09, information 4.21). The measurement was right and the
+conclusion was wrong: the question to ask was not "which foreground survives
+this surface" but "why is the surface different at all".
+
+A solid accent control is the same control in both themes. Dark now takes the
+Light ladder exactly, so white clears every state from 5.24 to 13.23, and
+`surface/primary` and friends no longer appear in `theme-dark.css` at all —
+identical values need no override.
+
+**What themes is the rim, not the fill.** `border/<accent>-strong` is `/700` in
+Light and `/500` in Dark: a rim _lighter_ than its own fill, which carries the
+control boundary against the dark page at 3.84 to 4.89. It used to be `/600` in
+Dark — darker than the fill it surrounded — and `border/error-strong` was
+failing SC 1.4.11 at 2.96 against the page. That is fixed as a side effect.
+
+Hover has to darken rather than lighten. A lighter hover at `/500` puts white
+back under AA on success. There is no version of this where the dark control
+brightens on hover and stays legible.
+
+### `on-color` is for colour. `inverse` is for the inverse.
+
+Making `text/on-color` white in both modes broke three components at **1:1** —
+white on white, an invisible control — and the contrast gate caught all three:
+`Button` Primary Neutral, `Alert` solid Neutral, and Avatar's neutral status
+indicator. All three drew `text/on-color` over `surface/inverse`.
+
+That was a category error that had always been there. `surface/inverse` is a
+neutral that flips with the theme, not an accent; its foreground has to flip
+with it, which is `text/inverse`. It rendered correctly for as long as it did
+only because `text/on-color` happened to be the exact inverse of the inverse
+surface in both modes — white over a dark inverse in Light, black over a light
+inverse in Dark. The coincidence held until on-color settled on white for both.
+
+Fixed at source: 90 node bindings across `Button`, `Icon Button`, `Alert` and
+`.Status Indicator` moved from `on-color` to `inverse`, scoped by the rule
+"the fill under it binds `surface/inverse`" rather than by variant name. The 240
+bindings on genuinely coloured surfaces were left alone. `Tooltip` already
+paired `text/inverse` with `surface/inverse` and needed no change — it was the
+one that had it right.
+
 ### The gate has now moved a design, which is what it is for
 
 `AvatarGradient` shipped its first draft as a saturated disc — `color/<hue>/500`
