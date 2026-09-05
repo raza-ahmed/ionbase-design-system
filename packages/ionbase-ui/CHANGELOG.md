@@ -44,6 +44,212 @@ and `1` is what fits the frame; a real pager reaches four digits, and a fixed 40
 box either clips `1024` or pads every single-digit cell to the widest one that
 might occur.
 
+## 0.47.0 — 2026-09-05
+
+### Fixed — the contrast gate was enforcing a pixel the browser never draws
+
+0.45.0 paired each translucent gradient layer against every opaque ground
+beneath it and called the cross product a safe bound, because it errs strict. It
+was not safe. It composited `AvatarGradient`'s white gloss over the `from` stop
+at full strength, and that pixel does not exist: `from` is the top of the disc,
+and the radial is centred at 70.513% of the height with a vertical radius of
+64.103%, so at `y=0` it sits **1.10 radii out** — past its own transparent stop.
+The gloss and the darkest stop never meet.
+
+`verify-contrast` parses `linear-gradient` and `radial-gradient` geometry now,
+samples the element — inside the inscribed circle when it is round, because a
+clipped corner is not painted either — composites the layers at each point, and
+reports the worst pixel that actually exists. **1068 pairings became 958:**
+fewer, and each one real. Colours _between_ two stops had never been measured at
+all, and the worst point on a gradient is rarely a stop.
+
+Interpolation is premultiplied, as CSS specifies. A naive lerp toward
+`transparent` — which is `rgba(0,0,0,0)` — drags every fade through black, and
+this gradient fades a white gloss to transparent.
+
+**This overturned 0.44.0.** That release reported the authored 18% sheen dropping
+five hues under AA in Dark; every one of those was the phantom pairing.
+Evaluated geometrically, 18% floors at **5.07**. Nothing was ever failing.
+`surface/sheen` stays a token — a raw 18% hardcoded twice is a real problem — and
+its 5% Dark value stays because it was preferred in review, but it is labelled a
+design choice, not a fix, everywhere it is mentioned.
+
+A bound erring strict looks free and is not: nobody audits a number that only
+looks too strict, so those five invented failures justified a design change, a
+token value, a `SAME_ON_PURPOSE` reason and a section of AGENTS.md.
+
+## 0.46.0 — 2026-09-04
+
+### Added — a value-aware sync checksum
+
+`verify-export.mjs` hashed `name|codeSyntax`, which catches a rename and is blind
+to an edited value by construction. Not theoretical: the green ramp changed in
+Figma and the script went on reading `944350191` against 384 variables, passing,
+exactly as if nothing had been touched. `color/orange/50` drifted the same way
+later and nothing noticed then either.
+
+Every gate in `packages/tokens` starts from the committed export, so a value that
+only differs in Figma is invisible to all of them at once — the build stays green
+while every measurement downstream describes a file nobody is looking at.
+
+There is a second hash now over `name|type|codeSyntax|mode=value`, computed on
+both sides and verified against the live file: 463 variables, names
+`3716173117`, values `2068035187`, all four per-collection hashes identical.
+`--expect` refuses the old two-argument form rather than quietly comparing names
+only.
+
+## 0.45.0 — 2026-09-04
+
+### Fixed — a translucent gradient stop was composited over the wrong ground
+
+0.43.0 taught the gate to read every gradient stop; that was half the job. A
+translucent stop is not a colour until something is behind it, and the backdrop
+the gate reached for was the component's flat `background-color` — for
+`AvatarGradient` the `to` stop, the palest part of the disc.
+
+`background-image` splits into layers and is walked bottom-up: opaque stops
+become grounds and a translucent stop is paired against every opaque ground
+beneath it. 980 pairings became 1068. The dedup key had to carry the backdrop —
+without it the stricter row is exactly the one that disappears.
+
+Superseded by 0.47.0, which replaced this cross product with real geometry.
+
+## 0.44.0 — 2026-09-04
+
+### Changed — the avatar gloss became a token
+
+`AvatarGradient`'s white sheen was hardcoded `rgb(255 255 255 / 18%)` in both
+themes — a place dark mode has to be fixed by hand, once per occurrence.
+`surface/sheen` is a themed token now, 20% in Light and 5% in Dark, following
+`surface/scrim` and `surface/hover`. Bound across 28 Figma variants so the file
+and the CSS cannot drift.
+
+`surface/sheen-subtle` is 5% in both themes and declared in `verify-modes.mjs`:
+the alpha ramp has no step below 5%.
+
+**The accessibility argument given for the 5% was wrong** — see 0.47.0. The token
+is right; the measurement that chose its Dark value was measuring a pixel that
+does not exist.
+
+## 0.43.0 — 2026-09-04
+
+### Fixed — the contrast gate read one stop of three, so a gradient could fail AA and pass
+
+`verify-contrast` resolved a ground from `background-color` only, so on a
+gradient it saw the flat fallback and nothing else. `AvatarGradient` declares its
+`to` stop as that fallback — the most flattering of the three for dark initials.
+
+It now parses `background-image`, keeping every `var()` that resolves to a
+parseable colour and discarding the rest, which is how the sheen's percentage var
+drops out without the gate needing to understand gradient grammar.
+Negative-tested by putting the Light initials back on `/600`.
+
+## 0.42.0 — 2026-09-04
+
+### Added — a palette tier, so AvatarGradient can theme
+
+`AvatarGradient` was the one component that could not theme. It bound 21
+Primitives and `palette/1..7` in Semantics, and those collections hold one mode
+each — only Interface carries a Light/Dark axis, and it bound none of it. Seven
+near-white discs rendered unchanged in the dark theme. Not a wrong dark value; no
+dark value.
+
+```
+Semantics  palette/<n>/<rung>            n=1..7, rungs 50 200 300 600 700 800 900
+Interface  surface/palette-<n>           Light <n>/300  Dark <n>/700
+           surface/palette-<n>-tint      Light <n>/200  Dark <n>/800
+           surface/palette-<n>-subtle    Light <n>/50   Dark <n>/900
+           text/palette-<n>              Light <n>/800  Dark <n>/200
+```
+
+Deliberately not accents: an accent moves when the brand's meaning moves, and
+binding a person's avatar to `error/*` would change their colour when the error
+red is re-branded. 391 → 461 variables — seventy names for one component, and
+AGENTS.md records that the rule bent here rather than held.
+
+### Fixed — six of seven avatar hues were failing AA in Light
+
+Pre-existing, and the build was green throughout. Against the `from` stop: blue
+3.42, purple 3.58, pink 3.27, orange 3.72, green 3.10, red 3.35. One unmirrored
+rung caused it — the disc mirrors cleanly (Light 300/200/50 against Dark
+700/800/900) but the initials were `/600` in Light and `/200` in Dark, and
+`/600`'s mirror is `/300`. Initials are `/800` in Light now; the worst stop reads
+5.29 Light and 5.31 Dark, and the symmetry is the evidence.
+
+## 0.41.0 — 2026-09-04
+
+### Changed — the dark button is the light button
+
+Dark lightened a solid accent control to `<accent>/500`, and that was the only
+reason `text/on-color` had to be black: white fails AA on four of the five
+lightened surfaces. A button with a dark label is not what these controls look
+like anywhere.
+
+Dark takes the Light ladder exactly — `/600 → /700 → /800` — so white clears
+every state from 5.24 to 13.23, and the accent surfaces no longer appear in
+`theme-dark.css` at all. **What themes is the rim, not the fill:**
+`border/<accent>-strong` is `/700` in Light and `/500` in Dark, carrying the
+control boundary against the dark page at 3.84–4.89, and fixing
+`border/error-strong`, which had been failing SC 1.4.11 at 2.96.
+
+### Fixed — `on-color` is for colour, `inverse` is for the inverse
+
+Making `on-color` white in both modes broke three components at **1:1** — white
+on white — and the contrast gate caught all three. All drew `text/on-color` over
+`surface/inverse`, always a category error: `surface/inverse` is a neutral that
+flips with the theme, so its foreground must flip too. It had rendered correctly
+only by coincidence. 90 node bindings moved, scoped by "the fill under it binds
+`surface/inverse`" rather than by variant name.
+
+## 0.40.0 — 2026-09-04
+
+### Fixed — `icon/on-color` never themed
+
+It was `base/white` in both modes while `text/on-color` was white in Light and
+black in Dark. A solid dark-mode button drew a black label beside a white icon;
+Icon Button, which binds only the icon role, drew a white glyph next to a Button
+drawing a black label. Eight Figma components bind it.
+
+**Nothing caught this, and the contrast gate could not.** It measures text, and
+an icon is an empty `aria-hidden` element: `icon/on-color` produced **zero
+pairings out of 892**. A role can be wrong in every component that binds it and
+never appear in a single measurement. White also clears the 3:1 non-text minimum,
+so even a gate that measured icons would have passed it. The defect is
+incoherence, and incoherence is not a ratio.
+
+### Added — `tokens:modes`
+
+`scripts/verify-modes.mjs` compares modes instead of measuring them: every
+Interface role must resolve to different values in Light and Dark, or be declared
+in `SAME_ON_PURPOSE` with the argument for why one value is right in both. A
+declared exemption that stops applying fails the build, so the list cannot become
+a place bugs go to be permitted. Negative-tested on both failure modes.
+
+## 0.39.0 — 2026-09-04
+
+### Changed — Dark is enforced
+
+`deferredModes` is empty. The gate measures 892 pairings across both modes, up
+from 446, with zero defects. The five deferred Dark defects were two problems:
+
+**Three accent text roles were on the wrong rung.** `text/error` and
+`text/information` had moved to `/300` while `text/primary`, `text/success` and
+`text/warning` were still on `/400`. Primary read 4.25 and success 3.79.
+
+**The purple ramp did not hold its slot** — the only one of eight whose luminance
+fell outside its siblings' range, at `/500` and again at `/400`. Lifted to
+`#786cdd` and `#9a8ff4`, hue and saturation held. Knock-ons: `chart/3` re-pointed
+to `purple/600` for luminance separation, and `text/link/hover` moved to
+`primary/200` after `text/link` collided with it.
+
+`text/success` at 3.79 was a defect the gate could not see — no component
+composes it on `surface/success-subtle/hover`, so it was never in the measured
+set. Found by comparing accents against each other, not by measuring what ships.
+
+Also corrects `color/orange/50`, `#fff4e5` in the repo against `#fff6ea` in
+Figma. The name checksum is blind to value drift and passed throughout; see
+0.46.0, which closed that gap.
+
 ## 0.38.0 — 2026-09-03
 
 ### Fixed — the contrast gate skipped every component that draws no background
