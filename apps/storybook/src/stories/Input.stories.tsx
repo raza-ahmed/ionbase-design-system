@@ -191,9 +191,12 @@ export const SmallAndLargeGeometry: Story = {
 };
 
 /**
- * Focus thickens the border from 1px to 2px. Because the padding subtracts the
- * live border width, the text must not move — that is the whole reason for the
- * calc, and it would regress silently without this check.
+ * The text must not move when the field takes focus.
+ *
+ * Focus used to thicken the border to 2px, and the padding calc existed to
+ * absorb it. Every state is 1px as of 5 Sep 2026, so nothing can shift by
+ * construction — but the assertion stays, because the calc is still live and
+ * the next state to take a different width would regress this silently.
  */
 export const FocusDoesNotShiftText: Story = {
   render: (args) => <Input {...args} aria-label="Field" />,
@@ -205,20 +208,25 @@ export const FocusDoesNotShiftText: Story = {
     field.focus();
     const after = field.getBoundingClientRect().left;
 
-    await expect(getComputedStyle(box).borderLeftWidth).toBe('2px');
+    await expect(getComputedStyle(box).borderLeftWidth).toBe('1px');
     await expect(Math.round(after - before)).toBe(0);
   },
 };
 
 /**
- * Invalid is 2px, matching Focus and matching Select.
+ * Invalid is 1px, and this story is the record of a reversal.
  *
- * This was 1px until the stroke weights were bound in Figma. At 1px the invalid
- * state differed from default only in hue, which fails WCAG 1.4.1 — error has
- * to be perceivable without relying on colour. Neither component bound its
- * stroke weight, which is why the two were allowed to disagree at all.
+ * It asserted 2px, and the reason was good: at 1px an invalid field differs
+ * from a default field by hue alone, which fails WCAG 1.4.1 — error has to be
+ * perceivable without relying on colour. That defect was found once and fixed
+ * once. It was thinned again on an explicit design call on 5 Sep 2026, applied
+ * to Input, Textarea and both Figma sets.
+ *
+ * SO THIS TEST NO LONGER GUARDS 1.4.1, and nothing else does either. If the
+ * error state needs a non-colour cue, an icon or a message is the better fix
+ * than putting the border back — see input.css.
  */
-export const InvalidBorderIsTwoPixels: Story = {
+export const InvalidBorderIsOnePixel: Story = {
   render: (args) => <Input {...args} isInvalid aria-label="Field" />,
   play: async ({ canvas }) => {
     const box = canvas
@@ -226,7 +234,7 @@ export const InvalidBorderIsTwoPixels: Story = {
       .closest('.ion-input') as HTMLElement;
     const cs = getComputedStyle(box);
 
-    await expect(cs.borderLeftWidth).toBe('2px');
+    await expect(cs.borderLeftWidth).toBe('1px');
     // The inset still resolves to 12px, so the value does not move.
     await expect(
       parseFloat(cs.paddingLeft) + parseFloat(cs.borderLeftWidth),

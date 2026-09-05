@@ -21,10 +21,12 @@
  *    padding box, so `padding-x: 12px` would put the text at 13px. The border
  *    width is subtracted back out — the same correction Badge and Tabs needed.
  *
- *    This also makes the focus state free: Figma's focus ring is a 2px inside
- *    stroke, which eats 1px further into the padding and leaves the text
- *    exactly where it was. Subtracting the live border width reproduces that,
- *    so nothing shifts when the field takes focus.
+ *    The subtraction is against the LIVE border width, which used to matter:
+ *    focus was a 2px inside stroke that ate a further 1px of padding, and
+ *    subtracting it kept the text from shifting. Every state is 1px as of
+ *    5 Sep 2026, so the correction is now constant — but it stays written this
+ *    way, because it is correct either way and the next state to need a
+ *    different width gets it for free.
  */
 .ion-input {
   /*
@@ -172,9 +174,10 @@
  * hover -> focus -> invalid -> read-only -> disabled.
  *
  * Invalid sits after focus and overrides the colour only, never the width. A
- * focused invalid field therefore keeps the 2px ring but shows it in the error
- * colour, which is both states being true at once rather than one masking the
- * other.
+ * focused invalid field therefore shows the error colour rather than the focus
+ * colour — both states are true at once and the more urgent one is shown. That
+ * ordering mattered more when the two differed in width as well; it is still
+ * the behaviour, and still deliberate.
  */
 
 /*
@@ -192,23 +195,39 @@
   border-color: var(--border-strong);
 }
 
+/*
+ * 1px, not the 2px this used to carry. See the note on --invalid below: both
+ * states were thinned on the same design call, and the trade is the same one.
+ */
 .ion-input:focus-within,
 .ion-input[data-focused='true'] {
-  --ion-input-border-width: var(--border-width-thick);
-
   border-color: var(--border-focus);
 }
 
 /*
- * 2px, matching Focus and matching Select. At 1px the invalid state differed
- * from default only in hue, which is the exact failure mode WCAG 1.4.1 is
- * about — error has to be perceivable without relying on colour alone.
- * Reconciled in Figma; Input was the one that was wrong.
+ * 1px. THIS COMMENT USED TO ARGUE FOR 2px AND THE ARGUMENT WAS SOUND, so read
+ * it before changing anything back:
+ *
+ *   "2px, matching Focus and matching Select. At 1px the invalid state differed
+ *    from default only in hue, which is the exact failure mode WCAG 1.4.1 is
+ *    about — error has to be perceivable without relying on colour alone.
+ *    Reconciled in Figma; Input was the one that was wrong."
+ *
+ * That defect was found once and fixed once, and thinning the border reopens
+ * it: an invalid field now differs from a default field by hue alone. It was
+ * changed on an explicit design call on 5 Sep 2026, applied to Input and
+ * Textarea and to their Figma sets, and it is recorded here rather than left to
+ * look like drift.
+ *
+ * Select, Checkbox, Radio, Tabs and Menu still carry border-width/thick, so
+ * these two are deliberately out of step with the rest of the system.
+ *
+ * IF THE ERROR STATE NEEDS A NON-COLOUR CUE AGAIN, this is the decision to
+ * revisit — and an icon or a message would satisfy 1.4.1 without the border,
+ * which is the better fix than putting the 2px back.
  */
 .ion-input--invalid,
 .ion-input[data-invalid='true'] {
-  --ion-input-border-width: var(--border-width-thick);
-
   border-color: var(--border-error-strong);
 }
 

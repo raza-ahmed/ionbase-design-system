@@ -1,5 +1,36 @@
 # Changelog
 
+## 0.49.0 — 2026-09-05
+
+### Changed — Input focus and invalid borders are 1px
+
+Both were `border-width/thick`. They are `border-width/default` now, on Input and
+on the Textarea being designed beside it, in the code and in both Figma sets.
+
+**This reverses a documented accessibility fix, and it is recorded rather than
+quietly applied.** `input.css` carried the argument for the thick invalid border:
+
+> "2px, matching Focus and matching Select. At 1px the invalid state differed
+> from default only in hue, which is the exact failure mode WCAG 1.4.1 is about
+> — error has to be perceivable without relying on colour alone."
+
+That defect was found once and fixed once. Thinning the border reopens it: an
+invalid field now differs from a default field by hue alone. Changed on an
+explicit design call, with the trade stated first.
+
+**Select, Checkbox, Radio, Tabs and Menu still carry 2px**, so Input and Textarea
+are deliberately out of step with the rest of the system. `Select.stories.tsx`
+previously claimed the two were reconciled and could not drift; that comment was
+false as of this release and now explains the mismatch instead.
+
+Two interaction tests were guarding the old decision and failed on this change —
+`FocusDoesNotShiftText` and `InvalidBorderIsTwoPixels`. Both were updated rather
+than removed, the latter renamed to `InvalidBorderIsOnePixel`, and it says
+plainly that it no longer guards 1.4.1 and that nothing else does either.
+
+If the error state needs a non-colour cue again, an icon or a message is the
+better fix than restoring the border width.
+
 ## 0.48.0 — 2026-09-05
 
 ### Added — Pagination

@@ -145,12 +145,17 @@ export const SmallAndLargeGeometry: Story = {
 };
 
 /**
- * Invalid is 2px, matching Focus and matching Input.
+ * Invalid is 2px here, and Input is 1px. THAT MISMATCH IS DELIBERATE.
  *
- * At 1px the invalid state differed from default only in hue — the exact
- * failure mode WCAG 1.4.1 exists for, since error has to be perceivable without
- * relying on colour. Input was the one that was wrong; both are now bound to
- * `border-width/thick` in Figma, so neither can drift from the other again.
+ * At 1px the invalid state differs from default only in hue — the exact failure
+ * mode WCAG 1.4.1 exists for, since error has to be perceivable without relying
+ * on colour. Both components were reconciled on 2px for that reason. Input and
+ * Textarea were thinned back to 1px on an explicit design call on 5 Sep 2026;
+ * Select, Checkbox, Radio, Tabs and Menu were not, so Select keeps the cue.
+ *
+ * This is the one place the two can be compared, so do not "fix" the
+ * inconsistency by thinning this one to match. Either the decision comes back
+ * the other way, or the error state gains a non-colour cue that is not a border.
  */
 export const InvalidBorderIsTwoPixels: Story = {
   render: (args) => <Select {...args} isInvalid aria-label="Status" />,
