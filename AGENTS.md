@@ -1203,29 +1203,41 @@ A gradient the parser does not understand — conic, repeating, a stop with no
 explicit position — falls back to the per-stop cross product. Strict, and never
 silent.
 
-### `text/placeholder` fails AA, and only Figma binds it — 5 Sep 2026
+### `text/placeholder` was retired, not exempted — 5 Sep 2026
 
-The role reads **2.38:1** on `surface/page` in Light and **2.33:1** in Dark,
+The role read **2.38:1** on `surface/page` in Light and **2.33:1** in Dark,
 against the 4.5 that SC 1.4.3 asks. Placeholder text is text; the criterion does
-not exempt it, and "it is only a hint" is not one of the exceptions.
+not exempt it, and "it is only a hint" is not one of the three exceptions.
 
-**No stylesheet in this package uses it.** `input.css` has always used
-`text/tertiary` for its `::placeholder`, at 7.09:1, so the shipped code is
-correct and always was. The role is bound in the Figma `Input` set (Default and
-Filled) and was bound in `Textarea` until this date.
+**No stylesheet ever used it.** `input.css` has always used `text/tertiary` for
+its `::placeholder`, at 7.09:1, so the shipped code was correct throughout. Only
+Figma bound the failing role — six nodes on the Input set, plus Form Field and
+Input/Phone through nested instances.
 
 Found the only way it could be: `textarea.css` was written to match its Figma
-set, used the role, and the contrast gate failed **14 pairings** immediately.
-Nothing else would have caught it, because a role nothing composes is a role the
-gate never measures — the same shape as the `icon/on-color` finding, and the
-reason `tokens:modes` exists.
+set, used the role, and the contrast gate failed **14 pairings** at once. A role
+nothing composes is a role the gate never measures — the same shape as the
+`icon/on-color` finding, and the reason `tokens:modes` exists.
 
-Textarea's Figma set now binds `text/tertiary` in Default and Hover, matching the
-code. **The `Input` set is the remaining instance** and is left alone
-deliberately: changing a shipped component's Figma values is a design decision,
-not a cleanup. Either `text/placeholder` gets a value that clears 4.5:1, or the
-Input set moves to `text/tertiary` and the role is retired. Until one of those
-happens, do not "fix" a stylesheet to match the Figma binding.
+**Retired rather than exempted, and the difference matters.** An exemption is a
+decision every future reader has to re-derive correctly; a deleted role cannot
+be reached for by mistake. The six Input bindings moved to `text/tertiary`, the
+variable was removed, and the export was verified against Figma on both hashes:
+462 variables, names `3800597933`, values `3733147685`, all four collections
+matching. Interface went 134 -> 133.
+
+Prior art, checked rather than assumed: **Base Web** points `inputPlaceholder` at
+`contentTertiary` and has no placeholder colour at all — the shape this now
+matches. **Carbon** keeps `text-placeholder` at `gray40`, which measures 2.38:1
+on white, with an open accessibility issue against it. A serious system shipping
+the defect is not a reason to keep it.
+
+**`icon/placeholder` is the same value and the same problem, and is still here.**
+`#9ca3b0` measures **2.54:1** on `surface/default` in Light and 2.33:1 in Dark,
+against the 3:1 that SC 1.4.11 asks of non-text. It is bound by Input, Form Field
+and Input/Phone. No stylesheet uses it either, so no gate measures it — the
+identical blind spot. `surface/placeholder` is a surface, carries no foreground
+floor of its own, and is fine.
 
 ### Six of seven avatar hues were failing AA in Light, and the gate said green
 

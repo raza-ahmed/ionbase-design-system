@@ -1,5 +1,33 @@
 # Changelog
 
+## 0.51.0 — 2026-09-05
+
+### Removed — `text/placeholder`
+
+The role read **2.38:1** in Light and **2.33:1** in Dark against the 4.5 SC 1.4.3
+asks. Placeholder text is text; the criterion does not exempt it.
+
+**No stylesheet ever used it** — `input.css` has always used `text/tertiary` at
+7.09:1 — so the shipped code was correct throughout and only Figma bound the
+failing role. It is retired rather than exempted: an exemption is a decision
+every future reader has to re-derive correctly, and a deleted role cannot be
+reached for by mistake. Six Input bindings moved to `text/tertiary`, the variable
+was deleted, and the export verified against Figma on both hashes — 462
+variables, Interface 134 → 133.
+
+Nothing in the public API changes. `--text-placeholder` was emitted in the token
+CSS and referenced by no component; it is gone from both.
+
+Prior art, checked rather than assumed: Base Web points `inputPlaceholder` at
+`contentTertiary` and has no placeholder colour at all, which is the shape this
+now matches. Carbon keeps one at 2.38:1 with an open issue against it.
+
+**`icon/placeholder` is the same value and the same problem, and is still here** —
+2.54:1 against the 3:1 SC 1.4.11 asks of non-text, bound by Input, Form Field and
+Input/Phone, used by no stylesheet so measured by no gate. Recorded in AGENTS.md
+rather than fixed in passing, because it is a design decision on a shipped
+component.
+
 ## 0.50.0 — 2026-09-05
 
 ### Added — Textarea

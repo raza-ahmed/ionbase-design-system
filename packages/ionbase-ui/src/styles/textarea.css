@@ -85,16 +85,18 @@
  * exactly the placeholder distinction — so it needs no variant, the same
  * resolution input.css reached.
  *
- * text/tertiary, NOT the text/placeholder the Figma set binds. Placeholder text
- * is text: SC 1.4.3 wants 4.5:1 and does not exempt it, and text/placeholder
- * reads 2.38:1 on surface/page in Light and 2.33:1 in Dark. The contrast gate
- * caught it the moment this file first used the role — 14 failures — and
- * text/tertiary is what input.css uses for the same pseudo-element, at 7.09:1.
+ * text/tertiary, and THERE IS NO LONGER A text/placeholder TO REACH FOR.
  *
- * The role is bound in the Figma Input and Textarea sets and used by no
- * stylesheet in this package. That is a Figma-side defect rather than a code
- * one, and it is recorded in AGENTS.md; do not "restore" the binding to match
- * the file until the role's value changes there.
+ * The role read 2.38:1 in Light and 2.33:1 in Dark against the 4.5 SC 1.4.3
+ * asks, and the criterion does not exempt placeholder text. Writing this file
+ * against the Figma binding failed 14 contrast pairings immediately, which is
+ * how the defect surfaced at all: no stylesheet had ever used the role, so
+ * nothing measured it. It was retired from Figma and the export on 5 Sep 2026
+ * rather than exempted, and Input's six bindings moved here too.
+ *
+ * Base Web makes the same call — `inputPlaceholder` points at `contentTertiary`
+ * and there is no placeholder colour. Carbon keeps one, at 2.38:1, and has an
+ * open issue about it.
  */
 .ion-textarea::placeholder {
   color: var(--text-tertiary);

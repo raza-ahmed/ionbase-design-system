@@ -15,7 +15,7 @@
     "would triple the file for one repeated fact."
   ],
   "file": "gaLbGd0QNb1fUl6BjSpfBA",
-  "exported": "2026-09-04",
+  "exported": "2026-09-05",
   "components": {
     "Avatar/Avatar": [
       {
@@ -986,10 +986,6 @@
       },
       {
         "collection": "Interface",
-        "token": "text/placeholder"
-      },
-      {
-        "collection": "Interface",
         "token": "text/secondary"
       },
       {
@@ -1104,10 +1100,6 @@
       },
       {
         "collection": "Interface",
-        "token": "text/placeholder"
-      },
-      {
-        "collection": "Interface",
         "token": "text/secondary"
       },
       {
@@ -1198,11 +1190,11 @@
       },
       {
         "collection": "Interface",
-        "token": "text/placeholder"
+        "token": "text/secondary"
       },
       {
         "collection": "Interface",
-        "token": "text/secondary"
+        "token": "text/tertiary"
       },
       {
         "collection": "Primitives",
