@@ -1,0 +1,65 @@
+{
+  "status": "stable",
+  "summary": "A multi-line text field. Every size and state is Input's; it wraps and it resizes vertically.",
+  "useWhen": [
+    "the answer is prose — a description, a note, a message — and may run past one line",
+    "the user should be able to see several lines of what they wrote at once"
+  ],
+  "useInstead": [
+    {
+      "when": "the value is a single short string — a name, an email, a search term",
+      "use": "Input",
+      "why": "a one-line answer in a three-line box tells the user to write more than you want"
+    },
+    {
+      "when": "the answer is one of a known set",
+      "use": "Select",
+      "why": "free text you intend to parse into categories is a Select you have not built yet"
+    },
+    {
+      "when": "the field needs formatting controls or renders markup",
+      "use": "Input",
+      "why": "a rich-text editor is not in this library, and a textarea styled to look like one will not behave like one"
+    }
+  ],
+  "variants": {
+    "size": {
+      "sm": { "use": "dense forms and side panels" },
+      "md": { "use": "the default" },
+      "lg": { "use": "roomy layouts, and the primary field on a page" }
+    }
+  },
+  "a11y": {
+    "role": "textbox (multiline)",
+    "guarantees": [
+      "the label, helper text and error message are wired to the control by React Aria's useTextField, so the accessible name and description are correct without the caller doing anything",
+      "`errorMessage` replaces the helper text only when `isInvalid` is set, and is announced as the field's description",
+      "the focus ring shows for keyboard focus only, and hover does not latch on touch",
+      "resize is disabled when the field is, matching what browsers do with a disabled textarea"
+    ],
+    "requires": [
+      "`label`, or an `aria-label` when the field is labelled by something on the page — an unlabelled textarea is announced only as \"edit text\"",
+      "a visible error cue that is not the border. THE INVALID BORDER IS 1px AS OF 0.49.0 and differs from a default field by hue alone, so pass `errorMessage` — WCAG 1.4.1 is not satisfied by the border on its own"
+    ]
+  },
+  "deprecated": [
+    {
+      "prop": "disabled",
+      "replacement": "isDisabled"
+    }
+  ],
+  "antiPatterns": [
+    {
+      "avoid": "setting a fixed `height` in CSS to size the box",
+      "instead": "use `rows`. The Figma height is derived from three lines of a bound line-height, so a fixed height pins the box while the text inside it keeps scaling with the type ramp"
+    },
+    {
+      "avoid": "drawing a custom resize grip",
+      "instead": "the browser paints one for `resize: vertical` and it cannot be styled or suppressed independently, so a custom grip sits beside it and the field gets two"
+    },
+    {
+      "avoid": "relying on `isInvalid` alone to communicate an error",
+      "instead": "pass `errorMessage` too. The border is 1px and the same width as every other state, so colour is the only difference without it"
+    }
+  ]
+}

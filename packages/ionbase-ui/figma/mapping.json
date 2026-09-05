@@ -1139,6 +1139,29 @@
           "prop": "showPageSize"
         }
       }
+    },
+    "Textarea": {
+      "code": "Textarea",
+      "props": {
+        "Size": {
+          "prop": "size",
+          "values": {
+            "Small": "sm",
+            "Medium": "md",
+            "Large": "lg"
+          }
+        },
+        "State": {
+          "prop": "isInvalid",
+          "when": {
+            "Invalid": true
+          },
+          "note": "Hover, Focus and Filled are CSS or content; Disabled is isDisabled, Read-only is isReadOnly — both react-aria props, mirroring Input."
+        },
+        "Value#1301:0": {
+          "prop": "value"
+        }
+      }
     }
   },
   "unmapped": {

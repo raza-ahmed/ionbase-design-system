@@ -19,7 +19,7 @@
   ],
   "file": "gaLbGd0QNb1fUl6BjSpfBA",
   "appliedOn": "2026-09-05",
-  "verifiedInFigma": 39,
+  "verifiedInFigma": 40,
   "applied": {
     "21:461": {
       "figmaComponent": "Button",
@@ -215,6 +215,11 @@
       "figmaComponent": "Pagination",
       "component": "Pagination",
       "hash": "caba28b9efcb93ba"
+    },
+    "1301:334": {
+      "figmaComponent": "Textarea",
+      "component": "Textarea",
+      "hash": "5205671a37f7f91c"
     }
   }
 }

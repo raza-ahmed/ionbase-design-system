@@ -1,5 +1,46 @@
 # Changelog
 
+## 0.50.0 — 2026-09-05
+
+### Added — Textarea
+
+A multi-line text field, designed in Figma first (`Textarea` 1301:334) and
+exported here. Every size and every one of the seven states is Input's — a
+textarea is an input that wrapped, and the shared vocabulary is the point.
+
+```tsx
+<Textarea label="Release notes" description="Markdown is not rendered." />
+<Textarea size="lg" rows={6} placeholder="…" />
+<Textarea isInvalid errorMessage="Release notes are required." />
+```
+
+**The height is derived, not typed.** The Figma frame hugs three lines of a bound
+line-height, so the box falls out of bound padding rather than a chosen number —
+72 / 88 / 96 for sm / md / lg. `rows={3}` reproduces that and keeps working when
+the type ramp moves; a fixed CSS `height` would pin the box while the text inside
+it kept scaling.
+
+**The resize grip is the browser's.** `resize: vertical` makes the browser paint
+it, and it cannot be styled, so the stylesheet draws nothing. Figma draws it as
+documentation of the native control. Resize is off when the field is disabled,
+matching what browsers do rather than expressing a preference.
+
+### Fixed — the placeholder role fails AA, and the gate caught it on first use
+
+`text/placeholder` reads **2.38:1** in Light and **2.33:1** in Dark against the
+4.5 SC 1.4.3 asks. Placeholder text is text; the criterion does not exempt it.
+
+`textarea.css` was written to match its Figma set, used the role, and failed 14
+contrast pairings immediately. No stylesheet in this package had used it before —
+`input.css` has always used `text/tertiary` at 7.09:1 — so the shipped code was
+correct and only Figma bound the failing role. A role nothing composes is a role
+the gate never measures, which is the same shape as the `icon/on-color` finding.
+
+Textarea's Figma set now binds `text/tertiary` in Default and Hover. **The Input
+set still binds `text/placeholder`** and is left alone deliberately: changing a
+shipped component's Figma values is a design decision, not a cleanup. Recorded in
+AGENTS.md with both ways out.
+
 ## 0.49.0 — 2026-09-05
 
 ### Changed — Input focus and invalid borders are 1px

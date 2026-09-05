@@ -1153,6 +1153,34 @@
         }
       }
     },
+    "Textarea": {
+      "page": "Textarea",
+      "id": "1301:334",
+      "kind": "SET",
+      "props": {
+        "Value#1301:0": {
+          "type": "TEXT"
+        },
+        "Size": {
+          "type": "VARIANT",
+          "options": ["Small", "Medium", "Large"],
+          "default": "Small"
+        },
+        "State": {
+          "type": "VARIANT",
+          "options": [
+            "Default",
+            "Hover",
+            "Focus",
+            "Filled",
+            "Invalid",
+            "Disabled",
+            "Read-only"
+          ],
+          "default": "Default"
+        }
+      }
+    },
     "Toast": {
       "page": "Toast",
       "id": "820:1655",

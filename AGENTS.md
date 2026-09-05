@@ -1203,6 +1203,30 @@ A gradient the parser does not understand — conic, repeating, a stop with no
 explicit position — falls back to the per-stop cross product. Strict, and never
 silent.
 
+### `text/placeholder` fails AA, and only Figma binds it — 5 Sep 2026
+
+The role reads **2.38:1** on `surface/page` in Light and **2.33:1** in Dark,
+against the 4.5 that SC 1.4.3 asks. Placeholder text is text; the criterion does
+not exempt it, and "it is only a hint" is not one of the exceptions.
+
+**No stylesheet in this package uses it.** `input.css` has always used
+`text/tertiary` for its `::placeholder`, at 7.09:1, so the shipped code is
+correct and always was. The role is bound in the Figma `Input` set (Default and
+Filled) and was bound in `Textarea` until this date.
+
+Found the only way it could be: `textarea.css` was written to match its Figma
+set, used the role, and the contrast gate failed **14 pairings** immediately.
+Nothing else would have caught it, because a role nothing composes is a role the
+gate never measures — the same shape as the `icon/on-color` finding, and the
+reason `tokens:modes` exists.
+
+Textarea's Figma set now binds `text/tertiary` in Default and Hover, matching the
+code. **The `Input` set is the remaining instance** and is left alone
+deliberately: changing a shipped component's Figma values is a design decision,
+not a cleanup. Either `text/placeholder` gets a value that clears 4.5:1, or the
+Input set moves to `text/tertiary` and the role is retired. Until one of those
+happens, do not "fix" a stylesheet to match the Figma binding.
+
 ### Six of seven avatar hues were failing AA in Light, and the gate said green
 
 Found while checking the new dark values. `verify-contrast` can only read a flat
