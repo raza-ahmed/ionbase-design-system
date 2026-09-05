@@ -1,5 +1,49 @@
 # Changelog
 
+## 0.48.0 — 2026-09-05
+
+### Added — Pagination
+
+Page navigation for a table or list, designed in Figma first (`Pagination`
+1291:503, `Pagination Item` 1283:289) and exported here. Two Figma sets, one
+exported component: the item is an internal part, so a caller places a
+`Pagination` and never a cell.
+
+```tsx
+<Pagination page={3} pageCount={12} onPageChange={setPage} />
+<Pagination type="simple" page={3} pageCount={12} />   // Page 3 of 12
+<Pagination showPageSize pageSize={10} onPageSizeChange={setSize} />
+```
+
+`type` is `numbered` or `simple`; `size` is `sm` / `md` / `lg` on the 32 / 40 /
+48 ramp Button and Tabs already share. **`page` is 1-based**, matching what the
+numbers say — an off-by-one here is silent, because the pager looks right and
+fetches the wrong rows.
+
+Truncation is the only real logic. A gap marker is drawn only where it replaces
+**two or more** pages, so an ellipsis never stands in for a single hidden page —
+which would be both a lie and a cell you cannot click to reach a number you can
+see.
+
+Accessibility: a named `nav` landmark; `aria-current="page"` on the current cell
+rather than `aria-pressed`, because this is a position in a set and not a toggle;
+an explicit label on every cell, so a screen reader never announces a bare digit;
+the ellipsis `aria-hidden` and unfocusable; and in `simple`, the "Page N of M"
+text is a polite live region, since the page can change with nothing else on
+screen announcing it.
+
+No new tokens. Selected uses `surface/selected` rather than the `surface/default`
+Tabs uses — a Tabs pill sits on a `surface/muted` track that makes
+`surface/default` read as raised, and Pagination has no track, so on a
+`surface/default` card the one cell that must be unmistakable would have been the
+only invisible one.
+
+One deliberate divergence from Figma: the cell height is the size token but its
+width is a **minimum**, not a fixed square. A Figma variant has to pick a number
+and `1` is what fits the frame; a real pager reaches four digits, and a fixed 40px
+box either clips `1024` or pads every single-digit cell to the widest one that
+might occur.
+
 ## 0.38.0 — 2026-09-03
 
 ### Fixed — the contrast gate skipped every component that draws no background

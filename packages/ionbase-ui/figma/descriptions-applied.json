@@ -18,8 +18,8 @@
     "returns 0 missing, then run: pnpm --filter ionbase-ui figma:applied"
   ],
   "file": "gaLbGd0QNb1fUl6BjSpfBA",
-  "appliedOn": "2026-09-03",
-  "verifiedInFigma": 38,
+  "appliedOn": "2026-09-05",
+  "verifiedInFigma": 39,
   "applied": {
     "21:461": {
       "figmaComponent": "Button",
@@ -210,6 +210,11 @@
       "figmaComponent": "Confidence Indicator",
       "component": "ConfidenceIndicator",
       "hash": "37749d2f3023ab3d"
+    },
+    "1291:503": {
+      "figmaComponent": "Pagination",
+      "component": "Pagination",
+      "hash": "caba28b9efcb93ba"
     }
   }
 }

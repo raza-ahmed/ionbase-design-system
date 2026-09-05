@@ -1,0 +1,170 @@
+/*
+ * Pagination
+ *
+ * Geometry measured from Figma `Pagination Item` (1283:289) and `Pagination`
+ * (1291:503), designed 5 Sep 2026. Two Figma sets, one exported component: the
+ * item is an internal part, not something a caller composes, so it is not in
+ * the public API. See the `unmapped` note in figma/mapping.json.
+ *
+ * Size is a set of slots defaulting to medium — the same shape tabs.css uses.
+ * A size modifier reassigns five variables rather than restating five rules,
+ * which is why the item, the icon and the summary all resize from one class.
+ *
+ *   sm   32   type/body-sm   icon 14
+ *   md   40   type/body      icon 20
+ *   lg   48   type/body-lg   icon 24
+ *
+ * THE CELL IS NOT A FIXED SQUARE, AND FIGMA'S IS.
+ *
+ * Figma binds width AND height to the same spacing token, because a Figma
+ * variant has to pick a number and `1` is what fits in the frame. A real pager
+ * reaches three and four digits, and a fixed 40px box either clips `1024` or
+ * pads every single-digit cell to fit the widest one that might occur. So the
+ * height is the token and the width is a MINIMUM — the cell is square until the
+ * number outgrows it, then it grows. Do not "fix" this back to a square to
+ * match the Figma frame; the frame is the constraint, not the intent.
+ */
+
+.ion-pagination {
+  --ion-pagination-box: var(--spacing-40);
+  --ion-pagination-gap: var(--spacing-8);
+  --ion-pagination-font-size: var(--type-body);
+  --ion-pagination-line-height: var(--type-body-line-height);
+  --ion-pagination-icon: var(--icon-size-md);
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-16);
+}
+
+.ion-pagination--sm {
+  --ion-pagination-box: var(--spacing-32);
+  --ion-pagination-gap: var(--spacing-6);
+  --ion-pagination-font-size: var(--type-body-sm);
+  --ion-pagination-line-height: var(--type-body-sm-line-height);
+  --ion-pagination-icon: var(--icon-size-xs);
+}
+
+.ion-pagination--lg {
+  --ion-pagination-box: var(--spacing-48);
+  --ion-pagination-font-size: var(--type-body-lg);
+  --ion-pagination-line-height: var(--type-body-lg-line-height);
+  --ion-pagination-icon: var(--icon-size-lg);
+}
+
+/*
+ * With no page-size slot there is nothing to sit opposite, and
+ * `space-between` would pin a lone control group to the left edge of whatever
+ * contains it. Ending the row is what the component means in that case.
+ */
+.ion-pagination--no-page-size {
+  justify-content: flex-end;
+}
+
+.ion-pagination__page-size {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-8);
+}
+
+.ion-pagination__controls {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-4);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* The cell. A button for pages and arrows; a span for the ellipsis. */
+.ion-pagination__item {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  min-width: var(--ion-pagination-box);
+  height: var(--ion-pagination-box);
+  padding: 0 var(--spacing-4);
+  border: 0;
+  border-radius: var(--radius-md);
+  background-color: transparent;
+  color: var(--text-tertiary);
+  font-family: var(--font-family-sans);
+  font-size: var(--ion-pagination-font-size);
+  line-height: var(--ion-pagination-line-height);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition:
+    background-color var(--ion-duration-base) var(--ion-ease-out),
+    color var(--ion-duration-base) var(--ion-ease-out);
+}
+
+.ion-pagination__item[data-hovered] {
+  background-color: var(--surface-hover);
+  color: var(--text-default);
+}
+
+/*
+ * SELECTED IS `surface/selected`, NOT THE `surface/default` TABS USES.
+ *
+ * A Tabs pill sits on a `surface/muted` track, so `surface/default` reads as a
+ * raised chip against it. Pagination has no track: on a `surface/default` card
+ * the current page would be the same colour as the thing behind it, and the one
+ * cell that must be unmistakable would be the only invisible one.
+ */
+.ion-pagination__item[data-selected] {
+  background-color: var(--surface-selected);
+  color: var(--text-default);
+}
+
+.ion-pagination__item[data-selected][data-hovered] {
+  background-color: var(--surface-selected-hover);
+}
+
+.ion-pagination__item[data-disabled] {
+  color: var(--text-disabled);
+  cursor: not-allowed;
+}
+
+.ion-pagination__item[data-focused] {
+  outline: var(--border-width-thick) solid var(--border-focus);
+  outline-offset: var(--spacing-2);
+}
+
+.ion-pagination__icon {
+  width: var(--ion-pagination-icon);
+  height: var(--ion-pagination-icon);
+  flex-shrink: 0;
+}
+
+/*
+ * The truncation marker. Not a button and not focusable — it is the absence of
+ * pages, and giving it a tab stop would put a control in the sequence that does
+ * nothing when activated. `aria-hidden` in the TSX keeps it out of the
+ * announcement too; the surrounding numbers already say what was skipped.
+ */
+.ion-pagination__ellipsis {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: var(--ion-pagination-box);
+  height: var(--ion-pagination-box);
+  color: var(--text-tertiary);
+}
+
+.ion-pagination__summary {
+  padding: 0 var(--spacing-8);
+  color: var(--text-secondary);
+  font-family: var(--font-family-sans);
+  font-size: var(--ion-pagination-font-size);
+  line-height: var(--ion-pagination-line-height);
+  font-weight: var(--font-weight-regular);
+  white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ion-pagination__item {
+    transition: none;
+  }
+}

@@ -1,0 +1,69 @@
+{
+  "status": "stable",
+  "summary": "Page navigation for a table or list. Renders prev/next arrows, a truncated run of page numbers, and an optional rows-per-page Select.",
+  "useWhen": [
+    "a result set is split into pages and the user needs to move between them",
+    "the total number of pages is known — the numbered run needs a last page to anchor to"
+  ],
+  "useInstead": [
+    {
+      "when": "the total is unknown or unbounded, as with a cursor-based or infinite feed",
+      "use": "Button",
+      "why": "a numbered pager has to draw a last page; with no total there is nothing to draw, and a bare Load more button is honest about that"
+    },
+    {
+      "when": "the user is moving between peer views rather than through one long list",
+      "use": "Tabs",
+      "why": "pagination implies a sequence with a position; tabs are peers in any order"
+    },
+    {
+      "when": "it is navigation between pages of the app rather than pages of data",
+      "use": "NavItem"
+    }
+  ],
+  "variants": {
+    "type": {
+      "numbered": {
+        "use": "the default — prev, the page numbers, next. Use wherever the numbers fit"
+      },
+      "simple": {
+        "use": "prev, \"Page N of M\", next. For drawers, narrow columns and mobile, where a numbered run would wrap or truncate to uselessness"
+      }
+    },
+    "size": {
+      "sm": { "use": "dense tables, and toolbars" },
+      "md": { "use": "the default" },
+      "lg": { "use": "roomy layouts, and touch targets on tablet" }
+    }
+  },
+  "a11y": {
+    "role": "navigation / list",
+    "guarantees": [
+      "the whole control is a landmark — a `nav` with an accessible name, defaulting to \"Pagination\"",
+      "the current page carries `aria-current=\"page\"`, not `aria-pressed`: this is a position in a set, not a toggle",
+      "every cell has an explicit label — \"Go to page 4\", \"Go to previous page\" — so a screen reader never announces a bare digit",
+      "the ellipsis is `aria-hidden` and not focusable: it marks absent pages, and a tab stop that does nothing when activated is worse than no tab stop",
+      "in `simple`, the \"Page N of M\" text is an `aria-live=\"polite\"` region, because the page can change without anything else on screen announcing it",
+      "prev and next are genuinely `disabled` at the ends rather than styled to look it",
+      "the focus ring shows for keyboard focus only, and hover does not latch on touch"
+    ],
+    "requires": [
+      "`aria-label` when more than one Pagination is on a page — two identically named landmarks are two indistinguishable landmarks",
+      "`pageSize` when `showPageSize` is set, or the rows-per-page Select renders with nothing selected"
+    ]
+  },
+  "antiPatterns": [
+    {
+      "avoid": "passing `pageCount={0}` for an empty result set",
+      "instead": "render EmptyState and no pager — the component clamps to a single page, which draws a lone disabled `1` that says a page exists when none does"
+    },
+    {
+      "avoid": "raising `siblingCount` to avoid truncation",
+      "instead": "switch to `type=\"simple\"`. Widening the run past the container is the problem truncation exists to solve, and it reappears one breakpoint down"
+    },
+    {
+      "avoid": "treating `page` as 0-based",
+      "instead": "it is 1-based, matching what the numbers say. An off-by-one here is silent — the pager looks right and fetches the wrong rows"
+    }
+  ]
+}

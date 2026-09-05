@@ -1116,6 +1116,29 @@
           "prop": "basis"
         }
       }
+    },
+    "Pagination": {
+      "code": "Pagination",
+      "props": {
+        "Type": {
+          "prop": "type",
+          "values": {
+            "Numbered": "numbered",
+            "Simple": "simple"
+          }
+        },
+        "Size": {
+          "prop": "size",
+          "values": {
+            "Small": "sm",
+            "Medium": "md",
+            "Large": "lg"
+          }
+        },
+        "Show Page Size#1291:0": {
+          "prop": "showPageSize"
+        }
+      }
     }
   },
   "unmapped": {
@@ -1126,7 +1149,8 @@
     "Line": "An internal part of the Scroll Progress rail, not a component a caller composes.",
     "Progress": "As Line — internal to ScrollProgress.",
     "Progress Heading": "As Line — internal to ScrollProgress.",
-    ".Status Indicator": "The dot Avatar draws in its corners. Avatar owns both instances — Top is Intent=Primary with the check glyph, Bottom is Intent=Success with Show Icon off — and exposes them as `topIndicator` / `bottomIndicator`.\n\nThe leading dot in the name is Figma's own marker for a private component: it is excluded from the published library, so a designer cannot place one on a canvas even if they wanted to. That settles a question this entry used to argue: it is internal by the file's own declaration, not merely by our reading of it. The same call Line, Progress and Progress Heading get for being internal to ScrollProgress — with better evidence.\n\nMap it only if the dot is ever removed."
+    ".Status Indicator": "The dot Avatar draws in its corners. Avatar owns both instances — Top is Intent=Primary with the check glyph, Bottom is Intent=Success with Show Icon off — and exposes them as `topIndicator` / `bottomIndicator`.\n\nThe leading dot in the name is Figma's own marker for a private component: it is excluded from the published library, so a designer cannot place one on a canvas even if they wanted to. That settles a question this entry used to argue: it is internal by the file's own declaration, not merely by our reading of it. The same call Line, Progress and Progress Heading get for being internal to ScrollProgress — with better evidence.\n\nMap it only if the dot is ever removed.",
+    "Pagination Item": "The cell inside Pagination — a page number, an arrow or the truncation ellipsis. Figma needs it as its own set to hold the Size x State matrix; a caller never places one, so it is internal to Pagination the way Line and Progress are internal to Scroll Progress."
   },
   "codeUnmapped": {
     "Icon": "Figma has no Icon component; icons are vector assets dropped into slots. Icon is the React wrapper that gives any of them a size rung and an accessible label, so there is nothing on the Figma side to point at.",

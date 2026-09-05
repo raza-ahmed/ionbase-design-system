@@ -10,7 +10,7 @@
     "Do not hand-edit. Re-export when the Figma components change."
   ],
   "file": "gaLbGd0QNb1fUl6BjSpfBA",
-  "exported": "2026-09-02",
+  "exported": "2026-09-05",
   "components": {
     ".Status Indicator": {
       "page": "Avatar",
@@ -815,6 +815,55 @@
         "State": {
           "type": "VARIANT",
           "options": ["Default", "Hover"],
+          "default": "Default"
+        }
+      }
+    },
+    "Pagination": {
+      "page": "Pagination",
+      "id": "1291:503",
+      "kind": "SET",
+      "props": {
+        "Show Page Size#1291:0": {
+          "type": "BOOLEAN"
+        },
+        "Size": {
+          "type": "VARIANT",
+          "options": ["Medium", "Small", "Large"],
+          "default": "Small"
+        },
+        "Type": {
+          "type": "VARIANT",
+          "options": ["Numbered", "Simple"],
+          "default": "Numbered"
+        }
+      }
+    },
+    "Pagination Item": {
+      "page": "Pagination",
+      "id": "1283:289",
+      "kind": "SET",
+      "props": {
+        "Icon#1284:39": {
+          "type": "INSTANCE_SWAP"
+        },
+        "Label#1284:0": {
+          "type": "TEXT"
+        },
+        "Show Icon#1284:26": {
+          "type": "BOOLEAN"
+        },
+        "Show Label#1284:13": {
+          "type": "BOOLEAN"
+        },
+        "Size": {
+          "type": "VARIANT",
+          "options": ["Small", "Medium", "Large"],
+          "default": "Small"
+        },
+        "State": {
+          "type": "VARIANT",
+          "options": ["Default", "Hover", "Selected", "Disabled"],
           "default": "Default"
         }
       }
