@@ -476,8 +476,13 @@ component must be mapped or listed in `codeUnmapped` with a reason, and that lis
 must stay honest — naming a component that is mapped, or one that is not
 exported, fails. Eight of the seventeen are permanent (code-side composition:
 `Table`, `TableHead`, `TableBody`, `RadioGroup`, `ToastProvider`, `Icon`,
-`LogoMark`, `ScrollProgress`); nine are the agentic tier, undrawn. When those are
-drawn, the build is what notices.
+`LogoMark`, `ScrollProgress`); the ninth is `EmptyState`, still undrawn.
+
+The agentic tier used to be the other nine, and the claim above them — that the
+build is what notices when they are drawn — held: they were drawn, exported and
+mapped, and the gate has counted them ever since without a word of this document
+being updated. That is the expected direction of drift here. Trust
+`figma:map`'s output over the counts in this file.
 
 Add `.figma.ts` files mapping each Figma component to its
 React counterpart. The Figma pipeline and MCP bridge already exist; this is the

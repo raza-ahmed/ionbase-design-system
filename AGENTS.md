@@ -322,12 +322,24 @@ rather than guarded by a gate: the gate cannot run at all until the file is
 clean.
 
 **Adding a React component means answering the Figma question too.** Map it, or
-put it in `codeUnmapped` with a reason. Seventeen sit there now: eight are
+put it in `codeUnmapped` with a reason. Nine sit there now: eight are
 permanent — `Table`, `TableHead`, `TableBody`, `RadioGroup`, `ToastProvider`,
 `Icon`, `LogoMark`, `ScrollProgress` are code-side composition or runtime
-behaviour, with nothing in Figma to point at — and nine are the agentic tier,
-simply not drawn yet. That second group is a to-do list with a build behind it,
-not a note in a document.
+behaviour, with nothing in Figma to point at — and one, `EmptyState`, is simply
+not drawn yet. That last entry is a to-do list with a build behind it, not a
+note in a document.
+
+**This paragraph said seventeen, of which nine were the undrawn agentic tier.
+That was true when it was written and is not now.** The tier was drawn, exported
+and mapped — all six sets are in `figma/components.json` and the list fell to
+nine. Reading the stale number cost a full re-derivation of finished work and
+came within one step of drawing a second `Approval Gate` set, which is precisely
+the duplicate that takes the whole export down for every component at once.
+
+A count in prose is stale the moment the thing it counts changes, and nothing
+announces it. `pnpm --filter ionbase-ui figma:map` prints the real figures on
+every build — 40 mapped, 9 unmapped, 198 properties checked — and that is the
+number to trust over this or any other sentence.
 
 ### The snippets are in the Figma descriptions too
 
