@@ -4,6 +4,14 @@
  *
  *   node run.mjs --provider files --dir ./candidates       # score what exists
  *   node run.mjs --provider api --packs readme,contract-indexed-rules
+ *   node run.mjs --provider claude-cli --limit 10           # one chunk, then stop
+ *
+ * A run is resumable and chunkable, because the first real one was not: it hit a
+ * session limit two thirds of the way through a 93-cell grid, recorded the
+ * remaining 70 cells as errors, and overwrote the results file with them.
+ * Generations already on disk are reused, `--limit` caps how many new ones an
+ * invocation pays for, a usage limit stops the queue instead of draining it, and
+ * results are merged into the existing file after every job.
  *
  * The question this exists to answer is the one the whole agent-readiness plan
  * assumes: does handing an agent the contracts and rules actually produce better
@@ -51,8 +59,17 @@ const concurrency = Number(arg('concurrency', '4'));
 const packNames = arg('packs', 'readme,contract-indexed-rules').split(',');
 const taskFilter = arg('tasks', null)?.split(',') ?? null;
 const outDir = resolve(arg('out', join(HERE, 'results')));
-const candidateDir = arg('dir', join(HERE, 'candidates'));
+// Resolved, not raw. The scorer runs eslint and tsc with cwd at the repo root,
+// so a relative --dir resolved against the wrong directory and every candidate
+// came back "No files matching the pattern" — a lint pass of zero files, which
+// scores as zero lint errors rather than as an error.
+const candidateDir = resolve(arg('dir', join(HERE, 'candidates')));
 const model = arg('model', 'claude-opus-5');
+// A chunk is measured in GENERATIONS, not jobs: a resumed candidate costs
+// nothing and must not count against the budget, or a mostly-resumed run would
+// stop having done almost no new work. Workers check the budget before pulling,
+// so a chunk can overshoot by at most concurrency-1.
+const limit = Number(arg('limit', 'Infinity'));
 
 const tasks = corpus.tasks.filter(
   (t) => !taskFilter || taskFilter.includes(t.id),
@@ -238,11 +255,74 @@ if (!provider) {
 }
 
 mkdirSync(outDir, { recursive: true });
-const results = [];
+const resultsPath = join(outDir, 'results.json');
 
+/**
+ * A usage limit is not a per-job failure, it is the end of the run.
+ *
+ * Every remaining job hits the same wall in milliseconds, so a queue with 70
+ * jobs left in it drains into 70 identical error rows and the report reads as
+ * though the model failed 70 tasks. That is exactly what the 3 Sep 2026 run
+ * recorded: 23 of 93 cells scored, the other 70 marked errored, none of them
+ * ever attempted against a working session. Stop pulling work instead.
+ */
+const isLimit = (m) =>
+  /usage limit|session limit|rate limit|quota|overloaded|too many requests|529/i.test(
+    m,
+  );
+
+/**
+ * Prior results are MERGED, not overwritten.
+ *
+ * The file was written once at the end from this invocation's array alone, so
+ * running a single pack silently dropped every other pack's rows — the opposite
+ * of what chunking needs. Rows are keyed by pack+task and the newer row wins,
+ * so re-running a cell replaces it and leaves the rest standing. `--fresh`
+ * starts over.
+ */
+const key = (r) => `${r.pack}\u0000${r.task}`;
+const merged = new Map();
+const knownPacks = new Set(packNames);
+if (existsSync(resultsPath) && !process.argv.includes('--fresh')) {
+  const prior = JSON.parse(readFileSync(resultsPath, 'utf8'));
+  for (const pack of prior.packs ?? []) knownPacks.add(pack);
+  for (const r of prior.results ?? []) {
+    // A limit row is not a result, it is the mark where a run stopped. Keeping
+    // it would make the cell look permanently failed when nothing was ever
+    // generated for it, and would hide it from the remaining-work count.
+    if (r.error && isLimit(r.error)) continue;
+    if (r.skipped) continue;
+    merged.set(key(r), r);
+  }
+}
+
+const flush = () =>
+  writeFileSync(
+    resultsPath,
+    `${JSON.stringify(
+      {
+        model,
+        provider: providerName,
+        packs: [...knownPacks],
+        results: [...merged.values()],
+      },
+      null,
+      2,
+    )}\n`,
+  );
+
+// Task-major, NOT pack-major. The grid is an A/B, so a run that stops early is
+// only readable if every cell it did finish has its counterparts: generating one
+// task across all packs before moving on means a half-finished run compares
+// like with like. Pack-major ordering is what left `contract-indexed-rules` with
+// zero rows on 3 Sep while `readme` had nineteen.
 const jobs = [];
-for (const pack of packNames)
-  for (const task of tasks) jobs.push({ pack, task });
+for (const task of tasks)
+  for (const pack of packNames) jobs.push({ pack, task });
+
+let halted = null;
+let generated = 0;
+const skippedNow = [];
 
 /** Generation dominates the wall clock; scoring is local and fast. */
 async function runJob({ pack, task }) {
@@ -250,11 +330,21 @@ async function runJob({ pack, task }) {
   try {
     produced = await provider(task, pack);
   } catch (e) {
+    const why = String(e.message).slice(0, 300);
+    if (isLimit(why)) {
+      halted ??= why;
+      process.stdout.write('!');
+      // Not recorded as a result — see isLimit. The cell is left unattempted so
+      // the next chunk picks it up.
+      return { pack, task: task.id, error: why, halted: true };
+    }
     process.stdout.write('x');
-    return { pack, task: task.id, error: String(e.message).slice(0, 300) };
+    return { pack, task: task.id, error: why };
   }
   if (produced.skipped)
     return { pack, task: task.id, skipped: produced.skipped };
+  // Only a real generation spends budget. `resumed` costs nothing.
+  if (!produced.resumed) generated += 1;
 
   const s = score(produced.file, task.id);
   const messages = lint(produced.file);
@@ -285,13 +375,27 @@ async function runJob({ pack, task }) {
 let cursor = 0;
 await Promise.all(
   Array.from({ length: Math.min(concurrency, jobs.length) }, async () => {
-    while (cursor < jobs.length) {
+    while (cursor < jobs.length && !halted && generated < limit) {
       const job = jobs[cursor++];
-      results.push(await runJob(job));
+      const r = await runJob(job);
+      if (r.halted) continue;
+      // A skip is an absence, not a result: the candidate was never on disk.
+      // Persisting it would let a cell that has produced nothing count as a row
+      // in a file that is meant to hold measurements.
+      if (r.skipped) {
+        skippedNow.push(r);
+        continue;
+      }
+      merged.set(key(r), r);
+      // Written after every job, not once at the end. Scoring is local and
+      // cheap; losing an hour of it to a Ctrl-C is not.
+      flush();
     }
   }),
 );
 process.stdout.write('\n\n');
+
+const results = [...merged.values()];
 
 /* ------------------------------------------------------------------- report */
 
@@ -313,9 +417,8 @@ for (const [pack, rows] of Object.entries(byPack)) {
   );
 }
 
-const skipped = results.filter((r) => r.skipped);
-if (skipped.length)
-  console.log(`\n  ${skipped.length} skipped (no candidate on disk)`);
+if (skippedNow.length)
+  console.log(`\n  ${skippedNow.length} skipped (no candidate on disk)`);
 
 // Which checks fail most — this is what tells you what to fix in the system.
 const failCounts = {};
@@ -330,8 +433,49 @@ if (Object.keys(failCounts).length) {
   }
 }
 
-writeFileSync(
-  join(outDir, 'results.json'),
-  `${JSON.stringify({ model, provider: providerName, packs: packNames, results }, null, 2)}\n`,
+flush();
+
+// What is left, stated in cells rather than percentages — the number that says
+// whether a pack's result can be read yet. `contract-indexed` scored 4 of 31 on
+// 3 Sep and the report said nothing about the other 27, which is how a run
+// missing two thirds of its grid gets quoted as a finding.
+// Skipped and errored rows are not scored cells. Counting them as scored is how
+// a grid with nothing in it reports itself complete.
+const scored = new Set(
+  [...merged.values()].filter((r) => !r.skipped && !r.error).map(key),
 );
-console.log(`\n  -> ${join(outDir, 'results.json')}\n`);
+const outstanding = jobs.filter(
+  (j) => !scored.has(key({ pack: j.pack, task: j.task.id })),
+);
+console.log(
+  `\n  ${jobs.length - outstanding.length}/${jobs.length} cells scored for this invocation's packs`,
+);
+if (outstanding.length) {
+  const byPackLeft = {};
+  for (const j of outstanding)
+    byPackLeft[j.pack] = (byPackLeft[j.pack] ?? 0) + 1;
+  console.log(
+    `  ${outstanding.length} remaining: ${Object.entries(byPackLeft)
+      .map(([p, n]) => `${p} ${n}`)
+      .join(', ')}`,
+  );
+}
+
+console.log(`\n  -> ${resultsPath}\n`);
+
+if (halted) {
+  console.error(`  STOPPED: ${halted}`);
+  console.error(
+    '  Nothing was recorded for the unattempted cells. Re-run the same command\n' +
+      '  when the limit resets; completed generations are resumed, not repaid.\n',
+  );
+  // EX_TEMPFAIL. A wrapper chunking through the grid needs to tell "come back
+  // later" apart from "the run finished", and an exit code is the only channel
+  // that survives being piped.
+  process.exit(75);
+}
+if (generated >= limit) {
+  console.log(
+    `  Chunk budget of ${limit} generation(s) reached. Re-run to continue.\n`,
+  );
+}
