@@ -70,6 +70,12 @@ const model = arg('model', 'claude-opus-5');
 // stop having done almost no new work. Workers check the budget before pulling,
 // so a chunk can overshoot by at most concurrency-1.
 const limit = Number(arg('limit', 'Infinity'));
+// Generation is stochastic and the spread is wide: two runs of the same pack
+// and model disagreed by four files on whether the output compiled — larger
+// than most of the differences this harness is used to decide. One sample per
+// cell cannot resolve that, so a cell is N samples and a task's score is their
+// median.
+const samples = Math.max(1, Number(arg('samples', '1')));
 
 const tasks = corpus.tasks.filter(
   (t) => !taskFilter || taskFilter.includes(t.id),
@@ -151,10 +157,14 @@ const claude = (args, input) =>
     child.stdin.end(input);
   });
 
+/** Sample 1 keeps the bare name, so runs made before --samples existed resume. */
+const sampleFile = (taskId, n) =>
+  n === 1 ? `${taskId}.tsx` : `${taskId}.s${n}.tsx`;
+
 const providers = {
   /** Score candidates already written to disk. */
-  async files(task, pack) {
-    const p = join(candidateDir, pack, `${task.id}.tsx`);
+  async files(task, pack, sample) {
+    const p = join(candidateDir, pack, sampleFile(task.id, sample));
     if (!existsSync(p)) return { skipped: `no candidate at ${p}` };
     return { file: p };
   },
@@ -174,9 +184,9 @@ const providers = {
    * Tools are disabled. The task is pure generation, and a model that goes off
    * to read files would be scored on something other than what it was given.
    */
-  async claudeCli(task, pack) {
+  async claudeCli(task, pack, sample) {
     const dir = join(outDir, 'generated', pack);
-    const file = join(dir, `${task.id}.tsx`);
+    const file = join(dir, sampleFile(task.id, sample));
     // Resume. A generation that already succeeded is not re-run — a usage limit
     // or a network blip part-way through a run should cost the remaining work,
     // not all of it. Pass --force to regenerate.
@@ -217,7 +227,7 @@ const providers = {
   },
 
   /** Generate with the Anthropic SDK. Lazily imported so the SDK stays optional. */
-  async api(task, pack) {
+  async api(task, pack, sample) {
     let Anthropic;
     try {
       ({ default: Anthropic } = await import('@anthropic-ai/sdk'));
@@ -271,7 +281,7 @@ const providers = {
 
     const dir = join(outDir, 'generated', pack);
     mkdirSync(dir, { recursive: true });
-    const file = join(dir, `${task.id}.tsx`);
+    const file = join(dir, sampleFile(task.id, sample));
     writeFileSync(file, code);
     return { file, usage: message.usage };
   },
@@ -314,7 +324,7 @@ const isLimit = (m) =>
  * so re-running a cell replaces it and leaves the rest standing. `--fresh`
  * starts over.
  */
-const key = (r) => `${r.pack}\u0000${r.task}`;
+const key = (r) => `${r.pack}\u0000${r.task}\u0000${r.sample ?? 1}`;
 const merged = new Map();
 const knownPacks = new Set(packNames);
 if (existsSync(resultsPath) && !process.argv.includes('--fresh')) {
@@ -352,17 +362,19 @@ const flush = () =>
 // zero rows on 3 Sep while `readme` had nineteen.
 const jobs = [];
 for (const task of tasks)
-  for (const pack of packNames) jobs.push({ pack, task });
+  for (const pack of packNames)
+    for (let sample = 1; sample <= samples; sample += 1)
+      jobs.push({ pack, task, sample });
 
 let halted = null;
 let generated = 0;
 const skippedNow = [];
 
 /** Generation dominates the wall clock; scoring is local and fast. */
-async function runJob({ pack, task }) {
+async function runJob({ pack, task, sample }) {
   let produced;
   try {
-    produced = await provider(task, pack);
+    produced = await provider(task, pack, sample);
   } catch (e) {
     const why = String(e.message).slice(0, 300);
     if (isLimit(why)) {
@@ -370,13 +382,13 @@ async function runJob({ pack, task }) {
       process.stdout.write('!');
       // Not recorded as a result — see isLimit. The cell is left unattempted so
       // the next chunk picks it up.
-      return { pack, task: task.id, error: why, halted: true };
+      return { pack, task: task.id, sample, error: why, halted: true };
     }
     process.stdout.write('x');
-    return { pack, task: task.id, error: why };
+    return { pack, task: task.id, sample, error: why };
   }
   if (produced.skipped)
-    return { pack, task: task.id, skipped: produced.skipped };
+    return { pack, task: task.id, sample, skipped: produced.skipped };
   // Only a real generation spends budget. `resumed` costs nothing.
   if (!produced.resumed) generated += 1;
 
@@ -389,6 +401,7 @@ async function runJob({ pack, task }) {
   return {
     pack,
     task: task.id,
+    sample,
     checksPassed: checks.filter((c) => c.pass).length,
     checksTotal: checks.length,
     lintErrors: messages.filter((m) => m.severity === 2).length,
@@ -438,16 +451,52 @@ const byPack = {};
 for (const r of live) (byPack[r.pack] ??= []).push(r);
 
 const pct = (n, d) => (d ? `${((n / d) * 100).toFixed(0)}%` : '—');
+const median = (xs) => {
+  const a = [...xs].sort((x, y) => x - y);
+  const mid = Math.floor(a.length / 2);
+  return a.length % 2 ? a[mid] : (a[mid - 1] + a[mid]) / 2;
+};
+
+/**
+ * A task's score is the MEDIAN of its samples, not the pooled total.
+ *
+ * Pooling lets one wild sample move a pack, which is how a harness with one
+ * sample per cell reported differences it could not actually resolve. The
+ * spread column is here for the same reason: it is the per-sample-index compile
+ * rate from lowest to highest, and when it is wide, no difference narrower than
+ * it means anything.
+ */
 console.log(
-  `  ${'pack'.padEnd(26)} ${'tasks'.padStart(5)} ${'checks'.padStart(8)} ${'compiles'.padStart(9)} ${'lint errs'.padStart(10)}`,
+  `  ${'pack'.padEnd(26)} ${'tasks'.padStart(5)} ${'checks'.padStart(8)} ${'compiles'.padStart(9)} ${'spread'.padStart(11)} ${'lint errs'.padStart(10)}`,
 );
 for (const [pack, rows] of Object.entries(byPack)) {
-  const cp = rows.reduce((a, r) => a + r.checksPassed, 0);
-  const ct = rows.reduce((a, r) => a + r.checksTotal, 0);
-  const comp = rows.filter((r) => r.compiles).length;
+  const byTask = {};
+  for (const r of rows) (byTask[r.task] ??= []).push(r);
+  const taskIds = Object.keys(byTask);
+
+  const checks = taskIds.map((t) =>
+    median(byTask[t].map((r) => r.checksPassed / r.checksTotal)),
+  );
+  const checkScore = checks.reduce((a, b) => a + b, 0) / (checks.length || 1);
+  const compiles = taskIds.filter(
+    (t) => median(byTask[t].map((r) => (r.compiles ? 1 : 0))) >= 0.5,
+  ).length;
+
+  // Per sample index, so the spread reflects whole-run variation rather than
+  // task difficulty.
+  const indices = [...new Set(rows.map((r) => r.sample ?? 1))];
+  const perIndex = indices.map((i) => {
+    const got = rows.filter((r) => (r.sample ?? 1) === i);
+    return got.length ? got.filter((r) => r.compiles).length / got.length : 0;
+  });
+  const spread =
+    indices.length > 1
+      ? `${(Math.min(...perIndex) * 100).toFixed(0)}–${(Math.max(...perIndex) * 100).toFixed(0)}%`
+      : '—';
+
   const lintErrs = rows.reduce((a, r) => a + r.lintErrors, 0);
   console.log(
-    `  ${pack.padEnd(26)} ${String(rows.length).padStart(5)} ${pct(cp, ct).padStart(8)} ${pct(comp, rows.length).padStart(9)} ${String(lintErrs).padStart(10)}`,
+    `  ${pack.padEnd(26)} ${String(taskIds.length).padStart(5)} ${pct(checkScore, 1).padStart(8)} ${pct(compiles, taskIds.length).padStart(9)} ${spread.padStart(11)} ${String(lintErrs).padStart(10)}`,
   );
 }
 
