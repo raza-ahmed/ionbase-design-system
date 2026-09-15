@@ -2,14 +2,15 @@
 
 import React, { forwardRef, useRef, useImperativeHandle } from 'react';
 import { resolveDisabled } from './resolve-disabled.js';
+import { resolveSelection, type SelectionProps } from './resolve-selection.js';
 
 export type ToggleSize = 'sm' | 'md' | 'lg';
 export type ToggleIntent = 'brand' | 'neutral' | 'danger';
 
-export interface ToggleProps extends Omit<
-  React.InputHTMLAttributes<HTMLInputElement>,
-  'size' | 'type'
-> {
+export interface ToggleProps
+  extends
+    Omit<React.InputHTMLAttributes<HTMLInputElement>, 'size' | 'type'>,
+    SelectionProps {
   /** Matches the Figma `Size` variant: Small, Medium, Large. */
   size?: ToggleSize;
   /** Matches the Figma `Color` variant: Brand, Neutral, Danger. */
@@ -45,10 +46,20 @@ export const Toggle = forwardRef<HTMLInputElement, ToggleProps>(
       children,
       isDisabled,
       disabled,
+      isSelected,
+      checked,
+      onChange,
+      onSelectionChange,
       ...rest
     } = props;
 
     const resolvedDisabled = resolveDisabled(isDisabled, disabled);
+    const selection = resolveSelection(
+      isSelected,
+      checked,
+      onChange,
+      onSelectionChange,
+    );
 
     const domRef = useRef<HTMLInputElement>(null);
     useImperativeHandle(forwardedRef, () => domRef.current!);
@@ -69,6 +80,8 @@ export const Toggle = forwardRef<HTMLInputElement, ToggleProps>(
           {...rest}
           ref={domRef}
           type="checkbox"
+          checked={selection.checked}
+          onChange={selection.onChange}
           role="switch"
           disabled={resolvedDisabled}
           className="ion-toggle__input"

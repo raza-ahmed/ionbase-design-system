@@ -149,3 +149,23 @@ export const AnnouncedAsASwitch: Story = {
     await expect(input).toHaveAttribute('type', 'checkbox');
   },
 };
+
+/** As Checkbox: the Aria selection pair works alongside the DOM one. */
+export const AriaSelectionShapeWorks: Story = {
+  render: function Render(args) {
+    const [on, setOn] = React.useState(false);
+    return (
+      <Toggle {...args} isSelected={on} onSelectionChange={setOn}>
+        Aria shape
+      </Toggle>
+    );
+  },
+  play: async ({ canvas, userEvent }) => {
+    const input = canvas.getByLabelText('Aria shape') as HTMLInputElement;
+    await expect(input.checked).toBe(false);
+    // The input itself is `pointer-events: none` — it is visually hidden and
+    // the label is the hit target, as LabelClickToggles documents.
+    await userEvent.click(canvas.getByText('Aria shape'));
+    await expect(input.checked).toBe(true);
+  },
+};

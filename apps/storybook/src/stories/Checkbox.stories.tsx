@@ -265,3 +265,64 @@ export const DisabledKeepsTheHeavyBorder: Story = {
     await expect(getComputedStyle(indicator('on')).borderTopWidth).toBe('2px');
   },
 };
+
+/**
+ * Both selection shapes work, and both handlers fire.
+ *
+ * `isSelected` / `onSelectionChange` is React Aria's shape, added in 0.54.0
+ * because the Aria-named `isDisabled` and `isIndeterminate` had callers — and,
+ * measurably, models — reaching for the rest of it. `checked` /
+ * `onChange(event)` is unchanged.
+ *
+ * The two are deliberately separate props rather than one `onChange` that takes
+ * either: a union of function types cannot be contextually typed, so every
+ * existing `onChange={(e) => …}` without an annotation would have become an
+ * implicit `any`. Pinned here because the union looks like the obvious design
+ * and is the one that breaks people.
+ */
+export const AriaSelectionShapeWorks: Story = {
+  render: function Render(args) {
+    const [on, setOn] = React.useState(false);
+    return (
+      <Checkbox {...args} isSelected={on} onSelectionChange={setOn}>
+        Aria shape
+      </Checkbox>
+    );
+  },
+  play: async ({ canvas, userEvent }) => {
+    const input = canvas.getByLabelText('Aria shape') as HTMLInputElement;
+    await expect(input.checked).toBe(false);
+    // The input itself is `pointer-events: none` — it is visually hidden and
+    // the label is the hit target, as LabelClickToggles documents.
+    await userEvent.click(canvas.getByText('Aria shape'));
+    await expect(input.checked).toBe(true);
+  },
+};
+
+export const BothHandlersFire: Story = {
+  render: function Render(args) {
+    const [seen, setSeen] = React.useState<string[]>([]);
+    return (
+      <>
+        <Checkbox
+          {...args}
+          onChange={(e) => setSeen((s) => [...s, `event:${e.target.checked}`])}
+          onSelectionChange={(isSelected) =>
+            setSeen((s) => [...s, `boolean:${isSelected}`])
+          }
+        >
+          Both handlers
+        </Checkbox>
+        <output data-testid="seen">{seen.join(',')}</output>
+      </>
+    );
+  },
+  play: async ({ canvas, userEvent }) => {
+    await userEvent.click(canvas.getByText('Both handlers'));
+    // Order is part of the contract: the DOM handler first, so a caller
+    // migrating incrementally sees the event before the derived boolean.
+    await expect(canvas.getByTestId('seen')).toHaveTextContent(
+      'event:true,boolean:true',
+    );
+  },
+};

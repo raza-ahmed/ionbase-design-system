@@ -76,8 +76,8 @@
     },
     {
       "dont": "<Checkbox isSelected={on} onChange={(isSelected) => setOn(isSelected)} />",
-      "do": "<Checkbox checked={on} onChange={(e) => setOn(e.target.checked)} />",
-      "why": "selection is the DOM `checked`, and `onChange` receives a React change event rather than a boolean. The React Aria shape is the one most models reach for — it is what `isDisabled` and `isIndeterminate` imply — and it does not compile. There is no `CheckboxChange` type; a generated eval invented one."
+      "do": "<Checkbox isSelected={on} onSelectionChange={setOn} />",
+      "why": "both selection shapes work, but they pair: `isSelected` goes with `onSelectionChange`, which receives the boolean, and `checked` goes with `onChange`, which receives the change event. Passing the Aria selection prop with the DOM handler name is the one combination that does not type — `onChange` is still the event handler. There is no `CheckboxChange` type; a generated eval invented one."
     }
   ],
   "deprecated": [

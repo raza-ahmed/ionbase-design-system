@@ -1,5 +1,37 @@
 # Changelog
 
+## 0.54.0 — 2026-09-15
+
+### Added — `isSelected` and `onSelectionChange` on `Checkbox` and `Toggle`
+
+Both components carried React Aria's `isDisabled` and `isIndeterminate` beside
+the DOM's `checked` and `onChange(event)`. Given Aria-shaped names, callers
+reach for the rest of the Aria shape — and in the eval harness, so do models:
+it was the most common type error in generated code, and one file invented a
+`CheckboxChange` type that exists nowhere in the package.
+
+The Aria shape now exists for real. `isSelected` is an alias for `checked` and
+wins when both are passed; `onSelectionChange` receives the boolean. `checked`
+and `onChange(event)` are untouched, and when both handlers are given both fire
+— the DOM one first, so an incremental migration sees the event before the
+derived boolean.
+
+**Not one `onChange` that accepts either, and the reason is measured rather than
+assumed.** A union of function types cannot be contextually typed, so every
+existing `onChange={(e) => …}` without an explicit annotation would become an
+implicit `any` and fail under `strict`. That is the most common real-world form,
+so the "additive" overload would have broken far more callers than it helped. A
+second, differently-named handler is the only shape that adds the Aria
+convention without removing the DOM one. All four combinations are pinned by a
+compile test and by interaction tests in both stories.
+
+The pairing is the thing to remember: `isSelected` goes with
+`onSelectionChange`, `checked` goes with `onChange`. Mixing the Aria selection
+prop with the DOM handler name is the one combination that still does not type,
+and both intent files carry it as an anti-pattern.
+
+Nothing is deprecated. This is additive only.
+
 ## 0.53.0 — 2026-09-15
 
 ### `Select.options` accepts a readonly array

@@ -7,14 +7,15 @@ import React, {
   useEffect,
 } from 'react';
 import { resolveDisabled } from './resolve-disabled.js';
+import { resolveSelection, type SelectionProps } from './resolve-selection.js';
 
 export type CheckboxSize = 'sm' | 'md' | 'lg';
 export type CheckboxIntent = 'brand' | 'neutral' | 'danger';
 
-export interface CheckboxProps extends Omit<
-  React.InputHTMLAttributes<HTMLInputElement>,
-  'size' | 'type'
-> {
+export interface CheckboxProps
+  extends
+    Omit<React.InputHTMLAttributes<HTMLInputElement>, 'size' | 'type'>,
+    SelectionProps {
   /** Matches the Figma `Size` variant: Small, Medium, Large. */
   size?: CheckboxSize;
   /** Matches the Figma `Color` variant: Brand, Neutral, Danger. */
@@ -81,10 +82,20 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
       children,
       isDisabled,
       disabled,
+      isSelected,
+      checked,
+      onChange,
+      onSelectionChange,
       ...rest
     } = props;
 
     const resolvedDisabled = resolveDisabled(isDisabled, disabled);
+    const selection = resolveSelection(
+      isSelected,
+      checked,
+      onChange,
+      onSelectionChange,
+    );
 
     const domRef = useRef<HTMLInputElement>(null);
     useImperativeHandle(forwardedRef, () => domRef.current!);
@@ -109,6 +120,8 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
           {...rest}
           ref={domRef}
           type="checkbox"
+          checked={selection.checked}
+          onChange={selection.onChange}
           disabled={resolvedDisabled}
           className="ion-checkbox__input"
         />

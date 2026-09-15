@@ -68,8 +68,8 @@
     },
     {
       "dont": "<Toggle isSelected={on} onChange={(isSelected) => setOn(isSelected)} />",
-      "do": "<Toggle checked={on} onChange={(e) => setOn(e.target.checked)} />",
-      "why": "Toggle extends the input element, so selection is `checked` and `onChange` takes the change event. `isDisabled` is Aria-shaped and the selection props are not, which is exactly the mix that makes the wrong guess feel right."
+      "do": "<Toggle isSelected={on} onSelectionChange={setOn} />",
+      "why": "as Checkbox: `isSelected` pairs with `onSelectionChange` and `checked` pairs with `onChange(event)`. Toggle extends the input element, so `onChange` keeps the DOM signature it has always had."
     }
   ],
   "deprecated": [
