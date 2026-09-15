@@ -23,16 +23,26 @@
   ],
   "variants": {
     "size": {
-      "sm": { "use": "dense forms and table rows" },
-      "md": { "use": "the default" },
-      "lg": { "use": "touch targets and prominent single choices" }
+      "sm": {
+        "use": "dense forms and table rows"
+      },
+      "md": {
+        "use": "the default"
+      },
+      "lg": {
+        "use": "touch targets and prominent single choices"
+      }
     },
     "intent": {
-      "brand": { "use": "the default" },
+      "brand": {
+        "use": "the default"
+      },
       "neutral": {
         "use": "where the checked state is a fact rather than an approval — bulk-selection columns"
       },
-      "danger": { "use": "consenting to something destructive or irreversible" }
+      "danger": {
+        "use": "consenting to something destructive or irreversible"
+      }
     }
   },
   "slots": {
@@ -63,7 +73,17 @@
     {
       "dont": "a div with `role=\"checkbox\"`",
       "why": "form association, the indeterminate property and label clicking are not free to reimplement"
+    },
+    {
+      "dont": "<Checkbox isSelected={on} onChange={(isSelected) => setOn(isSelected)} />",
+      "do": "<Checkbox checked={on} onChange={(e) => setOn(e.target.checked)} />",
+      "why": "selection is the DOM `checked`, and `onChange` receives a React change event rather than a boolean. The React Aria shape is the one most models reach for — it is what `isDisabled` and `isIndeterminate` imply — and it does not compile. There is no `CheckboxChange` type; a generated eval invented one."
     }
   ],
-  "deprecated": [{ "prop": "disabled", "replacement": "isDisabled" }]
+  "deprecated": [
+    {
+      "prop": "disabled",
+      "replacement": "isDisabled"
+    }
+  ]
 }

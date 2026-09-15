@@ -1,5 +1,31 @@
 # Changelog
 
+## 0.53.0 — 2026-09-15
+
+### `Select.options` accepts a readonly array
+
+An options list is almost always a module-level constant, and `as const` on one
+produces a `readonly` array that a mutable parameter rejects. The component only
+maps over it, so demanding mutability bought nothing and cost callers a spread
+or a cast. Found by the eval harness: two generated files failed to compile on
+`TS4104` and nothing else.
+
+Widening only — every call that compiled before still compiles.
+
+### Contracts — the form controls mix DOM and React Aria naming
+
+`Checkbox` and `Toggle` carry Aria-shaped `isDisabled` and `isIndeterminate`
+next to DOM-shaped `checked` and `onChange(event)`. That mix makes the wrong
+guess feel right: the first full eval run has models writing
+`isSelected={x} onChange={(isSelected) => …}` on both components, and one
+generated file invented a `CheckboxChange` type that does not exist.
+
+Both intent files now carry the anti-pattern with the compiling form beside it.
+This is what intent files are for — the generated prop table says what you MAY
+pass, and only judgement says what everyone gets wrong. The underlying API
+inconsistency is left alone here, because changing it is a breaking change and a
+separate decision.
+
 ## 0.52.0 — 2026-09-15
 
 ### `EmptyState` is drawn in Figma — the last component that was not

@@ -165,6 +165,8 @@ export function score(file, taskId) {
   // has done what any engineer would. Without this set every such helper was
   // scored as a hallucinated system component.
   const declared = new Set();
+  // Bare module specifiers the candidate imported, for the unknown-package check.
+  const imported = new Set();
   const intrinsics = new Map();
   let importsIonbase = false;
   const raw = { colours: 0, spacing: 0 };
@@ -172,8 +174,11 @@ export function score(file, taskId) {
   const visit = (node) => {
     if (ts.isImportDeclaration(node)) {
       const m = node.moduleSpecifier;
-      if (ts.isStringLiteral(m) && m.text.startsWith('ionbase-ui'))
-        importsIonbase = true;
+      if (ts.isStringLiteral(m)) {
+        if (m.text.startsWith('ionbase-ui')) importsIonbase = true;
+        if (!m.text.startsWith('.') && !m.text.startsWith('/'))
+          imported.add(m.text);
+      }
     }
     if (
       (ts.isFunctionDeclaration(node) ||
@@ -239,6 +244,21 @@ export function score(file, taskId) {
       !REACT_BUILTINS.has(c),
   );
 
+  /* ---- packages the project does not provide ---- */
+  const ALLOWED_PACKAGES = [
+    'react',
+    'react-dom',
+    'ionbase-ui',
+    'ionbase-icons',
+  ];
+  const unknownPackages = [...imported].filter((spec) => {
+    // "react-dom/client" and "ionbase-ui/meta" are the same dependency.
+    const root = spec.startsWith('@')
+      ? spec.split('/').slice(0, 2).join('/')
+      : spec.split('/')[0];
+    return !ALLOWED_PACKAGES.includes(root);
+  });
+
   /* ---- HEURISTIC: does it branch on empty / loading / error ---- */
   const wantStates = task?.expects?.states ?? [];
   const statePatterns = {
@@ -285,6 +305,17 @@ export function score(file, taskId) {
         ),
       },
       noInventedComponents: { pass: invented.length === 0, detail: invented },
+      //
+      // Reaching for a package the project does not have is its own defect, and
+      // it was hiding inside `compiles`. Seven of the 29 files that failed tsc
+      // in the first full run failed ONLY because they imported `lucide-react`
+      // — a real library, but not the one this system ships; icons come from
+      // `ionbase-icons`. Scored as a compile failure it reads as "got the API
+      // wrong", which is a different problem with a different fix.
+      noUnknownPackages: {
+        pass: unknownPackages.length === 0,
+        detail: unknownPackages,
+      },
       expectedComponents: {
         pass: missing.length === 0,
         detail: missing,

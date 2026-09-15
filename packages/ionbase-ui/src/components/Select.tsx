@@ -18,8 +18,15 @@ export interface SelectProps extends Omit<
 > {
   /** Matches the Figma `Size` variant: Small, Medium, Large. */
   size?: SelectSize;
-  /** The options to render. Omit and pass `children` for grouped options. */
-  options?: SelectOption[];
+  /**
+   * The options to render. Omit and pass `children` for grouped options.
+   *
+   * `readonly` because an options list is almost always a module-level constant,
+   * and `as const` on one produces a readonly array that a mutable parameter
+   * rejects. The component only ever maps over it, so demanding a mutable array
+   * bought nothing and cost callers a spread or a cast.
+   */
+  options?: readonly SelectOption[];
   /**
    * Text shown when nothing is selected. Renders as a disabled option so the
    * field can start empty without that being a valid choice.
