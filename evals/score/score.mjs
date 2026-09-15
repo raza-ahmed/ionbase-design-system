@@ -160,6 +160,11 @@ export function score(file, taskId) {
   );
 
   const used = new Set();
+  // Components the file defines for itself. A candidate that splits a page
+  // into `ResultsTable` and `SettingsSection` has not invented anything — it
+  // has done what any engineer would. Without this set every such helper was
+  // scored as a hallucinated system component.
+  const declared = new Set();
   const intrinsics = new Map();
   let importsIonbase = false;
   const raw = { colours: 0, spacing: 0 };
@@ -170,6 +175,15 @@ export function score(file, taskId) {
       if (ts.isStringLiteral(m) && m.text.startsWith('ionbase-ui'))
         importsIonbase = true;
     }
+    if (
+      (ts.isFunctionDeclaration(node) ||
+        ts.isClassDeclaration(node) ||
+        ts.isVariableDeclaration(node)) &&
+      node.name &&
+      ts.isIdentifier(node.name) &&
+      /^[A-Z]/.test(node.name.text)
+    )
+      declared.add(node.name.text);
     if (ts.isJsxOpeningElement(node) || ts.isJsxSelfClosingElement(node)) {
       const name = node.tagName.getText();
       if (/^[a-z]/.test(name))
@@ -204,9 +218,25 @@ export function score(file, taskId) {
   const missing = expected.filter((c) => !used.has(c));
 
   /* ---- components that do not exist in the system ---- */
+  //
+  // "Invented" means a name the model used as though the system provides it,
+  // when nothing does: not in the contracts, not declared in the file, and not
+  // React's own `Fragment`. The first full 93-cell run on 14 Sep 2026 made this
+  // the most-failed check at 34 failures, and all 34 were false: every flagged
+  // name was a local helper or `React.Fragment`, and no pack had invented a
+  // single IonBase component. The worse part was the direction — contract packs
+  // write more helpers, so the bug penalised exactly the context under test.
+  //
+  // A local component that re-implements a system one (the bad fixture's
+  // `StatusPill` in place of `Badge`) is a real defect, but it is hand-rolling,
+  // not invention, and is left to noHandRolled and the lint rules.
+  const REACT_BUILTINS = new Set(['Fragment', 'React.Fragment']);
   const invented = [...used].filter(
     (c) =>
-      !Object.hasOwn(meta.components, c) && !(meta.hooks ?? []).includes(c),
+      !Object.hasOwn(meta.components, c) &&
+      !(meta.hooks ?? []).includes(c) &&
+      !declared.has(c) &&
+      !REACT_BUILTINS.has(c),
   );
 
   /* ---- HEURISTIC: does it branch on empty / loading / error ---- */

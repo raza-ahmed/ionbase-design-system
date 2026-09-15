@@ -10,14 +10,43 @@ structured data over prose, but that was their design system, not this one.
 ## What is proven, and what is not
 
 **Proven.** The harness runs end to end. The scorer separates a deliberately
-bad implementation from a good one — 1/7 checks and 5 lint errors against 7/7
+bad implementation from a good one — 2/7 checks and 5 lint errors against 10/10
 and 0 — and the pipeline carries that through to a per-pack report.
 
-**Not proven, and not claimed anywhere.** No model has generated anything here.
-The only candidates so far are two fixtures written by hand, which measure the
-scorer and nothing else. **Do not read `14% vs 100%` from a fixture run as a
-result about context packs.** The accuracy half needs the `api` provider and
-costs money to run.
+## First full run — 14 Sep 2026
+
+`claude-opus-5` via `--provider claude-cli`, 31 tasks x 3 packs, every cell
+scored. One model, one sample per cell.
+
+| pack                     | checks | all checks pass | compiles | lint errors |
+| ------------------------ | ------ | --------------- | -------- | ----------- |
+| `readme`                 | 90%    | 15/31           | 20/31    | 2           |
+| `contract-indexed`       | 97%    | 25/31           | 23/31    | 1           |
+| `contract-indexed-rules` | 95%    | 21/31           | 21/31    | 0           |
+
+Per task, against `readme`: `contract-indexed` scored higher on 14, lower on
+**0**, tied 17. `contract-indexed-rules` scored higher on 13, lower on 3.
+
+**Question 1 — does the contract pack beat the README? Yes.** Never worse on a
+single task, and the gap is where the contracts should help: `readme` missed an
+expected component on 13 tasks against 4, and hand-rolled one the system
+provides on 10 against 2.
+
+**Question 2 — does the rules brief add anything? Not here.** It lost to
+`contract-indexed` 5 tasks to 1. The rules also ship as lint, which catches the
+same things after generation; a 1% brief that does not move the result is not
+yet earning its place in the prompt.
+
+**Not answered.** Question 3 (inherited ARIA props) was not tested. And a
+quarter to a third of every pack fails `tsc`, contracts included — the largest
+defect in the output, and not one any pack fixed. Look there next.
+
+**A scorer bug was fixed before these numbers were taken.**
+`noInventedComponents` counted every component a candidate declared for itself
+as a hallucinated system component. Unfixed, it was the most-failed check at 34,
+all false, and it hit the contract packs hardest because they produce more
+helpers — a bug in the grader that ran against the hypothesis under test. The
+pre-fix run is kept for comparison; generations were not repeated.
 
 ## Three parts
 
