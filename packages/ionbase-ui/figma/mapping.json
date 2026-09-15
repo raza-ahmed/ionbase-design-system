@@ -24,6 +24,324 @@
     "silence the Figma-side gate exists to break."
   ],
   "components": {
+    "Agent Activity": {
+      "code": "AgentActivity",
+      "props": {}
+    },
+    "Agent Activity Step": {
+      "code": "AgentActivityStep",
+      "props": {
+        "Status": {
+          "prop": "status",
+          "values": {
+            "Pending": "pending",
+            "Active": "active",
+            "Done": "done",
+            "Failed": "failed",
+            "Skipped": "skipped"
+          }
+        },
+        "Label#1162:0": {
+          "prop": "children"
+        },
+        "Detail#1162:6": {
+          "prop": "detail"
+        },
+        "Show Detail#1162:12": {
+          "prop": "detail",
+          "note": "false means detail is omitted"
+        }
+      }
+    },
+    "Agent Stop": {
+      "code": "AgentStop",
+      "props": {
+        "Size": {
+          "prop": "size",
+          "values": {
+            "Small": "sm",
+            "Medium": "md",
+            "Large": "lg"
+          }
+        },
+        "State": {
+          "ignore": "Default/Hover are CSS states; Stopping is the drawn form of isStopping"
+        },
+        "Label#1156:0": {
+          "prop": "label"
+        },
+        "Stopping Label#1156:10": {
+          "prop": "stoppingLabel"
+        },
+        "Focused#1156:20": {
+          "ignore": "drawn focus ring; :focus-visible in code"
+        }
+      }
+    },
+    "Alert": {
+      "code": "Alert",
+      "props": {
+        "Intent": {
+          "prop": "intent",
+          "values": {
+            "Neutral": "neutral",
+            "Primary": "primary",
+            "Success": "success",
+            "Warning": "warning",
+            "Error": "error",
+            "Information": "information"
+          }
+        },
+        "Emphasis": {
+          "prop": "emphasis",
+          "values": {
+            "Subtle": "subtle",
+            "Solid": "solid"
+          }
+        },
+        "Layout": {
+          "prop": "layout",
+          "values": {
+            "Inline": "inline",
+            "Banner": "banner"
+          }
+        },
+        "Title#812:0": {
+          "prop": "title"
+        },
+        "Show Title#812:50": {
+          "prop": "title",
+          "note": "false means omit title"
+        },
+        "Message#812:25": {
+          "prop": "children"
+        },
+        "Show Icon#812:75": {
+          "prop": "hideIcon",
+          "note": "inverted — Figma's Show Icon false is hideIcon true"
+        },
+        "Show Dismiss#812:100": {
+          "prop": "onDismiss",
+          "note": "the dismiss button appears when a handler is passed; there is no boolean"
+        },
+        "Show Actions#812:125": {
+          "prop": "actions",
+          "note": "an absent prop is the switch"
+        }
+      }
+    },
+    "Approval Gate": {
+      "code": "ApprovalGate",
+      "props": {
+        "Risk": {
+          "prop": "risk",
+          "values": {
+            "Low": "low",
+            "Medium": "medium",
+            "High": "high"
+          }
+        },
+        "Status": {
+          "prop": "status",
+          "values": {
+            "Pending": "pending",
+            "Approved": "approved",
+            "Rejected": "rejected",
+            "Expired": "expired"
+          }
+        },
+        "Title#1160:0": {
+          "prop": "title"
+        },
+        "Detail#1160:13": {
+          "prop": "children"
+        },
+        "Show Detail#1160:26": {
+          "prop": "children",
+          "note": "false means no children passed"
+        },
+        "Reject Label#1160:39": {
+          "prop": "rejectLabel"
+        },
+        "Edit Label#1160:52": {
+          "prop": "editLabel"
+        },
+        "Approve Label#1160:65": {
+          "prop": "approveLabel"
+        },
+        "Show Edit#1160:78": {
+          "prop": "onEdit",
+          "note": "the Edit button renders only when onEdit is supplied"
+        }
+      }
+    },
+    "Avatar": {
+      "code": "Avatar",
+      "props": {
+        "Size": {
+          "prop": "size",
+          "values": {
+            "Mini": "mini",
+            "Small": "sm",
+            "Medium": "md",
+            "Large": "lg"
+          }
+        },
+        "Shape": {
+          "prop": "shape",
+          "values": {
+            "Circle": "circle",
+            "Square": "square"
+          }
+        },
+        "Type": {
+          "prop": "src",
+          "when": {
+            "Image": true
+          },
+          "note": "code picks by precedence rather than a type prop: src, then initials, then icon. Character means pass initials, Icon means pass icon."
+        },
+        "Initials#74:25": {
+          "prop": "initials"
+        },
+        "Icon#74:50": {
+          "prop": "icon"
+        },
+        "Show Ring#1009:0": {
+          "prop": "ring"
+        },
+        "Show Top Indicator#1009:25": {
+          "prop": "topIndicator",
+          "note": "Figma needs a boolean because the intent lives on the nested Status Indicator instance; code takes the intent itself, so passing one is what shows the mark. The drawn instance is Intent=Primary with its check glyph, which is what `topIndicator=\"primary\"` renders."
+        },
+        "Show Bottom Indicator#1009:50": {
+          "prop": "bottomIndicator",
+          "note": "As the top indicator — the intent comes from the nested Status Indicator, which a boolean cannot carry. The drawn instance is Intent=Success with no glyph."
+        }
+      }
+    },
+    "Avatar Gradient": {
+      "code": "AvatarGradient",
+      "props": {
+        "Size": {
+          "prop": "size",
+          "values": {
+            "Mini": "mini",
+            "Small": "sm",
+            "Medium": "md",
+            "Large": "lg"
+          }
+        },
+        "Color": {
+          "prop": "color",
+          "values": {
+            "Slate": "slate",
+            "Blue": "blue",
+            "Violet": "violet",
+            "Pink": "pink",
+            "Orange": "orange",
+            "Green": "green",
+            "Red": "red"
+          }
+        },
+        "Initials#1054:32": {
+          "prop": "initials"
+        }
+      }
+    },
+    "Avatar Group": {
+      "code": "AvatarGroup",
+      "props": {
+        "Size": {
+          "prop": "size",
+          "values": {
+            "Mini": "mini",
+            "Small": "sm",
+            "Medium": "md",
+            "Large": "lg"
+          }
+        },
+        "Shape": {
+          "prop": "shape",
+          "values": {
+            "Circle": "circle",
+            "Square": "square"
+          }
+        },
+        "Show Overflow#74:84": {
+          "prop": "max",
+          "note": "the +N avatar appears when children exceed max"
+        },
+        "Show Avatar 3#74:93": {
+          "prop": "children",
+          "note": "Figma needs a boolean per slot; React just renders fewer children"
+        },
+        "Show Avatar 4#74:102": {
+          "prop": "children",
+          "note": "same"
+        }
+      }
+    },
+    "Badge": {
+      "code": "Badge",
+      "props": {
+        "Intent": {
+          "prop": "intent",
+          "values": {
+            "Neutral": "neutral",
+            "Primary": "primary",
+            "Success": "success",
+            "Warning": "warning",
+            "Error": "error",
+            "Information": "information"
+          }
+        },
+        "Label#152:24": {
+          "prop": "children"
+        },
+        "Show Label#614:0": {
+          "prop": "children"
+        },
+        "Show Dot#152:25": {
+          "prop": "dot"
+        },
+        "Show Icon#152:26": {
+          "prop": "icon",
+          "note": "false means omit icon; dot wins when both are set"
+        },
+        "Swap Icon#647:0": {
+          "prop": "icon"
+        },
+        "Size": {
+          "prop": "size",
+          "values": {
+            "Small": "sm",
+            "Medium": "md",
+            "Large": "lg"
+          }
+        },
+        "Shape": {
+          "prop": "shape",
+          "values": {
+            "Pill": "pill",
+            "Rounded": "rounded"
+          }
+        }
+      }
+    },
+    "Border": {
+      "code": "Divider",
+      "note": "Figma calls it Border; the code component is Divider, because it renders an <hr> and an <hr> is a thematic break rather than an edge.",
+      "props": {
+        "Style": {
+          "prop": "orientation",
+          "values": {
+            "Horizontal": "horizontal",
+            "Vertical": "vertical"
+          }
+        }
+      }
+    },
     "Button": {
       "code": "Button",
       "props": {
@@ -73,6 +391,208 @@
         "Show Trailing Icon#21:377": {
           "prop": "endIcon",
           "note": "same"
+        }
+      }
+    },
+    "Checkbox": {
+      "code": "Checkbox",
+      "props": {
+        "Size": {
+          "prop": "size",
+          "values": {
+            "Small": "sm",
+            "Medium": "md",
+            "Large": "lg"
+          }
+        },
+        "Color": {
+          "prop": "intent",
+          "values": {
+            "Brand": "brand",
+            "Neutral": "neutral",
+            "Danger": "danger"
+          }
+        },
+        "State": {
+          "prop": "isIndeterminate",
+          "when": {
+            "Indeterminate": true,
+            "Indeterminate-disabled": true
+          },
+          "note": "Checked is `checked`/`defaultChecked`, and the -disabled halves are isDisabled. One Figma axis, three code props, which is why it is not a single mapping."
+        },
+        "Label#87:0": {
+          "prop": "children"
+        },
+        "Show Label#87:28": {
+          "prop": "children",
+          "note": "false means a bare box — and then aria-label becomes required"
+        },
+        "Focused#188:38": {
+          "ignore": "a drawn focus ring. In code it is :focus-visible, which the browser owns."
+        }
+      }
+    },
+    "Citation": {
+      "code": "Citation",
+      "props": {
+        "State": {
+          "ignore": "Default/Hover is :hover in code"
+        },
+        "Index#1167:0": {
+          "prop": "index"
+        },
+        "Focused#1167:3": {
+          "ignore": "drawn focus ring; :focus-visible in code"
+        }
+      }
+    },
+    "Citation List": {
+      "code": "CitationList",
+      "props": {
+        "Label#1168:4": {
+          "prop": "label"
+        }
+      }
+    },
+    "Citation List Item": {
+      "code": "CitationListItem",
+      "props": {
+        "Index#1168:0": {
+          "prop": "index"
+        },
+        "Source#1168:1": {
+          "prop": "source"
+        },
+        "Passage#1168:2": {
+          "prop": "children"
+        },
+        "Show Passage#1168:3": {
+          "prop": "children",
+          "note": "false means no children passed"
+        }
+      }
+    },
+    "Confidence Indicator": {
+      "code": "ConfidenceIndicator",
+      "props": {
+        "Level": {
+          "prop": "level",
+          "values": {
+            "Low": "low",
+            "Medium": "medium",
+            "High": "high"
+          }
+        },
+        "Basis#1166:0": {
+          "prop": "basis"
+        }
+      }
+    },
+    "Empty State": {
+      "code": "EmptyState",
+      "props": {
+        "Size": {
+          "prop": "size",
+          "values": {
+            "Inline": "inline",
+            "Panel": "panel",
+            "Page": "page"
+          }
+        },
+        "Reason": {
+          "prop": "reason",
+          "values": {
+            "No Results": "no-results",
+            "First Run": "first-run",
+            "No Access": "no-access",
+            "Error": "error"
+          }
+        },
+        "Title#1334:0": {
+          "prop": "title"
+        },
+        "Description#1334:13": {
+          "prop": "description"
+        },
+        "Show Description#1334:39": {
+          "prop": "description",
+          "note": "an absent prop is the switch"
+        },
+        "Show Icon#1334:26": {
+          "prop": "icon",
+          "note": "the mark renders when a node is passed; there is no boolean, and reason picks the tint rather than the glyph"
+        },
+        "Show Actions#1334:52": {
+          "prop": "action",
+          "note": "the row appears when action or secondaryAction is passed; there is no boolean"
+        }
+      }
+    },
+    "Full Card": {
+      "code": "FullCard",
+      "props": {
+        "Row Reverse": {
+          "prop": "alignment",
+          "values": {
+            "True": "left",
+            "False": "right"
+          },
+          "note": "Figma's boolean reverses the row; the code prop names which side the MEDIA sits on"
+        },
+        "Headline#592:0": {
+          "prop": "headline"
+        },
+        "Description#592:1": {
+          "prop": "description"
+        },
+        "Show Description#592:3": {
+          "prop": "description"
+        },
+        "Eyebrow#592:5": {
+          "prop": "eyebrow"
+        },
+        "Show Eyebrow#592:2": {
+          "prop": "eyebrow"
+        },
+        "Actions#592:6": {
+          "prop": "actions"
+        },
+        "Show Actions#592:4": {
+          "prop": "actions"
+        },
+        "Media#592:7": {
+          "prop": "media",
+          "note": "pass the screenshot itself — the component draws the frame"
+        }
+      }
+    },
+    "Header": {
+      "code": "Header",
+      "props": {
+        "Device": {
+          "prop": "open",
+          "when": {
+            "Mobile-Open": true,
+            "Mobile-Closed": false
+          },
+          "note": "Figma spells one four-way axis; code splits it in two. Desktop/Tablet/Mobile is a media query the browser already answers, and only Open/Closed is a prop."
+        },
+        "Center Slot#68:12": {
+          "prop": "center"
+        },
+        "End Slot#68:16": {
+          "prop": "end"
+        },
+        "End Slot#667:37": {
+          "prop": "end",
+          "note": "a duplicate slot in the Figma component"
+        },
+        "Show Center Slot#69:0": {
+          "prop": "center"
+        },
+        "Show End Slot#69:4": {
+          "prop": "end"
         }
       }
     },
@@ -171,33 +691,165 @@
         }
       }
     },
-    "Select": {
-      "code": "Select",
+    "Link": {
+      "code": "Link",
       "props": {
-        "Size": {
-          "prop": "size",
+        "Type": {
+          "prop": "variant",
           "values": {
-            "Small": "sm",
-            "Medium": "md",
-            "Large": "lg"
+            "Inline": "inline",
+            "Standalone": "standalone"
           }
         },
         "State": {
-          "prop": "isInvalid",
+          "prop": "isDisabled",
           "when": {
-            "Invalid": true
+            "Disabled": true
           },
-          "note": "Hover, Focus and Filled are CSS or content; Disabled is isDisabled"
+          "note": "Hover and Focus are CSS; Visited is :visited, which no prop can set"
         },
-        "Value#82:18": {
-          "prop": "placeholder",
-          "note": "Figma's text is the collapsed display value. In code that is `placeholder` when nothing is chosen; once something is, the label comes from the `options` array."
+        "Label#774:0": {
+          "prop": "children"
+        },
+        "Leading Icon#774:33": {
+          "prop": "startIcon"
+        },
+        "Trailing Icon#774:44": {
+          "prop": "endIcon"
+        },
+        "Show Leading Icon#774:11": {
+          "prop": "startIcon"
+        },
+        "Show Trailing Icon#774:22": {
+          "prop": "endIcon"
         }
       }
     },
-    "Checkbox": {
-      "code": "Checkbox",
+    "Logo-Ionbase": {
+      "code": "Logo",
       "props": {
+        "Size": {
+          "prop": "size",
+          "values": {
+            "Small": "sm",
+            "Large": "lg"
+          }
+        },
+        "Type": {
+          "prop": "wordmark",
+          "values": {
+            "Logo": "vector",
+            "Icon": "text"
+          },
+          "note": "the names invert: Figma's Logo is the serif vector wordmark, Figma's Icon is live Host Grotesk text"
+        },
+        "Property": {
+          "ignore": "the Name axis renders placeholder text in an unbound colour — leftover debug content, not a real asset. LogoMark covers the no-wordmark case."
+        }
+      }
+    },
+    "Menu": {
+      "code": "Menu",
+      "props": {
+        "Type": {
+          "ignore": "Single and Multi describe how many items may be selected, which is the caller's state. Menu renders the surface and holds no selection of its own."
+        }
+      }
+    },
+    "Menu Item": {
+      "code": "MenuItem",
+      "props": {
+        "Status": {
+          "prop": "isSelected",
+          "when": {
+            "Selected": true,
+            "Selected Primary": true
+          },
+          "note": "Hover is CSS. Selected Primary is a second selected styling Figma draws and code does not yet ship."
+        },
+        "Text#639:12": {
+          "prop": "children"
+        },
+        "Show Icon#639:16": {
+          "prop": "icon"
+        },
+        "Select Icon#639:20": {
+          "prop": "icon"
+        }
+      }
+    },
+    "Modal": {
+      "code": "Modal",
+      "props": {
+        "Size": {
+          "prop": "size",
+          "values": {
+            "Small": "sm",
+            "Medium": "md",
+            "Large": "lg",
+            "Fullscreen": "fullscreen"
+          }
+        },
+        "Align": {
+          "prop": "align",
+          "values": {
+            "Left": "left",
+            "Center": "center"
+          }
+        },
+        "Title#792:0": {
+          "prop": "title"
+        },
+        "Description#792:5": {
+          "prop": "description"
+        },
+        "Show Description#792:10": {
+          "prop": "description"
+        },
+        "Show Close#792:15": {
+          "prop": "showClose"
+        },
+        "Show Body#792:20": {
+          "prop": "children"
+        },
+        "Show Footer#792:25": {
+          "prop": "footer"
+        },
+        "Show Media#794:24": {
+          "prop": "media"
+        },
+        "Media#794:33": {
+          "prop": "media"
+        }
+      }
+    },
+    "Nav Item": {
+      "code": "NavItem",
+      "props": {
+        "State": {
+          "ignore": "Default and Hover are CSS and React Aria's useHover, not props"
+        },
+        "Label#53:0": {
+          "prop": "children"
+        },
+        "Icon#61:0": {
+          "prop": "icon"
+        },
+        "Show Chevron#53:3": {
+          "prop": "showChevron"
+        }
+      }
+    },
+    "Pagination": {
+      "code": "Pagination",
+      "props": {
+        "Type": {
+          "prop": "type",
+          "values": {
+            "Numbered": "numbered",
+            "Simple": "simple"
+          }
+        },
         "Size": {
           "prop": "size",
           "values": {
@@ -206,31 +858,52 @@
             "Large": "lg"
           }
         },
-        "Color": {
-          "prop": "intent",
+        "Show Page Size#1291:0": {
+          "prop": "showPageSize"
+        }
+      }
+    },
+    "Popover": {
+      "code": "Popover",
+      "props": {
+        "Placement": {
+          "prop": "placement",
           "values": {
-            "Brand": "brand",
-            "Neutral": "neutral",
-            "Danger": "danger"
+            "Top": "top",
+            "Bottom": "bottom",
+            "Left": "left",
+            "Right": "right"
           }
         },
-        "State": {
-          "prop": "isIndeterminate",
-          "when": {
-            "Indeterminate": true,
-            "Indeterminate-disabled": true
-          },
-          "note": "Checked is `checked`/`defaultChecked`, and the -disabled halves are isDisabled. One Figma axis, three code props, which is why it is not a single mapping."
+        "Size": {
+          "prop": "size",
+          "values": {
+            "Small": "sm",
+            "Medium": "md",
+            "Large": "lg"
+          }
         },
-        "Label#87:0": {
-          "prop": "children"
+        "Title#825:0": {
+          "prop": "title"
         },
-        "Show Label#87:28": {
-          "prop": "children",
-          "note": "false means a bare box — and then aria-label becomes required"
+        "Show Header#825:26": {
+          "prop": "title"
         },
-        "Focused#188:38": {
-          "ignore": "a drawn focus ring. In code it is :focus-visible, which the browser owns."
+        "Body#825:13": {
+          "prop": "content"
+        },
+        "Show Body#825:52": {
+          "prop": "content"
+        },
+        "Show Close#825:39": {
+          "prop": "showClose"
+        },
+        "Show Footer#825:65": {
+          "prop": "footer"
+        },
+        "Show Arrow#825:78": {
+          "prop": "hideArrow",
+          "note": "inverted — Show Arrow false is hideArrow true"
         }
       }
     },
@@ -268,8 +941,8 @@
         }
       }
     },
-    "Toggle": {
-      "code": "Toggle",
+    "Select": {
+      "code": "Select",
       "props": {
         "Size": {
           "prop": "size",
@@ -279,242 +952,82 @@
             "Large": "lg"
           }
         },
-        "Color": {
-          "prop": "intent",
-          "values": {
-            "Brand": "brand",
-            "Neutral": "neutral",
-            "Danger": "danger"
-          }
-        },
         "State": {
-          "ignore": "On/Off is `checked`/`defaultChecked` on the underlying input, not a Toggle prop"
-        },
-        "Label#88:0": {
-          "prop": "children"
-        },
-        "Show Label#88:19": {
-          "prop": "children",
-          "note": "false means aria-label is required"
-        },
-        "Focused#188:19": {
-          "ignore": "drawn focus ring; :focus-visible in code"
-        }
-      }
-    },
-    "Badge": {
-      "code": "Badge",
-      "props": {
-        "Intent": {
-          "prop": "intent",
-          "values": {
-            "Neutral": "neutral",
-            "Primary": "primary",
-            "Success": "success",
-            "Warning": "warning",
-            "Error": "error",
-            "Information": "information"
-          }
-        },
-        "Label#152:24": {
-          "prop": "children"
-        },
-        "Show Label#614:0": {
-          "prop": "children"
-        },
-        "Show Dot#152:25": {
-          "prop": "dot"
-        },
-        "Show Icon#152:26": {
-          "prop": "icon",
-          "note": "false means omit icon; dot wins when both are set"
-        },
-        "Swap Icon#647:0": {
-          "prop": "icon"
-        },
-        "Size": {
-          "prop": "size",
-          "values": {
-            "Small": "sm",
-            "Medium": "md",
-            "Large": "lg"
-          }
-        },
-        "Shape": {
-          "prop": "shape",
-          "values": {
-            "Pill": "pill",
-            "Rounded": "rounded"
-          }
-        }
-      }
-    },
-    "Alert": {
-      "code": "Alert",
-      "props": {
-        "Intent": {
-          "prop": "intent",
-          "values": {
-            "Neutral": "neutral",
-            "Primary": "primary",
-            "Success": "success",
-            "Warning": "warning",
-            "Error": "error",
-            "Information": "information"
-          }
-        },
-        "Emphasis": {
-          "prop": "emphasis",
-          "values": {
-            "Subtle": "subtle",
-            "Solid": "solid"
-          }
-        },
-        "Layout": {
-          "prop": "layout",
-          "values": {
-            "Inline": "inline",
-            "Banner": "banner"
-          }
-        },
-        "Title#812:0": {
-          "prop": "title"
-        },
-        "Show Title#812:50": {
-          "prop": "title",
-          "note": "false means omit title"
-        },
-        "Message#812:25": {
-          "prop": "children"
-        },
-        "Show Icon#812:75": {
-          "prop": "hideIcon",
-          "note": "inverted — Figma's Show Icon false is hideIcon true"
-        },
-        "Show Dismiss#812:100": {
-          "prop": "onDismiss",
-          "note": "the dismiss button appears when a handler is passed; there is no boolean"
-        },
-        "Show Actions#812:125": {
-          "prop": "actions",
-          "note": "an absent prop is the switch"
-        }
-      }
-    },
-    "Toast": {
-      "code": "Toast",
-      "props": {
-        "Intent": {
-          "prop": "intent",
-          "values": {
-            "Neutral": "neutral",
-            "Primary": "primary",
-            "Success": "success",
-            "Warning": "warning",
-            "Error": "error",
-            "Information": "information"
-          }
-        },
-        "Title#820:0": {
-          "prop": "title"
-        },
-        "Show Title#820:14": {
-          "prop": "title"
-        },
-        "Message#820:7": {
-          "prop": "message"
-        },
-        "Show Message#820:21": {
-          "prop": "message"
-        },
-        "Show Action#820:28": {
-          "prop": "action",
-          "note": "one action only — a second belongs in a Modal"
-        },
-        "Show Dismiss#820:35": {
-          "prop": "dismissLabel",
-          "note": "the dismiss control is always rendered; only its label is configurable"
-        }
-      }
-    },
-    "Link": {
-      "code": "Link",
-      "props": {
-        "Type": {
-          "prop": "variant",
-          "values": {
-            "Inline": "inline",
-            "Standalone": "standalone"
-          }
-        },
-        "State": {
-          "prop": "isDisabled",
+          "prop": "isInvalid",
           "when": {
-            "Disabled": true
+            "Invalid": true
           },
-          "note": "Hover and Focus are CSS; Visited is :visited, which no prop can set"
+          "note": "Hover, Focus and Filled are CSS or content; Disabled is isDisabled"
         },
-        "Label#774:0": {
-          "prop": "children"
-        },
-        "Leading Icon#774:33": {
-          "prop": "startIcon"
-        },
-        "Trailing Icon#774:44": {
-          "prop": "endIcon"
-        },
-        "Show Leading Icon#774:11": {
-          "prop": "startIcon"
-        },
-        "Show Trailing Icon#774:22": {
-          "prop": "endIcon"
+        "Value#82:18": {
+          "prop": "placeholder",
+          "note": "Figma's text is the collapsed display value. In code that is `placeholder` when nothing is chosen; once something is, the label comes from the `options` array."
         }
       }
     },
-    "Nav Item": {
-      "code": "NavItem",
+    "Streaming Text": {
+      "code": "StreamingText",
       "props": {
-        "State": {
-          "ignore": "Default and Hover are CSS and React Aria's useHover, not props"
+        "Streaming": {
+          "prop": "isStreaming",
+          "values": {
+            "True": true,
+            "False": false
+          }
         },
-        "Label#53:0": {
+        "Text#1164:0": {
           "prop": "children"
-        },
-        "Icon#61:0": {
-          "prop": "icon"
-        },
-        "Show Chevron#53:3": {
-          "prop": "showChevron"
         }
       }
     },
-    "Menu": {
-      "code": "Menu",
+    "Table Cell": {
+      "code": "TableCell",
       "props": {
         "Type": {
-          "ignore": "Single and Multi describe how many items may be selected, which is the caller's state. Menu renders the surface and holds no selection of its own."
+          "prop": "header",
+          "when": {
+            "Header": true
+          },
+          "note": "Body is the default <td>"
+        },
+        "Align": {
+          "prop": "align",
+          "values": {
+            "Leading": "leading",
+            "Trailing": "trailing"
+          }
+        },
+        "Show Divider#174:38": {
+          "prop": "showDivider"
+        },
+        "Content#174:37": {
+          "prop": "children"
+        },
+        "Show Content#174:36": {
+          "prop": "children"
+        },
+        "Density": {
+          "ignore": "density is set once on Table and reaches the cell through CSS — a per-cell prop could disagree with its own table"
         }
       }
     },
-    "Menu Item": {
-      "code": "MenuItem",
+    "Table Row": {
+      "code": "TableRow",
       "props": {
-        "Status": {
+        "State": {
           "prop": "isSelected",
           "when": {
             "Selected": true,
-            "Selected Primary": true
+            "Selected-Hover": true
           },
-          "note": "Hover is CSS. Selected Primary is a second selected styling Figma draws and code does not yet ship."
+          "note": "Hover is CSS"
         },
-        "Text#639:12": {
-          "prop": "children"
+        "Show Selection#175:12": {
+          "prop": "selection",
+          "note": "takes the Checkbox's own props, not a boolean — a selectable row needs checked/onChange wiring"
         },
-        "Show Icon#639:16": {
-          "prop": "icon"
-        },
-        "Select Icon#639:20": {
-          "prop": "icon"
+        "Density": {
+          "ignore": "set once on Table; see Table Cell"
         }
       }
     },
@@ -574,286 +1087,96 @@
       },
       "example": "<TabItem key=\"billing\" title=\"Billing\">Panel content</TabItem>"
     },
-    "Table Cell": {
-      "code": "TableCell",
+    "Textarea": {
+      "code": "Textarea",
       "props": {
-        "Type": {
-          "prop": "header",
-          "when": {
-            "Header": true
-          },
-          "note": "Body is the default <td>"
-        },
-        "Align": {
-          "prop": "align",
+        "Size": {
+          "prop": "size",
           "values": {
-            "Leading": "leading",
-            "Trailing": "trailing"
+            "Small": "sm",
+            "Medium": "md",
+            "Large": "lg"
           }
         },
-        "Show Divider#174:38": {
-          "prop": "showDivider"
-        },
-        "Content#174:37": {
-          "prop": "children"
-        },
-        "Show Content#174:36": {
-          "prop": "children"
-        },
-        "Density": {
-          "ignore": "density is set once on Table and reaches the cell through CSS — a per-cell prop could disagree with its own table"
-        }
-      }
-    },
-    "Table Row": {
-      "code": "TableRow",
-      "props": {
         "State": {
-          "prop": "isSelected",
+          "prop": "isInvalid",
           "when": {
-            "Selected": true,
-            "Selected-Hover": true
+            "Invalid": true
           },
-          "note": "Hover is CSS"
+          "note": "Hover, Focus and Filled are CSS or content; Disabled is isDisabled, Read-only is isReadOnly — both react-aria props, mirroring Input."
         },
-        "Show Selection#175:12": {
-          "prop": "selection",
-          "note": "takes the Checkbox's own props, not a boolean — a selectable row needs checked/onChange wiring"
-        },
-        "Density": {
-          "ignore": "set once on Table; see Table Cell"
+        "Value#1301:0": {
+          "prop": "value"
         }
       }
     },
-    "Avatar": {
-      "code": "Avatar",
+    "Toast": {
+      "code": "Toast",
+      "props": {
+        "Intent": {
+          "prop": "intent",
+          "values": {
+            "Neutral": "neutral",
+            "Primary": "primary",
+            "Success": "success",
+            "Warning": "warning",
+            "Error": "error",
+            "Information": "information"
+          }
+        },
+        "Title#820:0": {
+          "prop": "title"
+        },
+        "Show Title#820:14": {
+          "prop": "title"
+        },
+        "Message#820:7": {
+          "prop": "message"
+        },
+        "Show Message#820:21": {
+          "prop": "message"
+        },
+        "Show Action#820:28": {
+          "prop": "action",
+          "note": "one action only — a second belongs in a Modal"
+        },
+        "Show Dismiss#820:35": {
+          "prop": "dismissLabel",
+          "note": "the dismiss control is always rendered; only its label is configurable"
+        }
+      }
+    },
+    "Toggle": {
+      "code": "Toggle",
       "props": {
         "Size": {
           "prop": "size",
           "values": {
-            "Mini": "mini",
-            "Small": "sm",
-            "Medium": "md",
-            "Large": "lg"
-          }
-        },
-        "Shape": {
-          "prop": "shape",
-          "values": {
-            "Circle": "circle",
-            "Square": "square"
-          }
-        },
-        "Type": {
-          "prop": "src",
-          "when": {
-            "Image": true
-          },
-          "note": "code picks by precedence rather than a type prop: src, then initials, then icon. Character means pass initials, Icon means pass icon."
-        },
-        "Initials#74:25": {
-          "prop": "initials"
-        },
-        "Icon#74:50": {
-          "prop": "icon"
-        },
-        "Show Ring#1009:0": {
-          "prop": "ring"
-        },
-        "Show Top Indicator#1009:25": {
-          "prop": "topIndicator",
-          "note": "Figma needs a boolean because the intent lives on the nested Status Indicator instance; code takes the intent itself, so passing one is what shows the mark. The drawn instance is Intent=Primary with its check glyph, which is what `topIndicator=\"primary\"` renders."
-        },
-        "Show Bottom Indicator#1009:50": {
-          "prop": "bottomIndicator",
-          "note": "As the top indicator — the intent comes from the nested Status Indicator, which a boolean cannot carry. The drawn instance is Intent=Success with no glyph."
-        }
-      }
-    },
-    "Avatar Group": {
-      "code": "AvatarGroup",
-      "props": {
-        "Size": {
-          "prop": "size",
-          "values": {
-            "Mini": "mini",
-            "Small": "sm",
-            "Medium": "md",
-            "Large": "lg"
-          }
-        },
-        "Shape": {
-          "prop": "shape",
-          "values": {
-            "Circle": "circle",
-            "Square": "square"
-          }
-        },
-        "Show Overflow#74:84": {
-          "prop": "max",
-          "note": "the +N avatar appears when children exceed max"
-        },
-        "Show Avatar 3#74:93": {
-          "prop": "children",
-          "note": "Figma needs a boolean per slot; React just renders fewer children"
-        },
-        "Show Avatar 4#74:102": {
-          "prop": "children",
-          "note": "same"
-        }
-      }
-    },
-    "Avatar Gradient": {
-      "code": "AvatarGradient",
-      "props": {
-        "Size": {
-          "prop": "size",
-          "values": {
-            "Mini": "mini",
             "Small": "sm",
             "Medium": "md",
             "Large": "lg"
           }
         },
         "Color": {
-          "prop": "color",
+          "prop": "intent",
           "values": {
-            "Slate": "slate",
-            "Blue": "blue",
-            "Violet": "violet",
-            "Pink": "pink",
-            "Orange": "orange",
-            "Green": "green",
-            "Red": "red"
+            "Brand": "brand",
+            "Neutral": "neutral",
+            "Danger": "danger"
           }
         },
-        "Initials#1054:32": {
-          "prop": "initials"
-        }
-      }
-    },
-    "Border": {
-      "code": "Divider",
-      "note": "Figma calls it Border; the code component is Divider, because it renders an <hr> and an <hr> is a thematic break rather than an edge.",
-      "props": {
-        "Style": {
-          "prop": "orientation",
-          "values": {
-            "Horizontal": "horizontal",
-            "Vertical": "vertical"
-          }
-        }
-      }
-    },
-    "Logo-Ionbase": {
-      "code": "Logo",
-      "props": {
-        "Size": {
-          "prop": "size",
-          "values": {
-            "Small": "sm",
-            "Large": "lg"
-          }
+        "State": {
+          "ignore": "On/Off is `checked`/`defaultChecked` on the underlying input, not a Toggle prop"
         },
-        "Type": {
-          "prop": "wordmark",
-          "values": {
-            "Logo": "vector",
-            "Icon": "text"
-          },
-          "note": "the names invert: Figma's Logo is the serif vector wordmark, Figma's Icon is live Host Grotesk text"
-        },
-        "Property": {
-          "ignore": "the Name axis renders placeholder text in an unbound colour — leftover debug content, not a real asset. LogoMark covers the no-wordmark case."
-        }
-      }
-    },
-    "Modal": {
-      "code": "Modal",
-      "props": {
-        "Size": {
-          "prop": "size",
-          "values": {
-            "Small": "sm",
-            "Medium": "md",
-            "Large": "lg",
-            "Fullscreen": "fullscreen"
-          }
-        },
-        "Align": {
-          "prop": "align",
-          "values": {
-            "Left": "left",
-            "Center": "center"
-          }
-        },
-        "Title#792:0": {
-          "prop": "title"
-        },
-        "Description#792:5": {
-          "prop": "description"
-        },
-        "Show Description#792:10": {
-          "prop": "description"
-        },
-        "Show Close#792:15": {
-          "prop": "showClose"
-        },
-        "Show Body#792:20": {
+        "Label#88:0": {
           "prop": "children"
         },
-        "Show Footer#792:25": {
-          "prop": "footer"
+        "Show Label#88:19": {
+          "prop": "children",
+          "note": "false means aria-label is required"
         },
-        "Show Media#794:24": {
-          "prop": "media"
-        },
-        "Media#794:33": {
-          "prop": "media"
-        }
-      }
-    },
-    "Popover": {
-      "code": "Popover",
-      "props": {
-        "Placement": {
-          "prop": "placement",
-          "values": {
-            "Top": "top",
-            "Bottom": "bottom",
-            "Left": "left",
-            "Right": "right"
-          }
-        },
-        "Size": {
-          "prop": "size",
-          "values": {
-            "Small": "sm",
-            "Medium": "md",
-            "Large": "lg"
-          }
-        },
-        "Title#825:0": {
-          "prop": "title"
-        },
-        "Show Header#825:26": {
-          "prop": "title"
-        },
-        "Body#825:13": {
-          "prop": "content"
-        },
-        "Show Body#825:52": {
-          "prop": "content"
-        },
-        "Show Close#825:39": {
-          "prop": "showClose"
-        },
-        "Show Footer#825:65": {
-          "prop": "footer"
-        },
-        "Show Arrow#825:78": {
-          "prop": "hideArrow",
-          "note": "inverted — Show Arrow false is hideArrow true"
+        "Focused#188:19": {
+          "ignore": "drawn focus ring; :focus-visible in code"
         }
       }
     },
@@ -879,289 +1202,6 @@
           "prop": "title"
         }
       }
-    },
-    "Full Card": {
-      "code": "FullCard",
-      "props": {
-        "Row Reverse": {
-          "prop": "alignment",
-          "values": {
-            "True": "left",
-            "False": "right"
-          },
-          "note": "Figma's boolean reverses the row; the code prop names which side the MEDIA sits on"
-        },
-        "Headline#592:0": {
-          "prop": "headline"
-        },
-        "Description#592:1": {
-          "prop": "description"
-        },
-        "Show Description#592:3": {
-          "prop": "description"
-        },
-        "Eyebrow#592:5": {
-          "prop": "eyebrow"
-        },
-        "Show Eyebrow#592:2": {
-          "prop": "eyebrow"
-        },
-        "Actions#592:6": {
-          "prop": "actions"
-        },
-        "Show Actions#592:4": {
-          "prop": "actions"
-        },
-        "Media#592:7": {
-          "prop": "media",
-          "note": "pass the screenshot itself — the component draws the frame"
-        }
-      }
-    },
-    "Header": {
-      "code": "Header",
-      "props": {
-        "Device": {
-          "prop": "open",
-          "when": {
-            "Mobile-Open": true,
-            "Mobile-Closed": false
-          },
-          "note": "Figma spells one four-way axis; code splits it in two. Desktop/Tablet/Mobile is a media query the browser already answers, and only Open/Closed is a prop."
-        },
-        "Center Slot#68:12": {
-          "prop": "center"
-        },
-        "End Slot#68:16": {
-          "prop": "end"
-        },
-        "End Slot#667:37": {
-          "prop": "end",
-          "note": "a duplicate slot in the Figma component"
-        },
-        "Show Center Slot#69:0": {
-          "prop": "center"
-        },
-        "Show End Slot#69:4": {
-          "prop": "end"
-        }
-      }
-    },
-    "Agent Stop": {
-      "code": "AgentStop",
-      "props": {
-        "Size": {
-          "prop": "size",
-          "values": {
-            "Small": "sm",
-            "Medium": "md",
-            "Large": "lg"
-          }
-        },
-        "State": {
-          "ignore": "Default/Hover are CSS states; Stopping is the drawn form of isStopping"
-        },
-        "Label#1156:0": {
-          "prop": "label"
-        },
-        "Stopping Label#1156:10": {
-          "prop": "stoppingLabel"
-        },
-        "Focused#1156:20": {
-          "ignore": "drawn focus ring; :focus-visible in code"
-        }
-      }
-    },
-    "Approval Gate": {
-      "code": "ApprovalGate",
-      "props": {
-        "Risk": {
-          "prop": "risk",
-          "values": {
-            "Low": "low",
-            "Medium": "medium",
-            "High": "high"
-          }
-        },
-        "Status": {
-          "prop": "status",
-          "values": {
-            "Pending": "pending",
-            "Approved": "approved",
-            "Rejected": "rejected",
-            "Expired": "expired"
-          }
-        },
-        "Title#1160:0": {
-          "prop": "title"
-        },
-        "Detail#1160:13": {
-          "prop": "children"
-        },
-        "Show Detail#1160:26": {
-          "prop": "children",
-          "note": "false means no children passed"
-        },
-        "Reject Label#1160:39": {
-          "prop": "rejectLabel"
-        },
-        "Edit Label#1160:52": {
-          "prop": "editLabel"
-        },
-        "Approve Label#1160:65": {
-          "prop": "approveLabel"
-        },
-        "Show Edit#1160:78": {
-          "prop": "onEdit",
-          "note": "the Edit button renders only when onEdit is supplied"
-        }
-      }
-    },
-    "Agent Activity": {
-      "code": "AgentActivity",
-      "props": {}
-    },
-    "Agent Activity Step": {
-      "code": "AgentActivityStep",
-      "props": {
-        "Status": {
-          "prop": "status",
-          "values": {
-            "Pending": "pending",
-            "Active": "active",
-            "Done": "done",
-            "Failed": "failed",
-            "Skipped": "skipped"
-          }
-        },
-        "Label#1162:0": {
-          "prop": "children"
-        },
-        "Detail#1162:6": {
-          "prop": "detail"
-        },
-        "Show Detail#1162:12": {
-          "prop": "detail",
-          "note": "false means detail is omitted"
-        }
-      }
-    },
-    "Streaming Text": {
-      "code": "StreamingText",
-      "props": {
-        "Streaming": {
-          "prop": "isStreaming",
-          "values": {
-            "True": true,
-            "False": false
-          }
-        },
-        "Text#1164:0": {
-          "prop": "children"
-        }
-      }
-    },
-    "Citation": {
-      "code": "Citation",
-      "props": {
-        "State": {
-          "ignore": "Default/Hover is :hover in code"
-        },
-        "Index#1167:0": {
-          "prop": "index"
-        },
-        "Focused#1167:3": {
-          "ignore": "drawn focus ring; :focus-visible in code"
-        }
-      }
-    },
-    "Citation List": {
-      "code": "CitationList",
-      "props": {
-        "Label#1168:4": {
-          "prop": "label"
-        }
-      }
-    },
-    "Citation List Item": {
-      "code": "CitationListItem",
-      "props": {
-        "Index#1168:0": {
-          "prop": "index"
-        },
-        "Source#1168:1": {
-          "prop": "source"
-        },
-        "Passage#1168:2": {
-          "prop": "children"
-        },
-        "Show Passage#1168:3": {
-          "prop": "children",
-          "note": "false means no children passed"
-        }
-      }
-    },
-    "Confidence Indicator": {
-      "code": "ConfidenceIndicator",
-      "props": {
-        "Level": {
-          "prop": "level",
-          "values": {
-            "Low": "low",
-            "Medium": "medium",
-            "High": "high"
-          }
-        },
-        "Basis#1166:0": {
-          "prop": "basis"
-        }
-      }
-    },
-    "Pagination": {
-      "code": "Pagination",
-      "props": {
-        "Type": {
-          "prop": "type",
-          "values": {
-            "Numbered": "numbered",
-            "Simple": "simple"
-          }
-        },
-        "Size": {
-          "prop": "size",
-          "values": {
-            "Small": "sm",
-            "Medium": "md",
-            "Large": "lg"
-          }
-        },
-        "Show Page Size#1291:0": {
-          "prop": "showPageSize"
-        }
-      }
-    },
-    "Textarea": {
-      "code": "Textarea",
-      "props": {
-        "Size": {
-          "prop": "size",
-          "values": {
-            "Small": "sm",
-            "Medium": "md",
-            "Large": "lg"
-          }
-        },
-        "State": {
-          "prop": "isInvalid",
-          "when": {
-            "Invalid": true
-          },
-          "note": "Hover, Focus and Filled are CSS or content; Disabled is isDisabled, Read-only is isReadOnly — both react-aria props, mirroring Input."
-        },
-        "Value#1301:0": {
-          "prop": "value"
-        }
-      }
     }
   },
   "unmapped": {
@@ -1183,7 +1223,6 @@
     "Table": "Figma draws Table Row and Table Cell; the table itself is the caller assembling them. Density, the one property Table owns, is mapped on Table Cell.",
     "TableHead": "As Table — a code-side grouping element. Figma expresses a header row as a Table Row variant, not a separate component.",
     "TableBody": "As TableHead.",
-    "ToastProvider": "Figma draws Toast, which is mapped. The provider is placement, queueing and the live region — runtime behaviour with nothing to draw.",
-    "EmptyState": "Not yet drawn in Figma. Repo-owned: the pattern tier demanded an empty state that the component tier did not ship, and it was built from that requirement rather than from a frame. Draw it and this line goes."
+    "ToastProvider": "Figma draws Toast, which is mapped. The provider is placement, queueing and the live region — runtime behaviour with nothing to draw."
   }
 }

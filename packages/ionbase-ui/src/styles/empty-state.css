@@ -1,9 +1,11 @@
 /*
  * EmptyState
  *
- * Repo-owned, not measured from Figma — there is no Empty State component in
- * the file yet. Every value below is a token already on a ladder, so when one
- * is drawn the two can be reconciled without moving anything underneath.
+ * Drawn in Figma on 15 Sep 2026, as `Empty State` — 12 variants, Size x Reason.
+ * It was the last component in this package with no Figma counterpart, and it
+ * went the unusual direction: built here first from the pattern tier's
+ * requirement, then drawn to match. Every value was already a token on a
+ * ladder, which is what made the reconciliation cost one line.
  *
  * REASON CHANGES THE ICON COLOUR AND NOTHING ELSE
  *
@@ -117,7 +119,17 @@
   color: var(--text-default);
   font-size: var(--ion-empty-state-title);
   line-height: var(--ion-empty-state-title-line-height);
-  font-weight: var(--font-weight-medium);
+
+  /*
+   * Semibold, not medium, settled when the component was drawn. Every heading
+   * style in the Figma file — `Heading/H3`, `Heading/H4` — is semibold, so a
+   * medium title here would have been the only heading-sized text in the system
+   * off the ramp, and would have needed a text style that exists nowhere else.
+   * The `inline` size sits at body-md rather than a heading rung, and its style
+   * (`Body/Medium Semibold`) was added to the file alongside the component, in
+   * the same shape as the `Body/Default Semibold` already there.
+   */
+  font-weight: var(--font-weight-semibold);
 
   /* A filter value or record id in the title must wrap, not widen the region. */
   overflow-wrap: anywhere;

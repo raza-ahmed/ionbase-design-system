@@ -322,12 +322,11 @@ rather than guarded by a gate: the gate cannot run at all until the file is
 clean.
 
 **Adding a React component means answering the Figma question too.** Map it, or
-put it in `codeUnmapped` with a reason. Nine sit there now: eight are
-permanent — `Table`, `TableHead`, `TableBody`, `RadioGroup`, `ToastProvider`,
-`Icon`, `LogoMark`, `ScrollProgress` are code-side composition or runtime
-behaviour, with nothing in Figma to point at — and one, `EmptyState`, is simply
-not drawn yet. That last entry is a to-do list with a build behind it, not a
-note in a document.
+put it in `codeUnmapped` with a reason. Eight sit there now, and all eight are
+permanent: `Table`, `TableHead`, `TableBody`, `RadioGroup`, `ToastProvider`,
+`Icon`, `LogoMark` and `ScrollProgress` are code-side composition or runtime
+behaviour, with nothing in Figma to point at. As of 15 Sep 2026 the list is
+empty of to-dos — `EmptyState` was the last undrawn component, and it is drawn.
 
 **This paragraph said seventeen, of which nine were the undrawn agentic tier.
 That was true when it was written and is not now.** The tier was drawn, exported

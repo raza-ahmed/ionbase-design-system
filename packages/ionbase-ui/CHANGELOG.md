@@ -1,5 +1,46 @@
 # Changelog
 
+## 0.52.0 — 2026-09-15
+
+### `EmptyState` is drawn in Figma — the last component that was not
+
+`Empty State` now exists in the library as a 12-variant set, `Size` x `Reason`,
+and is mapped like every other component. `codeUnmapped` is down to eight
+entries and all eight are permanent: `Table`, `TableHead`, `TableBody`,
+`RadioGroup`, `ToastProvider`, `Icon`, `LogoMark` and `ScrollProgress` are
+code-side composition or runtime behaviour with nothing in Figma to point at.
+There is no longer a backlog behind that list.
+
+This one went the unusual direction. Every other component was measured from
+Figma and built here; `EmptyState` was built here first, because the pattern
+tier demanded an empty state the component tier did not ship, and drawn
+afterwards to match. The cost of reconciling the two was one line, which is the
+argument for the rule that produced it: every value in `empty-state.css` was
+already a token on a ladder, so there was nothing to move underneath.
+
+### Changed — the title is semibold, was medium
+
+The only real disagreement the drawing surfaced. `Heading/H3` and `Heading/H4`
+in the Figma file are both semibold, so a medium title would have been the one
+heading-sized text in the system off that ramp, and would have needed a text
+style that exists nowhere else.
+
+The `inline` size sits at `type/body-md` rather than a heading rung, and the
+file had no semibold style at that size. `Body/Medium Semibold` was added
+alongside the component, in the same shape as the `Body/Default Semibold`
+already there — so all three sizes now carry a real style rather than a
+one-off binding.
+
+Visible change: empty-state titles render one weight heavier. No API change.
+
+### Verification
+
+All 12 variants audited on the Figma side for unbound values — padding, gap,
+icon size, icon fill, text fill and text style — 0 unbound. `figma:map` checks
+41 components and 205 properties against both the export and the TypeScript
+API. All 41 description blocks were re-read in the file before countersigning,
+with no HTML-entity damage.
+
 ## 0.51.0 — 2026-09-05
 
 ### Removed — `text/placeholder`

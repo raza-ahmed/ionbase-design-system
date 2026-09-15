@@ -10,7 +10,7 @@
     "Do not hand-edit. Re-export when the Figma components change."
   ],
   "file": "gaLbGd0QNb1fUl6BjSpfBA",
-  "exported": "2026-09-05",
+  "exported": "2026-09-15",
   "components": {
     ".Status Indicator": {
       "page": "Avatar",
@@ -469,6 +469,38 @@
           "type": "VARIANT",
           "options": ["Low", "Medium", "High"],
           "default": "Low"
+        }
+      }
+    },
+    "Empty State": {
+      "page": "Empty State",
+      "id": "1334:2294",
+      "kind": "SET",
+      "props": {
+        "Description#1334:13": {
+          "type": "TEXT"
+        },
+        "Reason": {
+          "type": "VARIANT",
+          "options": ["No Results", "First Run", "No Access", "Error"],
+          "default": "First Run"
+        },
+        "Show Actions#1334:52": {
+          "type": "BOOLEAN"
+        },
+        "Show Description#1334:39": {
+          "type": "BOOLEAN"
+        },
+        "Show Icon#1334:26": {
+          "type": "BOOLEAN"
+        },
+        "Size": {
+          "type": "VARIANT",
+          "options": ["Panel", "Inline", "Page"],
+          "default": "Inline"
+        },
+        "Title#1334:0": {
+          "type": "TEXT"
         }
       }
     },

@@ -476,7 +476,8 @@ component must be mapped or listed in `codeUnmapped` with a reason, and that lis
 must stay honest — naming a component that is mapped, or one that is not
 exported, fails. Eight of the seventeen are permanent (code-side composition:
 `Table`, `TableHead`, `TableBody`, `RadioGroup`, `ToastProvider`, `Icon`,
-`LogoMark`, `ScrollProgress`); the ninth is `EmptyState`, still undrawn.
+`LogoMark`, `ScrollProgress`). `EmptyState` was the ninth and was drawn on
+15 Sep 2026, which empties the backlog: every remaining entry is permanent.
 
 The agentic tier used to be the other nine, and the claim above them — that the
 build is what notices when they are drawn — held: they were drawn, exported and
