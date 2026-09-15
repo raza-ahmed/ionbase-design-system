@@ -77,18 +77,42 @@ const tasks = corpus.tasks.filter(
 
 /* ------------------------------------------------------------------ prompts */
 
-function packContext(pack) {
+const asFiles = (dir, names) =>
+  names.map(
+    (f) => `<file name="${f}">\n${readFileSync(join(dir, f), 'utf8')}\n</file>`,
+  );
+
+/** The part of a pack that is the same for every task — cacheable. */
+function packShared(pack) {
   const dir = join(PACKS, pack);
   if (!existsSync(dir)) {
     throw new Error(`No pack "${pack}". Run: node context/build-packs.mjs`);
   }
-  return readdirSync(dir)
-    .filter((f) => f !== 'PACK.json')
-    .map(
-      (f) =>
-        `<file name="${f}">\n${readFileSync(join(dir, f), 'utf8')}\n</file>`,
-    )
-    .join('\n\n');
+  const names = readdirSync(dir, { withFileTypes: true })
+    .filter((e) => e.isFile() && e.name !== 'PACK.json')
+    .map((e) => e.name);
+  return asFiles(dir, names).join('\n\n');
+}
+
+/**
+ * The contracts for one task, if the pack carries them per task.
+ *
+ * The indexed packs used to ship one hardcoded set of six contracts for all 31
+ * tasks, so a task about Checkbox and Toggle was answered with contracts for
+ * Table, Modal and Badge. Cells graded that way were measuring an absent file,
+ * not a contract that failed to help.
+ */
+function packTask(pack, task) {
+  const dir = join(PACKS, pack, 'tasks', task.id);
+  if (!existsSync(dir)) return '';
+  const names = readdirSync(dir).filter((f) => f.endsWith('.json'));
+  return names.length ? asFiles(dir, names).join('\n\n') : '';
+}
+
+function packContext(pack, task) {
+  const shared = packShared(pack);
+  const per = task ? packTask(pack, task) : '';
+  return per ? `${shared}\n\n${per}` : shared;
 }
 
 const SYSTEM = `You are building UI for an enterprise SaaS application that uses the IonBase design system.
@@ -165,7 +189,7 @@ const providers = {
       '',
       'Reference material about the design system:',
       '',
-      packContext(pack),
+      packContext(pack, task),
       '',
       `TASK: ${task.prompt}`,
       '',
@@ -216,12 +240,22 @@ const providers = {
         // cached; the task varies and goes after the breakpoint.
         { type: 'text', text: SYSTEM },
         {
+          // Only the shared half is cached: it is identical across tasks, while
+          // the per-task contracts change every call and would invalidate the
+          // breakpoint on each one.
           type: 'text',
-          text: packContext(pack),
+          text: packShared(pack),
           cache_control: { type: 'ephemeral' },
         },
       ],
-      messages: [{ role: 'user', content: userPrompt(task) }],
+      messages: [
+        {
+          role: 'user',
+          content: [packTask(pack, task), userPrompt(task)]
+            .filter(Boolean)
+            .join('\n\n'),
+        },
+      ],
     });
     const message = await stream.finalMessage();
     const text = message.content
