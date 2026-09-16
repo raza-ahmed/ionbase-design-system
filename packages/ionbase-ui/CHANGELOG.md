@@ -1,5 +1,47 @@
 # Changelog
 
+## 0.55.0 — 2026-09-16
+
+### Added — `Spinner`, `ProgressBar`, `Skeleton`
+
+The system had no way to say "this is loading". Not a spinner, not a progress
+bar, not a placeholder. Three of the nine patterns specify a loading state and
+none of them could render one.
+
+The gap was measured rather than guessed. Across ~250 files of generated code in
+[`evals/`](../../evals/), the fallbacks were: a bare `role="status"` in **48
+files**, `aria-busy` in 19, a hand-rolled pulse in 10, and `role="progressbar"`
+in 4. Every one of those is a consumer reimplementing something this package
+should have shipped, and the bare `role="status"` is the instructive one — it is
+the right instinct and half the job, because an EMPTY live region announces
+nothing at all.
+
+**`Spinner`** carries a politely-announced label by default, because the ring is
+silence to a screen reader. `isDecorative` turns the role off for the case where
+something else already announces the wait — a button whose label already reads
+"Saving…" — since two live regions racing is worse than one.
+
+**`ProgressBar`** takes determinate and indeterminate in one component: omitting
+`value` is what makes it indeterminate, and `aria-valuenow` is then omitted with
+it, as the ARIA spec asks. A bar reporting `aria-valuenow="0"` forever says the
+work is stuck rather than unmeasured, which is the defect hand-rolled bars carry
+most often. They are one component rather than two because work that starts
+unmeasurable and becomes measurable is the common case, and a swap at that
+moment would remount the node and take the live region with it.
+
+**`Skeleton`** is `aria-hidden` with no opt-out — a screen reader cannot use a
+picture of content. That makes the caller responsible for `aria-busy` on the
+region being replaced, which only the caller can scope. It is the one component
+here whose correct use requires something the type system cannot check, so it is
+stated in the contract, the story and the source.
+
+Reduced motion splits deliberately: `Spinner` and `ProgressBar` slow down but
+keep moving, because they are the only evidence a wait is still live. `Skeleton`
+stops outright, because it conveys nothing a static block does not.
+
+All three are repo-owned for now and recorded in `codeUnmapped` as undrawn, the
+same route `EmptyState` took before it was drawn in 0.52.0.
+
 ## 0.54.0 — 2026-09-15
 
 ### Added — `isSelected` and `onSelectionChange` on `Checkbox` and `Toggle`

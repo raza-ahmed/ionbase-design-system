@@ -1,0 +1,76 @@
+/*
+ * Skeleton
+ *
+ * A pulse on one surface token rather than a sweeping gradient. The gradient
+ * version is prettier and costs more than it looks: `verify-contrast.mjs`
+ * resolves gradient stops as real pairings, so every skeleton would enter the
+ * contrast budget as text-shaped colour it is not — and a placeholder has no
+ * text to be legible.
+ */
+.ion-skeleton {
+  --ion-skeleton-width: 100%;
+  --ion-skeleton-height: var(--spacing-16);
+  --ion-skeleton-radius: var(--radius-sm);
+
+  width: var(--ion-skeleton-width);
+  height: var(--ion-skeleton-height);
+  background-color: var(--surface-muted);
+  border-radius: var(--ion-skeleton-radius);
+  animation: ion-skeleton-pulse var(--ion-duration-slow) var(--ion-ease-in-out)
+    infinite;
+}
+
+.ion-skeleton-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-8);
+  width: var(--ion-skeleton-width, 100%);
+}
+
+/* Text sits on the line box so a skeleton paragraph occupies the height the
+ * real paragraph will, and the layout does not jump when content lands. */
+.ion-skeleton--text {
+  --ion-skeleton-height: var(--type-body-line-height);
+}
+
+/* The last line short, because real paragraphs end mid-measure. */
+.ion-skeleton--last {
+  --ion-skeleton-width: 60%;
+}
+
+.ion-skeleton--circle {
+  --ion-skeleton-height: var(--icon-size-lg);
+  --ion-skeleton-width: var(--icon-size-lg);
+  --ion-skeleton-radius: var(--radius-full);
+
+  flex: none;
+}
+
+.ion-skeleton--rect {
+  --ion-skeleton-height: var(--spacing-64);
+  --ion-skeleton-radius: var(--radius-md);
+}
+
+@keyframes ion-skeleton-pulse {
+  50% {
+    opacity: 0.55;
+  }
+}
+
+/*
+ * Held still, unlike Spinner and ProgressBar — and the difference is the point.
+ * Those two are the only evidence that a wait is live, so they keep moving
+ * slowly. A skeleton says nothing a static block does not, so for a user who
+ * asked for less motion it simply stops.
+ */
+@media (prefers-reduced-motion: reduce) {
+  .ion-skeleton {
+    animation: none;
+  }
+}
+
+@media (forced-colors: active) {
+  .ion-skeleton {
+    border: var(--border-width-default) solid GrayText;
+  }
+}

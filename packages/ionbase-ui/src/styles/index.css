@@ -67,6 +67,9 @@
 @import url('./citation.css');
 @import url('./confidence-indicator.css');
 @import url('./empty-state.css');
+@import url('./spinner.css');
+@import url('./progress-bar.css');
+@import url('./skeleton.css');
 
 /*
  * Visually hidden, but not hidden from assistive tech.

@@ -138,6 +138,19 @@ export type {
   ConfidenceIndicatorProps,
   ConfidenceLevel,
 } from './ConfidenceIndicator.js';
+export { Spinner } from './Spinner.js';
+export type { SpinnerProps, SpinnerSize } from './Spinner.js';
+
+export { ProgressBar } from './ProgressBar.js';
+export type {
+  ProgressBarProps,
+  ProgressBarIntent,
+  ProgressBarSize,
+} from './ProgressBar.js';
+
+export { Skeleton } from './Skeleton.js';
+export type { SkeletonProps, SkeletonVariant } from './Skeleton.js';
+
 export { EmptyState } from './EmptyState.js';
 export type {
   EmptyStateProps,

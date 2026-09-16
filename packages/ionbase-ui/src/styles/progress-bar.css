@@ -1,0 +1,107 @@
+/*
+ * ProgressBar
+ *
+ * The fill width arrives as a custom property rather than an inline `width`,
+ * so the only inline value a caller ever sees is a percentage on a token-named
+ * property — and `no-raw-style-values` stays true rather than exempted.
+ */
+.ion-progress-bar {
+  --ion-progress-bar-height: var(--spacing-8);
+  --ion-progress-bar-fill: var(--surface-primary);
+  --ion-progress-bar-pct: 0%;
+
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-4);
+  font-family: var(--font-family-sans);
+}
+
+.ion-progress-bar--sm {
+  --ion-progress-bar-height: var(--spacing-4);
+}
+
+.ion-progress-bar--success {
+  --ion-progress-bar-fill: var(--surface-success);
+}
+
+.ion-progress-bar--warning {
+  --ion-progress-bar-fill: var(--surface-warning);
+}
+
+.ion-progress-bar--error {
+  --ion-progress-bar-fill: var(--surface-error);
+}
+
+.ion-progress-bar__header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--spacing-8);
+  font-size: var(--type-body-sm);
+  line-height: var(--type-body-sm-line-height);
+}
+
+.ion-progress-bar__label {
+  color: var(--text-default);
+}
+
+.ion-progress-bar__value {
+  color: var(--text-secondary);
+  font-variant-numeric: tabular-nums;
+}
+
+.ion-progress-bar__track {
+  overflow: hidden;
+  height: var(--ion-progress-bar-height);
+  background-color: var(--surface-muted);
+  border-radius: var(--radius-full);
+}
+
+.ion-progress-bar__fill {
+  width: var(--ion-progress-bar-pct);
+  height: 100%;
+  background-color: var(--ion-progress-bar-fill);
+  border-radius: inherit;
+  transition: width var(--ion-duration-base) var(--ion-ease-out);
+}
+
+/*
+ * Indeterminate is a travelling segment rather than a filling bar: a bar that
+ * fills and resets reads as repeated failure and restart.
+ */
+.ion-progress-bar--indeterminate .ion-progress-bar__fill {
+  width: 40%;
+  animation: ion-progress-bar-slide var(--ion-duration-slow)
+    var(--ion-ease-in-out) infinite;
+}
+
+@keyframes ion-progress-bar-slide {
+  from {
+    transform: translateX(-100%);
+  }
+
+  to {
+    transform: translateX(250%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ion-progress-bar__fill {
+    transition-duration: 1ms;
+  }
+
+  /* Still moving, still slow — see Spinner for the same reasoning. */
+  .ion-progress-bar--indeterminate .ion-progress-bar__fill {
+    animation-duration: 3000ms;
+  }
+}
+
+@media (forced-colors: active) {
+  .ion-progress-bar__track {
+    border: var(--border-width-default) solid CanvasText;
+  }
+
+  .ion-progress-bar__fill {
+    background-color: Highlight;
+  }
+}

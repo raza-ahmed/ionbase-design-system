@@ -1,0 +1,67 @@
+{
+  "status": "stable",
+  "summary": "A determinate or indeterminate measure of work, with the name of the work attached. Omitting `value` is what makes it indeterminate.",
+  "useWhen": [
+    "work reports a fraction complete — an upload, an import, a multi-step job",
+    "work will become measurable but is not yet, and the bar should not remount when it does",
+    "a quota or usage figure is better read as a bar than a number"
+  ],
+  "useInstead": [
+    {
+      "when": "the wait is short and unmeasurable",
+      "use": "Spinner",
+      "why": "an indeterminate bar occupies a block of layout to say what a spinner says inline"
+    },
+    {
+      "when": "the region is being replaced by content",
+      "use": "Skeleton"
+    }
+  ],
+  "variants": {
+    "intent": {
+      "primary": { "use": "the default — work proceeding normally" },
+      "success": {
+        "use": "work that finished, where the bar stays on screen as a record"
+      },
+      "warning": {
+        "use": "a quota approaching its limit",
+        "note": "warning describes the VALUE, not a failure of the bar"
+      },
+      "error": {
+        "use": "a quota exceeded, or a job that failed part-way",
+        "note": "the bar is still reporting correctly — reserve this for the measured thing being bad"
+      }
+    },
+    "size": {
+      "sm": { "use": "inside a row or a dense table cell" },
+      "md": { "use": "the default" }
+    }
+  },
+  "a11y": {
+    "requires": [
+      "`label` — it is required, because role=\"progressbar\" announces a number and a number with no noun sounds like information while carrying none",
+      "`valueText` when a percentage is not what a person wants read aloud — \"3 of 12 files\""
+    ],
+    "notes": [
+      "indeterminate omits aria-valuenow entirely, as the ARIA spec asks; a bar reporting aria-valuenow=0 forever says the work is stuck rather than unmeasured",
+      "value is clamped to 0..max, so a caller cannot render a bar past its own end"
+    ]
+  },
+  "antiPatterns": [
+    {
+      "dont": "<ProgressBar label=\"Loading\" value={0} /> while the total is unknown",
+      "do": "<ProgressBar label=\"Loading\" />",
+      "why": "value={0} announces \"0 percent\" indefinitely. Omitting value is how you say \"not measurable yet\""
+    },
+    {
+      "dont": "swapping a Spinner for a ProgressBar once the size is known",
+      "do": "one ProgressBar, with `value` appearing when it becomes known",
+      "why": "the swap remounts the node and takes the live region with it, so the transition is silent to a screen reader"
+    },
+    {
+      "dont": "intent=\"error\" because the request failed",
+      "do": "leave the bar and put the failure in an Alert",
+      "why": "intent describes the value being measured. A failed request is not a red measurement, it is a different message"
+    }
+  ]
+}

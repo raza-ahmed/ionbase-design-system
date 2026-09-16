@@ -1,0 +1,57 @@
+{
+  "status": "stable",
+  "summary": "The shape of content that has not arrived. Always hidden from assistive technology — the caller owns the announcement.",
+  "useWhen": [
+    "a region will be replaced by content whose shape is known in advance",
+    "the layout would otherwise jump when the content lands",
+    "several regions load independently and a single page spinner would hide that"
+  ],
+  "useInstead": [
+    {
+      "when": "the shape of what is coming is not known",
+      "use": "Spinner",
+      "why": "a skeleton that does not match what replaces it is a worse promise than no promise"
+    },
+    {
+      "when": "the region is empty because there is nothing to show",
+      "use": "EmptyState",
+      "why": "a skeleton that never resolves is how an empty list looks like a broken one"
+    }
+  ],
+  "variants": {
+    "variant": {
+      "text": {
+        "use": "lines of copy",
+        "note": "height comes from the line box, so the block occupies what the real paragraph will. With `lines`, the last is drawn short because real paragraphs end mid-measure"
+      },
+      "circle": { "use": "an avatar or an icon slot" },
+      "rect": { "use": "a card, a thumbnail, a chart" }
+    }
+  },
+  "a11y": {
+    "requires": [
+      "`aria-busy=\"true\"` on the region being replaced, set by the CALLER — this component cannot do it, because only the caller knows where the region starts and ends"
+    ],
+    "notes": [
+      "every skeleton is aria-hidden with no opt-out: a screen reader cannot use a picture of content, and announcing it puts a stream of empty boxes between the user and what they asked for",
+      "prefers-reduced-motion stops the pulse outright, unlike Spinner and ProgressBar — a skeleton conveys nothing a static block does not, so there is no signal to preserve"
+    ]
+  },
+  "antiPatterns": [
+    {
+      "dont": "<Skeleton /> inside a region with no aria-busy",
+      "do": "<section aria-busy={isLoading}>{isLoading ? <Skeleton lines={3} /> : <Rows />}</section>",
+      "why": "the skeleton is hidden, so without aria-busy a screen-reader user is told nothing at all — the region simply reads as empty"
+    },
+    {
+      "dont": "a skeleton whose shape does not match the content that replaces it",
+      "do": "match the line count and block sizes to the real thing",
+      "why": "the entire benefit is that the layout does not move; a mismatched skeleton pays the cost and keeps the jump"
+    },
+    {
+      "dont": "leaving skeletons on screen when a request fails",
+      "do": "render EmptyState with reason=\"error\"",
+      "why": "a skeleton that never resolves is indistinguishable from a hung page"
+    }
+  ]
+}

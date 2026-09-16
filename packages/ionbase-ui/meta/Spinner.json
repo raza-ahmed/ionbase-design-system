@@ -1,0 +1,55 @@
+{
+  "status": "stable",
+  "summary": "An indeterminate wait, announced once. A ring plus a politely-announced label, sized off the icon ramp.",
+  "useWhen": [
+    "work is in flight and its duration cannot be measured",
+    "a control has started something and must show it is working",
+    "a small region is waiting and a skeleton would be more scaffolding than content"
+  ],
+  "useInstead": [
+    {
+      "when": "the work has a measurable fraction complete",
+      "use": "ProgressBar",
+      "why": "a spinner over measurable work discards information the user wants — a spinner and a 90%-complete upload look identical"
+    },
+    {
+      "when": "a region is being replaced by content with a known shape",
+      "use": "Skeleton",
+      "why": "a skeleton holds the layout so it does not jump when content lands; a spinner leaves a hole that then reflows"
+    }
+  ],
+  "variants": {
+    "size": {
+      "sm": { "use": "inside a control, or beside a line of text" },
+      "md": { "use": "the default — a panel or a section" },
+      "lg": { "use": "a whole route or a full-page wait" }
+    }
+  },
+  "a11y": {
+    "requires": [
+      "a `label` naming what is loading — it is announced politely and is the only thing a screen-reader user receives",
+      "`isDecorative` when something else already announces the wait, so two live regions do not race"
+    ],
+    "notes": [
+      "the ring is aria-hidden; the label carries the meaning",
+      "prefers-reduced-motion slows the rotation rather than stopping it — a stationary spinner is indistinguishable from a hung one"
+    ]
+  },
+  "antiPatterns": [
+    {
+      "dont": "<div className=\"spinner\" role=\"status\" />",
+      "do": "<Spinner label=\"Loading invoices\" />",
+      "why": "role=\"status\" creates a live region; an EMPTY live region announces nothing. This exact half-measure appeared in 48 files of this repo's eval corpus"
+    },
+    {
+      "dont": "<Button isDisabled>Saving… <Spinner /></Button>",
+      "do": "<Button isDisabled>Saving… <Spinner isDecorative /></Button>",
+      "why": "the button label already says it. Two live regions announcing the same wait talk over each other"
+    },
+    {
+      "dont": "a Spinner for an upload that reports bytes transferred",
+      "do": "ProgressBar with value",
+      "why": "throwing away a known percentage makes a finite wait feel unbounded"
+    }
+  ]
+}

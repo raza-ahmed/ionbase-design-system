@@ -1,0 +1,70 @@
+/*
+ * Spinner
+ *
+ * One ring, one token per slot, sized off the icon ramp rather than a ramp of
+ * its own — a spinner is an icon-shaped thing and giving it private sizes is
+ * the `control/<size>/*` mistake recorded in AGENTS.md.
+ */
+.ion-spinner {
+  --ion-spinner-size: var(--icon-size-md);
+  --ion-spinner-track: var(--border-subtle);
+  --ion-spinner-head: var(--border-primary-strong);
+
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-8);
+  color: var(--text-secondary);
+  font-family: var(--font-family-sans);
+  font-size: var(--type-body-sm);
+  line-height: var(--type-body-sm-line-height);
+}
+
+.ion-spinner--sm {
+  --ion-spinner-size: var(--icon-size-sm);
+}
+
+.ion-spinner--lg {
+  --ion-spinner-size: var(--icon-size-lg);
+}
+
+/*
+ * The track is the full ring and the head is one quadrant of it, which is what
+ * makes rotation legible: a ring of uniform colour spinning looks static.
+ */
+.ion-spinner__ring {
+  box-sizing: border-box;
+  flex: none;
+  width: var(--ion-spinner-size);
+  height: var(--ion-spinner-size);
+  border: var(--border-width-thick) solid var(--ion-spinner-track);
+  border-top-color: var(--ion-spinner-head);
+  border-radius: var(--radius-full);
+  animation: ion-spinner-rotate var(--ion-duration-slow) var(--ion-ease-linear)
+    infinite;
+}
+
+@keyframes ion-spinner-rotate {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/*
+ * Slowed, not stopped. A stationary spinner is not a calmer spinner; it is
+ * indistinguishable from a hung one, and it removes the only signal a sighted
+ * user has that the wait is still live.
+ */
+@media (prefers-reduced-motion: reduce) {
+  .ion-spinner__ring {
+    animation-duration: 2400ms;
+  }
+}
+
+/* Forced colours throw the token palette away; the ring must still read as a
+ * ring, so the head keeps its contrast against the track. */
+@media (forced-colors: active) {
+  .ion-spinner__ring {
+    border-color: GrayText;
+    border-top-color: CanvasText;
+  }
+}
