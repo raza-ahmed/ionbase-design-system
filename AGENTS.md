@@ -325,8 +325,14 @@ clean.
 put it in `codeUnmapped` with a reason. Eight sit there now, and all eight are
 permanent: `Table`, `TableHead`, `TableBody`, `RadioGroup`, `ToastProvider`,
 `Icon`, `LogoMark` and `ScrollProgress` are code-side composition or runtime
-behaviour, with nothing in Figma to point at. As of 15 Sep 2026 the list is
-empty of to-dos — `EmptyState` was the last undrawn component, and it is drawn.
+behaviour, with nothing in Figma to point at.
+
+The rest are to-dos, and the entry says so in its own reason line. As of
+16 Sep 2026 that is `Breadcrumb`, `BreadcrumbItem`, `Accordion`,
+`AccordionItem`, `Drawer`, `FileUpload` and `Combobox` — three tiers built in
+code ahead of the drawing. Do not read the number in this sentence; read the
+reasons in `figma/mapping.json`, which is the only copy that moves when the
+work does.
 
 **This paragraph said seventeen, of which nine were the undrawn agentic tier.
 That was true when it was written and is not now.** The tier was drawn, exported

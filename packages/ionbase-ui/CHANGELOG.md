@@ -1,5 +1,60 @@
 # Changelog
 
+## 0.58.0 — 2026-09-16
+
+### Added — `FileUpload`, `Combobox`
+
+The forms tier had no way to attach a file and no way to pick from a long list.
+`Select`'s own contract has pointed at "a combobox — not yet in this system"
+since it was written; it now points at a component.
+
+**`FileUpload`** is a drop target wrapped around a real `<input type="file">`.
+The usual build of this component is a `<div>` with drag handlers and an
+`onClick` that calls `input.click()` — that version has no accessible name, no
+tab stop, no form participation and no keyboard path. Here the input is a real,
+focusable, labelled control clipped to one pixel rather than `display: none`,
+which would remove it from the tab order and the accessibility tree outright.
+The zone is a `<label>` for it, so clicking anywhere opens the picker with no
+script at all, and drag-and-drop is layered on top of a path that already works
+without it. `accept` and `maxSize` are re-checked in JS because a browser
+enforces neither on drop — advisory, never validation.
+
+**`Combobox`** is a text field that filters a list to one value. Real focus
+never leaves the input; arrow keys move a virtual focus through the list via
+`aria-activedescendant`, which is what makes typing and browsing possible at
+once. Filtering is `Intl.Collator`, so "resume" finds "Résumé" and Turkish
+dotted/dotless I behaves as a Turkish reader expects — the usual
+`toLowerCase().includes()` fails both silently.
+
+### Fixed — three defects the tests found before a user could
+
+**`defaultFilter` was doing nothing.** react-stately consults it only for an
+uncontrolled collection passed as `defaultItems`. Passed as `items`, as it is
+here, the list is taken as final and the filter is ignored with no error and no
+warning: a combobox that listed every option no matter what was typed.
+Filtering moved into the component.
+
+**The selected value was the label plus its description.** `textValue` does
+double duty in react-stately — it is what the filter reads _and_ what the input
+is set to once an option is chosen. Folding the description in to make it
+searchable wrote `Australia Oceania` into the field. `textValue` is the label
+again and the filter is widened instead.
+
+**The menu opened and closed inside one gesture.** Two separate causes, both
+found by bisecting the panel down to nothing. Pressing the disclosure button
+moved focus off the input, and `useComboBox` closes the list the moment focus
+leaves it — Chromium focuses a button on mousedown, so this was not
+hypothetical. And syncing the menu's width from a `ResizeObserver` fed back into
+`usePopover`'s positioning; the scrollbar that resulted was read by
+`useCloseOnScroll` as a real scroll. Both presented as keyboard bugs.
+
+### Changed
+
+- `Select`'s `useInstead` now names `Combobox` instead of describing one.
+- One new WCAG 1.4.3 exemption: a disabled combobox option on the menu's raised
+  surface reads 3.12:1 in Dark. Light passes at 4.54:1, which is the tell that
+  the pair is borderline rather than arbitrary.
+
 ## 0.57.0 — 2026-09-16
 
 ### Added — `Breadcrumb`, `Accordion`, `Drawer`

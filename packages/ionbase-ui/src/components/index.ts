@@ -171,3 +171,17 @@ export type {
   EmptyStateSize,
   EmptyStateHeadingLevel,
 } from './EmptyState.js';
+
+export { FileUpload } from './FileUpload.js';
+export type {
+  FileUploadProps,
+  FileUploadSize,
+  RejectedFile,
+} from './FileUpload.js';
+
+export { Combobox } from './Combobox.js';
+export type {
+  ComboboxProps,
+  ComboboxSize,
+  ComboboxOption,
+} from './Combobox.js';

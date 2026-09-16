@@ -8,7 +8,8 @@
   "useInstead": [
     {
       "when": "the list is long enough to need search or type-ahead beyond the native behaviour",
-      "use": "a combobox — not yet in this system"
+      "use": "Combobox",
+      "why": "a native <select> list is the browser's, and cannot be filtered"
     },
     {
       "when": "the rows need icons, avatars or two lines of text",

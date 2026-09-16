@@ -1,0 +1,232 @@
+/*
+ * FileUpload
+ *
+ * NO FIGMA COUNTERPART YET. Nothing here is invented: the border, radius,
+ * background and disabled treatment are `Input`'s, and the centred
+ * icon-over-text stack with its padding ladder is `EmptyState`'s. When the
+ * component is drawn, the expectation is that values move and structure does
+ * not — the same bet Drawer made against Modal.
+ *
+ * THE VISUALLY HIDDEN INPUT IS NOT `display: none`
+ *
+ * A `display: none` input leaves the tab order and the accessibility tree, and
+ * the component then has no control in it at all — which is how the common
+ * build of this component ends up keyboard-unreachable while looking identical.
+ * `.ion-visually-hidden` would work, but the input is also positioned to sit
+ * inside the zone so a browser can anchor its own validation bubble somewhere
+ * sensible rather than at the top-left of the page.
+ */
+.ion-file-upload {
+  --ion-file-upload-padding: var(--spacing-32);
+  --ion-file-upload-gap: var(--spacing-8);
+  --ion-file-upload-icon-size: var(--icon-size-lg);
+
+  position: relative;
+  display: flex;
+  background-color: var(--surface-default);
+  border: var(--border-width-default) dashed var(--border-default);
+  border-radius: var(--radius-md);
+  transition:
+    border-color var(--ion-duration-base) var(--ion-ease-out),
+    background-color var(--ion-duration-base) var(--ion-ease-out);
+}
+
+.ion-file-upload--sm {
+  --ion-file-upload-padding: var(--spacing-20);
+  --ion-file-upload-gap: var(--spacing-6);
+  --ion-file-upload-icon-size: var(--icon-size-md);
+}
+
+/*
+ * 1px, not 0. The input has to have a box for the focus ring to be drawn
+ * against and for a validation bubble to point at; collapsing it to nothing
+ * puts both in the document corner. It is clipped, so the 1px is never seen.
+ */
+.ion-file-upload__input {
+  position: absolute;
+  bottom: var(--spacing-8);
+  left: 50%;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  border: 0;
+}
+
+.ion-file-upload__target {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--ion-file-upload-gap);
+  padding: var(--ion-file-upload-padding) var(--spacing-24);
+  text-align: center;
+  cursor: pointer;
+}
+
+.ion-file-upload__icon {
+  display: inline-flex;
+  color: var(--icon-secondary);
+}
+
+.ion-file-upload__icon svg {
+  width: var(--ion-file-upload-icon-size);
+  height: var(--ion-file-upload-icon-size);
+}
+
+.ion-file-upload__prompt {
+  color: var(--text-default);
+  font-family: var(--font-family-sans);
+  font-size: var(--type-body);
+  line-height: var(--type-body-line-height);
+  font-weight: var(--font-weight-medium);
+}
+
+.ion-file-upload__hint {
+  color: var(--text-tertiary);
+  font-family: var(--font-family-sans);
+  font-size: var(--type-body-sm);
+  line-height: var(--type-body-sm-line-height);
+}
+
+@media (hover: hover) {
+  .ion-file-upload:hover {
+    border-color: var(--border-strong);
+    background-color: var(--surface-hover);
+  }
+}
+
+/*
+ * The focus ring is on the ZONE, driven by the hidden input's focus. The ring
+ * belongs where the user's eye is, and the input is one clipped pixel.
+ */
+.ion-file-upload:focus-within {
+  outline: var(--border-width-thick) solid var(--ring-focus);
+  outline-offset: 2px;
+}
+
+/*
+ * Dragging reads as a solid border, not a colour change alone. A drop target
+ * that only shifts hue is invisible to anyone who cannot distinguish the two —
+ * WCAG 1.4.1, and it is also just easier to see.
+ */
+.ion-file-upload--dragging,
+.ion-file-upload[data-dragging='true'] {
+  border-style: solid;
+  border-color: var(--border-focus);
+  background-color: var(--surface-primary-subtle);
+}
+
+.ion-file-upload--invalid,
+.ion-file-upload[data-invalid='true'] {
+  border-color: var(--border-error);
+}
+
+.ion-file-upload--disabled,
+.ion-file-upload[data-disabled='true'] {
+  background-color: var(--surface-disabled);
+  border-color: var(--border-disabled);
+}
+
+.ion-file-upload--disabled .ion-file-upload__target,
+.ion-file-upload[data-disabled='true'] .ion-file-upload__target {
+  cursor: not-allowed;
+}
+
+.ion-file-upload--disabled .ion-file-upload__prompt,
+.ion-file-upload[data-disabled='true'] .ion-file-upload__prompt {
+  color: var(--text-disabled);
+}
+
+.ion-file-upload--disabled .ion-file-upload__icon,
+.ion-file-upload[data-disabled='true'] .ion-file-upload__icon {
+  color: var(--icon-disabled);
+}
+
+/*
+ * The list of held files is a sibling of the zone, not a child of it.
+ *
+ * Inside the zone it would sit inside the `<label>`, which makes every row —
+ * including each remove button — a click target for the file picker. Removing
+ * a file would open the picker on the way out.
+ */
+.ion-file-upload__list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-6);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ion-file-upload__file {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-8);
+  min-height: var(--spacing-32);
+  padding-inline: var(--spacing-12);
+  background-color: var(--surface-subtle);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-family-sans);
+  font-size: var(--type-body-sm);
+  line-height: var(--type-body-sm-line-height);
+}
+
+.ion-file-upload__name {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  color: var(--text-default);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ion-file-upload__size {
+  flex-shrink: 0;
+  color: var(--text-tertiary);
+  font-variant-numeric: tabular-nums;
+}
+
+/*
+ * 24px square — WCAG 2.2 SC 2.5.8's minimum pointer target, around a 16px
+ * glyph. Do not shrink it to the icon.
+ */
+.ion-file-upload__remove {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: var(--spacing-24);
+  height: var(--spacing-24);
+  padding: 0;
+  background: none;
+  border: none;
+  border-radius: var(--radius-sm);
+  color: var(--icon-secondary);
+  cursor: pointer;
+  transition: background-color var(--ion-duration-base) var(--ion-ease-out);
+}
+
+.ion-file-upload__remove svg {
+  width: var(--icon-size-sm);
+  height: var(--icon-size-sm);
+}
+
+@media (hover: hover) {
+  .ion-file-upload__remove:hover {
+    background-color: var(--surface-hover);
+    color: var(--icon-default);
+  }
+}
+
+.ion-file-upload__remove:focus-visible {
+  outline: var(--border-width-thick) solid var(--ring-focus);
+  outline-offset: 2px;
+}
+
+.ion-file-upload__remove:disabled {
+  color: var(--icon-disabled);
+  cursor: not-allowed;
+}

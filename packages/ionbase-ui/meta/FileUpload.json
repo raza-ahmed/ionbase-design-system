@@ -1,0 +1,65 @@
+{
+  "status": "stable",
+  "summary": "A drop target wrapped around a real file input, with client-side accept and size checks.",
+  "useWhen": [
+    "the user attaches one or more files to a form or a message",
+    "the constraints (types, size, count) should be stated before the upload is attempted rather than after"
+  ],
+  "useInstead": [
+    {
+      "when": "a single file is picked and no drop target or file list is wanted",
+      "use": "a plain <input type=\"file\">",
+      "why": "this component adds a drop zone and a removable list; without either it is a heavier way to render the same control"
+    },
+    {
+      "when": "upload progress needs to be shown",
+      "use": "ProgressBar",
+      "why": "FileUpload selects files; it does not transfer them, and deliberately owns no network state"
+    }
+  ],
+  "variants": {
+    "size": {
+      "sm": { "use": "inside a dense form, or beside other fields" },
+      "md": { "use": "the default — a standalone attachment area" }
+    }
+  },
+  "a11y": {
+    "guarantees": [
+      "the control is a real <input type=\"file\">, focusable and in the tab order — the drop zone is an enhancement layered on top, never the only way in",
+      "the zone is a <label> for that input, so clicking anywhere opens the picker without any script",
+      "the input is clipped to 1px rather than display:none, which would remove it from the tab order and the accessibility tree",
+      "the focus ring is drawn on the zone, where the user is looking, not on the clipped input",
+      "a polite live region announces the number of files held, because a drop changes nothing near the user's focus",
+      "dragging is signalled by a solid border as well as a colour, so it is not conveyed by colour alone (WCAG 1.4.1)",
+      "each remove button is a 24px target with a name that includes the file (WCAG 2.5.8)"
+    ],
+    "requires": [
+      "`label`, or an `aria-label` — an unnamed file input announces only as \"button\"",
+      "`hint` describing the accepted types and size limit, since `accept` itself is never announced"
+    ]
+  },
+  "antiPatterns": [
+    {
+      "dont": "treating `accept` or `maxSize` as validation",
+      "why": "both are client-side and advisory. A browser does not enforce `accept` on drop, and every platform picker offers an \"All files\" escape. The server must check again"
+    },
+    {
+      "dont": "rebuilding this as a div with onClick={() => inputRef.current.click()}",
+      "why": "that version has no accessible name, no tab stop, no form participation and no keyboard path — it is the usual build of this component and the usual defect"
+    },
+    {
+      "dont": "putting the file list inside the drop zone",
+      "why": "the zone is a label, so every row in it — including each remove button — would also open the file picker"
+    },
+    {
+      "dont": "using `onChange` as a delta",
+      "why": "it fires with the complete list after every add and every remove, never with what changed"
+    }
+  ],
+  "slots": {
+    "prompt": { "expects": "the call to action inside the zone" },
+    "hint": {
+      "expects": "the constraints in words — \"PNG or JPG, up to 5 MB\""
+    }
+  }
+}

@@ -1,0 +1,85 @@
+{
+  "status": "stable",
+  "summary": "A text field that filters a list of options down to one selected value.",
+  "useWhen": [
+    "the list is long enough that scanning it is worse than typing",
+    "the user picks exactly one value from a known set",
+    "the options carry a second line of context the native <select> cannot render"
+  ],
+  "useInstead": [
+    {
+      "when": "the list is short and fully scannable",
+      "use": "Select",
+      "why": "the native control brings keyboard handling and the mobile platform picker for free; this rebuilds all of it"
+    },
+    {
+      "when": "there are two or three mutually exclusive choices worth showing at once",
+      "use": "RadioGroup"
+    },
+    {
+      "when": "the value is free text and the list is only a convenience",
+      "use": "Input",
+      "why": "or set `allowsCustomValue`, which is the same decision made explicitly"
+    },
+    {
+      "when": "the rows are commands rather than values",
+      "use": "Menu",
+      "why": "options are selected and stay selected; menu items are invoked and the menu closes"
+    }
+  ],
+  "variants": {
+    "size": {
+      "sm": {
+        "use": "dense forms, table filters"
+      },
+      "md": {
+        "use": "the default"
+      },
+      "lg": {
+        "use": "prominent single-field forms"
+      }
+    }
+  },
+  "a11y": {
+    "guarantees": [
+      "role=combobox with aria-expanded, aria-controls and aria-activedescendant, from react-aria's useComboBox",
+      "real focus never leaves the input; arrow keys move a virtual focus through the list, which is what keeps typing and browsing possible at once",
+      "the popover is non-modal, so the page behind stays readable and focus stays in the field",
+      "Escape reverts to the last committed value rather than clearing the field",
+      "filtering is Intl.Collator-based, so accents and locale-specific casing behave correctly",
+      "the empty message is a sibling of the listbox, not an option in it, so it is never counted, focused or selectable",
+      "the menu matches the field's width, clamped to the space right of it so a full-bleed field cannot push the menu past the viewport edge"
+    ],
+    "requires": [
+      "`label`, or an `aria-label` when no visible label is rendered",
+      "`emptyLabel` wording that says why nothing is listed, if the default is too terse"
+    ]
+  },
+  "antiPatterns": [
+    {
+      "dont": "giving the disclosure button a tab stop",
+      "why": "the input already opens the list with ArrowDown. A second tab stop doubles the cost of tabbing past every combobox in a form and adds nothing"
+    },
+    {
+      "dont": "styling the focused option with :hover or :focus",
+      "why": "no option is ever either — focus is virtual. Use [data-focused], which react-aria sets for both pointer and keyboard"
+    },
+    {
+      "dont": "posting the input's text in a form",
+      "why": "the text is the label and the value is the key; pass `name` and the component posts the key in a hidden input"
+    },
+    {
+      "dont": "filtering with toLowerCase().includes()",
+      "why": "it fails on accents and on Turkish dotted/dotless I, silently, in the locales least likely to be tested"
+    },
+    {
+      "dont": "writing a width onto the menu from a ResizeObserver or any effect that runs while it is open",
+      "why": "a positioned popover that changes size feeds back into react-aria's positioning, and any scrollbar that results is read by useCloseOnScroll as a real scroll. The menu opens and closes within about a hundred milliseconds, which presents as a keyboard bug rather than a layout one"
+    }
+  ],
+  "slots": {
+    "emptyLabel": {
+      "expects": "what to show when the filter matches nothing"
+    }
+  }
+}

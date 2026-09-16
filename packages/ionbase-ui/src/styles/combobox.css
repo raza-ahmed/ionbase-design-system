@@ -1,0 +1,147 @@
+/*
+ * Combobox
+ *
+ * NO FIGMA COUNTERPART YET. The field is `Input`'s box unchanged — Combobox
+ * carries `.ion-input` alongside `.ion-combobox` rather than restating a border,
+ * a radius and three states that would then drift from the real thing. Only the
+ * disclosure button is new here. The menu borrows `Menu`'s row metrics.
+ *
+ * THE MENU IS ITS OWN BLOCK, `.ion-combobox-menu`
+ *
+ * Not `.ion-combobox__popover`. The contrast gate resolves a translucent
+ * colour's backdrop from the BLOCK's background, and `.ion-combobox` has no
+ * background of its own — it inherits Input's. An option's `surface/hover`
+ * would then have had no resolvable ground and come back *skipped*: not
+ * failing, not passing, unmeasured. Drawer shipped that exact bug in 0.57.0 and
+ * only a count in a summary line caught it.
+ */
+.ion-combobox__button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  padding: 0;
+  background: none;
+  border: none;
+  color: var(--icon-secondary);
+  cursor: pointer;
+}
+
+.ion-combobox__button svg {
+  width: var(--ion-input-icon-size);
+  height: var(--ion-input-icon-size);
+  transition: transform var(--ion-duration-base) var(--ion-ease-out);
+}
+
+/* The caret follows the list. A static caret beside an open menu is a lie. */
+.ion-combobox[data-open='true'] .ion-combobox__button svg {
+  transform: rotate(180deg);
+}
+
+.ion-combobox[data-disabled='true'] .ion-combobox__button {
+  color: var(--icon-disabled);
+  cursor: not-allowed;
+}
+
+/*
+ * NO UNDERLAY, deliberately.
+ *
+ * Modal and Popover render one. A non-modal popover must not: `usePopover`
+ * already listens for outside interaction on the document, so the underlay adds
+ * nothing, and a fixed full-viewport element over the page swallows the first
+ * click on whatever is behind it. The page stays fully interactive while the
+ * list is open, which is the whole difference between this and a dialog.
+ */
+.ion-combobox-menu {
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  padding: var(--spacing-4);
+  background-color: var(--surface-raised);
+  border: var(--border-width-default) solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  box-shadow: var(--ion-shadow-shadow-lg);
+}
+
+/*
+ * Capped, and the cap is the whole reason the list scrolls rather than the
+ * page. `usePopover` also passes a maxHeight in the inline style when the
+ * viewport is tighter than this; the smaller of the two wins, which is correct
+ * either way.
+ */
+.ion-combobox-menu__list {
+  max-height: 16rem;
+  margin: 0;
+  padding: 0;
+  overflow-y: auto;
+  list-style: none;
+}
+
+.ion-combobox-menu__list:focus {
+  outline: none;
+}
+
+.ion-combobox-menu__option {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2);
+  padding: var(--spacing-6) var(--spacing-8);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+}
+
+.ion-combobox-menu__label {
+  color: var(--text-default);
+  font-family: var(--font-family-sans);
+  font-size: var(--type-body);
+  line-height: var(--type-body-line-height);
+}
+
+.ion-combobox-menu__description {
+  color: var(--text-tertiary);
+  font-family: var(--font-family-sans);
+  font-size: var(--type-body-sm);
+  line-height: var(--type-body-sm-line-height);
+}
+
+/*
+ * Focus is a background, not an outline, and it is driven by data-focused
+ * rather than `:focus`.
+ *
+ * The real DOM focus never leaves the input — the list is driven by
+ * `aria-activedescendant`, so no option is ever `:focus` or `:hover` in the way
+ * a normal menu's rows are. Styling either one would produce a list where the
+ * keyboard highlight is invisible. React Aria also routes pointer hover into
+ * the same `isFocused` flag, so one rule covers both and the mouse and keyboard
+ * cannot end up highlighting two different rows.
+ */
+.ion-combobox-menu__option[data-focused='true'] {
+  background-color: var(--surface-hover);
+}
+
+.ion-combobox-menu__option[data-selected='true'] .ion-combobox-menu__label {
+  font-weight: var(--font-weight-medium);
+}
+
+.ion-combobox-menu__option[data-selected='true'] {
+  background-color: var(--surface-primary-subtle);
+}
+
+.ion-combobox-menu__option[data-disabled='true'] {
+  cursor: not-allowed;
+}
+
+.ion-combobox-menu__option[data-disabled='true'] .ion-combobox-menu__label,
+.ion-combobox-menu__option[data-disabled='true']
+  .ion-combobox-menu__description {
+  color: var(--text-disabled);
+}
+
+.ion-combobox-menu__empty {
+  padding: var(--spacing-12) var(--spacing-8);
+  color: var(--text-tertiary);
+  font-family: var(--font-family-sans);
+  font-size: var(--type-body-sm);
+  line-height: var(--type-body-sm-line-height);
+  text-align: center;
+}
