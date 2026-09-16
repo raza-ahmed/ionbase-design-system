@@ -1,5 +1,43 @@
 # Changelog
 
+## 0.56.0 — 2026-09-16
+
+### `Spinner`, `ProgressBar` and `Skeleton` are drawn in Figma
+
+Shipped in code one day earlier; drawn now, and mapped. 22 variants across three
+sets — Spinner `Size` (3), Progress Bar `Intent` x `Size` x `Type` (16),
+Skeleton `Variant` (3). `codeUnmapped` is back to eight entries and all eight
+are permanent.
+
+`Progress Bar`'s `Type` axis is the interesting one: it maps to `value`, and
+there is no `type` prop in code. Determinate means a value was passed,
+Indeterminate means it was omitted. A real `type` prop would let the state be
+set independently of the number it describes, which is how a bar ends up
+claiming to be indeterminate while holding a value.
+
+`Show Value` is bound only on the eight Determinate variants. An indeterminate
+bar has no percentage, so a property offering to reveal one would be offering a
+number the component does not have.
+
+### Three drawing bugs worth recording
+
+**Arc, not wedge.** A Figma ellipse with `arcData` and `innerRadius: 0` is a
+pie slice, not a ring — the spinner's first render was a small dark wedge. The
+ring is two filled donut segments now, and `innerRadius` is computed per size
+(`1 - 2 * thickness / diameter`) because it is a RATIO: one constant would give
+a 1.6px ring at 16px and 2.4px at 24px where the CSS says 2px throughout.
+
+**Bound paints cache black, silently.** `setBoundVariableForPaint` keeps
+whatever colour the paint already carried, so building one from `{0,0,0}` leaves
+a black placeholder that renders black while reporting a correct binding. Three
+Progress Bar variants shipped that way and every structural check passed; only
+a screenshot caught it. Resolve the variable first, then bind. An audit of all
+76 paints across the three sets now reports zero.
+
+**`combineAsVariants` reorders.** Laying variants out by the array passed in
+produces a scrambled grid, because the set sorts its own children. Read
+`set.children` back before positioning.
+
 ## 0.55.0 — 2026-09-16
 
 ### Added — `Spinner`, `ProgressBar`, `Skeleton`

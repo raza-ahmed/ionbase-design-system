@@ -18,8 +18,8 @@
     "returns 0 missing, then run: pnpm --filter ionbase-ui figma:applied"
   ],
   "file": "gaLbGd0QNb1fUl6BjSpfBA",
-  "appliedOn": "2026-09-15",
-  "verifiedInFigma": 41,
+  "appliedOn": "2026-09-16",
+  "verifiedInFigma": 44,
   "applied": {
     "1162:246": {
       "figmaComponent": "Agent Activity",
@@ -171,6 +171,11 @@
       "component": "Popover",
       "hash": "ea51a31bf58baa35"
     },
+    "1344:331": {
+      "figmaComponent": "Progress Bar",
+      "component": "ProgressBar",
+      "hash": "b05185a273f6eae5"
+    },
     "89:314": {
       "figmaComponent": "Radio",
       "component": "Radio",
@@ -180,6 +185,16 @@
       "figmaComponent": "Select",
       "component": "Select",
       "hash": "6f30dd4afd7565f5"
+    },
+    "1345:248": {
+      "figmaComponent": "Skeleton",
+      "component": "Skeleton",
+      "hash": "031ee84eac9501b2"
+    },
+    "1341:258": {
+      "figmaComponent": "Spinner",
+      "component": "Spinner",
+      "hash": "09d382723b3c47ce"
     },
     "1164:248": {
       "figmaComponent": "Streaming Text",

@@ -907,6 +907,45 @@
         }
       }
     },
+    "Progress Bar": {
+      "code": "ProgressBar",
+      "props": {
+        "Intent": {
+          "prop": "intent",
+          "values": {
+            "Primary": "primary",
+            "Success": "success",
+            "Warning": "warning",
+            "Error": "error"
+          }
+        },
+        "Size": {
+          "prop": "size",
+          "values": {
+            "Small": "sm",
+            "Medium": "md"
+          }
+        },
+        "Type": {
+          "prop": "value",
+          "note": "not a prop value. Determinate means `value` was passed; Indeterminate means it was omitted, which is also what drops aria-valuenow. There is no `type` prop in code, and adding one would make the state settable independently of the number it describes"
+        },
+        "Label#1344:0": {
+          "prop": "label"
+        },
+        "Value#1344:17": {
+          "prop": "valueText",
+          "note": "the Figma text is a sample percentage; in code `valueText` REPLACES the computed percentage and is what a screen reader speaks"
+        },
+        "Show Label#1344:34": {
+          "prop": "isLabelVisible"
+        },
+        "Show Value#1344:51": {
+          "prop": "isValueVisible",
+          "note": "bound only on the Determinate variants — an indeterminate bar has no percentage to reveal"
+        }
+      }
+    },
     "Radio": {
       "code": "Radio",
       "props": {
@@ -962,6 +1001,39 @@
         "Value#82:18": {
           "prop": "placeholder",
           "note": "Figma's text is the collapsed display value. In code that is `placeholder` when nothing is chosen; once something is, the label comes from the `options` array."
+        }
+      }
+    },
+    "Skeleton": {
+      "code": "Skeleton",
+      "props": {
+        "Variant": {
+          "prop": "variant",
+          "values": {
+            "Text": "text",
+            "Circle": "circle",
+            "Rect": "rect"
+          }
+        }
+      }
+    },
+    "Spinner": {
+      "code": "Spinner",
+      "props": {
+        "Size": {
+          "prop": "size",
+          "values": {
+            "Small": "sm",
+            "Medium": "md",
+            "Large": "lg"
+          }
+        },
+        "Label#1341:0": {
+          "prop": "label"
+        },
+        "Show Label#1341:4": {
+          "prop": "isLabelVisible",
+          "note": "controls only whether the label is VISIBLE. The label is announced either way — turning this off in Figma does not remove it from the accessibility tree, and `isDecorative` is the prop that silences the component"
         }
       }
     },
@@ -1218,11 +1290,8 @@
   "codeUnmapped": {
     "Icon": "Figma has no Icon component; icons are vector assets dropped into slots. Icon is the React wrapper that gives any of them a size rung and an accessible label, so there is nothing on the Figma side to point at.",
     "LogoMark": "Logo-Ionbase maps to Logo. Figma spells the no-wordmark case as that component's Type axis rather than a separate component; LogoMark is how code spells the same thing.",
-    "ProgressBar": "Not yet drawn in Figma. Built alongside Spinner and Skeleton — the system had no determinate progress either. Its measurements borrow the radius and surface ramps rather than inventing any, so drawing it should change values, not structure.",
     "RadioGroup": "Figma draws Radio only. The group is the thing that owns the selected value, which a static frame cannot express — Figma's Radio State axis is ignored for exactly this reason.",
     "ScrollProgress": "Drawn in Figma as its three parts — Line, Progress, Progress Heading — all of which the component owns internally. There is no whole-component frame to map.",
-    "Skeleton": "Not yet drawn in Figma. The hardest of the three to draw usefully, since a skeleton is a shape of whatever it replaces rather than a component with its own look; a frame per variant is probably the honest version.",
-    "Spinner": "Not yet drawn in Figma. Repo-owned, like EmptyState before it: the eval corpus reached for a bare role=\"status\" in 48 generated files and the system had no loading component at all, so it was built from that evidence rather than from a frame. Draw it and this line goes.",
     "Table": "Figma draws Table Row and Table Cell; the table itself is the caller assembling them. Density, the one property Table owns, is mapped on Table Cell.",
     "TableBody": "As TableHead.",
     "TableHead": "As Table — a code-side grouping element. Figma expresses a header row as a Table Row variant, not a separate component.",

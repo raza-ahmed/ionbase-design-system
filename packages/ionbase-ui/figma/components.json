@@ -10,7 +10,7 @@
     "Do not hand-edit. Re-export when the Figma components change."
   ],
   "file": "gaLbGd0QNb1fUl6BjSpfBA",
-  "exported": "2026-09-15",
+  "exported": "2026-09-16",
   "components": {
     ".Status Indicator": {
       "page": "Avatar",
@@ -950,6 +950,40 @@
         }
       }
     },
+    "Progress Bar": {
+      "page": "Progress Bar",
+      "id": "1344:331",
+      "kind": "SET",
+      "props": {
+        "Intent": {
+          "type": "VARIANT",
+          "options": ["Primary", "Success", "Warning", "Error"],
+          "default": "Primary"
+        },
+        "Label#1344:0": {
+          "type": "TEXT"
+        },
+        "Show Label#1344:34": {
+          "type": "BOOLEAN"
+        },
+        "Show Value#1344:51": {
+          "type": "BOOLEAN"
+        },
+        "Size": {
+          "type": "VARIANT",
+          "options": ["Medium", "Small"],
+          "default": "Medium"
+        },
+        "Type": {
+          "type": "VARIANT",
+          "options": ["Determinate", "Indeterminate"],
+          "default": "Determinate"
+        },
+        "Value#1344:17": {
+          "type": "TEXT"
+        }
+      }
+    },
     "Progress Heading": {
       "page": "Scroll Progress",
       "id": "191:1021",
@@ -1023,6 +1057,36 @@
         },
         "Value#82:18": {
           "type": "TEXT"
+        }
+      }
+    },
+    "Skeleton": {
+      "page": "Skeleton",
+      "id": "1345:248",
+      "kind": "SET",
+      "props": {
+        "Variant": {
+          "type": "VARIANT",
+          "options": ["Text", "Circle", "Rect"],
+          "default": "Text"
+        }
+      }
+    },
+    "Spinner": {
+      "page": "Spinner",
+      "id": "1341:258",
+      "kind": "SET",
+      "props": {
+        "Label#1341:0": {
+          "type": "TEXT"
+        },
+        "Show Label#1341:4": {
+          "type": "BOOLEAN"
+        },
+        "Size": {
+          "type": "VARIANT",
+          "options": ["Medium", "Small", "Large"],
+          "default": "Medium"
         }
       }
     },
