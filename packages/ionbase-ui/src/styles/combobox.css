@@ -1,10 +1,17 @@
 /*
  * Combobox
  *
- * NO FIGMA COUNTERPART YET. The field is `Input`'s box unchanged — Combobox
- * carries `.ion-input` alongside `.ion-combobox` rather than restating a border,
- * a radius and three states that would then drift from the real thing. Only the
+ * Drawn in Figma as `Combobox` (1370:2359) and `Combobox Menu` (1372:262), from
+ * this file. The field is `Input`'s box unchanged — Combobox carries
+ * `.ion-input` alongside `.ion-combobox` rather than restating a border, a
+ * radius and three states that would then drift from the real thing. Only the
  * disclosure button is new here. The menu borrows `Menu`'s row metrics.
+ *
+ * The two are one control in code and two components in Figma, because a frame
+ * cannot both hug a field and overlay a list on top of it. `Combobox Menu` is
+ * recorded in mapping.json's `unmapped` for exactly that reason: there is no
+ * React export behind it, and there should not be — a listbox with no combobox
+ * to own it is not a thing a caller should be able to mount.
  *
  * THE MENU IS ITS OWN BLOCK, `.ion-combobox-menu`
  *

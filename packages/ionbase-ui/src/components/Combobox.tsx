@@ -275,9 +275,9 @@ function ComboboxListBox({
 /**
  * Combobox — a text field that filters a list, with one selected value.
  *
- * NO FIGMA COUNTERPART YET. The field borrows `Input`'s box wholesale and the
- * menu borrows `Menu`'s rows, so drawing it should change values rather than
- * structure.
+ * Drawn in Figma as `Combobox` (1370:2359) — three sizes by seven states, the
+ * same axes `Input` carries, because the field IS Input's box. The open list is
+ * a second Figma component, `Combobox Menu`, with no React export behind it.
  *
  * WHY THIS IS NOT `Select` WITH A SEARCH BOX
  *

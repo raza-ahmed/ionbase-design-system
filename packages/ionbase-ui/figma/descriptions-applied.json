@@ -19,8 +19,18 @@
   ],
   "file": "gaLbGd0QNb1fUl6BjSpfBA",
   "appliedOn": "2026-09-16",
-  "verifiedInFigma": 44,
+  "verifiedInFigma": 51,
   "applied": {
+    "1360:267": {
+      "figmaComponent": "Accordion",
+      "component": "Accordion",
+      "hash": "d9141c459d883153"
+    },
+    "1360:266": {
+      "figmaComponent": "Accordion Item",
+      "component": "AccordionItem",
+      "hash": "a1d04a1f15d90cdb"
+    },
     "1162:246": {
       "figmaComponent": "Agent Activity",
       "component": "AgentActivity",
@@ -71,6 +81,16 @@
       "component": "Divider",
       "hash": "ac190a15d7c26cc1"
     },
+    "1359:252": {
+      "figmaComponent": "Breadcrumb",
+      "component": "Breadcrumb",
+      "hash": "c5b2eb3840c7cabd"
+    },
+    "1359:251": {
+      "figmaComponent": "Breadcrumb Item",
+      "component": "BreadcrumbItem",
+      "hash": "fe8244786b5f6332"
+    },
     "21:461": {
       "figmaComponent": "Button",
       "component": "Button",
@@ -96,15 +116,30 @@
       "component": "CitationListItem",
       "hash": "7f3c4e189cbca699"
     },
+    "1370:2359": {
+      "figmaComponent": "Combobox",
+      "component": "Combobox",
+      "hash": "5c1069c627a01021"
+    },
     "1166:262": {
       "figmaComponent": "Confidence Indicator",
       "component": "ConfidenceIndicator",
       "hash": "37749d2f3023ab3d"
     },
+    "1365:2404": {
+      "figmaComponent": "Drawer",
+      "component": "Drawer",
+      "hash": "d2e3deb851a06c4d"
+    },
     "1334:2294": {
       "figmaComponent": "Empty State",
       "component": "EmptyState",
       "hash": "5a51f6b9b7408363"
+    },
+    "1367:2333": {
+      "figmaComponent": "File Upload",
+      "component": "FileUpload",
+      "hash": "a01c7ee7eacae214"
     },
     "592:857": {
       "figmaComponent": "Full Card",

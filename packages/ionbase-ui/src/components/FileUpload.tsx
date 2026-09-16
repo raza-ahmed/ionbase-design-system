@@ -120,9 +120,11 @@ const matchesAccept = (file: File, accept?: string): boolean => {
 /**
  * FileUpload — a drop target wrapped around a real `<input type="file">`.
  *
- * NO FIGMA COUNTERPART YET. Measurements come from `Input` and `EmptyState`
- * rather than being invented: the border, radius and disabled treatment are
- * Input's; the centred icon-over-text stack is EmptyState's.
+ * Drawn in Figma as `File Upload` (1367:2333) — two sizes by five states. The
+ * measurements came from `Input` and `EmptyState` rather than being invented:
+ * the border, radius and disabled treatment are Input's; the centred
+ * icon-over-text stack is EmptyState's. Figma draws the drop zone alone, the
+ * same split `Input` makes against `Form Field`.
  *
  * THE INPUT IS THE CONTROL. THE DROP ZONE IS DECORATION.
  *

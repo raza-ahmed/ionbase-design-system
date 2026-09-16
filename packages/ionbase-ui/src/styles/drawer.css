@@ -1,6 +1,9 @@
 /*
  * Drawer
  *
+ * Drawn in Figma as `Drawer` (1365:2404), from this file. Twelve variants:
+ * four placements by three sizes, the same cross product the props expose.
+ *
  * The panel IS the block — `.ion-drawer`, not `.ion-drawer__panel` — which
  * matches popover.css and is load-bearing rather than cosmetic. The contrast
  * gate resolves a translucent hover colour's backdrop from the block's own

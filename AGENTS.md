@@ -327,12 +327,12 @@ permanent: `Table`, `TableHead`, `TableBody`, `RadioGroup`, `ToastProvider`,
 `Icon`, `LogoMark` and `ScrollProgress` are code-side composition or runtime
 behaviour, with nothing in Figma to point at.
 
-The rest are to-dos, and the entry says so in its own reason line. As of
-16 Sep 2026 that is `Breadcrumb`, `BreadcrumbItem`, `Accordion`,
-`AccordionItem`, `Drawer`, `FileUpload` and `Combobox` — three tiers built in
-code ahead of the drawing. Do not read the number in this sentence; read the
-reasons in `figma/mapping.json`, which is the only copy that moves when the
-work does.
+As of 16 Sep 2026 there are no to-dos in the list: the navigation tier
+(`Breadcrumb`, `Accordion`, `Drawer`) and the forms tier (`FileUpload`,
+`Combobox`) were drawn and mapped the day after they were built. Do not trust
+that sentence — it has been wrong twice, in both directions. Read the reasons in
+`figma/mapping.json`, which is the only copy that moves when the work does, or
+run the gate, which prints the real figures.
 
 **This paragraph said seventeen, of which nine were the undrawn agentic tier.
 That was true when it was written and is not now.** The tier was drawn, exported
@@ -397,11 +397,13 @@ If you ever see `&amp;` in a Figma description, something wrote through
 ## The agentic tier — `AgentStop` and `ApprovalGate`
 
 Two components for products where an agent acts and a person supervises. They
-are the first components in this system with **no Figma counterpart**, so their
-measurements are borrowed rather than invented: `AgentStop` takes Button's size
-ramp, radius and focus ring; `ApprovalGate` takes Alert's icon-rail structure and
-one-variable-per-colour-slot approach. When Figma draws them, those files should
-need values changed, not structure rewritten.
+were the first components in this system built with **no Figma counterpart**, so
+their measurements are borrowed rather than invented: `AgentStop` takes Button's
+size ramp, radius and focus ring; `ApprovalGate` takes Alert's icon-rail
+structure and one-variable-per-colour-slot approach. Both have since been drawn
+and mapped, and the bet held — the drawing changed values, not structure. Five
+later components were built the same way for the same reason, and it held for
+them too.
 
 **Neither enforces anything, and that is the most important thing about them.**
 `AgentStop` does not stop a run — it reports intent, and the caller aborts the

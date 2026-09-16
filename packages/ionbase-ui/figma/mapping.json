@@ -24,6 +24,28 @@
     "silence the Figma-side gate exists to break."
   ],
   "components": {
+    "Accordion": {
+      "code": "Accordion",
+      "props": {}
+    },
+    "Accordion Item": {
+      "code": "AccordionItem",
+      "props": {
+        "Title#1360:0": {
+          "prop": "title"
+        },
+        "Content#1360:4": {
+          "prop": "children"
+        },
+        "State": {
+          "prop": "isDisabled",
+          "when": {
+            "Disabled": true
+          },
+          "note": "Collapsed and Expanded are the container’s expandedKeys, not the item’s: a static frame cannot own a selection, so the axis is drawn on the item and owned in code by Accordion."
+        }
+      }
+    },
     "Agent Activity": {
       "code": "AgentActivity",
       "props": {}
@@ -342,6 +364,28 @@
         }
       }
     },
+    "Breadcrumb": {
+      "code": "Breadcrumb",
+      "props": {}
+    },
+    "Breadcrumb Item": {
+      "code": "BreadcrumbItem",
+      "props": {
+        "Label#1359:0": {
+          "prop": "children"
+        },
+        "Show Separator#1359:4": {
+          "ignore": "The separator is a CSS ::before in code and never markup, so it stays out of the accessibility tree — a \"/\" in the DOM is the usual build of this component and the usual defect. Figma has no generated content, so it is drawn as a real text layer and switched off on the first crumb. A drawing convenience with no prop behind it."
+        },
+        "State": {
+          "prop": "isCurrent",
+          "when": {
+            "Current": true
+          },
+          "note": "Default is the resting link and Hover is CSS. Only Current is a prop, because the last crumb renders as text rather than a link."
+        }
+      }
+    },
     "Button": {
       "code": "Button",
       "props": {
@@ -473,6 +517,30 @@
         }
       }
     },
+    "Combobox": {
+      "code": "Combobox",
+      "props": {
+        "Size": {
+          "prop": "size",
+          "values": {
+            "Small": "sm",
+            "Medium": "md",
+            "Large": "lg"
+          }
+        },
+        "State": {
+          "prop": "isInvalid",
+          "when": {
+            "Invalid": true
+          },
+          "note": "Hover, Focus and Filled are CSS or content; Disabled is isDisabled and Read-only is isReadOnly. The same split Input records, because the field is Input’s box."
+        },
+        "Value#1370:0": {
+          "prop": "placeholder",
+          "note": "Figma’s text is whatever the field shows. In code that is `placeholder` until something is chosen; after that it is the selected option’s label, which comes from `options`."
+        }
+      }
+    },
     "Confidence Indicator": {
       "code": "ConfidenceIndicator",
       "props": {
@@ -486,6 +554,45 @@
         },
         "Basis#1166:0": {
           "prop": "basis"
+        }
+      }
+    },
+    "Drawer": {
+      "code": "Drawer",
+      "props": {
+        "Placement": {
+          "prop": "placement",
+          "values": {
+            "Start": "start",
+            "End": "end",
+            "Top": "top",
+            "Bottom": "bottom"
+          }
+        },
+        "Size": {
+          "prop": "size",
+          "values": {
+            "Small": "sm",
+            "Medium": "md",
+            "Large": "lg"
+          }
+        },
+        "Title#1365:0": {
+          "prop": "title"
+        },
+        "Description#1365:13": {
+          "prop": "description"
+        },
+        "Show Description#1365:26": {
+          "prop": "description",
+          "note": "false means description is omitted"
+        },
+        "Show Close#1365:39": {
+          "prop": "showClose"
+        },
+        "Show Footer#1365:52": {
+          "prop": "footer",
+          "note": "false means footer is omitted"
         }
       }
     },
@@ -526,6 +633,38 @@
         "Show Actions#1334:52": {
           "prop": "action",
           "note": "the row appears when action or secondaryAction is passed; there is no boolean"
+        }
+      }
+    },
+    "File Upload": {
+      "code": "FileUpload",
+      "props": {
+        "Size": {
+          "prop": "size",
+          "values": {
+            "Small": "sm",
+            "Medium": "md"
+          }
+        },
+        "State": {
+          "prop": "isInvalid",
+          "when": {
+            "Invalid": true
+          },
+          "note": "Hover and Dragging are CSS; Disabled is isDisabled. Dragging has no prop at all — it is a pointer state the browser owns."
+        },
+        "Prompt#1367:0": {
+          "prop": "prompt"
+        },
+        "Hint#1367:11": {
+          "prop": "hint"
+        },
+        "Show Hint#1367:22": {
+          "prop": "hint",
+          "note": "false means hint is omitted"
+        },
+        "Icon#1367:33": {
+          "ignore": "The upload glyph is inlined in the component, like Select’s chevron: it is part of the control rather than a slot a caller fills, so there is no prop to swap it. The INSTANCE_SWAP exists so a designer can substitute it in a mock without detaching."
         }
       }
     },
@@ -1277,24 +1416,18 @@
     }
   },
   "unmapped": {
+    ".Status Indicator": "The dot Avatar draws in its corners. Avatar owns both instances — Top is Intent=Primary with the check glyph, Bottom is Intent=Success with Show Icon off — and exposes them as `topIndicator` / `bottomIndicator`.\n\nThe leading dot in the name is Figma's own marker for a private component: it is excluded from the published library, so a designer cannot place one on a canvas even if they wanted to. That settles a question this entry used to argue: it is internal by the file's own declaration, not merely by our reading of it. The same call Line, Progress and Progress Heading get for being internal to ScrollProgress — with better evidence.\n\nMap it only if the dot is ever removed.",
+    "Combobox Menu": "The list Combobox opens. It is not a separate export: the React component renders its own menu, because the two are one control and splitting them would let a caller mount a listbox with no combobox to own it. Drawn separately in Figma because a frame cannot both hug a field and overlay a list on top of it.",
     "Form Field": "Label, helper text and error wiring are built into Input and Select rather than a separate wrapper — the wrapper is how Figma composes them, not how React does.",
-    "Table/Cell Text": "TableCell covers Figma's Table Cell and Cell Text together; the two are never used apart in the design. Recorded in TableCell's contract.",
-    "Screen Frame": "The frame FullCard draws around its media slot. The component owns it, so there is nothing for a caller to place.",
-    "Menu Section Title": "No code counterpart yet. It is a heading inside a menu surface; nothing renders it.",
     "Line": "An internal part of the Scroll Progress rail, not a component a caller composes.",
+    "Menu Section Title": "No code counterpart yet. It is a heading inside a menu surface; nothing renders it.",
+    "Pagination Item": "The cell inside Pagination — a page number, an arrow or the truncation ellipsis. Figma needs it as its own set to hold the Size x State matrix; a caller never places one, so it is internal to Pagination the way Line and Progress are internal to Scroll Progress.",
     "Progress": "As Line — internal to ScrollProgress.",
     "Progress Heading": "As Line — internal to ScrollProgress.",
-    ".Status Indicator": "The dot Avatar draws in its corners. Avatar owns both instances — Top is Intent=Primary with the check glyph, Bottom is Intent=Success with Show Icon off — and exposes them as `topIndicator` / `bottomIndicator`.\n\nThe leading dot in the name is Figma's own marker for a private component: it is excluded from the published library, so a designer cannot place one on a canvas even if they wanted to. That settles a question this entry used to argue: it is internal by the file's own declaration, not merely by our reading of it. The same call Line, Progress and Progress Heading get for being internal to ScrollProgress — with better evidence.\n\nMap it only if the dot is ever removed.",
-    "Pagination Item": "The cell inside Pagination — a page number, an arrow or the truncation ellipsis. Figma needs it as its own set to hold the Size x State matrix; a caller never places one, so it is internal to Pagination the way Line and Progress are internal to Scroll Progress."
+    "Screen Frame": "The frame FullCard draws around its media slot. The component owns it, so there is nothing for a caller to place.",
+    "Table/Cell Text": "TableCell covers Figma's Table Cell and Cell Text together; the two are never used apart in the design. Recorded in TableCell's contract."
   },
   "codeUnmapped": {
-    "Accordion": "Not yet drawn in Figma. The collapsed and expanded states are a variant axis a frame can carry; the heading level is not, and stays a code-only concern.",
-    "AccordionItem": "As Accordion — the section is the thing drawn; the container holds only the open set.",
-    "Breadcrumb": "Not yet drawn in Figma. Repo-owned: the navigation tier had nothing for depth, and the trail was built from that gap. Draw it and this line goes.",
-    "BreadcrumbItem": "As Breadcrumb — one crumb, drawn with its parent or not at all.",
-    "Combobox": "Not yet drawn in Figma. The field is Input's box unchanged and the menu is Menu's rows; what has no Figma counterpart is the open state, which is a variant axis a frame can carry.",
-    "Drawer": "Not yet drawn in Figma. Borrows Modal's panel structure and Popover's block-is-the-panel CSS shape, so drawing it should change values rather than structure.",
-    "FileUpload": "Not yet drawn in Figma. Repo-owned: borrows Input's box and EmptyState's centred stack, so drawing it should change values rather than structure.",
     "Icon": "Figma has no Icon component; icons are vector assets dropped into slots. Icon is the React wrapper that gives any of them a size rung and an accessible label, so there is nothing on the Figma side to point at.",
     "LogoMark": "Logo-Ionbase maps to Logo. Figma spells the no-wordmark case as that component's Type axis rather than a separate component; LogoMark is how code spells the same thing.",
     "RadioGroup": "Figma draws Radio only. The group is the thing that owns the selected value, which a static frame cannot express — Figma's Radio State axis is ignored for exactly this reason.",

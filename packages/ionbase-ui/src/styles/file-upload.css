@@ -1,11 +1,15 @@
 /*
  * FileUpload
  *
- * NO FIGMA COUNTERPART YET. Nothing here is invented: the border, radius,
- * background and disabled treatment are `Input`'s, and the centred
- * icon-over-text stack with its padding ladder is `EmptyState`'s. When the
- * component is drawn, the expectation is that values move and structure does
- * not — the same bet Drawer made against Modal.
+ * Drawn in Figma as `File Upload` (1367:2333), from this file. Nothing here was
+ * invented: the border, radius, background and disabled treatment are
+ * `Input`'s, and the centred icon-over-text stack with its padding ladder is
+ * `EmptyState`'s. The bet when this was written was that drawing it would move
+ * values and not structure; drawing it moved neither.
+ *
+ * Figma draws the DROP ZONE only, not the label and helper around it — the same
+ * split `Input` makes against `Form Field`. The file list has no Figma
+ * counterpart at all, because it is runtime content rather than a state.
  *
  * THE VISUALLY HIDDEN INPUT IS NOT `display: none`
  *

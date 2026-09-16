@@ -1,6 +1,15 @@
 /*
  * Accordion
  *
+ * Drawn in Figma as `Accordion` (1360:267) and `Accordion Item` (1360:266),
+ * from this file rather than the reverse — so the code is the source when the
+ * two disagree.
+ *
+ * Figma's Accordion Item carries a Collapsed/Expanded axis that the React
+ * component does NOT own: the open set lives on the container, because a static
+ * frame cannot hold a selection. The axis is drawn on the item because that is
+ * where the difference is visible, and owned in code where it is decidable.
+ *
  * The trigger fills its heading so the whole row is the hit target. A button
  * that only covers its text makes a wide section header mostly dead space.
  */

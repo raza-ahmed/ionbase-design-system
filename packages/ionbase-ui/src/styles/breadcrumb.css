@@ -1,6 +1,12 @@
 /*
  * Breadcrumb
  *
+ * Drawn in Figma as `Breadcrumb` (1359:252) and `Breadcrumb Item` (1359:251) —
+ * FROM this file, not the other way round. Every other stylesheet here says
+ * "measured from Figma" because Figma came first; here the code did, and the
+ * drawing was made to match it. Worth stating, because the direction decides
+ * which side wins the next time the two disagree: this one.
+ *
  * The separator is a CSS ::before on every item after the first. Drawing it in
  * markup is the usual version of this component and the usual defect: a "/"
  * character in the DOM is announced as punctuation between every crumb.

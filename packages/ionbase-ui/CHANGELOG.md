@@ -1,5 +1,49 @@
 # Changelog
 
+## 0.59.0 — 2026-09-16
+
+### Added — the navigation and forms tiers are drawn in Figma
+
+Seven React components had no Figma counterpart. They now have eight Figma
+components between them, and `codeUnmapped` is back to the eight permanent
+entries — every one of those a code-side composition or runtime behaviour with
+nothing to draw.
+
+| Figma                            | Variants               | React                           |
+| -------------------------------- | ---------------------- | ------------------------------- |
+| `Breadcrumb` / `Breadcrumb Item` | 3 states               | `Breadcrumb` / `BreadcrumbItem` |
+| `Accordion` / `Accordion Item`   | 3 states               | `Accordion` / `AccordionItem`   |
+| `Drawer`                         | 4 placements x 3 sizes | `Drawer`                        |
+| `File Upload`                    | 2 sizes x 5 states     | `FileUpload`                    |
+| `Combobox`                       | 3 sizes x 7 states     | `Combobox`                      |
+| `Combobox Menu`                  | —                      | none, deliberately              |
+
+**These were drawn FROM the code**, which is the reverse of every other
+component here, and the stylesheet headers now say so — the direction decides
+which side wins the next time the two disagree.
+
+The bet those five files were written on was that drawing them would move values
+and not structure. It moved neither. `File Upload` took Input's border and
+EmptyState's centred stack unchanged; `Combobox` took Input's box so exactly
+that its seven states are Input's seven, read off the Input set rather than
+guessed at.
+
+**Two axes are drawn on one side and owned on the other**, and the mapping says
+which. `Accordion Item` carries Collapsed/Expanded because that is where the
+difference is visible, but the open set lives on the container — a static frame
+cannot hold a selection. `Combobox Menu` has no React export and should not:
+the component renders its own menu, and a listbox with no combobox to own it is
+not something a caller should be able to mount.
+
+### Fixed
+
+- `Drawer`'s footer buttons said "Button". They say Cancel and Apply.
+- Three stale claims in prose. Two stylesheets and both new component headers
+  still said "NO FIGMA COUNTERPART YET"; `AGENTS.md` still described the agentic
+  tier as the only undrawn one, and its `codeUnmapped` paragraph had gone stale
+  for the third time. That paragraph now tells the reader not to trust its own
+  count — it has been wrong in both directions — and points at the gate instead.
+
 ## 0.58.0 — 2026-09-16
 
 ### Added — `FileUpload`, `Combobox`

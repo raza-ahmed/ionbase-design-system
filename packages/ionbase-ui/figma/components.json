@@ -42,6 +42,30 @@
         }
       }
     },
+    "Accordion": {
+      "page": "Accordion",
+      "id": "1360:267",
+      "kind": "COMPONENT",
+      "props": {}
+    },
+    "Accordion Item": {
+      "page": "Accordion",
+      "id": "1360:266",
+      "kind": "SET",
+      "props": {
+        "Content#1360:4": {
+          "type": "TEXT"
+        },
+        "State": {
+          "type": "VARIANT",
+          "options": ["Collapsed", "Expanded", "Disabled"],
+          "default": "Collapsed"
+        },
+        "Title#1360:0": {
+          "type": "TEXT"
+        }
+      }
+    },
     "Agent Activity": {
       "page": "Agent Activity",
       "id": "1162:246",
@@ -327,6 +351,30 @@
         }
       }
     },
+    "Breadcrumb": {
+      "page": "Breadcrumb",
+      "id": "1359:252",
+      "kind": "COMPONENT",
+      "props": {}
+    },
+    "Breadcrumb Item": {
+      "page": "Breadcrumb",
+      "id": "1359:251",
+      "kind": "SET",
+      "props": {
+        "Label#1359:0": {
+          "type": "TEXT"
+        },
+        "Show Separator#1359:4": {
+          "type": "BOOLEAN"
+        },
+        "State": {
+          "type": "VARIANT",
+          "options": ["Default", "Hover", "Current"],
+          "default": "Default"
+        }
+      }
+    },
     "Button": {
       "page": "Buttons",
       "id": "21:461",
@@ -457,6 +505,40 @@
         }
       }
     },
+    "Combobox": {
+      "page": "Combobox",
+      "id": "1370:2359",
+      "kind": "SET",
+      "props": {
+        "Size": {
+          "type": "VARIANT",
+          "options": ["Medium", "Small", "Large"],
+          "default": "Small"
+        },
+        "State": {
+          "type": "VARIANT",
+          "options": [
+            "Default",
+            "Hover",
+            "Focus",
+            "Filled",
+            "Invalid",
+            "Disabled",
+            "Read-only"
+          ],
+          "default": "Default"
+        },
+        "Value#1370:0": {
+          "type": "TEXT"
+        }
+      }
+    },
+    "Combobox Menu": {
+      "page": "Combobox",
+      "id": "1372:262",
+      "kind": "COMPONENT",
+      "props": {}
+    },
     "Confidence Indicator": {
       "page": "Confidence Indicator",
       "id": "1166:262",
@@ -469,6 +551,38 @@
           "type": "VARIANT",
           "options": ["Low", "Medium", "High"],
           "default": "Low"
+        }
+      }
+    },
+    "Drawer": {
+      "page": "Drawer",
+      "id": "1365:2404",
+      "kind": "SET",
+      "props": {
+        "Description#1365:13": {
+          "type": "TEXT"
+        },
+        "Placement": {
+          "type": "VARIANT",
+          "options": ["End", "Start", "Top", "Bottom"],
+          "default": "Start"
+        },
+        "Show Close#1365:39": {
+          "type": "BOOLEAN"
+        },
+        "Show Description#1365:26": {
+          "type": "BOOLEAN"
+        },
+        "Show Footer#1365:52": {
+          "type": "BOOLEAN"
+        },
+        "Size": {
+          "type": "VARIANT",
+          "options": ["Medium", "Small", "Large"],
+          "default": "Small"
+        },
+        "Title#1365:0": {
+          "type": "TEXT"
         }
       }
     },
@@ -501,6 +615,35 @@
         },
         "Title#1334:0": {
           "type": "TEXT"
+        }
+      }
+    },
+    "File Upload": {
+      "page": "File Upload",
+      "id": "1367:2333",
+      "kind": "SET",
+      "props": {
+        "Hint#1367:11": {
+          "type": "TEXT"
+        },
+        "Icon#1367:33": {
+          "type": "INSTANCE_SWAP"
+        },
+        "Prompt#1367:0": {
+          "type": "TEXT"
+        },
+        "Show Hint#1367:22": {
+          "type": "BOOLEAN"
+        },
+        "Size": {
+          "type": "VARIANT",
+          "options": ["Medium", "Small"],
+          "default": "Medium"
+        },
+        "State": {
+          "type": "VARIANT",
+          "options": ["Default", "Hover", "Dragging", "Invalid", "Disabled"],
+          "default": "Default"
         }
       }
     },
