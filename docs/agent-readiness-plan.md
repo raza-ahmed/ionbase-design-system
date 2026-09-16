@@ -643,7 +643,32 @@ decoration.
 > Expected effort: 4a ~1–2 weeks. 4b ~2–3 weeks, and it is a product decision
 > about IonBase's positioning as much as an engineering one.
 
-### Phase 5 — HARNESS DONE, 18 Aug 2026. The A/B itself is unrun.
+### Phase 5 — HARNESS DONE 18 Aug 2026. A/B RUN 15 Sep 2026.
+
+> **The result, and the caveat that governs how much to read into it.**
+>
+> Contracts beat the README: 97% of checks against 90%, better on 14 tasks,
+> worse on **0**, tied on 17. The clearest single case is `intent` on Button,
+> which is `variant` — 15 of the README pack's 17 type errors and not one in
+> either contract pack.
+>
+> The rules brief did not earn its 1%: it lost to the contracts alone, 5 tasks
+> to 1.
+>
+> **Run-to-run variance is wider than most of those differences.** Three samples
+> of the same pack and model spanned 40–71% on compile rate. Every conclusion
+> above was measured at one sample per cell, so treat the direction as real and
+> the magnitudes as unresolved. `run.mjs --samples N` scores the median and
+> prints that spread, added for exactly this reason.
+>
+> Three harness bugs were fixed before any of it could be trusted, and two of
+> them had been biasing the answer against the hypothesis:
+> `noInventedComponents` counted a file's own helper components as
+> hallucinations (34 failures, all false, hitting the contract packs hardest);
+> the "indexed" packs shipped one hardcoded set of six contracts to all 31
+> tasks, so the component a task was about was frequently absent from its
+> prompt; and `--dir` was never resolved, so `--provider files` linted nothing
+> and scored that as zero lint errors.
 
 Built in [`evals/`](../evals/). Three parts, and it matters which are verified:
 
@@ -703,14 +728,14 @@ all.
 
 ```
 Phase 0  ▓  DONE                                  manifest live: 26 components, 249 stories
-Phase 1  ▓▓▓▓▓▓▓▓▓▓  DONE                          ionbase-ui/meta, 35 of 35 with intent
-Phase 2c ▓▓  DONE                                 250 pairings; found 3 defects, 2 unknown
-Phase 5  ▓▓▓▓▓▓  HARNESS DONE, A/B UNRUN          32 tasks, 9 checks, 5 context packs
+Phase 1  ▓▓▓▓▓▓▓▓▓▓  DONE                          ionbase-ui/meta, 48 of 48 with intent
+Phase 2c ▓▓  DONE                                 1008 pairings; 0 outstanding defects
+Phase 5  ▓▓▓▓▓▓▓▓  A/B RUN 15 Sep 2026            31 tasks, 10 checks; see the result below
 Phase 2  ▓▓▓▓▓▓  DONE                             5 lint rules + stylelint config, shipped
-Phase 3a ▓▓▓▓  DONE                                llms.txt + 35 mirrors, hosted + in-tarball
+Phase 3a ▓▓▓▓  DONE                                llms.txt + 48 mirrors, hosted + in-tarball
 Phase 3b ▓▓▓▓  REPLACED                            figma-map.json — Code Connect without the plan
 Phase 4a ▓▓▓▓▓  CONTRACTS DONE                     6 recipes, 7-check gate; no TSX examples yet
-Phase 4b ▓▓▓▓▓▓▓▓▓▓  DONE                          all 6 shipped; 44 components
+Phase 4b ▓▓▓▓▓▓▓▓▓▓  DONE                          all 6 shipped; 48 components
 Phase 3c ░░░░                                     MCP server — only if measured need
 ```
 
