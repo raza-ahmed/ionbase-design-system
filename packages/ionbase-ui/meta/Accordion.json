@@ -1,0 +1,52 @@
+{
+  "status": "stable",
+  "summary": "Sections that collapse, with the document's heading structure intact. Holds the open set and the heading level.",
+  "useWhen": [
+    "a page has several long sections and most users need one of them",
+    "optional or advanced settings should be present but not in the way",
+    "an FAQ or a reference list where scanning titles is the primary action"
+  ],
+  "useInstead": [
+    {
+      "when": "the sections are alternatives and only one is ever relevant",
+      "use": "Tabs",
+      "why": "tabs say \"pick one\"; an accordion says \"all of these exist, open what you need\""
+    },
+    {
+      "when": "hiding the content would hide something the user must act on",
+      "use": "render it directly",
+      "why": "a required field inside a collapsed section is a form that cannot be completed without exploration"
+    }
+  ],
+  "slots": {
+    "children": {
+      "accepts": "AccordionItem"
+    }
+  },
+  "a11y": {
+    "requires": [
+      "`headingLevel` that fits the surrounding document — the default of 3 is a guess this component cannot verify"
+    ],
+    "notes": [
+      "each section's trigger is a button inside a heading, which is the only arrangement that keeps both document structure and operability",
+      "collapsed panels are hidden rather than unmounted, so form state survives and in-page search still finds the text"
+    ]
+  },
+  "antiPatterns": [
+    {
+      "dont": "allowsMultiple on a long FAQ",
+      "do": "leave it off, so opening one section closes the last",
+      "why": "with every section openable at once the page has no maximum height, and a user who opens six is scrolling a wall of text looking for the one they wanted. Reach for it when sections are settings or reference material a user may need to compare side by side"
+    },
+    {
+      "dont": "headingLevel left at 3 inside a section already under an h4",
+      "do": "headingLevel={5}",
+      "why": "the page looks correct and its outline is nonsense — a heading-level jump is invisible to sighted users and disorienting to everyone navigating by headings"
+    },
+    {
+      "dont": "an accordion holding a single section",
+      "do": "a heading and the content",
+      "why": "one collapsible section is a control that exists to hide the only thing on screen"
+    }
+  ]
+}

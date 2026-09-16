@@ -1,0 +1,33 @@
+{
+  "status": "stable",
+  "summary": "One crumb. A link to an ancestor, or the current page rendered as text.",
+  "useWhen": ["inside a Breadcrumb, once per level"],
+  "useInstead": [
+    {
+      "when": "outside a breadcrumb trail",
+      "use": "Link",
+      "why": "the crumb's density, colour and truncation are tuned for a trail and look wrong on their own"
+    }
+  ],
+  "slots": {
+    "children": {
+      "accepts": "text",
+      "note": "the name of the level, not its path"
+    }
+  },
+  "a11y": {
+    "requires": [
+      "`isCurrent` on the last crumb, which renders it as text with aria-current=\"page\" rather than as a link"
+    ],
+    "notes": [
+      "isCurrent is a prop rather than inferred from position: a trail whose last crumb legitimately links elsewhere exists, and inferring would break it"
+    ]
+  },
+  "antiPatterns": [
+    {
+      "dont": "<BreadcrumbItem href=\"/invoices/12\">Invoice 12</BreadcrumbItem> for the page you are on",
+      "do": "<BreadcrumbItem isCurrent>Invoice 12</BreadcrumbItem>",
+      "why": "a link to the current page is a dead control — it announces as a link, invites a click and does nothing"
+    }
+  ]
+}

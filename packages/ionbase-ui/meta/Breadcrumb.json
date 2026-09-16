@@ -1,0 +1,48 @@
+{
+  "status": "stable",
+  "summary": "Where this page sits in the hierarchy, and how to get back up. An ordered list inside a named landmark.",
+  "useWhen": [
+    "a page sits more than one level deep and the parent is not otherwise reachable",
+    "a record view needs its collection one click away",
+    "the hierarchy itself is information the user needs — which project, which environment"
+  ],
+  "useInstead": [
+    {
+      "when": "the destinations are siblings rather than ancestors",
+      "use": "Tabs",
+      "why": "a breadcrumb describes depth; tabs describe alternatives at the same depth"
+    },
+    {
+      "when": "the trail is the primary navigation for the whole app",
+      "use": "NavItem inside the app shell",
+      "why": "a breadcrumb supplements navigation, it does not replace it — it appears after a user has already gone somewhere"
+    }
+  ],
+  "slots": {
+    "children": {
+      "accepts": "BreadcrumbItem",
+      "note": "ancestor first, current page last. Anything else and the trail reads backwards"
+    }
+  },
+  "a11y": {
+    "requires": [
+      "`label` when a page has more than one nav landmark — it defaults to \"Breadcrumb\", which is what screen-reader users listen for"
+    ],
+    "notes": [
+      "the separator is drawn by CSS ::before and never enters the accessibility tree; a \"/\" in the markup is announced as punctuation between every crumb",
+      "the list is an `ol`, so the position and length are announced — which is the entire content of a breadcrumb"
+    ]
+  },
+  "antiPatterns": [
+    {
+      "dont": "<div>Home / Projects / Invoice 12</div>",
+      "do": "<Breadcrumb><BreadcrumbItem href=\"/\">Home</BreadcrumbItem>…</Breadcrumb>",
+      "why": "a row of divs conveys neither sequence nor position, and the slashes are read aloud"
+    },
+    {
+      "dont": "a full trail on a top-level page",
+      "do": "omit it",
+      "why": "a breadcrumb with one crumb is furniture — it takes vertical space to say nothing"
+    }
+  ]
+}

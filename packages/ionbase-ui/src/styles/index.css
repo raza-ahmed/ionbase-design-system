@@ -70,6 +70,9 @@
 @import url('./spinner.css');
 @import url('./progress-bar.css');
 @import url('./skeleton.css');
+@import url('./breadcrumb.css');
+@import url('./accordion.css');
+@import url('./drawer.css');
 
 /*
  * Visually hidden, but not hidden from assistive tech.

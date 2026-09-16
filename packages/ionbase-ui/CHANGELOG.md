@@ -1,5 +1,47 @@
 # Changelog
 
+## 0.57.0 — 2026-09-16
+
+### Added — `Breadcrumb`, `Accordion`, `Drawer`
+
+The navigation tier, which had nothing in it. No way to show depth, no way to
+collapse a section, and no overlay anchored to an edge.
+
+**`Breadcrumb`** is an ordered list inside a named landmark, because the trail
+is a sequence and `ol` is what says so — a screen reader announces the position
+and the length, which is the entire content of a breadcrumb. The separator is a
+CSS `::before` and never enters the accessibility tree; a "/" in the markup is
+the usual version of this component and the usual defect. `isCurrent` renders
+the last crumb as text with `aria-current="page"`, because a link to the page
+you are on announces as a link, invites a click and does nothing.
+
+**`Accordion`** puts the trigger in a button inside a heading, which is the only
+arrangement that keeps both document structure and operability: the heading is
+how a screen-reader user moves through a long page, and the button is what makes
+the section operable. Collapsed panels are hidden rather than unmounted, so a
+half-filled form inside one keeps its answers and in-page search still finds the
+text. `headingLevel` is a required judgement with only a guess for a default —
+the wrong level produces a page whose outline is nonsense while looking fine.
+
+**`Drawer`** is `Modal`'s behaviour with an edge-anchored panel: focus trap,
+Escape, scrim, the rest of the page inert. A side panel that does none of that
+is layout, not a drawer. Placement uses logical properties, so `start` and `end`
+follow writing direction without a second variant.
+
+### Fixed — a contrast pairing that was silently unmeasured
+
+Drawer's first draft put the panel surface on `.ion-drawer__panel`. The contrast
+gate resolves a translucent hover colour's backdrop from the BLOCK's background,
+so the close button's `surface/hover` pairing came back **skipped** — not
+failing, not passing, simply unmeasured, and reported only as a count.
+
+The panel is the block now, `.ion-drawer`, matching `popover.css`. Skipped
+pairings went 2 → 0 and the enforced total rose 1130 → **1144**: fourteen
+pairings that could not previously be measured at all.
+
+Worth keeping: "skipped" is not "fine". It is the same shape of hole as a gate
+that reports green while validating nothing.
+
 ## 0.56.0 — 2026-09-16
 
 ### `Spinner`, `ProgressBar` and `Skeleton` are drawn in Figma

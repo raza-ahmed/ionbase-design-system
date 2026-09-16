@@ -1,0 +1,28 @@
+{
+  "status": "stable",
+  "summary": "One collapsible section: an always-visible title that toggles a region beneath it.",
+  "useWhen": ["inside an Accordion, once per section"],
+  "slots": {
+    "title": {
+      "accepts": "text",
+      "note": "always visible, so it must say what is inside — \"Advanced\" tells the user nothing about whether to open it"
+    },
+    "children": { "accepts": "any content" }
+  },
+  "a11y": {
+    "requires": [
+      "a stable `id`, which is the section's identity in the open set — an index breaks the moment the list reorders"
+    ],
+    "notes": [
+      "the trigger carries aria-expanded and aria-controls; the panel is a region labelled by the trigger",
+      "the panel keeps its DOM when collapsed, so a half-filled form inside one does not lose its answers"
+    ]
+  },
+  "antiPatterns": [
+    {
+      "dont": "a required form field inside a collapsed section",
+      "do": "keep required fields outside, or expand the section when validation fails",
+      "why": "a user cannot fix an error they cannot see, and the browser cannot focus a hidden invalid field"
+    }
+  ]
+}

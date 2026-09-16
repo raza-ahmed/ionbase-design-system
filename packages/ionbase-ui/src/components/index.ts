@@ -138,6 +138,19 @@ export type {
   ConfidenceIndicatorProps,
   ConfidenceLevel,
 } from './ConfidenceIndicator.js';
+export { Breadcrumb, BreadcrumbItem } from './Breadcrumb.js';
+export type { BreadcrumbProps, BreadcrumbItemProps } from './Breadcrumb.js';
+
+export { Accordion, AccordionItem } from './Accordion.js';
+export type {
+  AccordionProps,
+  AccordionItemProps,
+  AccordionHeadingLevel,
+} from './Accordion.js';
+
+export { Drawer } from './Drawer.js';
+export type { DrawerProps, DrawerPlacement, DrawerSize } from './Drawer.js';
+
 export { Spinner } from './Spinner.js';
 export type { SpinnerProps, SpinnerSize } from './Spinner.js';
 

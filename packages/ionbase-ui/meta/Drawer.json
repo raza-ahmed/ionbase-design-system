@@ -1,0 +1,81 @@
+{
+  "status": "stable",
+  "summary": "A modal panel anchored to an edge. Modal behaviour — focus trap, Escape, scrim — with the shape of a side panel.",
+  "useWhen": [
+    "work that is long or list-shaped: filters, a record's detail, a run of settings",
+    "the page behind should stay visible as context while a task is done beside it",
+    "a form long enough that a centred dialog would scroll its own actions off screen"
+  ],
+  "useInstead": [
+    {
+      "when": "the user is making a decision, especially a destructive one",
+      "use": "Modal",
+      "why": "a modal is centred and small enough that the thing being confirmed cannot be scrolled past"
+    },
+    {
+      "when": "the panel should stay open while the user works elsewhere",
+      "use": "page layout",
+      "why": "a drawer traps focus and marks the rest of the page inert. A panel that does not do those things is layout, not an overlay"
+    },
+    {
+      "when": "the content is a short menu of actions",
+      "use": "Popover or Menu"
+    }
+  ],
+  "variants": {
+    "placement": {
+      "start": {
+        "use": "navigation and hierarchy, which readers expect at the leading edge"
+      },
+      "end": {
+        "use": "the default — detail and editing beside the record that opened it"
+      },
+      "top": { "use": "rare: a global search or command surface" },
+      "bottom": {
+        "use": "touch-first layouts, where the bottom edge is the reachable one"
+      }
+    },
+    "size": {
+      "sm": { "use": "a short form or a filter list" },
+      "md": { "use": "the default" },
+      "lg": { "use": "a record detail with its own sections" }
+    }
+  },
+  "slots": {
+    "title": {
+      "accepts": "text",
+      "note": "required — it is the dialog's accessible name"
+    },
+    "description": { "accepts": "text" },
+    "children": {
+      "accepts": "any content",
+      "note": "the only scrolling region"
+    },
+    "footer": {
+      "accepts": "Button",
+      "note": "pinned to the bottom edge, so actions stay reachable in a long panel"
+    }
+  },
+  "a11y": {
+    "requires": [
+      "`title`, which becomes the dialog's accessible name via aria-labelledby"
+    ],
+    "notes": [
+      "start and end follow writing direction, so a right-hand drawer in English is a left-hand one in Arabic with no second variant",
+      "renders nothing when closed and portals when open: a closed overlay left in the tree is still keyboard-focusable",
+      "only the body scrolls, so the title stays on screen — the one piece of context a user needs while working down a long list"
+    ]
+  },
+  "antiPatterns": [
+    {
+      "dont": "a Drawer that stays open while the user edits the page behind it",
+      "do": "a layout panel",
+      "why": "it traps focus and marks the rest inert; a keyboard user cannot reach the page behind it"
+    },
+    {
+      "dont": "<Drawer> for a delete confirmation",
+      "do": "<Modal>",
+      "why": "an edge panel is tall, so the confirm button can sit below the fold — the one control that must never be missed"
+    }
+  ]
+}

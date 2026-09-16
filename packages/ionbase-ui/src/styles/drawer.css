@@ -1,0 +1,178 @@
+/*
+ * Drawer
+ *
+ * The panel IS the block — `.ion-drawer`, not `.ion-drawer__panel` — which
+ * matches popover.css and is load-bearing rather than cosmetic. The contrast
+ * gate resolves a translucent hover colour's backdrop from the block's own
+ * background, so with the surface on an element class the close button's hover
+ * pairing came back "skipped": unmeasured, and silently so.
+ *
+ * The scrim lives here for the same reason it lives in modal.css: nothing can
+ * render an overlay without also rendering what sits behind it, so the split
+ * Figma makes between panel and overlay has no meaning in code.
+ *
+ * Placement uses logical properties throughout — `inset-inline-start` rather
+ * than `left` — so `start` and `end` follow writing direction and a right-hand
+ * drawer in English is a left-hand one in Arabic without a second variant.
+ */
+.ion-drawer__scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  background-color: var(--surface-scrim);
+}
+
+.ion-drawer {
+  --ion-drawer-size: 30rem;
+
+  position: fixed;
+  display: flex;
+  flex-direction: column;
+  max-width: 100%;
+  max-height: 100%;
+  background-color: var(--surface-raised);
+  color: var(--text-default);
+  font-family: var(--font-family-sans);
+}
+
+.ion-drawer--sm {
+  --ion-drawer-size: 22rem;
+}
+
+.ion-drawer--lg {
+  --ion-drawer-size: 40rem;
+}
+
+/* Edge panels are square against their own edge and rounded on the inner one:
+ * a drawer rounded on all four corners reads as a floating card that happens
+ * to touch the side. */
+.ion-drawer--start,
+.ion-drawer--end {
+  inset-block: 0;
+  width: var(--ion-drawer-size);
+}
+
+.ion-drawer--start {
+  inset-inline-start: 0;
+  border-start-end-radius: var(--radius-lg);
+  border-end-end-radius: var(--radius-lg);
+}
+
+.ion-drawer--end {
+  inset-inline-end: 0;
+  border-start-start-radius: var(--radius-lg);
+  border-end-start-radius: var(--radius-lg);
+}
+
+.ion-drawer--top,
+.ion-drawer--bottom {
+  inset-inline: 0;
+  height: var(--ion-drawer-size);
+  width: 100%;
+}
+
+.ion-drawer--top {
+  inset-block-start: 0;
+  border-end-start-radius: var(--radius-lg);
+  border-end-end-radius: var(--radius-lg);
+}
+
+.ion-drawer--bottom {
+  inset-block-end: 0;
+  border-start-start-radius: var(--radius-lg);
+  border-start-end-radius: var(--radius-lg);
+}
+
+.ion-drawer__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--spacing-12);
+  flex: none;
+  padding: var(--spacing-24);
+  border-bottom: var(--border-width-default) solid var(--border-subtle);
+}
+
+.ion-drawer__heading {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-4);
+  min-width: 0;
+}
+
+.ion-drawer__title {
+  margin: 0;
+  font-size: var(--type-h5);
+  line-height: var(--type-h5-line-height);
+  font-weight: var(--font-weight-semibold);
+}
+
+.ion-drawer__description {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: var(--type-body-sm);
+  line-height: var(--type-body-sm-line-height);
+}
+
+.ion-drawer__close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: var(--spacing-32);
+  height: var(--spacing-32);
+  padding: var(--spacing-4);
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: none;
+  color: var(--icon-secondary);
+  cursor: pointer;
+}
+
+/*
+ * Background only, no colour change — the same rule Modal's close button uses,
+ * and for a measurable reason as well as a consistency one. `surface/hover` is
+ * translucent, so a rule that changes BOTH creates a foreground/background pair
+ * whose backdrop the contrast gate cannot resolve, and it reports the pairing
+ * as skipped. A skipped pairing is an unmeasured one.
+ */
+@media (hover: hover) {
+  .ion-drawer__close:hover {
+    background-color: var(--surface-hover);
+  }
+}
+
+.ion-drawer__close:focus-visible {
+  outline: var(--border-width-thick) solid var(--border-focus);
+  outline-offset: 2px;
+}
+
+.ion-drawer__close svg {
+  width: var(--icon-size-md);
+  height: var(--icon-size-md);
+}
+
+/*
+ * The body is the only scrolling region. A drawer whose whole panel scrolls
+ * takes its own title off screen, which is the one piece of context a user
+ * needs while working down a long list.
+ */
+.ion-drawer__body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: var(--spacing-24);
+  font-size: var(--type-body);
+  line-height: var(--type-body-line-height);
+}
+
+.ion-drawer__footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--spacing-8);
+  flex: none;
+  padding: var(--spacing-24);
+  border-top: var(--border-width-default) solid var(--border-subtle);
+}

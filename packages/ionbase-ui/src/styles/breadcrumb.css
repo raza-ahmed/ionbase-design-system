@@ -1,0 +1,66 @@
+/*
+ * Breadcrumb
+ *
+ * The separator is a CSS ::before on every item after the first. Drawing it in
+ * markup is the usual version of this component and the usual defect: a "/"
+ * character in the DOM is announced as punctuation between every crumb.
+ */
+.ion-breadcrumb {
+  font-family: var(--font-family-sans);
+  font-size: var(--type-body-sm);
+  line-height: var(--type-body-sm-line-height);
+}
+
+.ion-breadcrumb__list {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--spacing-8);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ion-breadcrumb__item {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-8);
+  min-width: 0;
+}
+
+.ion-breadcrumb__item + .ion-breadcrumb__item::before {
+  content: '/';
+  color: var(--text-tertiary);
+}
+
+.ion-breadcrumb__link {
+  color: var(--text-secondary);
+  text-decoration: none;
+  border-radius: var(--radius-xs);
+}
+
+.ion-breadcrumb__link:hover {
+  color: var(--text-default);
+  text-decoration: underline;
+}
+
+.ion-breadcrumb__link:focus-visible {
+  outline: var(--border-width-thick) solid var(--border-focus);
+  outline-offset: 2px;
+}
+
+/*
+ * The current page is the one crumb a user is most likely to be looking for,
+ * so it carries the stronger colour — the trail above it is navigation, and
+ * this is the position.
+ */
+.ion-breadcrumb__current {
+  color: var(--text-default);
+  font-weight: var(--font-weight-medium);
+
+  /* A long record title truncates rather than wrapping the trail onto three
+   * lines; the full value stays reachable through the element's own text. */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
