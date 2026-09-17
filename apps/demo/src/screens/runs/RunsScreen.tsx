@@ -39,7 +39,7 @@ export function RunsScreen() {
   return (
     <div className="demo-page">
       <div>
-        <h1 id="page-title" className="ion-text-h3">
+        <h1 id="page-title" className="ion-text-h4">
           Runs
         </h1>
         <p className="ion-text-body demo-muted">
@@ -103,7 +103,7 @@ export function RunsScreen() {
 function WaitingQueue({ runs }: { runs: RunSummary[] }) {
   return (
     <section aria-labelledby="queue-title" className="demo-page">
-      <h2 id="queue-title" className="ion-text-h5">
+      <h2 id="queue-title" className="ion-text-h6">
         Waiting for you
       </h2>
       {runs.length === 0 ? (
@@ -170,7 +170,7 @@ function History({ runs: all }: { runs: RunSummary[] }) {
   return (
     <section aria-labelledby="history-title" className="demo-page">
       <div className="demo-section-head">
-        <h2 id="history-title" className="ion-text-h5">
+        <h2 id="history-title" className="ion-text-h6">
           History
         </h2>
         <SegmentedControl

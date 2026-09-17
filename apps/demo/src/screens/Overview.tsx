@@ -61,7 +61,7 @@ export function Overview() {
     <div className="demo-page">
       <div className="demo-page__header">
         <div>
-          <h1 id="page-title" className="ion-text-h3">
+          <h1 id="page-title" className="ion-text-h4">
             Overview
           </h1>
           <p className="ion-text-body demo-muted">

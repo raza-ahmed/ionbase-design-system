@@ -89,7 +89,7 @@ export function RunDetail({ runId }: { runId: string }) {
   if (!script || !summary || !run.state) {
     return (
       <div className="demo-page">
-        <h1 id="page-title" className="ion-text-h3">
+        <h1 id="page-title" className="ion-text-h4">
           Run not found
         </h1>
         <EmptyState

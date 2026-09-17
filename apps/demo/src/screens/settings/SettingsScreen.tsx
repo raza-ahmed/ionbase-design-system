@@ -31,7 +31,7 @@ export function SettingsScreen() {
   return (
     <div className="demo-page demo-page--narrow">
       <div>
-        <h1 id="page-title" className="ion-text-h3">
+        <h1 id="page-title" className="ion-text-h4">
           Settings
         </h1>
         <p className="ion-text-body demo-muted">

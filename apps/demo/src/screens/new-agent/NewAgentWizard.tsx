@@ -149,7 +149,7 @@ export function NewAgentWizard() {
         <BreadcrumbItem isCurrent>New agent</BreadcrumbItem>
       </Breadcrumb>
 
-      <h1 id="page-title" className="ion-text-h3">
+      <h1 id="page-title" className="ion-text-h4">
         New agent
       </h1>
 
