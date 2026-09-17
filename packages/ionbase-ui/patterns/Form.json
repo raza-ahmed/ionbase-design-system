@@ -12,6 +12,7 @@
     "RadioGroup",
     "Toggle",
     "PhoneInput",
+    "NumberInput",
     "Button",
     "Alert",
     "Divider"
@@ -43,6 +44,14 @@
     }
   },
   "propsUsed": {
+    "NumberInput": [
+      "label",
+      "minValue",
+      "maxValue",
+      "formatOptions",
+      "isInvalid",
+      "errorMessage"
+    ],
     "Input": [
       "label",
       "description",

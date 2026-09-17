@@ -1,0 +1,23 @@
+{
+  "extends": "../../tsconfig.base.json",
+  /*
+   * An app, not a library: Vite bundles it, so tsc only checks. The base
+   * config's NodeNext + composite + declaration are right for the packages and
+   * wrong here — NodeNext would demand `.js` suffixes Vite does not need, and
+   * nothing consumes this project's declarations.
+   *
+   * Not listed in the root tsconfig.json `references` for that reason: a
+   * referenced project must be composite and emit.
+   */
+  "compilerOptions": {
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "jsx": "react-jsx",
+    "composite": false,
+    "declaration": false,
+    "declarationMap": false,
+    "noEmit": true,
+    "types": ["vite/client"]
+  },
+  "include": ["src", "vite.config.ts"]
+}

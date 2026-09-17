@@ -5,6 +5,11 @@ IonBase is a modern, high-performance design system monorepo built to deliver co
 **[Browse the components →](https://raza-ahmed.github.io/ionbase-design-system/)**
 Storybook, published from `main` on every push.
 
+**[See them in a product →](https://raza-ahmed.github.io/ionbase-design-system/demo/)**
+Ionbase Ops, a demo AI ops console built only from `ionbase-ui` and
+`ionbase-icons`: dashboards, tables, forms, and agents that stop and ask before
+acting. Source in [`apps/demo`](apps/demo).
+
 ## Using IonBase in a product
 
 The whole system ships as one package, `ionbase-ui`:
@@ -39,15 +44,16 @@ pnpm build      # also lint / typecheck / format
 
 ## Where things are documented
 
-| If you want to…                             | Read                                                                                                                                    |
-| ------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
-| See the components running                  | [Storybook](https://raza-ahmed.github.io/ionbase-design-system/) — live, deployed from `main` by [`ci.yml`](.github/workflows/ci.yml)   |
-| Install / publish the packages              | [`docs/publishing.md`](docs/publishing.md)                                                                                              |
-| Change a design token                       | [`packages/tokens/README.md`](packages/tokens/README.md) — **start here**, the workflow has a Figma half that is not runnable from Node |
-| Name a token                                | [`docs/variable-naming-spec.html`](docs/variable-naming-spec.html) — the grammar, and the validator that enforces it                    |
-| Know which tokens exist and what they hold  | [`docs/token-architecture-v2.md`](docs/token-architecture-v2.md) — the full inventory, four collections, 381 variables                  |
-| Understand why a rule is what it is         | [`docs/naming-decisions.md`](docs/naming-decisions.md) — dated decisions, newest first                                                  |
-| Work on this repo, by hand or with an agent | [`AGENTS.md`](AGENTS.md) — the traps worth knowing before editing tokens. Vendor-neutral; tool-specific files are pointers to it        |
+| If you want to…                             | Read                                                                                                                                                              |
+| ------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| See the components running                  | [Storybook](https://raza-ahmed.github.io/ionbase-design-system/) — live, deployed from `main` by [`ci.yml`](.github/workflows/ci.yml)                             |
+| See the system used as a real product       | [Ionbase Ops demo](https://raza-ahmed.github.io/ionbase-design-system/demo/) — [`apps/demo`](apps/demo), plan in [`docs/demo-app-plan.md`](docs/demo-app-plan.md) |
+| Install / publish the packages              | [`docs/publishing.md`](docs/publishing.md)                                                                                                                        |
+| Change a design token                       | [`packages/tokens/README.md`](packages/tokens/README.md) — **start here**, the workflow has a Figma half that is not runnable from Node                           |
+| Name a token                                | [`docs/variable-naming-spec.html`](docs/variable-naming-spec.html) — the grammar, and the validator that enforces it                                              |
+| Know which tokens exist and what they hold  | [`docs/token-architecture-v2.md`](docs/token-architecture-v2.md) — the full inventory, four collections, 381 variables                                            |
+| Understand why a rule is what it is         | [`docs/naming-decisions.md`](docs/naming-decisions.md) — dated decisions, newest first                                                                            |
+| Work on this repo, by hand or with an agent | [`AGENTS.md`](AGENTS.md) — the traps worth knowing before editing tokens. Vendor-neutral; tool-specific files are pointers to it                                  |
 
 > **Architecture v2 is live.** Four collections — Primitives → Semantics →
 > Interface, with brand modes in Semantics and light/dark in Interface, plus a
@@ -66,6 +72,7 @@ pnpm build      # also lint / typecheck / format
 ```text
 ionbase-design-system/
 ├── apps/
+│   ├── demo/               # Ionbase Ops — the consumer demo app
 │   └── storybook/          # Storybook application workspace
 ├── packages/
 │   ├── tokens/             # Token pipeline — PRIVATE, never published

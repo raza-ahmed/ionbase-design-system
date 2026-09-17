@@ -151,6 +151,30 @@ export type {
 export { Drawer } from './Drawer.js';
 export type { DrawerProps, DrawerPlacement, DrawerSize } from './Drawer.js';
 
+export { SegmentedControl, SegmentedControlItem } from './SegmentedControl.js';
+export type {
+  SegmentedControlProps,
+  SegmentedControlItemProps,
+  SegmentedControlSize,
+} from './SegmentedControl.js';
+
+export { NumberInput } from './NumberInput.js';
+export type { NumberInputProps, NumberInputSize } from './NumberInput.js';
+
+export { ToolCall } from './ToolCall.js';
+export type { ToolCallProps } from './ToolCall.js';
+
+export { PromptInput } from './PromptInput.js';
+export type { PromptInputProps, PromptInputSubmitKey } from './PromptInput.js';
+
+export { Stepper, StepperStep } from './Stepper.js';
+export type {
+  StepperProps,
+  StepperStepProps,
+  StepperOrientation,
+  StepperStepStatus,
+} from './Stepper.js';
+
 export { Spinner } from './Spinner.js';
 export type { SpinnerProps, SpinnerSize } from './Spinner.js';
 

@@ -1,0 +1,250 @@
+/*
+ * Stepper
+ *
+ * NOT DRAWN IN FIGMA. Built code-first, like Breadcrumb: the indicator is a
+ * circle at the `lg` icon rung, the label type is Breadcrumb's, and the colours
+ * are the primary and error roles every other status in the system uses. When
+ * it is drawn, the drawing follows this file.
+ *
+ * Status is never colour alone. `complete` draws a check and `error` an
+ * exclamation, and both carry their name as visually hidden text.
+ *
+ * Status and current are BEM modifiers, not `[data-*]` attributes, and that is
+ * load-bearing: the contrast gate keys contexts on `--modifier` classes. The
+ * first draft used `[data-status]`, and the filled current indicator and every
+ * error colour were silently unmeasured — no failure, no pass, just absent.
+ */
+.ion-stepper {
+  display: flex;
+  gap: var(--spacing-8);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-family: var(--font-family-sans);
+  font-size: var(--type-body-sm);
+  line-height: var(--type-body-sm-line-height);
+}
+
+/*
+ * Horizontal only: an inline-size container stops sizing to its content, which
+ * a vertical rail inside a flex parent needs to do.
+ */
+.ion-stepper--horizontal {
+  container-type: inline-size;
+}
+
+.ion-stepper--vertical {
+  flex-direction: column;
+  gap: 0;
+}
+
+.ion-stepper__label {
+  font-weight: var(--font-weight-medium);
+}
+
+.ion-stepper__step {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-8);
+  min-width: 0;
+  color: var(--text-secondary);
+}
+
+.ion-stepper--vertical .ion-stepper__step {
+  align-items: flex-start;
+  padding-bottom: var(--spacing-24);
+}
+
+.ion-stepper--horizontal .ion-stepper__step {
+  flex: 1 1 0;
+  align-items: flex-start;
+}
+
+.ion-stepper--horizontal .ion-stepper__step:last-child {
+  flex: 0 0 auto;
+}
+
+.ion-stepper--vertical .ion-stepper__step:last-child {
+  padding-bottom: 0;
+}
+
+/*
+ * The connector. Drawn by CSS after every step but the last, so it is
+ * decoration that never enters the accessibility tree. It turns primary once
+ * the step before it is complete, which is the "how far have I got" reading.
+ *
+ * A border, not a background: the contrast gate reads `background-color` on a
+ * `::after` as the ground for the whole step, and measured the check glyph
+ * against its own connector at 1:1. It is a line, so it is drawn as one.
+ */
+.ion-stepper--horizontal .ion-stepper__step:not(:last-child)::after {
+  content: '';
+  flex: 1 1 var(--spacing-16);
+  min-width: var(--spacing-16);
+
+  /* Centred on the indicator, not on a step that may carry a description. */
+  margin-top: calc((var(--icon-size-lg) - var(--border-width-thick)) / 2);
+  border-top: var(--border-width-thick) solid var(--border-default);
+}
+
+.ion-stepper--vertical .ion-stepper__step:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  top: calc(var(--icon-size-lg) + var(--spacing-4));
+  bottom: var(--spacing-4);
+
+  /* Centred under the indicator. */
+  left: calc((var(--icon-size-lg) - var(--border-width-thick)) / 2);
+  border-left: var(--border-width-thick) solid var(--border-default);
+}
+
+.ion-stepper__trigger {
+  display: inline-flex;
+  align-items: flex-start;
+  gap: var(--spacing-8);
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-xs);
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: start;
+  text-decoration: none;
+}
+
+a.ion-stepper__trigger,
+button.ion-stepper__trigger {
+  cursor: pointer;
+}
+
+a.ion-stepper__trigger:focus-visible,
+button.ion-stepper__trigger:focus-visible {
+  outline: var(--border-width-thick) solid var(--border-focus);
+  outline-offset: 2px;
+}
+
+a.ion-stepper__trigger:hover .ion-stepper__label,
+button.ion-stepper__trigger:hover .ion-stepper__label {
+  color: var(--text-default);
+  text-decoration: underline;
+}
+
+.ion-stepper__indicator {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: var(--icon-size-lg);
+  height: var(--icon-size-lg);
+  border: var(--border-width-thick) solid var(--border-strong);
+  border-radius: var(--radius-full);
+  color: var(--text-secondary);
+  font-size: var(--type-caption);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--type-caption-line-height);
+}
+
+.ion-stepper__indicator svg {
+  width: var(--icon-size-sm);
+  height: var(--icon-size-sm);
+}
+
+.ion-stepper__text {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2);
+  min-width: 0;
+
+  /* Aligns the label's first line with the 24px indicator. */
+  padding-top: var(--spacing-2);
+}
+
+.ion-stepper__description {
+  color: var(--text-tertiary);
+  font-size: var(--type-caption);
+  line-height: var(--type-caption-line-height);
+}
+
+/* complete — a primary check in a primary ring, and a primary connector. */
+.ion-stepper .ion-stepper__step--complete:not(:last-child)::after {
+  border-color: var(--border-primary);
+}
+
+.ion-stepper__step--complete .ion-stepper__indicator {
+  border-color: var(--border-primary);
+  color: var(--icon-primary);
+}
+
+/* error — the same ring in error, with a different glyph. */
+.ion-stepper__step--error {
+  color: var(--text-error);
+}
+
+.ion-stepper__step--error .ion-stepper__indicator {
+  border-color: var(--border-error);
+  color: var(--icon-error);
+}
+
+/*
+ * current — the one filled indicator on the row, so the position reads at a
+ * glance. The label goes to the strongest text colour for the same reason
+ * Breadcrumb's current crumb does.
+ */
+.ion-stepper__step--current {
+  color: var(--text-default);
+}
+
+.ion-stepper__step--current .ion-stepper__indicator {
+  border-color: var(--surface-primary);
+  background-color: var(--surface-primary);
+  color: var(--text-on-color);
+}
+
+.ion-stepper__step--current.ion-stepper__step--error {
+  color: var(--text-error);
+}
+
+.ion-stepper__step--current.ion-stepper__step--error .ion-stepper__indicator {
+  border-color: var(--surface-error);
+  background-color: var(--surface-error);
+  color: var(--text-on-color);
+}
+
+/*
+ * Narrow containers: a horizontal stepper keeps every indicator and only the
+ * current step's label. The other labels are hidden visually, NOT removed, so
+ * "Step 2 of 5: Shipping, Completed" is still read for each of them.
+ */
+@container (max-width: 40rem) {
+  .ion-stepper--horizontal .ion-stepper__step--current {
+    flex: 0 1 auto;
+  }
+
+  .ion-stepper--horizontal
+    .ion-stepper__step:not(.ion-stepper__step--current)
+    .ion-stepper__text {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+}
+
+/*
+ * Forced colours throw the primary fill away, which would leave the current
+ * step looking like every other. A heavier ring survives, because width is
+ * not a colour. (Not `Highlight` + `forced-color-adjust: none`: the contrast
+ * gate flattens at-rules, and a system colour here replaced the real fill in
+ * its model, so the white-on-primary pairing silently went unmeasured.)
+ */
+@media (forced-colors: active) {
+  .ion-stepper__step--current .ion-stepper__indicator {
+    border-width: var(--border-width-thicker);
+  }
+}

@@ -1,5 +1,210 @@
 # Changelog
 
+## 0.65.0 — 2026-09-17
+
+### Added — `SegmentedControl`, `SegmentedControlItem`
+
+Pick one of two to five options, all visible at once — a view mode, a range, a
+unit. Until now the nearest thing was Tabs' `pill` type, which looks exactly
+right and is exactly wrong: a tab controls a panel, and a view switch controls
+none, so a screen-reader user was told about a relationship that did not exist.
+
+**It looks like the pill track and behaves like a radio group.** The visual is
+Tabs' pill, token for token, so the two cannot drift into looking almost alike.
+The semantics are `radiogroup`: one tab stop, arrow keys move and select and
+skip disabled segments, and it submits with a form under `name`. Built from real
+radio inputs, visually hidden — not buttons with `aria-pressed`, which cost a tab
+stop per option and announce no mutual exclusion.
+
+`label` is required and is an `aria-label` by default; `showLabel` renders it
+above the track as a form field does. **A disabled selected segment keeps its
+selected surface**, because a disabled control still has a value — the test for
+it was confirmed to fail with the rule removed. `Tabs`' intent file now points
+here, and this one points back, so an agent choosing by appearance is told to
+choose by what changes.
+
+### Found on the way — two more ways CSS hides from the contrast gate
+
+- **`:not(a, b)` is split at the comma.** A hover rule guarded with
+  `:not(--selected, --disabled)` was read as the disabled state and measured
+  disabled text on a hover surface: two failures, for a combination that never
+  renders. The state rules are ordered by specificity instead.
+- **`background-color: transparent` drops the pairing.** It is not a token, the
+  gate cannot resolve it, and it moves on without counting a skip. Disabled text
+  was simply absent. The disabled segment paints the track's own surface, which
+  is identical on screen, and is now measured — under the existing `text/disabled`
+  exemption. **Eighteen other rules across the package set a transparent
+  background**, and some may be hiding pairings the same way. Not audited here.
+
+## 0.64.0 — 2026-09-17
+
+### Added — `NumberInput`
+
+The forms tier had no way to take a quantity other than `<Input type="number">`,
+which is three defects wearing one attribute:
+
+- **It changes under the scroll wheel.** A focused number field edited by
+  scrolling the page past it is the classic bug. The wheel is off here
+  (`isWheelDisabled` defaults to `true`); a caller has to ask for it.
+- **It cannot format.** `formatOptions` takes `Intl.NumberFormatOptions`, so
+  currency, percent and units display and parse in the user's locale —
+  "$1,234.50" here, "1.234,50 $" for a German user.
+- **It parses badly.** The field is `type="text"` with the matching `inputMode`,
+  so phones get the numeric keyboard without the native input's quirks.
+
+**Empty is `null`, never `NaN`.** React Aria reports an empty field as `NaN`,
+and `NaN === NaN` is false, so every emptiness check a caller writes is wrong.
+It converts at the boundary, both ways.
+
+**− and + sit side by side**, at field height minus 8px — 24/32/40 — so a Small
+field still meets WCAG 2.5.8's 24px target. Stacked chevrons would have halved
+that. They are out of the tab order, as React Aria sets them: the arrow keys,
+Page Up/Down and Home/End do the same job from the field.
+
+**The box is Input**, class for class, so every size and state comes from
+`input.css` and cannot drift. `number-input.css` owns only the step buttons.
+
+The contract's first `useInstead` is the one agents most need: postcodes, phone,
+card and order numbers are digits, not quantities. A number field strips their
+leading zeros and adds separators. `Form` now composes `NumberInput`.
+
+### Found on the way — the contrast gate looks up a backdrop per stylesheet
+
+The step buttons' translucent hover and pressed surfaces came back **skipped**
+in both modes: the gate resolves a translucent ground against the block's own
+background, looked up in the same stylesheet, and the box's background is
+declared in `input.css`. Scoping the selectors from `.ion-input` did not help,
+for the same reason.
+
+`number-input.css` restates Input's default surface under `:where()`. Zero
+specificity means it matches what the box already paints and loses to every
+Input state — confirmed in the browser: disabled and read-only still repaint the
+box. Skipped went 4 → 0; hover and pressed measure 13.49–17.35:1.
+
+A component that reuses another component's block will hit this again. Worth
+knowing before the next one: the gate's world is one file at a time.
+
+## 0.63.0 — 2026-09-17
+
+### Added — `ToolCall`
+
+`AgentActivityStep` tells a person what the agent did, in their language, and
+the patterns forbid raw tool names and JSON there — correctly. But that left
+nowhere for the evidence to go: which tool, with what arguments, and what came
+back. `ToolCall` is where the person checking the account goes next.
+
+- **The title is plain language and required.** The function name goes in
+  `name`, beside it in monospace. The technical detail supplements the account;
+  it does not replace it.
+- **Collapsed by default, except the failure.** `errorMessage` renders outside
+  the disclosure, because evidence that takes a click to reach is evidence
+  nobody reads.
+- **A call with nothing to show is not a button.** With no `input` and no
+  `output` the header renders as text — a disclosure that discloses nothing
+  announces as expandable and does nothing.
+- **Payloads are focusable, named scroll regions**, capped in height and
+  wrapping rather than scrolling sideways. Objects render as formatted JSON; a
+  circular structure falls back to `String()` rather than crashing the thread.
+- **Details unmount when collapsed**, unlike Accordion: a tool call holds no user
+  state and its payloads can be large, multiplied by every call in a run.
+
+It shares `AgentActivityStep`'s status union and glyphs, now in one internal
+module (`agent-status.tsx`) that both import, so a step and the tool call behind
+it cannot disagree about what "failed" looks like or is called. `AgentActivity`
+is otherwise unchanged and its tests pass untouched.
+
+`AgentRun` now composes it: a collapsed ToolCall under any step that called a
+tool, carrying the same status.
+
+### Fixed on the way — a hover state the contrast gate never checked
+
+The header's hover rule set `surface/hover` and no text colour, so the gate had
+nothing to pair it with and the state went unmeasured. It restates the text
+colour now. Same class of hole as the two recorded under 0.61.0: a rule the
+gate cannot pair is a rule it silently skips.
+
+## 0.62.0 — 2026-09-17
+
+### Added — `PromptInput`
+
+The agentic tier could show a run, stop it and cite its answer, but had no
+place for a person to write to the agent. Every product assembles one from a
+Textarea and a Button, and every one re-implements the same four bugs. This
+component exists to not have them.
+
+- **Enter during IME composition does not send.** Japanese, Chinese and Korean
+  input confirm a candidate with Enter; a handler that ignores `isComposing`
+  sends the message mid-character. Invisible on an English keyboard, and it
+  excludes whole languages. `keyCode 229` covers Safari, which reports the
+  keydown before setting the flag.
+- **A failed send restores the prompt.** Uncontrolled, the field clears straight
+  away — waiting on the server makes a composer feel broken — and a rejected
+  `onSubmit` promise puts the text back, unless the user has already started a
+  new message.
+- **Send becomes stop, in place.** While `isRunning` with `onStop`, the send
+  control is replaced by `AgentStop` with its guarantees intact. The field stays
+  editable; only submitting is refused.
+- **The keyboard contract is announced.** "Press Enter to send, Shift and Enter
+  for a new line" is the field's description, because a screen-reader user who
+  presses Enter expecting a newline has just sent a message.
+
+`label` is required: a placeholder is not an accessible name. `submitKey` is
+`enter` (chat) or `mod-enter` (long messages). `actions` and `attachments` are
+slots — what a product attaches and which tools it offers are its decisions.
+
+`AgentRun` now composes it, with one rule: the composer's stop IS the run's
+AgentStop, so a run started from it renders one stop control, not two.
+
+Screenshots caught what the tests could not: `:hover:not(--disabled)` outranked
+`:focus-within`, and the pointer is always over the box right after clicking
+into it — so the focus border never showed. The IME and restore tests were each
+confirmed to fail with their guard removed.
+
+## 0.61.0 — 2026-09-17
+
+### Added — `Stepper`, `StepperStep`
+
+The `Wizard` pattern asked for "a step indicator naming every step and marking
+the current one — not Tabs", and nothing in the system could be one. It had to
+be assembled from Badges, or — the mistake the pattern warns against — from
+Tabs, whose role promises peers visited in any order.
+
+**An ordered list, with position and status as text.** Every step renders
+"Step 2 of 5" and its status as visually hidden text, derived from the children
+rather than passed in, so "Step 3 of 4" cannot appear twice. `complete` draws a
+check and `error` an exclamation: the states differ in shape, not only hue.
+
+**Only visited steps are links.** `href` and `onPress` are honoured on
+`complete` and `error` steps that are not current. An `incomplete` step renders
+as text whatever it is given, because skipping unanswered steps is what a wizard
+exists to prevent. `status` and `isCurrent` are separate props, since a user who
+goes Back to step 1 is on a step that is both current and complete.
+
+Below a 40rem container a horizontal stepper keeps every indicator and only the
+current step's label; the others are visually hidden, not removed.
+
+`Wizard` now composes it. Not drawn in Figma yet — recorded in `codeUnmapped`.
+
+### Found on the way — two ways a stylesheet can hide from the contrast gate
+
+Neither is a gate change; both are recorded in `stepper.css` so the next
+component does not repeat them.
+
+- **State as `[data-*]` attributes is unmeasured.** The gate keys contexts on
+  BEM `--modifier` classes. The first draft used `[data-status]` and
+  `[data-current]`, and the filled current indicator and every error colour
+  produced no pairing at all — not failing, not passing, absent.
+- **A system colour in `@media (forced-colors)` replaces the real value.** The
+  gate flattens at-rules, so `background-color: Highlight` overwrote
+  `surface/primary` in its model and white-on-primary went unmeasured. It is a
+  heavier ring now, which is also what actually survives forced colours.
+
+And one false positive the other way: a connector drawn with `background-color`
+on `::after` was read as the ground for the whole step, failing the check glyph
+at 1:1 against its own connector. The connector is a border now.
+
+Enforced pairings 1310 → **1352**.
+
 ## 0.59.0 — 2026-09-16
 
 ### Added — the navigation and forms tiers are drawn in Figma

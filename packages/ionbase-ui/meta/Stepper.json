@@ -1,0 +1,65 @@
+{
+  "status": "stable",
+  "summary": "Where the user is in a task that has an order. An ordered list of steps, each stating its position and status in text.",
+  "useWhen": [
+    "a Wizard — later steps depend on earlier answers and the user needs to see what is left",
+    "a multi-page flow such as checkout or onboarding, where the steps are fixed and known in advance"
+  ],
+  "useInstead": [
+    {
+      "when": "the sections can be visited in any order",
+      "use": "Tabs",
+      "why": "tabs promise peers; a stepper promises a sequence, and using one for the other misleads in both directions"
+    },
+    {
+      "when": "the progress is a quantity with no named stages — an upload, an import",
+      "use": "ProgressBar",
+      "why": "a stepper with no meaningful step names is a progress bar drawn in circles"
+    },
+    {
+      "when": "the steps are an agent's actions rather than the user's",
+      "use": "AgentActivity",
+      "why": "the user is not moving through those steps; they are supervising them"
+    }
+  ],
+  "variants": {
+    "orientation": {
+      "horizontal": {
+        "use": "the default — a header above the step's form. Below 40rem it keeps only the current label visible"
+      },
+      "vertical": {
+        "use": "a side rail beside the form, or when step names or descriptions are long"
+      }
+    }
+  },
+  "slots": {
+    "children": {
+      "accepts": "StepperStep",
+      "note": "first step first, and exactly one with isCurrent"
+    }
+  },
+  "a11y": {
+    "requires": [
+      "`label` naming the task when a page carries more than one stepper — it defaults to \"Progress\""
+    ],
+    "guarantees": [
+      "every step renders \"Step N of M\" and its status as visually hidden text, derived from the children rather than passed in",
+      "the current step carries aria-current=\"step\"",
+      "connectors are CSS and never enter the accessibility tree"
+    ],
+    "notes": [
+      "it does not announce step changes. The Wizard pattern moves focus to the new step's heading, which announces it; a live region here would say it twice"
+    ]
+  },
+  "antiPatterns": [
+    {
+      "dont": "<Tabs> as a wizard's step indicator",
+      "do": "<Stepper>",
+      "why": "the tablist role announces peers that can be visited in any order, which is the opposite of a wizard"
+    },
+    {
+      "dont": "more than about seven steps",
+      "why": "a stepper that has to scroll or wrap no longer shows what is left, which is the only thing it is for — group the steps instead"
+    }
+  ]
+}

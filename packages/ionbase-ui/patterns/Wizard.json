@@ -5,6 +5,8 @@
     "the whole task is too long to present as one form without abandonment"
   ],
   "composes": [
+    "Stepper",
+    "StepperStep",
     "Button",
     "Input",
     "Select",
@@ -17,7 +19,7 @@
     "Modal"
   ],
   "structure": [
-    "A step indicator naming every step and marking the current one — not Tabs, because the steps are not peers and cannot be visited in any order.",
+    "A Stepper naming every step and marking the current one — not Tabs, because the steps are not peers and cannot be visited in any order. Completed steps link back; incomplete ones do not.",
     "One step's fields at a time, each step a Form in its own right.",
     "Back and Next, plus save-and-exit for anything longer than three steps.",
     "A final review step listing every answer with a link back to the step that set it."
@@ -41,6 +43,8 @@
     }
   },
   "propsUsed": {
+    "Stepper": ["label", "orientation"],
+    "StepperStep": ["status", "isCurrent", "onPress", "description"],
     "Button": ["variant", "size", "isDisabled"],
     "Input": ["label", "isInvalid", "errorMessage", "isRequired"],
     "Select": ["label", "isInvalid", "errorMessage"],
@@ -50,6 +54,7 @@
     "Modal": ["isOpen", "onOpenChange", "title", "footer"]
   },
   "variantsUsed": {
+    "StepperStep": { "status": ["incomplete", "complete", "error"] },
     "Button": { "variant": ["primary-brand", "secondary", "tertiary"] },
     "Alert": { "intent": ["error", "information"] },
     "Badge": { "intent": ["success", "neutral"] }
