@@ -1,7 +1,7 @@
 # Demo app — IonBase as a real product
 
 _Proposal, 17 Sep 2026. Product story and chart library agreed the same day.
-Phases 0–1 done 17 Sep 2026. Phase 2 (Agents, New agent, Settings) built, awaiting review._
+Phases 0–2 done 17 Sep 2026. Phase 3 (Runs, Assistant) built, awaiting review._
 
 A showcase dashboard that lives in this repo and consumes `ionbase-ui` and
 `ionbase-icons` **exactly as an outside app would**. It has two jobs:

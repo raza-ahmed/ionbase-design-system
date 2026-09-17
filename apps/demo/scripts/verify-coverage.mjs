@@ -60,7 +60,31 @@ const REQUIRED = [
   'Divider',
   'Accordion',
   'AccordionItem',
+  // Phase 3 — Runs and Assistant
+  'AgentActivity',
+  'AgentActivityStep',
+  'AgentStop',
+  'ApprovalGate',
+  'StreamingText',
+  'Drawer',
+  'AvatarGroup',
+  'Citation',
+  'CitationList',
+  'CitationListItem',
+  'ConfidenceIndicator',
+  'AvatarGradient',
+  'LogoMark',
+  'ScrollProgress',
+  'Spinner',
+  'Toast',
 ];
+
+/**
+ * Components reached through a hook rather than imported by name. Toast is
+ * rendered by ToastProvider from `useToast()` calls — a demo that imported the
+ * Toast component itself would be using it wrongly.
+ */
+const VIA_HOOK = { useToast: 'Toast' };
 
 const require = createRequire(import.meta.url);
 const index = require('ionbase-ui/meta/index');
@@ -91,7 +115,7 @@ for (const file of files(
         .trim()
         .replace(/^type\s+/, '')
         .split(/\s+as\s+/)[0];
-      if (name) imported.add(name);
+      if (name) imported.add(VIA_HOOK[name] ?? name);
     }
   }
 }

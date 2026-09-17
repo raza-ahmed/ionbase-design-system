@@ -415,3 +415,147 @@ body {
 .ion-table-container {
   position: relative;
 }
+
+/* ---- Phase 3: runs and assistant ---- */
+
+.demo-run-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--spacing-16);
+}
+
+.demo-run-header__title {
+  display: grid;
+  gap: var(--spacing-4);
+}
+
+.demo-run-header__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--spacing-8);
+}
+
+.demo-scenario {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--spacing-8);
+  padding: var(--spacing-8) var(--spacing-12);
+  border: var(--border-width-default) dashed var(--border-default);
+  border-radius: var(--radius-lg);
+}
+
+.demo-gate-body {
+  display: grid;
+  gap: var(--spacing-12);
+}
+
+.demo-gate-edit {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--spacing-8);
+}
+
+.demo-queue {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(18rem, 1fr));
+  gap: var(--spacing-16);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.demo-queue .demo-panel {
+  gap: var(--spacing-8);
+  align-content: start;
+}
+
+.demo-queue__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--spacing-8);
+}
+
+.demo-assistant {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: var(--spacing-32);
+  align-items: start;
+}
+
+.demo-assistant__thread {
+  grid-column: 2;
+  max-width: calc(var(--container-max-width) * 0.62);
+}
+
+.demo-assistant__rail {
+  position: sticky;
+  z-index: 5;
+  top: var(--spacing-80);
+}
+
+.demo-suggestions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--spacing-8);
+}
+
+.demo-composer__actions .demo-suggestions {
+  justify-content: flex-start;
+}
+
+.demo-composer {
+  display: grid;
+  gap: var(--spacing-12);
+}
+
+.demo-composer__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--spacing-8);
+}
+
+.demo-turn {
+  display: grid;
+  gap: var(--spacing-12);
+  scroll-margin-top: var(--spacing-80);
+}
+
+.demo-turn__question {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-12);
+}
+
+.demo-turn__question h2:focus {
+  outline: none;
+}
+
+.demo-turn__meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-8);
+}
+
+@media (width <= 1023px) {
+  .demo-assistant {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .demo-assistant__thread {
+    grid-column: 1;
+  }
+
+  .demo-assistant__rail {
+    display: none;
+  }
+}
