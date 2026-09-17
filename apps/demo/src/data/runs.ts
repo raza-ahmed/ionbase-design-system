@@ -17,6 +17,13 @@ export interface WorkStep {
   /** Detail when this step is the one that fails, in the "fails" scenario. */
   failure?: string;
   ms: number;
+  /** The tool call behind the step — evidence for the plain-language line, never a replacement for it. */
+  tool?: {
+    title: string;
+    name: string;
+    input: Record<string, unknown>;
+    output: Record<string, unknown>;
+  };
 }
 
 export interface ApprovalStep {
@@ -66,6 +73,16 @@ export const SCRIPTS: RunScript[] = [
         done: 'Read ticket #88213 from Maya Chen',
         detail: '“I was charged twice for March. Can you fix this?”',
         ms: 1100,
+        tool: {
+          title: 'Fetched the support ticket',
+          name: 'get_ticket',
+          input: { id: 88213 },
+          output: {
+            from: 'maya.chen@example.com',
+            subject: 'Charged twice for March',
+            channel: 'email',
+          },
+        },
       },
       {
         kind: 'work',
@@ -73,6 +90,17 @@ export const SCRIPTS: RunScript[] = [
         done: 'Checked her billing history',
         detail: 'Two charges of $249.00 on 3 March, four seconds apart',
         ms: 1400,
+        tool: {
+          title: 'Searched her charges',
+          name: 'list_charges',
+          input: { customer: 'cus_7Q2M', since: '2026-03-01' },
+          output: {
+            charges: [
+              { id: 'ch_3301', amount: 249, at: '2026-03-03T09:14:02Z' },
+              { id: 'ch_3302', amount: 249, at: '2026-03-03T09:14:06Z' },
+            ],
+          },
+        },
       },
       {
         kind: 'work',
@@ -80,6 +108,12 @@ export const SCRIPTS: RunScript[] = [
         done: 'Found the duplicate-charge policy',
         detail: 'Refund in full. Refunds over $100 need a person to approve.',
         ms: 1000,
+        tool: {
+          title: 'Searched the billing policies',
+          name: 'search_policies',
+          input: { query: 'duplicate charge refund' },
+          output: { policy: 'BIL-12', refund: 'full', approvalOver: 100 },
+        },
       },
       {
         kind: 'approval',
@@ -104,6 +138,12 @@ export const SCRIPTS: RunScript[] = [
         detail: 'Arrives in 5–10 business days · reference RF-20931',
         failure: 'The payment provider timed out. No money moved.',
         ms: 1600,
+        tool: {
+          title: 'Created the refund',
+          name: 'create_refund',
+          input: { charge: 'ch_3302', amount: 249, reason: 'duplicate' },
+          output: { refund: 'RF-20931', status: 'pending', eta_days: '5-10' },
+        },
       },
       {
         kind: 'output',
@@ -129,6 +169,12 @@ export const SCRIPTS: RunScript[] = [
         done: 'Listed accounts with no sign-in for 90 days',
         detail: '14 accounts across Finance, Growth and Platform',
         ms: 1300,
+        tool: {
+          title: 'Queried the directory',
+          name: 'list_users',
+          input: { inactiveDays: 90 },
+          output: { count: 14, teams: ['Finance', 'Growth', 'Platform'] },
+        },
       },
       {
         kind: 'work',
@@ -136,6 +182,12 @@ export const SCRIPTS: RunScript[] = [
         done: 'Checked for open tickets and owned agents',
         detail: '2 accounts have open tickets and were left out',
         ms: 1500,
+        tool: {
+          title: "Checked each account's open work",
+          name: 'get_ownership',
+          input: { users: 14 },
+          output: { withOpenTickets: 2, withOwnedAgents: 0 },
+        },
       },
       {
         kind: 'approval',
@@ -160,6 +212,12 @@ export const SCRIPTS: RunScript[] = [
         failure:
           'The identity provider refused the request. No access was changed.',
         ms: 1800,
+        tool: {
+          title: 'Suspended the accounts',
+          name: 'suspend_users',
+          input: { users: 12, revokeKeys: true },
+          output: { suspended: 12, keysDeleted: 7 },
+        },
       },
       {
         kind: 'output',
@@ -185,6 +243,12 @@ export const SCRIPTS: RunScript[] = [
         done: 'Pulled Acme’s usage for the year',
         detail: 'Seats up 18%, spend flat',
         ms: 1200,
+        tool: {
+          title: 'Fetched account usage',
+          name: 'get_usage',
+          input: { account: 'acme', period: '12m' },
+          output: { seats: { change: 0.18 }, spend: { change: 0.0 } },
+        },
       },
       {
         kind: 'work',
@@ -192,6 +256,12 @@ export const SCRIPTS: RunScript[] = [
         done: 'Drafted the renewal quote',
         detail: 'Quote Q-2291 · $48,000 a year with a 12% multi-year discount',
         ms: 1400,
+        tool: {
+          title: 'Generated the quote',
+          name: 'create_quote',
+          input: { account: 'acme', term_years: 3, discount: 0.12 },
+          output: { quote: 'Q-2291', annual: 48000 },
+        },
       },
       {
         kind: 'approval',
@@ -214,6 +284,12 @@ export const SCRIPTS: RunScript[] = [
         detail: 'Delivered to jordan@acme.example',
         failure: 'The mail server rejected the attachment. Nothing was sent.',
         ms: 1100,
+        tool: {
+          title: 'Sent the quote email',
+          name: 'send_email',
+          input: { to: 'jordan@acme.example', attachment: 'Q-2291.pdf' },
+          output: { messageId: 'msg_5c1e', delivered: true },
+        },
       },
       {
         kind: 'output',
@@ -282,6 +358,11 @@ export function summaryFor(runId: string): RunSummary | undefined {
 /** Runs paused on a person, for the navigation's count. Synchronous: the nav is chrome, and chrome never waits on data. */
 export function listWaitingRuns(): RunSummary[] {
   return HISTORY.filter((r) => r.outcome === 'waiting');
+}
+
+/** The newest runs that have finished, synchronously, for a summary list. */
+export function listRecentRuns(count: number): RunSummary[] {
+  return HISTORY.filter((r) => r.outcome !== 'waiting').slice(0, count);
 }
 
 export async function listRuns(

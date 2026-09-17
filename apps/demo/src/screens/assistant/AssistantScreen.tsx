@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
 import {
-  AgentStop,
   Alert,
   AvatarGradient,
   Button,
@@ -10,10 +9,10 @@ import {
   ConfidenceIndicator,
   EmptyState,
   LogoMark,
+  PromptInput,
   ScrollProgress,
   Spinner,
   StreamingText,
-  Textarea,
 } from 'ionbase-ui';
 
 import {
@@ -201,7 +200,7 @@ export function AssistantScreen() {
         )}
 
         {turns.map((t) => (
-          <TurnView key={t.id} turn={t} onStop={stop} />
+          <TurnView key={t.id} turn={t} />
         ))}
 
         {/* Completion is announced once, for the newest answer only. */}
@@ -213,62 +212,50 @@ export function AssistantScreen() {
               : ''}
         </p>
 
-        <form
-          className="demo-composer"
-          onSubmit={(e) => {
-            e.preventDefault();
-            ask(draft);
-          }}
-        >
-          <Textarea
+        {/*
+         * One stop control for the thread: the composer's send button becomes
+         * it while an answer is in flight, so the answer itself carries none.
+         */}
+        <div className="demo-composer">
+          <PromptInput
             label="Your question"
-            rows={2}
+            placeholder="Ask about refunds, success targets, or anything else"
             value={draft}
             onChange={setDraft}
-            description="Try asking about refunds, success targets, or anything else."
-            onKeyDown={(e) => {
-              if (e.key === 'Enter' && !e.shiftKey) {
-                e.preventDefault();
-                ask(draft);
-              }
-            }}
+            onSubmit={(q) => ask(q)}
+            isRunning={busy}
+            onStop={stop}
+            sendLabel="Ask"
           />
-          <div className="demo-composer__actions">
-            {turns.length > 0 && !busy && (
-              <span className="demo-suggestions">
-                {SUGGESTIONS.filter(
-                  (s) => !turns.some((t) => t.answer.id === s.id),
-                ).map((s) => (
-                  <Button
-                    key={s.id}
-                    size="sm"
-                    variant="tertiary"
-                    onClick={() =>
-                      ask(
-                        s.question,
-                        ANSWERS.find((a) => a.id === s.id),
-                      )
-                    }
-                  >
-                    {s.question}
-                  </Button>
-                ))}
-              </span>
-            )}
-            <span className="demo-form__spacer" />
-            <Button type="submit" isDisabled={busy || !draft.trim()}>
-              Ask
-            </Button>
-          </div>
-        </form>
+          {turns.length > 0 && !busy && (
+            <span className="demo-suggestions">
+              {SUGGESTIONS.filter(
+                (s) => !turns.some((t) => t.answer.id === s.id),
+              ).map((s) => (
+                <Button
+                  key={s.id}
+                  size="sm"
+                  variant="tertiary"
+                  onClick={() =>
+                    ask(
+                      s.question,
+                      ANSWERS.find((a) => a.id === s.id),
+                    )
+                  }
+                >
+                  {s.question}
+                </Button>
+              ))}
+            </span>
+          )}
+        </div>
       </div>
     </div>
   );
 }
 
-function TurnView({ turn, onStop }: { turn: Turn; onStop: () => void }) {
+function TurnView({ turn }: { turn: Turn }) {
   const { answer, revealed, status } = turn;
-  const inFlight = status === 'searching' || status === 'streaming';
   const complete = status === 'done';
 
   // Reveal text up to `revealed`; a marker shows once the claim before it is whole.
@@ -306,9 +293,6 @@ function TurnView({ turn, onStop }: { turn: Turn; onStop: () => void }) {
       <div className="demo-turn__answer demo-panel">
         <div className="demo-turn__meta">
           <LogoMark size="sm" label="Ionbase assistant" />
-          {inFlight && (
-            <AgentStop size="sm" label="Stop answering" onStop={onStop} />
-          )}
           {complete && answer.confidence && (
             <ConfidenceIndicator
               level={answer.confidence.level}

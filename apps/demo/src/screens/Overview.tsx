@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import {
   Alert,
+  Badge,
   Button,
   DateRangePicker,
   EmptyState,
@@ -9,6 +10,11 @@ import {
   ProgressBar,
   Skeleton,
   TabItem,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableRow,
   Tabs,
   type DateRange,
 } from 'ionbase-ui';
@@ -23,6 +29,7 @@ import { useResource } from '../lib/use-resource';
 import { RunHeatmap } from '../local/charts/RunHeatmap';
 import { SuccessRateChart } from '../local/charts/SuccessRateChart';
 import { StatTile } from '../local/StatTile';
+import { ago, OUTCOME } from './runs/outcome';
 
 const PRESETS = [
   {
@@ -249,6 +256,47 @@ function OverviewReady({
           </ul>
         </section>
       </div>
+
+      <section className="demo-panel" aria-labelledby="recent-title">
+        <div className="demo-section-head">
+          <h2 id="recent-title" className="ion-text-h6">
+            Recent runs
+          </h2>
+          <Link variant="standalone" href={href('runs')}>
+            All runs
+          </Link>
+        </div>
+        <Table aria-label="Five most recent finished runs">
+          <TableHead>
+            <TableRow>
+              <TableCell header>Run</TableCell>
+              <TableCell header>Agent</TableCell>
+              <TableCell header>Outcome</TableCell>
+              <TableCell header align="trailing">
+                Started
+              </TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {data.recentRuns.map((r) => (
+              <TableRow key={r.id}>
+                <TableCell>
+                  <Link href={href(`runs/${r.id}`)}>{r.task}</Link>
+                </TableCell>
+                <TableCell>{r.agent}</TableCell>
+                <TableCell>
+                  <Badge size="sm" dot intent={OUTCOME[r.outcome].intent}>
+                    {OUTCOME[r.outcome].text}
+                  </Badge>
+                </TableCell>
+                <TableCell align="trailing">
+                  {ago(r.startedMinutesAgo)}
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </section>
     </>
   );
 }

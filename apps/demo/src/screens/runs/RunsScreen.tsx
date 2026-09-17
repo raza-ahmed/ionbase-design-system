@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import {
   Alert,
   Avatar,
@@ -6,6 +7,8 @@ import {
   Button,
   EmptyState,
   Link,
+  SegmentedControl,
+  SegmentedControlItem,
   Skeleton,
   Table,
   TableBody,
@@ -14,35 +17,17 @@ import {
   TableRow,
 } from 'ionbase-ui';
 
-import {
-  listRuns,
-  scriptFor,
-  type RunOutcome,
-  type RunSummary,
-} from '../../data/runs';
+import { listRuns, scriptFor, type RunSummary } from '../../data/runs';
 import { useDemoSettings } from '../../lib/demo-settings';
 import { href } from '../../lib/router';
 import { useResource } from '../../lib/use-resource';
-
-const OUTCOME: Record<
-  RunOutcome,
-  { intent: 'warning' | 'success' | 'error' | 'neutral'; text: string }
-> = {
-  waiting: { intent: 'warning', text: 'Waiting for approval' },
-  completed: { intent: 'success', text: 'Completed' },
-  failed: { intent: 'error', text: 'Failed' },
-  stopped: { intent: 'neutral', text: 'Stopped' },
-  rejected: { intent: 'neutral', text: 'Rejected' },
-};
+import { ago, OUTCOME } from './outcome';
 
 const RISK_INTENT = {
   low: 'neutral',
   medium: 'warning',
   high: 'error',
 } as const;
-
-const ago = (minutes: number) =>
-  minutes < 60 ? `${minutes} min ago` : `${Math.round(minutes / 60)} h ago`;
 
 export function RunsScreen() {
   const settings = useDemoSettings();
@@ -160,63 +145,108 @@ function WaitingQueue({ runs }: { runs: RunSummary[] }) {
   );
 }
 
-function History({ runs }: { runs: RunSummary[] }) {
+const FILTERS = {
+  all: { label: 'All', matches: () => true },
+  completed: {
+    label: 'Completed',
+    matches: (r: RunSummary) => r.outcome === 'completed',
+  },
+  failed: {
+    label: 'Failed',
+    matches: (r: RunSummary) => r.outcome === 'failed',
+  },
+  unfinished: {
+    label: 'Stopped or rejected',
+    matches: (r: RunSummary) =>
+      r.outcome === 'stopped' || r.outcome === 'rejected',
+  },
+} as const;
+type Filter = keyof typeof FILTERS;
+
+function History({ runs: all }: { runs: RunSummary[] }) {
+  const [filter, setFilter] = useState<Filter>('all');
+  const runs = all.filter(FILTERS[filter].matches);
+
   return (
     <section aria-labelledby="history-title" className="demo-page">
-      <h2 id="history-title" className="ion-text-h5">
-        History
-      </h2>
+      <div className="demo-section-head">
+        <h2 id="history-title" className="ion-text-h5">
+          History
+        </h2>
+        <SegmentedControl
+          label="Show runs"
+          size="sm"
+          value={filter}
+          onChange={(v) => setFilter(v as Filter)}
+        >
+          {Object.entries(FILTERS).map(([value, f]) => (
+            <SegmentedControlItem key={value} value={value}>
+              {f.label}
+            </SegmentedControlItem>
+          ))}
+        </SegmentedControl>
+      </div>
       {/* Not labelled by the heading: the section already is, and two landmarks
           with one name are indistinguishable (axe landmark-unique). */}
-      <Table aria-label="Run history">
-        <TableHead>
-          <TableRow>
-            <TableCell header>Run</TableCell>
-            <TableCell header>Outcome</TableCell>
-            <TableCell header>Started</TableCell>
-            <TableCell header align="trailing">
-              Duration
-            </TableCell>
-            <TableCell header>Decided by</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {runs.map((r) => (
-            <TableRow key={r.id}>
-              <TableCell>
-                <span className="demo-cell-stack">
-                  <Link href={href(`runs/${r.id}`)}>{r.task}</Link>
-                  <span className="ion-text-caption demo-muted">{r.agent}</span>
-                </span>
+      {runs.length === 0 ? (
+        <p className="ion-text-body demo-muted">
+          No {FILTERS[filter].label.toLowerCase()} runs in the history.
+        </p>
+      ) : (
+        <Table aria-label="Run history">
+          <TableHead>
+            <TableRow>
+              <TableCell header>Run</TableCell>
+              <TableCell header>Outcome</TableCell>
+              <TableCell header>Started</TableCell>
+              <TableCell header align="trailing">
+                Duration
               </TableCell>
-              <TableCell>
-                <Badge size="sm" dot intent={OUTCOME[r.outcome].intent}>
-                  {OUTCOME[r.outcome].text}
-                </Badge>
-              </TableCell>
-              <TableCell>{ago(r.startedMinutesAgo)}</TableCell>
-              <TableCell align="trailing">
-                {r.durationSec ? `${r.durationSec}s` : '—'}
-              </TableCell>
-              <TableCell>
-                {r.reviewers.length === 0 ? (
-                  <span className="demo-muted">Stopped before a decision</span>
-                ) : (
-                  <AvatarGroup size="sm" max={3}>
-                    {r.reviewers.map((p) => (
-                      <Avatar
-                        key={p.initials}
-                        initials={p.initials}
-                        alt={p.name}
-                      />
-                    ))}
-                  </AvatarGroup>
-                )}
-              </TableCell>
+              <TableCell header>Decided by</TableCell>
             </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+          </TableHead>
+          <TableBody>
+            {runs.map((r) => (
+              <TableRow key={r.id}>
+                <TableCell>
+                  <span className="demo-cell-stack">
+                    <Link href={href(`runs/${r.id}`)}>{r.task}</Link>
+                    <span className="ion-text-caption demo-muted">
+                      {r.agent}
+                    </span>
+                  </span>
+                </TableCell>
+                <TableCell>
+                  <Badge size="sm" dot intent={OUTCOME[r.outcome].intent}>
+                    {OUTCOME[r.outcome].text}
+                  </Badge>
+                </TableCell>
+                <TableCell>{ago(r.startedMinutesAgo)}</TableCell>
+                <TableCell align="trailing">
+                  {r.durationSec ? `${r.durationSec}s` : '—'}
+                </TableCell>
+                <TableCell>
+                  {r.reviewers.length === 0 ? (
+                    <span className="demo-muted">
+                      Stopped before a decision
+                    </span>
+                  ) : (
+                    <AvatarGroup size="sm" max={3}>
+                      {r.reviewers.map((p) => (
+                        <Avatar
+                          key={p.initials}
+                          initials={p.initials}
+                          alt={p.name}
+                        />
+                      ))}
+                    </AvatarGroup>
+                  )}
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      )}
     </section>
   );
 }

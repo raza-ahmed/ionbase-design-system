@@ -303,51 +303,6 @@ body {
   display: none;
 }
 
-.demo-steps {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--spacing-8) var(--spacing-24);
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.demo-steps__item {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--spacing-8);
-  color: var(--text-tertiary);
-}
-
-.demo-steps__item[data-state='current'] {
-  color: var(--text-default);
-  font-weight: var(--font-weight-semibold);
-}
-
-.demo-steps__item[data-state='done'] {
-  color: var(--text-secondary);
-}
-
-.demo-steps__marker {
-  display: inline-grid;
-  place-items: center;
-  width: var(--spacing-24);
-  height: var(--spacing-24);
-  border: var(--border-width-default) solid var(--border-default);
-  border-radius: var(--radius-full);
-  font-size: var(--type-caption);
-}
-
-.demo-steps__item[data-state='current'] .demo-steps__marker {
-  border-color: var(--border-primary-strong);
-  color: var(--text-primary);
-}
-
-.demo-steps__item[data-state='done'] .demo-steps__marker {
-  border-color: var(--border-success);
-  color: var(--text-success);
-}
-
 .demo-form {
   display: grid;
   gap: var(--spacing-24);
@@ -567,20 +522,13 @@ body {
   gap: var(--spacing-8);
 }
 
-.demo-composer__actions .demo-suggestions {
+.demo-composer .demo-suggestions {
   justify-content: flex-start;
 }
 
 .demo-composer {
   display: grid;
   gap: var(--spacing-12);
-}
-
-.demo-composer__actions {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: var(--spacing-8);
 }
 
 .demo-turn {
@@ -619,4 +567,20 @@ body {
   .demo-assistant__rail {
     display: none;
   }
+}
+
+/* A step's result line, then the tool call that produced it. */
+.demo-work-detail {
+  display: grid;
+  gap: var(--spacing-8);
+  margin-block-start: var(--spacing-4);
+}
+
+/* A section heading with its control or link at the far end. */
+.demo-section-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-12);
 }

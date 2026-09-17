@@ -6,6 +6,7 @@ import {
   Divider,
   FileUpload,
   Input,
+  NumberInput,
   PhoneInput,
   Radio,
   RadioGroup,
@@ -234,13 +235,21 @@ export function GuardrailsStep({
         Ask a human before anything irreversible — sending, paying, deleting
       </Checkbox>
 
-      <Input
+      <NumberInput
         id="field-monthlyTokenBudget"
         label="Monthly token budget"
         isRequired
-        inputMode="numeric"
-        value={values.monthlyTokenBudget}
-        onChange={(monthlyTokenBudget) => onChange({ monthlyTokenBudget })}
+        minValue={1_000}
+        maxValue={5_000_000}
+        step={10_000}
+        value={
+          values.monthlyTokenBudget.trim()
+            ? Number(values.monthlyTokenBudget)
+            : null
+        }
+        onChange={(n) =>
+          onChange({ monthlyTokenBudget: n === null ? '' : String(n) })
+        }
         onBlur={() => onBlur('monthlyTokenBudget')}
         description="Runs stop and ask for more once this is spent."
         {...invalid(errors, 'monthlyTokenBudget')}
