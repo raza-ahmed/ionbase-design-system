@@ -1,3 +1,7 @@
+/*
+ * Page layout only. Every component styles itself; this file places them, and
+ * every value is a token — stylelint fails the build otherwise.
+ */
 body {
   margin: 0;
   background-color: var(--surface-page);
@@ -5,11 +9,159 @@ body {
   font-family: var(--font-family-sans);
 }
 
-.demo-placeholder {
-  display: grid;
-  place-items: center;
-  align-content: center;
-  gap: var(--spacing-24);
+.demo-app {
   min-height: 100vh;
-  padding: var(--spacing-32);
+}
+
+.demo-muted {
+  color: var(--text-secondary);
+}
+
+.demo-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-8);
+  color: inherit;
+  text-decoration: none;
+}
+
+.demo-brand__product {
+  color: var(--text-tertiary);
+  font-size: var(--type-body-sm);
+  font-weight: var(--font-weight-semibold);
+}
+
+.demo-nav {
+  display: contents;
+}
+
+.demo-main {
+  max-width: var(--container-max-width);
+  margin: 0 auto;
+  padding: var(--spacing-32) var(--spacing-24) var(--spacing-128);
+}
+
+.demo-page {
+  display: grid;
+  gap: var(--spacing-24);
+}
+
+.demo-page h1,
+.demo-page p {
+  margin: 0;
+}
+
+.demo-page__header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--spacing-16);
+}
+
+.demo-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+  gap: var(--spacing-16);
+  margin: 0;
+}
+
+.demo-stat {
+  display: grid;
+  gap: var(--spacing-8);
+  padding: var(--spacing-20);
+  border: var(--border-width-default) solid var(--border-subtle);
+  border-radius: var(--radius-xl);
+  background-color: var(--surface-default);
+}
+
+.demo-stat__label {
+  color: var(--text-secondary);
+}
+
+.demo-stat__body {
+  display: grid;
+  gap: var(--spacing-6);
+  margin: 0;
+}
+
+.demo-stat__change {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-6);
+}
+
+.demo-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+  gap: var(--spacing-16);
+  align-items: start;
+}
+
+@media (width <= 1023px) {
+  .demo-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.demo-panel {
+  display: grid;
+  gap: var(--spacing-16);
+  padding: var(--spacing-20);
+  border: var(--border-width-default) solid var(--border-subtle);
+  border-radius: var(--radius-xl);
+  background-color: var(--surface-default);
+}
+
+.demo-panel h2 {
+  margin: 0;
+}
+
+.demo-panel__body {
+  padding-top: var(--spacing-16);
+}
+
+.demo-budgets {
+  display: grid;
+  gap: var(--spacing-20);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.demo-loading {
+  display: grid;
+  gap: var(--spacing-24);
+}
+
+.demo-controls {
+  position: fixed;
+  bottom: var(--spacing-16);
+  left: 50%;
+  z-index: 10;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--spacing-12);
+  padding: var(--spacing-8) var(--spacing-16);
+  border: var(--border-width-default) solid var(--border-default);
+  border-radius: var(--radius-full);
+  background-color: var(--surface-raised);
+  box-shadow: var(--ion-shadow-shadow-lg);
+  transform: translateX(-50%);
+}
+
+@media (width <= 767px) {
+  .demo-main {
+    padding: var(--spacing-24) var(--spacing-16) var(--spacing-128);
+  }
+
+  .demo-controls {
+    right: var(--spacing-8);
+    bottom: var(--spacing-8);
+    left: var(--spacing-8);
+    justify-content: center;
+    border-radius: var(--radius-xl);
+    transform: none;
+  }
 }

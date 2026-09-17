@@ -1,7 +1,7 @@
 # Demo app — IonBase as a real product
 
 _Proposal, 17 Sep 2026. Product story and chart library agreed the same day.
-Phase 0 (scaffold) done 17 Sep 2026; phases 1–4 not started._
+Phase 0 (scaffold) done 17 Sep 2026. Phase 1 (shell + Overview) built, awaiting review._
 
 A showcase dashboard that lives in this repo and consumes `ionbase-ui` and
 `ionbase-icons` **exactly as an outside app would**. It has two jobs:
@@ -42,15 +42,15 @@ demo does not invent layouts the system has no opinion about. Each screen must
 cover the pattern's `loading`, `empty` and `error` states, and `partial` where it
 applies.
 
-| Screen                  | Pattern(s)                        | Components on show                                                                                                                                       |
-| ----------------------- | --------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| App shell (all screens) | `PageShell`                       | Header, NavItem, Logo/LogoMark, Avatar, Breadcrumb, Drawer (mobile nav), ToastProvider, Tooltip                                                          |
-| **Overview**            | `PageShell`                       | FullCard (KPI tiles), Badge, ProgressBar, Skeleton, Alert, DateRangePicker, Tabs, plus visx charts: run heatmap (weekday × hour) and a success-rate line |
-| **Customers**           | `DataTable`, `DestructiveConfirm` | Table, Pagination, Combobox/Select filters, Checkbox (bulk select), Menu, Modal, EmptyState, Toast                                                       |
-| **New project**         | `Wizard`, `Form`                  | Input, Textarea, PhoneInput, Radio, Checkbox, DatePicker, FileUpload, Button, ProgressBar                                                                |
-| **Settings**            | `SettingsPanel`                   | Toggle, Select, Accordion, Divider, Link, Popover                                                                                                        |
-| **Agent runs**          | `AgentRun`, `HumanApproval`       | AgentActivity, AgentStop, ApprovalGate, ConfidenceIndicator, Spinner, StreamingText                                                                      |
-| **Assistant**           | `AssistantAnswer`                 | StreamingText, Citation, ConfidenceIndicator, Textarea, ScrollProgress                                                                                   |
+| Screen                      | Pattern(s)                        | Components on show                                                                                                                                                          |
+| --------------------------- | --------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| App shell (all screens)     | `PageShell`                       | Header, NavItem, Logo/LogoMark, Avatar, Breadcrumb, Drawer (mobile nav), ToastProvider, Tooltip                                                                             |
+| **Overview**                | `PageShell`                       | StatTile (local stand-in for KPI tiles), Badge, ProgressBar, Skeleton, Alert, DateRangePicker, Tabs, plus visx charts: run heatmap (weekday × hour) and a success-rate line |
+| **Agents**                  | `DataTable`, `DestructiveConfirm` | Table, Pagination, Combobox/Select filters, Checkbox (bulk select), Menu, Modal, EmptyState, Toast                                                                          |
+| **New agent** (from Agents) | `Wizard`, `Form`                  | Input, Textarea, PhoneInput, Radio, Checkbox, DatePicker, FileUpload, Button, ProgressBar                                                                                   |
+| **Settings**                | `SettingsPanel`                   | Toggle, Select, Accordion, Divider, Link, Popover                                                                                                                           |
+| **Agent runs**              | `AgentRun`, `HumanApproval`       | AgentActivity, AgentStop, ApprovalGate, ConfidenceIndicator, Spinner, StreamingText                                                                                         |
+| **Assistant**               | `AssistantAnswer`                 | StreamingText, Citation, ConfidenceIndicator, Textarea, ScrollProgress                                                                                                      |
 
 The last two screens make the pitch. Most design systems can draw a table. Few
 can show an agent asking for approval before it acts.
@@ -82,6 +82,12 @@ It also makes the states visible to screenshots and tests.
     with `var(--…)` strings. Use 5–7 bins, each mapped to a token, and they
     switch with dark mode for free. `ionbase-ui/tokens-js` gives light-mode
     values only, so using it here would break dark mode.
+  - **Use `useParentSize`, not `<ParentSize>`.** In visx 4, `ParentSize`
+    draws its children inside an absolutely positioned box. A container with no
+    fixed height clips the chart to nothing, with no error.
+  - **Put a hidden data table inside a `.ion-visually-hidden` wrapper, not on
+    the `<table>`.** A table cannot shrink below its content, so a 24-column
+    table with the class on it scrolled the mobile page sideways by 882px.
   - **Charts need a text alternative.** Each chart gets a visually hidden table
     or summary. Tooltips need keyboard focus, not just hover.
 - **No backend, no auth.** Fixtures only.
@@ -98,7 +104,7 @@ It also makes the states visible to screenshots and tests.
 | ----------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
 | **0. Scaffold**         | `apps/demo` with Vite, tsconfig extending `tsconfig.base.json`, ESLint (all 5 rules on) + stylelint config, `dev`/`build`/`typecheck`/`lint`/`format` scripts, Turbo picks it up                            | `pnpm build lint typecheck format` all green with an empty page on the screen          |
 | **1. Shell + Overview** | `PageShell`, theme toggle, hash routing, fixture API, Overview screen with all three states, control bar                                                                                                    | Overview works on mobile and desktop, in light and dark, and every state can be forced |
-| **2. Classic screens**  | Customers (`DataTable` + `DestructiveConfirm`), New project (`Wizard` + `Form`), Settings                                                                                                                   | Every component in `forms` and `navigation` appears on at least one screen             |
+| **2. Classic screens**  | Agents (`DataTable` + `DestructiveConfirm`), New agent (`Wizard` + `Form`), Settings                                                                                                                        | Every component in `forms` and `navigation` appears on at least one screen             |
 | **3. Agentic screens**  | Agent runs, Assistant                                                                                                                                                                                       | A scripted run streams steps, stops for approval, and completes or is cancelled        |
 | **4. Ship it**          | CI builds the demo, Pages deploy copies it to `/demo/`, Storybook and README link to it, and a Playwright smoke test opens each route in both themes and checks for no console errors and no axe violations | The demo URL is live from `main`, and a PR that breaks the demo fails CI               |
 

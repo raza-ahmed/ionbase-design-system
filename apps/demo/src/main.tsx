@@ -5,6 +5,7 @@ import { createRoot } from 'react-dom/client';
 // import, exactly as the README tells a consumer to do.
 import 'ionbase-ui/styles';
 import './app.css';
+import './local/charts/charts.css';
 
 import { App } from './App';
 

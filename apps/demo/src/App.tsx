@@ -1,22 +1,26 @@
-import { EmptyState, Icon, Logo } from 'ionbase-ui';
-import { Bot } from 'ionbase-icons/icons/bot';
+import { ToastProvider } from 'ionbase-ui';
 
-/**
- * Phase 0 placeholder. Proves the workspace link, the built stylesheet, a
- * per-icon subpath import and the lint rules all work before any screen
- * exists. Replaced by the PageShell in phase 1.
- */
+import { DemoSettingsProvider } from './lib/demo-settings';
+import { useRoute } from './lib/router';
+import { AppShell } from './shell/AppShell';
+import { Overview } from './screens/Overview';
+import { NotFound, Placeholder } from './screens/Placeholder';
+
 export function App() {
+  const route = useRoute();
+
   return (
-    <main className="demo-placeholder">
-      <Logo size="lg" wordmark="vector" />
-      <EmptyState
-        reason="first-run"
-        size="page"
-        icon={<Icon as={Bot} size="xl" />}
-        title="Ionbase Ops is being built"
-        description="A fictional AI ops console, assembled only from ionbase-ui and ionbase-icons."
-      />
-    </main>
+    <DemoSettingsProvider>
+      <ToastProvider placement="top-right">
+        <AppShell route={route}>
+          {route === 'overview' && <Overview />}
+          {route === 'agents' && <Placeholder title="Agents" phase={2} />}
+          {route === 'runs' && <Placeholder title="Runs" phase={3} />}
+          {route === 'assistant' && <Placeholder title="Assistant" phase={3} />}
+          {route === 'settings' && <Placeholder title="Settings" phase={2} />}
+          {route === null && <NotFound />}
+        </AppShell>
+      </ToastProvider>
+    </DemoSettingsProvider>
   );
 }
