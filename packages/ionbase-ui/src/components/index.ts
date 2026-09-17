@@ -151,6 +151,9 @@ export type {
 export { Drawer } from './Drawer.js';
 export type { DrawerProps, DrawerPlacement, DrawerSize } from './Drawer.js';
 
+export { NumberInput } from './NumberInput.js';
+export type { NumberInputProps, NumberInputSize } from './NumberInput.js';
+
 export { ToolCall } from './ToolCall.js';
 export type { ToolCallProps } from './ToolCall.js';
 

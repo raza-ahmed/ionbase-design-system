@@ -1,5 +1,53 @@
 # Changelog
 
+## 0.64.0 — 2026-09-17
+
+### Added — `NumberInput`
+
+The forms tier had no way to take a quantity other than `<Input type="number">`,
+which is three defects wearing one attribute:
+
+- **It changes under the scroll wheel.** A focused number field edited by
+  scrolling the page past it is the classic bug. The wheel is off here
+  (`isWheelDisabled` defaults to `true`); a caller has to ask for it.
+- **It cannot format.** `formatOptions` takes `Intl.NumberFormatOptions`, so
+  currency, percent and units display and parse in the user's locale —
+  "$1,234.50" here, "1.234,50 $" for a German user.
+- **It parses badly.** The field is `type="text"` with the matching `inputMode`,
+  so phones get the numeric keyboard without the native input's quirks.
+
+**Empty is `null`, never `NaN`.** React Aria reports an empty field as `NaN`,
+and `NaN === NaN` is false, so every emptiness check a caller writes is wrong.
+It converts at the boundary, both ways.
+
+**− and + sit side by side**, at field height minus 8px — 24/32/40 — so a Small
+field still meets WCAG 2.5.8's 24px target. Stacked chevrons would have halved
+that. They are out of the tab order, as React Aria sets them: the arrow keys,
+Page Up/Down and Home/End do the same job from the field.
+
+**The box is Input**, class for class, so every size and state comes from
+`input.css` and cannot drift. `number-input.css` owns only the step buttons.
+
+The contract's first `useInstead` is the one agents most need: postcodes, phone,
+card and order numbers are digits, not quantities. A number field strips their
+leading zeros and adds separators. `Form` now composes `NumberInput`.
+
+### Found on the way — the contrast gate looks up a backdrop per stylesheet
+
+The step buttons' translucent hover and pressed surfaces came back **skipped**
+in both modes: the gate resolves a translucent ground against the block's own
+background, looked up in the same stylesheet, and the box's background is
+declared in `input.css`. Scoping the selectors from `.ion-input` did not help,
+for the same reason.
+
+`number-input.css` restates Input's default surface under `:where()`. Zero
+specificity means it matches what the box already paints and loses to every
+Input state — confirmed in the browser: disabled and read-only still repaint the
+box. Skipped went 4 → 0; hover and pressed measure 13.49–17.35:1.
+
+A component that reuses another component's block will hit this again. Worth
+knowing before the next one: the gate's world is one file at a time.
+
 ## 0.63.0 — 2026-09-17
 
 ### Added — `ToolCall`

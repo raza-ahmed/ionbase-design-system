@@ -1,0 +1,82 @@
+/*
+ * NumberInput
+ *
+ * NOT DRAWN IN FIGMA. The box is `.ion-input` itself — the component renders
+ * Input's classes, so every size and state comes from input.css and cannot
+ * drift from it. This file owns only what Input does not have: the − and +
+ * buttons, and tabular figures.
+ *
+ * − and + sit side by side at (field height − 8px): 24 / 32 / 40. Stacked
+ * chevrons would halve that, and a Small field's 16px targets would fall under
+ * WCAG 2.5.8's 24px.
+ */
+
+/*
+ * Restates Input's default surface, at zero specificity, for the contrast gate.
+ *
+ * The gate resolves a translucent `surface/hover` against the block's own
+ * background — looked up in THIS stylesheet, and the box's background is
+ * declared in input.css. Without this, the step buttons' hover and pressed
+ * pairings came back skipped in both modes: unmeasured, not passing.
+ *
+ * `:where()` is what makes it safe. It matches what the box already paints and
+ * loses to every Input state, so disabled and read-only still repaint the box.
+ */
+:where(.ion-number-input) {
+  background-color: var(--surface-default);
+}
+
+.ion-number-input--stepper {
+  /* The buttons carry their own inset; full padding would double it. */
+  padding-inline-end: var(--spacing-4);
+}
+
+/* Figures line up down a column of fields, which is where numbers usually are. */
+.ion-number-input__field {
+  font-variant-numeric: tabular-nums;
+}
+
+.ion-number-input__steps {
+  display: inline-flex;
+  flex: none;
+  gap: var(--spacing-2);
+}
+
+.ion-number-input__step {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: calc(var(--ion-input-height) - var(--spacing-8));
+  height: calc(var(--ion-input-height) - var(--spacing-8));
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background-color: transparent;
+  color: var(--icon-secondary);
+  cursor: pointer;
+}
+
+.ion-number-input__step svg {
+  width: var(--ion-input-icon-size);
+  height: var(--ion-input-icon-size);
+}
+
+@media (hover: hover) {
+  .ion-number-input__step:hover {
+    background-color: var(--surface-hover);
+    color: var(--icon-default);
+  }
+}
+
+.ion-number-input__step:active {
+  background-color: var(--surface-pressed);
+  color: var(--icon-default);
+}
+
+/* At the bound, or with the whole field disabled or read-only. */
+.ion-number-input__step:disabled {
+  background-color: transparent;
+  color: var(--icon-disabled);
+  cursor: not-allowed;
+}

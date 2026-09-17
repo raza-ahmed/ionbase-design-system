@@ -1,0 +1,69 @@
+{
+  "status": "stable",
+  "summary": "A quantity field: formats and parses in the user's locale, clamps to bounds, steps with − and + or the arrow keys, and never changes under the scroll wheel unless asked.",
+  "useWhen": [
+    "the value is a quantity someone might add to or compare — a price, a count, a percentage, a duration",
+    "the value has bounds or a step the field should enforce",
+    "the value needs formatting — currency, percent, units — in the user's locale"
+  ],
+  "useInstead": [
+    {
+      "when": "the value is made of digits but is not a quantity — a phone number, postcode, card number, account or order ID",
+      "use": "Input",
+      "why": "a number field strips leading zeros, adds grouping separators and offers + and −, all of which corrupt an identifier. Nobody increments a postcode"
+    },
+    {
+      "when": "the value is a phone number",
+      "use": "PhoneInput"
+    },
+    {
+      "when": "a rough value within a range matters more than an exact one — volume, a zoom level",
+      "use": "Input",
+      "why": "there is no Slider yet; do not stand one in with a stepper that takes forty presses"
+    }
+  ],
+  "variants": {
+    "size": {
+      "sm": { "use": "dense forms and table cells" },
+      "md": { "use": "the default" },
+      "lg": { "use": "a form where this value is the main input" }
+    }
+  },
+  "a11y": {
+    "requires": [
+      "`label` or `aria-label` — the accessible name. A unit shown by `formatOptions` is not a name"
+    ],
+    "guarantees": [
+      "Arrow Up and Down step the value from the field; Page Up and Down step by ten; Home and End go to the bounds",
+      "the − and + buttons are named and out of the tab order, because the arrow keys already do their job from the field",
+      "every size's step buttons are at least 24px square — WCAG 2.5.8",
+      "the field is `type=\"text\"` with the matching `inputMode`, so phones show a numeric keyboard without the native number input's parsing quirks"
+    ],
+    "notes": [
+      "the scroll wheel does not change the value unless `isWheelDisabled={false}` — a focused number input edited by scrolling past it is the classic bug",
+      "`onChange` fires on commit — blur, Enter, a step — not per keystroke. `null` means empty; `NaN` never reaches the caller"
+    ]
+  },
+  "antiPatterns": [
+    {
+      "dont": "<NumberInput label=\"Postcode\" />",
+      "do": "<Input label=\"Postcode\" inputMode=\"numeric\" />",
+      "why": "\"02134\" becomes 2,134 — leading zero gone, separator added, and a + button nobody should press"
+    },
+    {
+      "dont": "<Input type=\"number\" />",
+      "do": "<NumberInput />",
+      "why": "the native number input changes under the scroll wheel, cannot show currency or grouping, and reports an empty string for input it cannot parse"
+    },
+    {
+      "dont": "a unit typed into the label and the value — label=\"Price ($)\" with a \"$\" typed in",
+      "do": "formatOptions={{ style: 'currency', currency: 'USD' }}",
+      "why": "formatOptions displays and parses the unit in the user's locale; a hand-typed symbol is text the parser has to reject"
+    },
+    {
+      "dont": "checking `Number.isNaN(value)` for empty",
+      "do": "`value === null`",
+      "why": "this component converts the hook's NaN to null at the boundary, so NaN never arrives"
+    }
+  ]
+}
