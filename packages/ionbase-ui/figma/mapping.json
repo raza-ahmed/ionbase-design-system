@@ -1433,6 +1433,8 @@
     "Icon": "Figma has no Icon component; icons are vector assets dropped into slots. Icon is the React wrapper that gives any of them a size rung and an accessible label, so there is nothing on the Figma side to point at.",
     "LogoMark": "Logo-Ionbase maps to Logo. Figma spells the no-wordmark case as that component's Type axis rather than a separate component; LogoMark is how code spells the same thing.",
     "RadioGroup": "Figma draws Radio only. The group is the thing that owns the selected value, which a static frame cannot express — Figma's Radio State axis is ignored for exactly this reason.",
+    "Stepper": "Not yet drawn. Built code-first like Breadcrumb: the indicator is a 24px circle on the icon-size ladder and the colours are the primary and error roles, so drawing it means one set with Status (incomplete, complete, error) x Current, and the stylesheet decides where the two disagree.",
+    "StepperStep": "As Stepper — the step is the thing drawn; the list only supplies position.",
     "ScrollProgress": "Drawn in Figma as its three parts — Line, Progress, Progress Heading — all of which the component owns internally. There is no whole-component frame to map.",
     "Table": "Figma draws Table Row and Table Cell; the table itself is the caller assembling them. Density, the one property Table owns, is mapped on Table Cell.",
     "TableBody": "As TableHead.",
