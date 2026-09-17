@@ -1428,6 +1428,8 @@
     "Table/Cell Text": "TableCell covers Figma's Table Cell and Cell Text together; the two are never used apart in the design. Recorded in TableCell's contract."
   },
   "codeUnmapped": {
+    "DatePicker": "Not yet drawn. Built React-first, the same way the agentic tier was: the field is Input's box unchanged, the overlay borrows Combobox Menu's surface and the day cell borrows Menu's row metrics, so the drawing has values to change rather than a structure to invent. Drawing it means one component set for the field (Size x State, as Input carries) and a second for the open calendar, which is the same split Combobox and Combobox Menu already needed — a frame cannot both hug a field and overlay a grid on top of it.",
+    "DateRangePicker": "As DatePicker, and drawn at the same time as it: the calendar frame is shared, with the range band, the preset rail and the two-month layout as variants of that one set rather than a third component.",
     "Icon": "Figma has no Icon component; icons are vector assets dropped into slots. Icon is the React wrapper that gives any of them a size rung and an accessible label, so there is nothing on the Figma side to point at.",
     "LogoMark": "Logo-Ionbase maps to Logo. Figma spells the no-wordmark case as that component's Type axis rather than a separate component; LogoMark is how code spells the same thing.",
     "RadioGroup": "Figma draws Radio only. The group is the thing that owns the selected value, which a static frame cannot express — Figma's Radio State axis is ignored for exactly this reason.",

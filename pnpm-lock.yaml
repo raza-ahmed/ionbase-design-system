@@ -115,6 +115,9 @@ importers:
 
   packages/ionbase-ui:
     dependencies:
+      '@internationalized/date':
+        specifier: ^3.12.2
+        version: 3.12.2
       '@react-stately/collections':
         specifier: ^3.13.1
         version: 3.13.1(react-dom@19.2.8(react@19.2.8))(react@19.2.8)

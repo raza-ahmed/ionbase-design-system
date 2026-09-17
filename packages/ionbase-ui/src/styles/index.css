@@ -77,6 +77,15 @@
 @import url('./combobox.css');
 
 /*
+ * date-range-picker AFTER date-picker, and the order is load-bearing rather
+ * than alphabetical. The range band overrides `.ion-calendar__day`'s
+ * border-radius at equal specificity — square sides so consecutive days join
+ * into one bar — and at equal specificity the later rule is the one that wins.
+ */
+@import url('./date-picker.css');
+@import url('./date-range-picker.css');
+
+/*
  * Visually hidden, but not hidden from assistive tech.
  *
  * Written once here rather than per component: two components already needed

@@ -1,0 +1,95 @@
+{
+  "status": "stable",
+  "summary": "Two segmented date fields sharing one calendar, returning an inclusive { start, end } of YYYY-MM-DD strings.",
+  "useWhen": [
+    "the user picks a period — a report window, a stay, a filter over time",
+    "the range commonly crosses a month boundary, so both ends need to be visible at once",
+    "there are conventional periods worth offering as shortcuts: last 7 days, month to date, year to date"
+  ],
+  "useInstead": [
+    {
+      "when": "the user picks one date",
+      "use": "DatePicker"
+    },
+    {
+      "when": "the choice is really a named period and the exact dates are incidental",
+      "use": "Select",
+      "why": "if 'Last 30 days' is the answer rather than a shortcut to one, a calendar is scaffolding around a list of five options"
+    },
+    {
+      "when": "one end is open — everything before, or everything since",
+      "use": "DatePicker",
+      "why": "with the open end expressed as minValue or maxValue. This component has no half-open value on purpose; see antiPatterns"
+    }
+  ],
+  "variants": {
+    "size": {
+      "sm": {
+        "use": "dense forms, table filters, dashboard toolbars"
+      },
+      "md": {
+        "use": "the default"
+      },
+      "lg": {
+        "use": "prominent single-field forms"
+      }
+    }
+  },
+  "a11y": {
+    "guarantees": [
+      "both fields sit in one labelled group; each announces its own name, so 'Start Date' and 'End Date' are heard without a visible sublabel, and each editable segment is its own tab stop as it is in DatePicker",
+      "the dash between them is aria-hidden — the fields have already said what they are, and a spoken dash adds nothing",
+      "the calendar is modal: focus enters the grid, the page behind is hidden from assistive tech, Escape closes and focus returns",
+      "a range cannot be made to run backwards, in either direction of selection, and cannot be dragged across an unavailable day",
+      "preset rows are buttons in a labelled group carrying aria-pressed, so 'which shortcut is active' is answerable without seeing the tint",
+      "the selected preset is marked by weight as well as by background, so it does not rely on colour alone",
+      "range endpoints and the band between them keep their fill under forced-colors, where background-color is otherwise discarded",
+      "the rail stacks above the grids below 32rem rather than being hidden, because shortcuts matter most on the device where dragging across two months is worst"
+    ],
+    "requires": [
+      "`label`, or an `aria-label` when no visible label is rendered",
+      "`presetsLabel` wording if the default is wrong for the context — it names the whole shortcut group",
+      "preset labels that say what period they select, since the label is the button's entire accessible name"
+    ]
+  },
+  "antiPatterns": [
+    {
+      "dont": "expecting an Apply button, or adding one",
+      "why": "the value commits when the second end lands and the calendar closes. A draft model makes Escape and an outside click silently discard a selection the user watched themselves make, and there is no way to tell those gestures apart from 'I am done'. Clear exists because clearing has no other affordance"
+    },
+    {
+      "dont": "passing a range with only one end, or reading one back",
+      "why": "a start with no end is a state the calendar passes through between the two clicks, never a value the caller is handed. 'Everything after March' and 'March to today' are different questions and a null end cannot say which was meant"
+    },
+    {
+      "dont": "writing a relative preset as a literal object",
+      "why": "`value: { start: '…', end: '…' }` is evaluated once, when the module is first imported. 'Last 7 days' is then seven days before whenever the tab was opened. Pass a function; it is re-run each time the calendar opens"
+    },
+    {
+      "dont": "composing this out of two DatePickers",
+      "why": "two independent pickers cannot stop the end preceding the start, cannot draw the band between the ends, and make the user reconcile two calendars from memory"
+    },
+    {
+      "dont": "setting visibleMonths to 1 for a filter that usually spans weeks",
+      "why": "the user then pages back and forth to see both ends of their own selection. One month is for ranges that genuinely sit inside one"
+    },
+    {
+      "dont": "treating `end` as exclusive",
+      "why": "the range is closed. A stay of 3 nights from the 1st ends on the 4th in checkout terms and on the 3rd here; convert at your boundary, not in the picker"
+    }
+  ],
+  "slots": {
+    "label": {
+      "expects": "what the period is for — 'Reporting period', not 'Dates'"
+    },
+    "presets": {
+      "expects": "conventional periods for this screen, longest-lived first: today, last 7 days, month to date, year to date"
+    },
+    "description": {
+      "expects": "helper text under the fields; replaced by `errorMessage` when `isInvalid`"
+    },
+    "errorMessage": {
+      "expects": "what is wrong with the range and what would be right, shown only when `isInvalid`"
+    }
+  }
+}

@@ -1,0 +1,274 @@
+/*
+ * DateRangePicker — only what the range adds.
+ *
+ * The field, the calendar grid, the day cell and the overlay all come from
+ * `date-picker.css` unchanged. What is here is the three things a range has and
+ * a single date does not: two fields with a dash between them, a band across
+ * the days in between, and the preset rail beside the grids.
+ *
+ * This is a separate file rather than a section of that one because
+ * `build-meta.mjs` resolves a component's token list from its own kebab-cased
+ * filename — see the note at the top of `date-picker.css` for what sharing one
+ * file would silently do to `verify-meta`'s token check.
+ */
+
+/* ------------------------------------------------------------------ field */
+
+.ion-date-range-picker {
+  cursor: text;
+}
+
+/*
+ * The dash between the two fields. `aria-hidden` in the markup, so this is
+ * purely a visual separator — held at the tertiary token so it reads as
+ * punctuation rather than as one of the two values it sits between.
+ */
+.ion-date-range-picker__dash {
+  flex-shrink: 0;
+  padding-inline: var(--spacing-2);
+  color: var(--text-tertiary);
+}
+
+.ion-input[data-disabled='true'] .ion-date-range-picker__dash {
+  color: var(--text-disabled);
+}
+
+.ion-date-range-picker__button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  padding: 0;
+  background: none;
+  border: none;
+  border-radius: var(--radius-2xs);
+  color: var(--icon-interactive);
+  cursor: pointer;
+}
+
+.ion-date-range-picker__button svg {
+  width: var(--ion-input-icon-size);
+  height: var(--ion-input-icon-size);
+}
+
+.ion-input[data-disabled='true'] .ion-date-range-picker__button {
+  color: var(--icon-disabled);
+  cursor: not-allowed;
+}
+
+/* ------------------------------------------------------------- the band */
+
+/*
+ * A day inside the range but not at either end.
+ *
+ * SQUARE, and bled sideways by half the gap between cells, so consecutive days
+ * join into one continuous bar instead of a row of separate tinted pills. The
+ * bleed is `--ion-calendar-day-size` derived rather than a literal because the
+ * cell size is a slot in `date-picker.css`: a band measured independently is a
+ * band that is one pixel off the first time that slot changes.
+ *
+ * The rule overrides `border-radius` from `.ion-calendar__day`, which is why it
+ * has to load after it — `styles/index.css` imports date-picker.css first.
+ */
+.ion-calendar__day[data-in-range] {
+  width: 100%;
+  background-color: var(--surface-primary-subtle);
+  border-radius: var(--radius-none);
+  color: var(--text-default);
+  font-weight: var(--font-weight-regular);
+}
+
+/*
+ * The two endpoints. Solid fill, and rounded only on the OUTER side so each one
+ * caps the band rather than floating beside it.
+ *
+ * Logical properties, not `border-top-left-radius`: in an RTL locale the start
+ * of the range is on the right, and a physically-named radius would cap the
+ * wrong end of every range an Arabic or Hebrew reader selects.
+ */
+.ion-calendar__day[data-range-start],
+.ion-calendar__day[data-range-end] {
+  width: 100%;
+  background-color: var(--surface-primary);
+  color: var(--text-on-color);
+}
+
+.ion-calendar__day[data-range-start] {
+  border-start-start-radius: var(--radius-full);
+  border-start-end-radius: var(--radius-none);
+  border-end-start-radius: var(--radius-full);
+  border-end-end-radius: var(--radius-none);
+}
+
+.ion-calendar__day[data-range-end] {
+  border-start-start-radius: var(--radius-none);
+  border-start-end-radius: var(--radius-full);
+  border-end-start-radius: var(--radius-none);
+  border-end-end-radius: var(--radius-full);
+}
+
+/*
+ * A one-day range is both ends at once, and the two rules above would leave it
+ * square on both inner sides — a lozenge with no round edge anywhere. Fully
+ * round is what a single selected day looks like everywhere else in the grid.
+ */
+.ion-calendar__day[data-range-start][data-range-end] {
+  border-radius: var(--radius-full);
+}
+
+@media (hover: hover) {
+  .ion-calendar__day[data-in-range]:hover {
+    background-color: var(--surface-primary-subtle-hover);
+  }
+}
+
+/* --------------------------------------------------------------- presets */
+
+/*
+ * The rail. A column of shortcuts at the start edge of the calendar, matching
+ * the reference this was drawn from.
+ *
+ * `role="group"` with a label rather than a `<nav>` or a list: these are
+ * buttons that set the value beside them, and a reader arriving at an unnamed
+ * cluster of eight buttons inside a date dialog has no way to tell what they
+ * are for.
+ *
+ * ITS OWN BLOCK, NOT `.ion-date-range-picker__presets`, and the reason is the
+ * same one `combobox.css` gives for `.ion-combobox-menu`. The rail's hover is
+ * `--surface-hover`, a five-percent black tint. The contrast gate composites a
+ * translucent ground over the BLOCK's own background — and
+ * `.ion-date-range-picker` has none of its own, because it borrows `.ion-input`'s
+ * from another stylesheet, which this file's parse cannot see. Named as an
+ * element of the field, every hover pairing in the rail came back *skipped*:
+ * unmeasured, while the gate reported green.
+ *
+ * Naming it for where it actually lives — on the popover's raised surface —
+ * gives the tint something to sit on, and the declaration below is true rather
+ * than defensive.
+ */
+.ion-range-presets {
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  background-color: var(--surface-raised);
+  gap: var(--spacing-2);
+  padding-inline-end: var(--spacing-12);
+  border-inline-end: var(--border-width-default) solid var(--border-subtle);
+}
+
+.ion-range-presets__item {
+  padding: var(--spacing-6) var(--spacing-8);
+  background-color: transparent;
+  border: none;
+  border-radius: var(--radius-sm);
+  color: var(--text-default);
+  font-family: var(--font-family-sans);
+  font-size: var(--type-body-sm);
+  line-height: var(--type-body-sm-line-height);
+  text-align: start;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+@media (hover: hover) {
+  .ion-range-presets__item:hover {
+    background-color: var(--surface-hover);
+  }
+}
+
+.ion-range-presets__item:focus-visible {
+  outline: var(--border-width-thick) solid var(--border-focus);
+  outline-offset: calc(var(--border-width-default) * -1);
+}
+
+/*
+ * A preset whose range is the one currently selected.
+ *
+ * Tinted AND weighted, not tinted alone — `aria-pressed` carries it for a
+ * screen reader, and a background tint on its own is the colour-only
+ * distinction WCAG 1.4.1 is about for everyone else.
+ */
+.ion-range-presets__item[data-selected] {
+  background-color: var(--surface-primary-subtle);
+  color: var(--text-primary);
+  font-weight: var(--font-weight-medium);
+}
+
+/* ---------------------------------------------------------------- footer */
+
+/* Its own block too, and for the same reason as the rail above. */
+.ion-range-footer {
+  display: flex;
+  justify-content: flex-end;
+  background-color: var(--surface-raised);
+  padding-block-start: var(--spacing-8);
+  border-block-start: var(--border-width-default) solid var(--border-subtle);
+}
+
+/*
+ * Clear, and there is no Apply beside it — the value commits when the second
+ * date lands. See the component's own doc comment for why a draft model was
+ * considered and rejected.
+ */
+.ion-range-footer__clear {
+  padding: var(--spacing-4) var(--spacing-8);
+  background-color: transparent;
+  border: none;
+  border-radius: var(--radius-sm);
+  color: var(--text-interactive);
+  font-family: var(--font-family-sans);
+  font-size: var(--type-body-sm);
+  line-height: var(--type-body-sm-line-height);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+}
+
+@media (hover: hover) {
+  .ion-range-footer__clear:hover {
+    background-color: var(--surface-hover);
+    color: var(--text-interactive-hover);
+  }
+}
+
+.ion-range-footer__clear:focus-visible {
+  outline: var(--border-width-thick) solid var(--border-focus);
+  outline-offset: calc(var(--border-width-default) * -1);
+}
+
+/*
+ * The rail stacks above the grids on a narrow viewport rather than being
+ * dropped. A two-month calendar is already near the width of a small phone, and
+ * the shortcuts are the fastest path to a range on exactly the device where
+ * dragging across two grids is worst.
+ */
+@media (width <= 32rem) {
+  .ion-calendar {
+    flex-direction: column;
+  }
+
+  .ion-range-presets {
+    flex-flow: row wrap;
+    padding-inline-end: 0;
+    padding-block-end: var(--spacing-8);
+    border-inline-end: none;
+    border-block-end: var(--border-width-default) solid var(--border-subtle);
+  }
+
+  .ion-calendar__months {
+    flex-direction: column;
+  }
+}
+
+@media (forced-colors: active) {
+  .ion-calendar__day[data-in-range] {
+    background-color: Highlight;
+    color: HighlightText;
+    forced-color-adjust: none;
+  }
+
+  .ion-range-presets__item[data-selected] {
+    background-color: Highlight;
+    color: HighlightText;
+    forced-color-adjust: none;
+  }
+}

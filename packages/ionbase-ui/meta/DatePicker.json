@@ -1,0 +1,102 @@
+{
+  "status": "stable",
+  "summary": "A segmented date field with a calendar attached, taking and returning a YYYY-MM-DD string.",
+  "useWhen": [
+    "the user picks one calendar date — an event date, a due date, a birthday",
+    "the date has to be typed as well as clicked, because the user often already knows it",
+    "some dates must be refused individually rather than as a continuous range"
+  ],
+  "useInstead": [
+    {
+      "when": "the user picks a start and an end",
+      "use": "DateRangePicker",
+      "why": "two DatePickers cannot stop the end preceding the start, cannot show the days between them, and give the user two calendars to reconcile from memory"
+    },
+    {
+      "when": "the value is a month or a year rather than a day",
+      "use": "Select",
+      "why": "a calendar grid to choose 'March' is twelve options rendered as thirty-one"
+    },
+    {
+      "when": "the field is one of a short, known set of dates the product defines",
+      "use": "Select or RadioGroup",
+      "why": "picking from four delivery slots is a choice from a list, not a date"
+    },
+    {
+      "when": "a time of day is part of the value",
+      "use": "Input",
+      "why": "this picker is fixed to day granularity; a time picker is not yet in this system"
+    }
+  ],
+  "variants": {
+    "size": {
+      "sm": {
+        "use": "dense forms, table filters"
+      },
+      "md": {
+        "use": "the default"
+      },
+      "lg": {
+        "use": "prominent single-field forms"
+      }
+    }
+  },
+  "a11y": {
+    "guarantees": [
+      "each editable segment is its own tab stop, as in Chrome's native <input type=date>; the locale's separators are not, and arrow keys move between segments as well, so neither convention has to be learned",
+      "the segments sit in one labelled group, so the field's name is announced once on entry rather than repeated per segment",
+      "each segment announces its own name, value and bounds, so 'month, 4, minimum 1, maximum 12' is heard rather than an opaque number",
+      "field order and separators come from Intl, so a German reader edits DD.MM.YYYY and a US reader MM/DD/YYYY from the same component and the same value",
+      "the calendar overlay is modal: focus moves into the grid, the rest of the page is hidden from assistive tech, Escape closes it and focus returns to the field",
+      "every day cell carries the full date as its accessible name in the reader's own language, so the narrow weekday headers are never load-bearing",
+      "unavailable and disabled days are distinguished visually and in the accessible name, not by colour alone",
+      "today is marked with a dot rather than a ring, so it cannot be mistaken for a second selected day",
+      "the selected fill and the segment focus box are redeclared under forced-colors, where background-color is discarded"
+    ],
+    "requires": [
+      "`label`, or an `aria-label` when no visible label is rendered",
+      "`calendarLabel` wording if 'Open calendar' is wrong for the context — it is the button's whole accessible name"
+    ]
+  },
+  "antiPatterns": [
+    {
+      "dont": "passing a Date object, a timestamp, or a locale-formatted string as `value`",
+      "why": "the value is a calendar date with no time and no zone, spelled YYYY-MM-DD. `new Date('2026-04-12')` parses as UTC midnight and displays as the 11th for every reader west of Greenwich. A malformed value throws with the prop name rather than rendering an empty field"
+    },
+    {
+      "dont": "using `isDateUnavailable` to express a lower or upper bound",
+      "why": "`minValue` and `maxValue` also disable the navigation arrows past the bound, so the user cannot page into a month with nothing selectable in it. A predicate is for the holes inside the bounds"
+    },
+    {
+      "dont": "hiding the field and leaving only the calendar button",
+      "why": "typing a date is faster than clicking one for anyone who already knows it, and paging a calendar back to a birth year is the worst interaction in any form"
+    },
+    {
+      "dont": "styling a day cell with :hover for the keyboard highlight",
+      "why": "use [data-selected], [data-today], [data-disabled] and [data-unavailable]. Pointer hover and keyboard focus are different states here and a grid where they disagree has two apparent cursors"
+    },
+    {
+      "dont": "reading the posted form value from the segments",
+      "why": "they are spinbuttons with no name. Pass `name` and the component posts the ISO value in a hidden input"
+    },
+    {
+      "dont": "wrapping it in a <label>",
+      "why": "the group is a set of spinbuttons rather than one form control, so there is nothing for htmlFor to point at. Pass `label` and react-aria wires the name through aria-labelledby"
+    },
+    {
+      "dont": "adding a roving tabindex so the field becomes one tab stop",
+      "why": "it buys back two tabs per field and costs the ability to Tab straight to the year, which is the segment users most often fix on its own. It also diverges from the native date input, which is the convention they already have"
+    }
+  ],
+  "slots": {
+    "label": {
+      "expects": "what the date is for — 'Event starts', not 'Date'"
+    },
+    "description": {
+      "expects": "helper text under the field; replaced by `errorMessage` when `isInvalid`"
+    },
+    "errorMessage": {
+      "expects": "what is wrong and what would be right, shown only when `isInvalid`"
+    }
+  }
+}

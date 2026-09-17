@@ -1,0 +1,419 @@
+/*
+ * DatePicker — the segmented field, the calendar grid and the overlay that
+ * holds it. `date-range-picker.css` carries only what the range adds.
+ *
+ * NOT YET DRAWN IN FIGMA. Measurements are borrowed rather than invented, the
+ * same way AgentStop borrowed Button's and ApprovalGate borrowed Alert's:
+ *
+ *   the field    Input's box, unchanged — `.ion-date-picker` rides on
+ *                `.ion-input` rather than restating a border, a radius and
+ *                seven states that would then drift from the real thing
+ *   the overlay  Combobox Menu's surface, border, radius and shadow
+ *   a day cell   Menu's row metrics, squared off to the icon ladder
+ *
+ * That bet has now held for seven components: the drawing changed values, not
+ * structure. When this one IS drawn, the numbers move in Figma and come back
+ * through the token pipeline; nothing about the shape below should need to.
+ *
+ * WHY THE SPLIT ACROSS TWO FILES IS NOT ARBITRARY
+ *
+ * `build-meta.mjs` resolves a component's token list from `src/styles/<kebab
+ * name>.css`, falling back to the longest filename that is a PREFIX of it.
+ * `date-picker` is not a prefix of `date-range-picker`, so one shared file
+ * would leave DateRangePicker with `stylesheet: null` and an empty `tokens`
+ * array — and `verify-meta`'s "every custom property is defined by a token
+ * layer" check would then pass by having nothing to check. A gate that passes
+ * because it was handed nothing is the failure mode that file warns about.
+ */
+
+/* ------------------------------------------------------------------ field */
+
+/*
+ * The group is `.ion-input` plus this. Only the parts Input has no opinion
+ * about are new: how the segments sit, and the trailing calendar button.
+ */
+.ion-date-picker {
+  cursor: text;
+}
+
+.ion-date-field {
+  display: flex;
+  flex: 1 1 auto;
+  align-items: center;
+  min-width: 0;
+  color: var(--text-secondary);
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+  font-weight: var(--font-weight-regular);
+}
+
+.ion-date-field:focus {
+  outline: none;
+}
+
+/*
+ * A segment is a spinbutton, not an input, so every affordance a text field
+ * gets for free has to be declared: the caret is suppressed, selection is off,
+ * and the tap target is the padded box rather than the glyph.
+ */
+.ion-date-field__segment {
+  padding-inline: var(--spacing-2);
+  border-radius: var(--radius-2xs);
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+  caret-color: transparent;
+  outline: none;
+}
+
+/*
+ * Focus is a filled box, NOT the focus ring the rest of the system uses.
+ *
+ * A ring is drawn outside the element it belongs to, and these elements sit
+ * shoulder to shoulder inside a bordered field with two or three pixels between
+ * them — an outline on the month segment overlaps the day segment beside it and
+ * clips against the field's own border. A filled box is contained, reads at a
+ * glance, and is what every native date input does for the same reason.
+ *
+ * `:focus-visible` would be wrong here too. The segment takes focus from a
+ * click as well as from the keyboard, and in both cases the user needs to know
+ * which of three near-identical numbers the next keystroke will change.
+ */
+.ion-date-field__segment:focus {
+  background-color: var(--surface-primary);
+  color: var(--text-on-color);
+}
+
+/*
+ * An unfilled segment shows its placeholder — "mm", "dd", "yyyy" in the
+ * reader's own language, from Intl. Held at the placeholder token so an empty
+ * field reads as empty rather than as a date somebody chose.
+ */
+.ion-date-field__segment--placeholder {
+  color: var(--text-tertiary);
+}
+
+.ion-date-field__segment:focus.ion-date-field__segment--placeholder {
+  color: var(--text-on-color);
+}
+
+/*
+ * The separators. Not focusable, no padding, no reserved width — they are the
+ * locale's own "/" or "." and must not be mistaken for something editable.
+ */
+.ion-date-field__segment--literal {
+  padding-inline: 0;
+  color: var(--text-tertiary);
+}
+
+.ion-input[data-disabled='true'] .ion-date-field,
+.ion-input[data-disabled='true'] .ion-date-field__segment {
+  color: var(--text-disabled);
+  cursor: not-allowed;
+}
+
+.ion-date-picker__button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  padding: 0;
+  background: none;
+  border: none;
+  border-radius: var(--radius-2xs);
+  color: var(--icon-interactive);
+  cursor: pointer;
+}
+
+.ion-date-picker__button svg {
+  width: var(--ion-input-icon-size);
+  height: var(--ion-input-icon-size);
+}
+
+.ion-input[data-disabled='true'] .ion-date-picker__button {
+  color: var(--icon-disabled);
+  cursor: not-allowed;
+}
+
+/* ---------------------------------------------------------------- overlay */
+
+/*
+ * Transparent. It exists to catch the outside click and nothing else — the page
+ * behind stays legible because the field being edited is part of what the user
+ * is reading. Modal's scrim is visible because a modal replaces the page.
+ */
+.ion-calendar-popover__underlay {
+  position: fixed;
+  inset: 0;
+}
+
+.ion-calendar-popover {
+  z-index: 1000;
+  padding: var(--spacing-12);
+  background-color: var(--surface-raised);
+  border: var(--border-width-default) solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  box-shadow: var(--ion-shadow-shadow-lg);
+}
+
+/* --------------------------------------------------------------- calendar */
+
+/*
+ * THE BACKGROUND IS NOT DECORATION — IT IS WHAT MAKES THE HOVERS MEASURABLE.
+ *
+ * `--surface-hover` is `rgba(0, 0, 0, 0.05)`: a tint with no colour of its own.
+ * The contrast gate resolves a translucent ground by compositing it over the
+ * BLOCK's default background, and a block that declares none leaves it with
+ * nothing to composite against — so every hover pairing inside came back
+ * *skipped*: not failing, not passing, unmeasured. `combobox.css` records the
+ * same trap from the other direction, and Drawer shipped it in 0.57.0 with only
+ * a count in a summary line to catch it.
+ *
+ * The calendar is always inside `.ion-calendar-popover`, which is already
+ * `surface/raised`, so this restates what is true rather than changing what is
+ * painted. What it buys is a gate that can answer the question.
+ */
+.ion-calendar {
+  display: flex;
+  align-items: stretch;
+  gap: var(--spacing-12);
+  background-color: var(--surface-raised);
+  font-family: var(--font-family-sans);
+}
+
+.ion-calendar__body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-8);
+}
+
+.ion-calendar__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-8);
+}
+
+.ion-calendar__title {
+  flex: 1 1 auto;
+  color: var(--text-default);
+  font-size: var(--type-body-sm);
+  line-height: var(--type-body-sm-line-height);
+  font-weight: var(--font-weight-semibold);
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+/*
+ * The per-grid month label. Present only when more than one month is shown —
+ * with a single grid the header title above already names the month, and two
+ * copies of "April 2026" stacked on top of each other reads as a rendering bug.
+ */
+.ion-calendar__month-label {
+  display: none;
+  padding-block-end: var(--spacing-6);
+  color: var(--text-default);
+  font-size: var(--type-body-sm);
+  line-height: var(--type-body-sm-line-height);
+  font-weight: var(--font-weight-semibold);
+  text-align: center;
+}
+
+.ion-calendar:not([data-months='1']) .ion-calendar__month-label {
+  display: block;
+}
+
+/*
+ * ...and with more than one month the HEADER title is the one that goes, for
+ * the mirror-image reason: it names the whole visible range
+ * ("November – December 2024") while each grid already names itself. The
+ * visually-hidden <h2> beside it stays either way, so the calendar keeps its
+ * accessible name with no visible title at all.
+ */
+.ion-calendar:not([data-months='1']) .ion-calendar__title {
+  visibility: hidden;
+}
+
+.ion-calendar__nav-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: var(--spacing-32);
+  height: var(--spacing-32);
+  padding: 0;
+  background-color: transparent;
+  border: none;
+  border-radius: var(--radius-sm);
+  color: var(--icon-secondary);
+  cursor: pointer;
+}
+
+.ion-calendar__nav-button svg {
+  width: var(--icon-size-sm);
+  height: var(--icon-size-sm);
+}
+
+@media (hover: hover) {
+  .ion-calendar__nav-button:hover {
+    background-color: var(--surface-hover);
+  }
+}
+
+/*
+ * The boundary case: a `minValue` inside the visible month leaves no previous
+ * month to step to. react-aria disables the arrow rather than removing it, so
+ * the header does not reflow — and the cursor says why.
+ */
+.ion-calendar__nav-button:disabled {
+  color: var(--icon-disabled);
+  cursor: not-allowed;
+}
+
+.ion-calendar__months {
+  display: flex;
+  gap: var(--spacing-24);
+}
+
+.ion-calendar__grid {
+  border-collapse: collapse;
+
+  /*
+   * Fixed, so every column is the same width regardless of what is in it. Left
+   * automatic, a month whose widest cell is "30" and one whose widest is "9"
+   * lay out differently, and the two grids of a range calendar sitting side by
+   * side would not line up.
+   */
+  table-layout: fixed;
+}
+
+.ion-calendar__weekday {
+  width: var(--spacing-32);
+  padding-block-end: var(--spacing-4);
+  color: var(--text-tertiary);
+  font-size: var(--type-caption);
+  line-height: var(--type-caption-line-height);
+  font-weight: var(--font-weight-medium);
+  text-align: center;
+}
+
+.ion-calendar__cell {
+  padding: 0;
+  text-align: center;
+}
+
+/*
+ * A day.
+ *
+ * `--ion-calendar-day-size` is a slot rather than a literal because three rules
+ * need the same number — the cell, the range band's bleed and the today dot's
+ * offset — and a band that is a pixel off the cell it fills is visible.
+ */
+.ion-calendar__day {
+  --ion-calendar-day-size: var(--spacing-32);
+
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--ion-calendar-day-size);
+  height: var(--ion-calendar-day-size);
+  border-radius: var(--radius-full);
+  color: var(--text-default);
+  font-size: var(--type-body-sm);
+  line-height: var(--type-body-sm-line-height);
+  font-variant-numeric: tabular-nums;
+  cursor: pointer;
+  outline: none;
+}
+
+@media (hover: hover) {
+  .ion-calendar__day:not([data-disabled], [data-unavailable]):hover {
+    background-color: var(--surface-hover);
+  }
+}
+
+/*
+ * Keyboard focus is a ring, and unlike the segments above it is safe here:
+ * a day cell has a full cell's worth of space around it, and the ring sits in
+ * the gap rather than over the neighbour.
+ */
+.ion-calendar__day:focus-visible {
+  outline: var(--border-width-thick) solid var(--border-focus);
+  outline-offset: calc(var(--border-width-default) * 2);
+}
+
+.ion-calendar__day[data-selected] {
+  background-color: var(--surface-primary);
+  color: var(--text-on-color);
+  font-weight: var(--font-weight-medium);
+}
+
+/*
+ * Today, marked whether or not it is selected.
+ *
+ * A dot under the numeral rather than a border around it: a ring would be one
+ * more circle in a grid of circles and would read as a second selected day. The
+ * dot moves to the on-colour token when the cell is selected so the mark
+ * survives the fill — a "today" cue that disappears the moment today is picked
+ * vanishes exactly when the user is checking that they picked it.
+ */
+.ion-calendar__day[data-today]::after {
+  position: absolute;
+  bottom: var(--spacing-4);
+  left: 50%;
+  width: var(--spacing-4);
+  height: var(--spacing-4);
+  background-color: var(--icon-primary);
+  border-radius: var(--radius-full);
+  transform: translateX(-50%);
+  content: '';
+}
+
+.ion-calendar__day[data-today][data-selected]::after {
+  background-color: var(--icon-on-color);
+}
+
+/*
+ * Disabled and unavailable are DIFFERENT and are drawn differently on purpose.
+ *
+ * Disabled is outside the allowed bounds, or the whole control is off: the day
+ * is not part of the question. Unavailable is inside the bounds and taken — a
+ * booked night, a closed holiday. A user who sees both drawn the same way reads
+ * a fully-booked week as a broken calendar.
+ */
+.ion-calendar__day[data-disabled] {
+  color: var(--text-disabled);
+  cursor: not-allowed;
+}
+
+.ion-calendar__day[data-unavailable] {
+  color: var(--text-disabled);
+  cursor: not-allowed;
+  text-decoration: line-through;
+}
+
+/*
+ * Forced colours: every fill above is a background-color, and Windows High
+ * Contrast discards those. Without this the selected day loses its fill and the
+ * grid becomes a wall of identical numbers with nothing marking the answer.
+ */
+@media (forced-colors: active) {
+  .ion-calendar__day[data-selected] {
+    background-color: Highlight;
+    color: HighlightText;
+    forced-color-adjust: none;
+  }
+
+  .ion-calendar__day[data-disabled],
+  .ion-calendar__day[data-unavailable] {
+    color: GrayText;
+  }
+
+  .ion-date-field__segment:focus {
+    background-color: Highlight;
+    color: HighlightText;
+    forced-color-adjust: none;
+  }
+}

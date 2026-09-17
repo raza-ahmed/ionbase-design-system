@@ -185,3 +185,22 @@ export type {
   ComboboxSize,
   ComboboxOption,
 } from './Combobox.js';
+
+export { DatePicker } from './DatePicker.js';
+export type { DatePickerProps, DatePickerSize } from './DatePicker.js';
+
+export { DateRangePicker } from './DateRangePicker.js';
+export type {
+  DateRangePickerProps,
+  DateRangePickerSize,
+  DateRange,
+  DateRangePreset,
+} from './DateRangePicker.js';
+
+/*
+ * `IsoDate` is exported because it appears in both pickers' signatures and a
+ * consumer reading the generated prop table should be able to follow the type
+ * to something. It is an alias for `string` — see iso-date.ts for why the
+ * public value type is not react-aria's `CalendarDate`.
+ */
+export type { IsoDate } from './iso-date.js';
