@@ -86,6 +86,20 @@ that a test failing only on the runner silently freezes the live site at an old
 commit — that happened for two days in August 2026 and nobody noticed, because
 every check people looked at was on a branch.
 
+**The demo deploys inside the Storybook site, at `/demo/`.** GitHub Pages gives
+a repo one site, so `deploy-storybook` builds [`apps/demo`](apps/demo) into
+`storybook-static/demo/` with `DEMO_BASE_PATH` set, and waits on the `demo` job
+as well. That job is the only place this repo checks an app's landmark
+structure — Storybook's a11y config turns axe's `region` rule off, correctly,
+because a story has no `<main>`. The demo's smoke test runs axe with every rule
+on, over every route in both themes.
+
+**`lib/` in `.gitignore` matches source directories, not just build output.**
+`apps/demo/src/lib/` went uncommitted for three commits because of it; the
+local build passed throughout, because the files existed on disk. There is an
+explicit exception for the demo. A new package with a `src/lib/` needs one too
+— check with `git check-ignore -v <path>`.
+
 ---
 
 ## Interaction tests — hover is a pulse, not a level

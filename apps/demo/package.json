@@ -11,7 +11,8 @@
     "typecheck": "tsc --noEmit",
     "lint": "eslint . && stylelint \"src/**/*.css\"",
     "format": "prettier --check .",
-    "coverage": "node scripts/verify-coverage.mjs"
+    "coverage": "node scripts/verify-coverage.mjs",
+    "test:smoke": "node scripts/smoke.mjs"
   },
   "dependencies": {
     "@visx/axis": "^4.0.0",
@@ -30,6 +31,8 @@
     "@types/react": "^19.2.17",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^6.1.1",
+    "axe-core": "^4.12.1",
+    "playwright": "^1.62.0",
     "stylelint": "^17.14.1",
     "stylelint-config-standard": "^40.0.0",
     "stylelint-declaration-strict-value": "^1.11.1",

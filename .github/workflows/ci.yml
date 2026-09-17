@@ -148,7 +148,49 @@ jobs:
       - name: Interaction tests
         run: pnpm --filter @ionbase-ui/storybook test
 
+  # The demo app (apps/demo) — the repo's one consumer app. `verify` already
+  # builds, lints and typechecks it; this job is what runs it. Every route in
+  # both themes in a real Chromium, failing on a console error, a failed
+  # request, an axe violation, or sideways scroll at phone width. Two sideways-
+  # scroll bugs and a duplicate-landmark violation were found this way while
+  # the demo was built; no other check in this file could see any of them.
+  demo:
+    name: demo smoke test
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9.6.0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - name: Install
+        run: pnpm install --frozen-lockfile
+
+      # Builds ionbase-ui and ionbase-icons first — the demo consumes their dist.
+      - name: Build packages and demo
+        run: pnpm build
+
+      # Reports which components the demo shows; fails only if a component on
+      # its required list has dropped off every screen.
+      - name: Component coverage
+        run: pnpm --filter @ionbase-ui/demo coverage
+
+      - name: Install Playwright Chromium
+        run: pnpm --filter @ionbase-ui/demo exec playwright install --with-deps chromium
+
+      - name: Smoke test
+        run: pnpm --filter @ionbase-ui/demo test:smoke
+
   # Publishes Storybook to https://raza-ahmed.github.io/ionbase-design-system/
+  # and the demo app to https://raza-ahmed.github.io/ionbase-design-system/demo/
   #
   # Gated on both the site building and the interaction tests, so neither a
   # story that throws on render nor a broken component contract reaches the
@@ -162,7 +204,7 @@ jobs:
   # avoids.
   deploy-storybook:
     name: deploy storybook
-    needs: [storybook, storybook-test]
+    needs: [storybook, storybook-test, demo]
     if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     timeout-minutes: 15
@@ -228,6 +270,19 @@ jobs:
           node packages/ionbase-ui/scripts/build-llms.mjs
           --site apps/storybook/storybook-static
           --base-url ${{ steps.pages.outputs.base_url }}
+
+      # One Pages site per repository, so the demo is a subdirectory of the
+      # Storybook upload rather than a second deployment. Built here, not taken
+      # from `pnpm build`, for the same reason Storybook is: the asset URLs must
+      # carry the Pages subpath, and a `/`-based build 404s every chunk while
+      # the HTML still loads.
+      - name: Build demo into the site
+        run: >
+          pnpm --filter @ionbase-ui/demo exec vite build
+          --outDir ../storybook/storybook-static/demo
+          --emptyOutDir
+        env:
+          DEMO_BASE_PATH: ${{ steps.pages.outputs.base_path }}/demo/
 
       - uses: actions/upload-pages-artifact@v3
         with:

@@ -166,7 +166,9 @@ function History({ runs }: { runs: RunSummary[] }) {
       <h2 id="history-title" className="ion-text-h5">
         History
       </h2>
-      <Table aria-labelledby="history-title">
+      {/* Not labelled by the heading: the section already is, and two landmarks
+          with one name are indistinguishable (axe landmark-unique). */}
+      <Table aria-label="Run history">
         <TableHead>
           <TableRow>
             <TableCell header>Run</TableCell>
