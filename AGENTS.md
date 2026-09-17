@@ -1052,6 +1052,38 @@ pnpm --filter ionbase-ui contrast        # runs in the build
 pnpm --filter ionbase-ui contrast:list   # every pairing, worst first
 ```
 
+### How a stylesheet goes unmeasured, and the one number that says so — 17 Sep 2026
+
+**Green is not the same as measured.** The gate models CSS with regexes, one
+stylesheet at a time, and five shapes of ordinary CSS used to leave a pairing
+out of the model without any count moving. Five components in one session hit
+one each; the audit that followed found the worst had been hiding real states
+for months.
+
+| shape                             | what the gate did                                                                                                                                                              | now                                    |
+| --------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------------------------------------- |
+| `@media (forced-colors: active)`  | flattened it, so `GrayText` / `HighlightText` **overwrote** the real colour for the same selector — nine controls' disabled state and four calendar-day states went unmeasured | skipped whole                          |
+| `:not(.a, .b--disabled)`          | split at the comma, so `.b--disabled)` became the disabled state                                                                                                               | top-level commas only                  |
+| `::before` / `::after` background | read as the host's ground: a day number against its today dot at 1.11:1                                                                                                        | ignored for grounds                    |
+| state as `[data-*]`               | folded into `default`, where the last rule wins                                                                                                                                | still a limit — use the BEM modifier   |
+| backdrop in another file          | a translucent hover looks up the block's background in the **same** stylesheet only                                                                                            | still a limit — see `number-input.css` |
+
+**The proof that the first row mattered:** with the old gate, setting the
+selected calendar day's text to `text/primary` on the primary fill — 1:1,
+unreadable — built green. The new gate fails it at 1:1 and 3.42:1.
+
+**Every early exit is counted now.** The summary line prints `N dropped`, and
+`contrast:list` names each row and why. That is the durable fix: the five
+shapes above are the ones found so far, and the next one will show up as a
+number that moved rather than as nothing. **When `dropped` rises, read the rows
+before shipping** — two today, both Alert's `--solid`, which only renders
+compounded with an intent and is dropped on purpose.
+
+For a new component: state as BEM modifiers, the block carries its own
+background, no `:not()` lists, decorative shapes as borders or pseudo-elements,
+and check that `contrast:list` shows the states you wrote — not just that the
+build is green.
+
 ### Dark was deferred, and is not any more — 4 Sep 2026
 
 `contrast-exceptions.json` carries `deferredModes: []`. **Dark is enforced.** The

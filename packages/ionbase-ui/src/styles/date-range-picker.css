@@ -69,8 +69,14 @@
  *
  * The rule overrides `border-radius` from `.ion-calendar__day`, which is why it
  * has to load after it — `styles/index.css` imports date-picker.css first.
+ *
+ * Range states are selected by the BEM modifiers Calendar already emits, not
+ * by `[data-in-range]` and friends. Same DOM, same specificity (0,2,0) — but
+ * the contrast gate keys contexts on `--modifier` classes and folds every
+ * `[data-*]` into `default`, so it merged the endpoint's white text with the
+ * in-range hover surface and reported 1.15:1 for a state that cannot render.
  */
-.ion-calendar__day[data-in-range] {
+.ion-calendar__day.ion-calendar__day--in-range {
   width: 100%;
   background-color: var(--surface-primary-subtle);
   border-radius: var(--radius-none);
@@ -86,21 +92,21 @@
  * of the range is on the right, and a physically-named radius would cap the
  * wrong end of every range an Arabic or Hebrew reader selects.
  */
-.ion-calendar__day[data-range-start],
-.ion-calendar__day[data-range-end] {
+.ion-calendar__day.ion-calendar__day--range-start,
+.ion-calendar__day.ion-calendar__day--range-end {
   width: 100%;
   background-color: var(--surface-primary);
   color: var(--text-on-color);
 }
 
-.ion-calendar__day[data-range-start] {
+.ion-calendar__day.ion-calendar__day--range-start {
   border-start-start-radius: var(--radius-full);
   border-start-end-radius: var(--radius-none);
   border-end-start-radius: var(--radius-full);
   border-end-end-radius: var(--radius-none);
 }
 
-.ion-calendar__day[data-range-end] {
+.ion-calendar__day.ion-calendar__day--range-end {
   border-start-start-radius: var(--radius-none);
   border-start-end-radius: var(--radius-full);
   border-end-start-radius: var(--radius-none);
@@ -112,12 +118,12 @@
  * square on both inner sides — a lozenge with no round edge anywhere. Fully
  * round is what a single selected day looks like everywhere else in the grid.
  */
-.ion-calendar__day[data-range-start][data-range-end] {
+.ion-calendar__day.ion-calendar__day--range-start.ion-calendar__day--range-end {
   border-radius: var(--radius-full);
 }
 
 @media (hover: hover) {
-  .ion-calendar__day[data-in-range]:hover {
+  .ion-calendar__day.ion-calendar__day--in-range:hover {
     background-color: var(--surface-primary-subtle-hover);
   }
 }

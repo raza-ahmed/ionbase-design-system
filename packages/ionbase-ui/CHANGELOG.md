@@ -1,5 +1,59 @@
 # Changelog
 
+## 0.66.0 — 2026-09-17
+
+### Fixed — the contrast gate was not measuring what it reported green
+
+An audit of how stylesheets go unmeasured, prompted by five components in a row
+each hitting one shape of it. The worst was not in any of them.
+
+**`@media (forced-colors: active)` blocks were flattened into the normal
+rules**, so `GrayText` and `HighlightText` overwrote the real colour for the same
+selector and the pairing was dropped without a skip being counted. That hid the
+disabled state of nine controls — Button, Input, Select, Checkbox, Radio,
+Toggle, Tabs, NavItem, Menu — and the calendar day's default, focus, selected
+and disabled states. Forced-colours blocks are now skipped whole: a system
+colour is not a token pairing.
+
+Proved on a deliberate break: the selected calendar day's text set to
+`text/primary` on the primary fill, **1:1**, built green on the old gate. The new
+gate fails it at 1:1 Light and 3.42:1 Dark.
+
+Also in the gate:
+
+- **Selectors split at top-level commas only.** `:not(.a, .b--disabled)` was cut
+  in two and its second half read as the disabled state.
+- **Pseudo-element backgrounds are not grounds.** `::after` paints a shape; the
+  calendar's today dot was read as the background of the day number.
+- **`color: inherit` walks up the chain**, as `transparent` already did.
+- **Every early exit is counted.** The summary prints `N dropped`, and
+  `contrast:list` names each row and the reason. Today: 2, both Alert's `--solid`,
+  dropped on purpose.
+
+Enforced pairings **1446 → 1500**, 0 unexpected.
+
+### Changed — `date-range-picker.css` selects range states by modifier class
+
+The newly measured calendar surfaced one false failure: white endpoint text on
+the in-range hover, 1.15:1. It cannot render — `isInRange` excludes the
+endpoints — but the gate folds every `[data-*]` into `default`, where the
+endpoint's colour met the band's hover. The selectors now use the BEM modifiers
+`Calendar` already emits, at the same (0,2,0) specificity. Same DOM, same
+cascade.
+
+### Corrected — 0.65.0's account of SegmentedControl's disabled text
+
+0.65.0 said `background-color: transparent` makes the gate drop a pairing. It
+does not; `lookup` skips `transparent` and walks up. The real cause was the
+"renders only compounded" rule, and the new `dropped` count is how that was
+found. The 0.65.0 entry and the stylesheet comment are corrected.
+
+### Documented
+
+`AGENTS.md` gains a section on the shapes of CSS the gate cannot see, the two
+that remain limits, and the rule that a rising `dropped` count is read before
+shipping.
+
 ## 0.65.0 — 2026-09-17
 
 ### Added — `SegmentedControl`, `SegmentedControlItem`
@@ -29,12 +83,14 @@ choose by what changes.
   `:not(--selected, --disabled)` was read as the disabled state and measured
   disabled text on a hover surface: two failures, for a combination that never
   renders. The state rules are ordered by specificity instead.
-- **`background-color: transparent` drops the pairing.** It is not a token, the
-  gate cannot resolve it, and it moves on without counting a skip. Disabled text
-  was simply absent. The disabled segment paints the track's own surface, which
-  is identical on screen, and is now measured — under the existing `text/disabled`
-  exemption. **Eighteen other rules across the package set a transparent
-  background**, and some may be hiding pairings the same way. Not audited here.
+- **Disabled text was dropped as an "impossible" state.** The segment first
+  declared `background-color: transparent`, so its surface came from the block —
+  and because `--disabled` also appears compounded with `--selected`, the gate
+  read the single-modifier state as one the component cannot render and dropped
+  it without counting a skip. Painting the track's own surface, identical on
+  screen, makes it measured. (This entry first blamed `transparent` itself; the
+  gate's `lookup` skips `transparent` correctly, and 0.66.0 records how the real
+  cause was found.)
 
 ## 0.64.0 — 2026-09-17
 

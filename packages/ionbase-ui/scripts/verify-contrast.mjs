@@ -394,6 +394,24 @@ function parseRules(css) {
       }
       const prelude = css.slice(i, brace).trim();
       i = brace + 1;
+      if (/^@media[^{]*forced-colors\s*:\s*active/i.test(prelude)) {
+        /*
+         * Skipped whole, not flattened. Forced-colours mode replaces every
+         * author colour with a system colour the user chose, so nothing in
+         * here is a token pairing — and flattening it let `GrayText` and
+         * `HighlightText` OVERWRITE the real colour for the same selector.
+         * Until 17 Sep 2026 that silently removed the disabled state of nine
+         * controls and four states of the calendar day from measurement: no
+         * failure, no skip, just absent.
+         */
+        let depth = 1;
+        while (i < css.length && depth > 0) {
+          if (css[i] === '{') depth++;
+          else if (css[i] === '}') depth--;
+          i++;
+        }
+        continue;
+      }
       if (prelude.startsWith('@')) {
         // at-rule: its children are rules in their own right
         walk();
@@ -412,8 +430,24 @@ function parseRules(css) {
       for (const m of body.matchAll(/([a-z-]+)\s*:\s*([^;]+);/gi)) {
         decls[m[1].trim()] = m[2].trim();
       }
-      for (const sel of prelude.split(','))
-        rules.push({ selector: sel.trim(), decls });
+      /*
+       * Split at top-level commas only. A plain split cut
+       * `.a:hover:not(.b, .c--disabled)` into two selectors, and the second
+       * half — `.c--disabled)` — was read as the disabled state.
+       */
+      const selectors = [];
+      let paren = 0;
+      let from = 0;
+      for (let j = 0; j < prelude.length; j++) {
+        if (prelude[j] === '(') paren++;
+        else if (prelude[j] === ')') paren--;
+        else if (prelude[j] === ',' && paren === 0) {
+          selectors.push(prelude.slice(from, j));
+          from = j + 1;
+        }
+      }
+      selectors.push(prelude.slice(from));
+      for (const sel of selectors) rules.push({ selector: sel.trim(), decls });
     }
   };
   walk();
@@ -423,7 +457,10 @@ function parseRules(css) {
 const STATE_PATTERNS = [
   [/\[data-hovered|:hover/, 'hover'],
   [/\[data-pressed|:active/, 'pressed'],
-  [/\[data-disabled|:disabled|--disabled/, 'disabled'],
+  // `data-unavailable` is a calendar day that cannot be picked — disabled in
+  // every sense this gate cares about. Unrecognised, it merged into `default`
+  // and overwrote the day's real colour.
+  [/\[data-disabled|\[data-unavailable|:disabled|--disabled/, 'disabled'],
   [/\[data-focused|:focus/, 'focus'],
   [/\[data-selected|--selected|\[aria-selected/, 'selected'],
 ];
@@ -458,6 +495,13 @@ function contextOf(selector) {
 
 const files = readdirSync(STYLES).filter((f) => f.endsWith('.css'));
 const pairings = [];
+/*
+ * Slots the extraction gave up on. Every early `continue` below lands here,
+ * because an uncounted drop is indistinguishable from a pairing that passed —
+ * which is how a forced-colours block hid nine disabled states and a selected
+ * calendar day for months. The number is printed; `--list` prints the rows.
+ */
+const dropped = [];
 const textRolesSeen = new Set();
 
 for (const file of files) {
@@ -472,10 +516,19 @@ for (const file of files) {
     if (!ctx) continue;
     const state = stateOf(selector);
     const k = key(ctx.variant, state, ctx.element);
+    /*
+     * A pseudo-element's background is not the ground its host's text sits on.
+     * `::after` paints a shape — a today dot, a connector — and reading its
+     * background as the element's own paired the day number against its dot
+     * at 1.11:1, a pixel pairing that does not exist. Its `color` still counts,
+     * for a `::before` that renders a glyph.
+     */
+    const isPseudo = /::?(before|after)\b/.test(selector);
     const slot = table.get(k) ?? { locals: {} };
     if (decls.color) slot.color = decls.color;
-    if (decls['background-color']) slot.background = decls['background-color'];
-    if (decls['background-image'])
+    if (decls['background-color'] && !isPseudo)
+      slot.background = decls['background-color'];
+    if (decls['background-image'] && !isPseudo)
       slot.backgroundImage = decls['background-image'];
     if (decls['border-radius']) slot.radius = decls['border-radius'];
     for (const [d, v] of Object.entries(decls)) {
@@ -525,7 +578,9 @@ for (const file of files) {
   const lookup = (field, ctx, state, element) => {
     for (const k of chain(ctx, state, element)) {
       const v = table.get(k)?.[field];
-      if (v && v.trim() !== 'transparent') return { raw: v, from: k };
+      // Neither says what is painted; the answer is further up the chain.
+      if (v && !['transparent', 'inherit'].includes(v.trim()))
+        return { raw: v, from: k };
     }
     return null;
   };
@@ -545,7 +600,15 @@ for (const file of files) {
     if (!fg) continue;
 
     const fgRef = deref(fg.raw, ctx, state, ctx.element);
-    if (!fgRef) continue;
+    if (!fgRef) {
+      dropped.push({
+        file,
+        ctx: ctx.variant,
+        state,
+        why: `color ${fg.raw} is not a token`,
+      });
+      continue;
+    }
     const fgToken = fgRef.token;
 
     /*
@@ -554,7 +617,15 @@ for (const file of files) {
      * on rather than skipping it — see ASSUMED_GROUNDS.
      */
     const bgRef = bg ? deref(bg.raw, ctx, state, ctx.element) : null;
-    if (bg && !bgRef) continue;
+    if (bg && !bgRef) {
+      dropped.push({
+        file,
+        ctx: ctx.variant,
+        state,
+        why: `background ${bg.raw} is not a token`,
+      });
+      continue;
+    }
     const assumed = !bg;
     if (assumed && ON_COLOR_ROLES.has(fgToken)) continue;
     const flatTokens = assumed ? [...ASSUMED_GROUNDS] : [bgRef.token];
@@ -575,7 +646,15 @@ for (const file of files) {
     const single = (ctx.modifiers ?? []).length === 1;
     const surfaceFromBlock =
       !assumed && (bgRef.scope ?? bg.from.split('|')[0]) === ctx.base;
-    if (single && surfaceFromBlock && compounds.has(ctx.modifiers[0])) continue;
+    if (single && surfaceFromBlock && compounds.has(ctx.modifiers[0])) {
+      dropped.push({
+        file,
+        ctx: ctx.variant,
+        state,
+        why: 'modifier only renders compounded',
+      });
+      continue;
+    }
 
     if (fgToken.startsWith('--text-')) textRolesSeen.add(fgToken);
 
@@ -914,6 +993,12 @@ writeFileSync(
 );
 
 const args = process.argv.slice(2);
+if (args.includes('--list') && dropped.length) {
+  console.log('\n  Dropped before measurement:');
+  for (const d of dropped)
+    console.log(`    ${d.file.padEnd(28)} ${d.ctx} · ${d.state} — ${d.why}`);
+}
+
 if (args.includes('--list')) {
   for (const r of unique.sort((a, b) => a.ratio - b.ratio)) {
     const ok = r.ratio >= r.min ? ' ' : '!';
@@ -1022,7 +1107,7 @@ console.log(
   `\nContrast: ${measured.length} enforced pairings (+${deferredResults.length} deferred) across ` +
     `${new Set(unique.map((p) => p.component)).size} stylesheets — ` +
     `${unexpected.length} unexpected, ${outstanding.length} outstanding defects, ` +
-    `${exempt} WCAG-exempt, ${skipped.length} skipped, ${unresolved.length} unresolved` +
+    `${exempt} WCAG-exempt, ${skipped.length} skipped, ${dropped.length} dropped, ${unresolved.length} unresolved` +
     (deferredUnexempt ? `, ${deferredUnexempt} deferred and unexempt` : ''),
 );
 
