@@ -156,7 +156,7 @@ const FILTERS = {
     matches: (r: RunSummary) => r.outcome === 'failed',
   },
   unfinished: {
-    label: 'Stopped or rejected',
+    label: 'Unfinished',
     matches: (r: RunSummary) =>
       r.outcome === 'stopped' || r.outcome === 'rejected',
   },
