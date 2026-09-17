@@ -1,0 +1,71 @@
+{
+  "status": "stable",
+  "summary": "An application's navigation as a column: pinned header and footer that take any component, a scrolling body of titled, collapsible sections, and nested items that expand.",
+  "useWhen": [
+    "an app has more destinations than fit in a header — workspaces, projects, saved views",
+    "the navigation is hierarchical and users need to see where they are inside it",
+    "rows need their own actions — create inside this space, rename, favourite"
+  ],
+  "useInstead": [
+    {
+      "when": "there are five or fewer top-level destinations and no hierarchy",
+      "use": "Header",
+      "why": "a sidebar spends a column of width on what a header row carries in its height"
+    },
+    {
+      "when": "the hierarchy describes the current page's position rather than offering destinations",
+      "use": "Breadcrumb"
+    },
+    {
+      "when": "sections of content collapse, not destinations",
+      "use": "Accordion",
+      "why": "Accordion's headings belong to the document outline; a sidebar is a navigation landmark"
+    }
+  ],
+  "composition": {
+    "order": ["Sidebar", "SidebarSection", "SidebarItem"],
+    "note": "Items always go inside a section, because a section renders the list. Anything that is not an item — a Divider, a promotional Alert — goes directly in Sidebar between sections, or in `header` / `footer`. On narrow screens, put the Sidebar inside a Drawer; it does not collapse itself.",
+    "example": "<Sidebar label=\"Workspace\" header={<WorkspaceMenu />} footer={<Button>Invite</Button>}><SidebarSection><SidebarItem label=\"Home\" href=\"/\" isCurrent /></SidebarSection><Divider /><SidebarSection title=\"Spaces\" isCollapsible><SidebarItem label=\"Team Space\" href=\"/team\"><SidebarItem label=\"Projects\" href=\"/team/projects\" /></SidebarItem></SidebarSection></Sidebar>"
+  },
+  "slots": {
+    "header": {
+      "accepts": "Menu",
+      "note": "pinned above the scroll — a workspace switcher, search, icon Buttons"
+    },
+    "footer": {
+      "accepts": "Button",
+      "note": "pinned below the scroll — Invite, Help, a trial notice in an Alert"
+    },
+    "children": {
+      "accepts": "SidebarSection",
+      "note": "and Divider or other non-item content between sections"
+    }
+  },
+  "a11y": {
+    "role": "navigation",
+    "requires": [
+      "`label` — the accessible name of the navigation landmark. Pages with a sidebar usually have a second nav, and two unnamed ones cannot be told apart"
+    ],
+    "guarantees": [
+      "only the body scrolls; the header and footer stay reachable at any scroll position"
+    ],
+    "notes": [
+      "it is disclosure navigation, not a treeview: everything is reachable with Tab, and rows can hold buttons. The tree role forbids interactive content inside items and would have ruled out row actions"
+    ]
+  },
+  "antiPatterns": [
+    {
+      "dont": "role=\"tree\" on a sidebar with row actions",
+      "why": "a treeview item cannot contain buttons, and its arrow-key model hides every action from Tab"
+    },
+    {
+      "dont": "a SidebarItem placed directly in Sidebar, outside a section",
+      "do": "wrap it in an untitled <SidebarSection>",
+      "why": "the item renders an <li>, which is only valid inside the list a section provides"
+    },
+    {
+      "dont": "a sidebar that is only ever a hamburger menu on desktop",
+      "why": "hierarchical navigation that is hidden by default is navigation nobody uses; hide it only where the width forces it"
+    }
+  ]
+}

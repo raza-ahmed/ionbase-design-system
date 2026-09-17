@@ -6,6 +6,10 @@
   "composes": [
     "Header",
     "NavItem",
+    "Sidebar",
+    "SidebarSection",
+    "SidebarItem",
+    "Drawer",
     "Logo",
     "LogoMark",
     "Avatar",
@@ -17,7 +21,8 @@
     "Header at the top with the brand in `brand`, primary navigation in `center` and account actions in `end`.",
     "One <main> content region, named, holding the page's own heading as its h1.",
     "ToastProvider mounted once around the whole shell, not per route.",
-    "Breadcrumbs, when present, sit inside <main> above the h1 — they describe where the content is, not where the chrome is."
+    "Breadcrumbs, when present, sit inside <main> above the h1 — they describe where the content is, not where the chrome is.",
+    "When navigation is hierarchical or longer than a header row holds, a Sidebar replaces the NavItems in Header's `center`: Header keeps the brand and account actions, and the Sidebar sits beside <main> as the primary navigation. Below the tablet breakpoint the same Sidebar moves into a Drawer opened from Header — one copy, not two."
   ],
   "states": {
     "loading": {
@@ -36,6 +41,10 @@
   "propsUsed": {
     "Header": ["brand", "center", "end", "open", "onOpenChange", "menuLabel"],
     "NavItem": ["icon", "showChevron", "href"],
+    "Sidebar": ["label", "header", "footer"],
+    "SidebarSection": ["title", "isCollapsible", "actions"],
+    "SidebarItem": ["label", "icon", "href", "isCurrent", "badge", "actions"],
+    "Drawer": ["isOpen", "onOpenChange", "title", "placement"],
     "ToastProvider": ["placement", "limit"],
     "Logo": ["size", "wordmark"],
     "LogoMark": ["size", "label"]
@@ -48,7 +57,8 @@
       "`menuLabel` on Header — the mobile toggle is icon-only",
       "a <nav> with its own accessible name wrapping the NavItems; Header supplies the banner landmark, not the navigation one",
       "exactly one <main>, and exactly one h1 inside it",
-      "`aria-current=\"page\"` on the NavItem for the current route — colour alone does not tell a screen-reader user where they are"
+      "`aria-current=\"page\"` on the NavItem for the current route — colour alone does not tell a screen-reader user where they are",
+      "with a Sidebar, `isCurrent` on the SidebarItem for the current route, and a Sidebar `label` distinct from any other nav on the page"
     ],
     "notes": [
       "The desktop/tablet/mobile switch is a media query inside Header. Do not duplicate that decision in React state."
@@ -62,6 +72,10 @@
     {
       "dont": "the page title as an h2 because the logo is an h1",
       "why": "the brand is not a heading; the page's subject is"
+    },
+    {
+      "dont": "a Sidebar AND the same destinations as NavItems in Header",
+      "why": "two navigation landmarks listing the same pages double every link a screen-reader user tabs through"
     },
     {
       "dont": "rendering a second nav for mobile",

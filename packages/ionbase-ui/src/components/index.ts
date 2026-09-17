@@ -151,6 +151,13 @@ export type {
 export { Drawer } from './Drawer.js';
 export type { DrawerProps, DrawerPlacement, DrawerSize } from './Drawer.js';
 
+export { Sidebar, SidebarSection, SidebarItem } from './Sidebar.js';
+export type {
+  SidebarProps,
+  SidebarSectionProps,
+  SidebarItemProps,
+} from './Sidebar.js';
+
 export { SegmentedControl, SegmentedControlItem } from './SegmentedControl.js';
 export type {
   SegmentedControlProps,

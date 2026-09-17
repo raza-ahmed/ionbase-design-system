@@ -1,0 +1,40 @@
+{
+  "status": "stable",
+  "summary": "A group of sidebar items under an optional title, which can fold away and carry its own actions.",
+  "useWhen": [
+    "inside a Sidebar, once per group — the untitled top group, then Favorites, Spaces"
+  ],
+  "useInstead": [
+    {
+      "when": "the grouping is one item and its children",
+      "use": "SidebarItem",
+      "why": "an item with nested items already expands; a section per parent doubles the structure"
+    }
+  ],
+  "slots": {
+    "children": {
+      "accepts": "SidebarItem",
+      "note": "items only — the section renders a list"
+    },
+    "actions": {
+      "accepts": "Button",
+      "note": "beside the title — a + to create in this group. Icon-only buttons need aria-label"
+    }
+  },
+  "a11y": {
+    "guarantees": [
+      "a titled section's list is named by its title, so a screen reader announces \"Spaces, list, 4 items\"",
+      "a collapsible title is a button with aria-expanded and aria-controls; the folded list is hidden, not unmounted"
+    ]
+  },
+  "antiPatterns": [
+    {
+      "dont": "isCollapsible with no title",
+      "why": "there is nothing to press; the prop is ignored"
+    },
+    {
+      "dont": "collapsing the section that holds the current page by default",
+      "why": "the user's location is hidden on arrival — leave it open, or open it when the page is inside"
+    }
+  ]
+}
