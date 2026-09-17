@@ -10,7 +10,8 @@
     "preview": "vite preview",
     "typecheck": "tsc --noEmit",
     "lint": "eslint . && stylelint \"src/**/*.css\"",
-    "format": "prettier --check ."
+    "format": "prettier --check .",
+    "coverage": "node scripts/verify-coverage.mjs"
   },
   "dependencies": {
     "@visx/axis": "^4.0.0",

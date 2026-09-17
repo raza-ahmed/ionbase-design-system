@@ -1,0 +1,119 @@
+/**
+ * Which ionbase-ui components the demo shows, and which it does not yet.
+ *
+ * Reads the component list from the published contract index, not from a list
+ * kept here, so a new component appears as "not shown" the release it lands —
+ * that is the demo's to-do list. Reports by default and fails only for names in
+ * REQUIRED, so a component can ship before it has a home in the demo.
+ *
+ *   pnpm --filter @ionbase-ui/demo coverage
+ */
+import { readFileSync, readdirSync, statSync } from 'node:fs';
+import { createRequire } from 'node:module';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+/** Components that must stay on screen. Grows as phases land. */
+const REQUIRED = [
+  // Phase 1 — shell and Overview
+  'Header',
+  'NavItem',
+  'Logo',
+  'Avatar',
+  'ToastProvider',
+  'Tooltip',
+  'Alert',
+  'Badge',
+  'Button',
+  'DateRangePicker',
+  'EmptyState',
+  'ProgressBar',
+  'Skeleton',
+  'Tabs',
+  'TabItem',
+  'Select',
+  'Toggle',
+  'Link',
+  'Icon',
+  // Phase 2 — Agents, New agent, Settings
+  'Table',
+  'TableHead',
+  'TableBody',
+  'TableRow',
+  'TableCell',
+  'Pagination',
+  'Input',
+  'Checkbox',
+  'Menu',
+  'MenuItem',
+  'Popover',
+  'Modal',
+  'Breadcrumb',
+  'BreadcrumbItem',
+  'Textarea',
+  'Combobox',
+  'RadioGroup',
+  'Radio',
+  'DatePicker',
+  'PhoneInput',
+  'FileUpload',
+  'Divider',
+  'Accordion',
+  'AccordionItem',
+];
+
+const require = createRequire(import.meta.url);
+const index = require('ionbase-ui/meta/index');
+const components = Object.keys(index.components).sort();
+
+function files(dir) {
+  return readdirSync(dir).flatMap((name) => {
+    const path = join(dir, name);
+    return statSync(path).isDirectory()
+      ? files(path)
+      : /\.tsx?$/.test(name)
+        ? [path]
+        : [];
+  });
+}
+
+// Every name imported from the package, across the app.
+const imported = new Set();
+for (const file of files(
+  join(dirname(fileURLToPath(import.meta.url)), '../src'),
+)) {
+  const source = readFileSync(file, 'utf8');
+  for (const [, names] of source.matchAll(
+    /import\s*\{([^}]*)\}\s*from\s*'ionbase-ui'/g,
+  )) {
+    for (const n of names.split(',')) {
+      const name = n
+        .trim()
+        .replace(/^type\s+/, '')
+        .split(/\s+as\s+/)[0];
+      if (name) imported.add(name);
+    }
+  }
+}
+
+const shown = components.filter((c) => imported.has(c));
+const missing = components.filter((c) => !imported.has(c));
+const unknownRequired = REQUIRED.filter((c) => !components.includes(c));
+const requiredMissing = REQUIRED.filter(
+  (c) => components.includes(c) && !imported.has(c),
+);
+
+console.log(
+  `Demo coverage: ${shown.length} of ${components.length} components shown`,
+);
+console.log(`  not shown yet: ${missing.join(', ') || 'none'}`);
+
+if (unknownRequired.length) {
+  console.error(
+    `  REQUIRED names no longer in ionbase-ui: ${unknownRequired.join(', ')}`,
+  );
+}
+if (requiredMissing.length) {
+  console.error(`  REQUIRED but not shown: ${requiredMissing.join(', ')}`);
+}
+process.exit(unknownRequired.length || requiredMissing.length ? 1 : 0);

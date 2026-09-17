@@ -165,3 +165,253 @@ body {
     transform: none;
   }
 }
+
+/* ---- Phase 2: tables, forms, settings ---- */
+
+.demo-page--narrow {
+  max-width: calc(var(--container-max-width) * 0.62);
+}
+
+.demo-page h2,
+.demo-page h3 {
+  margin: 0;
+}
+
+.demo-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--spacing-8);
+}
+
+.demo-toolbar__search {
+  flex: 1 1 16rem;
+}
+
+.demo-toolbar__bulk {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-8);
+  margin-left: auto;
+}
+
+.demo-table-footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-12);
+}
+
+.demo-cell-stack {
+  display: grid;
+
+  /* A floor, so a narrow screen scrolls the table instead of crushing this column. */
+  min-width: 16rem;
+  gap: var(--spacing-2);
+}
+
+.demo-cell-inline {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-8);
+  white-space: nowrap;
+}
+
+.demo-list {
+  display: grid;
+  gap: var(--spacing-4);
+  margin: 0;
+  padding-left: var(--spacing-20);
+}
+
+.demo-modal-body {
+  display: grid;
+  gap: var(--spacing-16);
+}
+
+.demo-modal-body p {
+  margin: 0;
+}
+
+.demo-focus-target:focus {
+  outline: none;
+}
+
+.demo-focus-target:empty {
+  display: none;
+}
+
+.demo-steps {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-8) var(--spacing-24);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.demo-steps__item {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-8);
+  color: var(--text-tertiary);
+}
+
+.demo-steps__item[data-state='current'] {
+  color: var(--text-default);
+  font-weight: var(--font-weight-semibold);
+}
+
+.demo-steps__item[data-state='done'] {
+  color: var(--text-secondary);
+}
+
+.demo-steps__marker {
+  display: inline-grid;
+  place-items: center;
+  width: var(--spacing-24);
+  height: var(--spacing-24);
+  border: var(--border-width-default) solid var(--border-default);
+  border-radius: var(--radius-full);
+  font-size: var(--type-caption);
+}
+
+.demo-steps__item[data-state='current'] .demo-steps__marker {
+  border-color: var(--border-primary-strong);
+  color: var(--text-primary);
+}
+
+.demo-steps__item[data-state='done'] .demo-steps__marker {
+  border-color: var(--border-success);
+  color: var(--text-success);
+}
+
+.demo-form {
+  display: grid;
+  gap: var(--spacing-24);
+  padding: var(--spacing-24);
+  border: var(--border-width-default) solid var(--border-subtle);
+  border-radius: var(--radius-xl);
+  background-color: var(--surface-default);
+}
+
+.demo-form h2:focus {
+  outline: none;
+}
+
+.demo-form__fields {
+  display: grid;
+  gap: var(--spacing-20);
+}
+
+.demo-form__pair {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--spacing-16);
+  align-items: start;
+}
+
+.demo-form__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--spacing-8);
+}
+
+.demo-form__spacer {
+  flex: 1;
+}
+
+.demo-review {
+  display: grid;
+  gap: var(--spacing-8);
+}
+
+.demo-review__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.demo-review__list {
+  display: grid;
+  gap: var(--spacing-8);
+  margin: 0;
+}
+
+.demo-review__row {
+  display: grid;
+  grid-template-columns: minmax(8rem, 1fr) 2fr;
+  gap: var(--spacing-12);
+}
+
+.demo-review__row dd {
+  margin: 0;
+}
+
+.demo-panel p {
+  margin: 0;
+}
+
+.demo-panel--danger {
+  border-color: var(--border-error-subtle);
+}
+
+.demo-setting {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-16);
+}
+
+.demo-setting__text {
+  display: grid;
+  gap: var(--spacing-2);
+}
+
+.demo-setting__control {
+  flex-shrink: 0;
+}
+
+.demo-savebar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--spacing-8);
+  padding: var(--spacing-12) var(--spacing-16);
+  border: var(--border-width-default) solid var(--border-default);
+  border-radius: var(--radius-lg);
+  background-color: var(--surface-sunken);
+}
+
+@media (width <= 767px) {
+  .demo-form {
+    padding: var(--spacing-16);
+  }
+
+  .demo-form__pair,
+  .demo-review__row {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .demo-setting {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .demo-toolbar__bulk {
+    margin-left: 0;
+  }
+}
+
+/*
+ * WORKAROUND — gap list, ionbase-ui bug. `.ion-table-container` scrolls but is
+ * not a containing block, so absolutely positioned descendants (checkbox
+ * inputs, `.ion-visually-hidden` text, avatar media) are placed against the
+ * page and widen it: 382px of sideways scroll on a 390px phone. The real fix is
+ * `position: relative` in ionbase-ui's table.css; delete this when it ships.
+ */
+.ion-table-container {
+  position: relative;
+}

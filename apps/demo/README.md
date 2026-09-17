@@ -7,6 +7,7 @@ The plan and its decisions are in [docs/demo-app-plan.md](../../docs/demo-app-pl
 ```bash
 pnpm --filter @ionbase-ui/demo dev      # needs ionbase-ui built once: pnpm build
 pnpm --filter @ionbase-ui/demo build
+pnpm --filter @ionbase-ui/demo coverage # which components the demo shows, and which it doesn't yet
 ```
 
 ## Rules
@@ -23,9 +24,12 @@ pnpm --filter @ionbase-ui/demo build
 What the demo needed that IonBase does not provide. This is the demo's feedback
 to the design system.
 
-| Gap                                                                                                                                     | Where it showed up | Stand-in                                                                             |
-| --------------------------------------------------------------------------------------------------------------------------------------- | ------------------ | ------------------------------------------------------------------------------------ |
-| No stat / KPI tile. `FullCard` is a full-bleed text-and-media row, not a metric.                                                        | Overview KPI row   | [`src/local/StatTile.tsx`](src/local/StatTile.tsx)                                   |
-| No sequential colour ramp. `chart/1…8` is categorical only.                                                                             | Run heatmap        | `chart/1` at six fixed opacity steps, in [`charts.css`](src/local/charts/charts.css) |
-| `chart/1…8` has no dark-mode values in `theme-dark.css`. Readable on the current dark surfaces, but never checked by the contrast gate. | Both charts        | Used as-is                                                                           |
-| No chart primitives: axis, gridline and tooltip styling.                                                                                | Success-rate line  | visx, with classes in [`charts.css`](src/local/charts/charts.css)                    |
+| Gap                                                                                                                                               | Where it showed up    | Stand-in                                                                                |
+| ------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------- | --------------------------------------------------------------------------------------- |
+| No stat / KPI tile. `FullCard` is a full-bleed text-and-media row, not a metric.                                                                  | Overview KPI row      | [`src/local/StatTile.tsx`](src/local/StatTile.tsx)                                      |
+| No sequential colour ramp. `chart/1…8` is categorical only.                                                                                       | Run heatmap           | `chart/1` at six fixed opacity steps, in [`charts.css`](src/local/charts/charts.css)    |
+| `chart/1…8` has no dark-mode values in `theme-dark.css`. Readable on the current dark surfaces, but never checked by the contrast gate.           | Both charts           | Used as-is                                                                              |
+| No chart primitives: axis, gridline and tooltip styling.                                                                                          | Success-rate line     | visx, with classes in [`charts.css`](src/local/charts/charts.css)                       |
+| Stepper / step indicator. The Wizard pattern forbids Tabs for this, and nothing else fits.                                                        | New agent wizard      | [`src/local/StepIndicator.tsx`](src/local/StepIndicator.tsx)                            |
+| Setting row: label and description on the left, control on the right, as the SettingsPanel pattern describes.                                     | Settings              | [`src/local/SettingRow.tsx`](src/local/SettingRow.tsx)                                  |
+| **Bug:** `.ion-table-container` has no `position: relative`, so absolutely positioned content in cells scrolls the whole page sideways on mobile. | Agents table at 390px | CSS override at the end of [`src/app.css`](src/app.css). Delete it once fixed upstream. |

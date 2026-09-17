@@ -8,6 +8,7 @@ import { useEffect, useState } from 'react';
 export const ROUTES = [
   'overview',
   'agents',
+  'agents/new',
   'runs',
   'assistant',
   'settings',
@@ -19,6 +20,14 @@ export const href = (route: Route) => `#/${route}`;
 function parse(hash: string): Route | null {
   const path = hash.replace(/^#\/?/, '') || 'overview';
   return (ROUTES as readonly string[]).includes(path) ? (path as Route) : null;
+}
+
+/** The top-level section a route belongs to — what the nav marks as current. */
+export const sectionOf = (route: Route): Route =>
+  route.startsWith('agents/') ? 'agents' : route;
+
+export function navigate(route: Route) {
+  window.location.hash = href(route);
 }
 
 /** `null` is an unknown route — rendered as not-found, never silently redirected. */

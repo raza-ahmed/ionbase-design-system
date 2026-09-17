@@ -15,7 +15,7 @@ import { ListChecks } from 'ionbase-icons/icons/list-checks';
 import { MessageSquare } from 'ionbase-icons/icons/message-square';
 import { Settings } from 'ionbase-icons/icons/settings';
 
-import { href, type Route } from '../lib/router';
+import { href, sectionOf, type Route } from '../lib/router';
 import { DemoControls } from './DemoControls';
 
 const NAV: { route: Route; label: string; icon: typeof Bot }[] = [
@@ -62,7 +62,9 @@ export function AppShell({
                 key={r}
                 href={href(r)}
                 icon={<Icon as={icon} size="sm" />}
-                aria-current={r === route ? 'page' : undefined}
+                aria-current={
+                  route && r === sectionOf(route) ? 'page' : undefined
+                }
               >
                 {label}
               </NavItem>
