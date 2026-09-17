@@ -151,6 +151,14 @@ export type {
 export { Drawer } from './Drawer.js';
 export type { DrawerProps, DrawerPlacement, DrawerSize } from './Drawer.js';
 
+export { Stepper, StepperStep } from './Stepper.js';
+export type {
+  StepperProps,
+  StepperStepProps,
+  StepperOrientation,
+  StepperStepStatus,
+} from './Stepper.js';
+
 export { Spinner } from './Spinner.js';
 export type { SpinnerProps, SpinnerSize } from './Spinner.js';
 

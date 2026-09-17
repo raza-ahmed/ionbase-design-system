@@ -1,5 +1,50 @@
 # Changelog
 
+## 0.61.0 — 2026-09-17
+
+### Added — `Stepper`, `StepperStep`
+
+The `Wizard` pattern asked for "a step indicator naming every step and marking
+the current one — not Tabs", and nothing in the system could be one. It had to
+be assembled from Badges, or — the mistake the pattern warns against — from
+Tabs, whose role promises peers visited in any order.
+
+**An ordered list, with position and status as text.** Every step renders
+"Step 2 of 5" and its status as visually hidden text, derived from the children
+rather than passed in, so "Step 3 of 4" cannot appear twice. `complete` draws a
+check and `error` an exclamation: the states differ in shape, not only hue.
+
+**Only visited steps are links.** `href` and `onPress` are honoured on
+`complete` and `error` steps that are not current. An `incomplete` step renders
+as text whatever it is given, because skipping unanswered steps is what a wizard
+exists to prevent. `status` and `isCurrent` are separate props, since a user who
+goes Back to step 1 is on a step that is both current and complete.
+
+Below a 40rem container a horizontal stepper keeps every indicator and only the
+current step's label; the others are visually hidden, not removed.
+
+`Wizard` now composes it. Not drawn in Figma yet — recorded in `codeUnmapped`.
+
+### Found on the way — two ways a stylesheet can hide from the contrast gate
+
+Neither is a gate change; both are recorded in `stepper.css` so the next
+component does not repeat them.
+
+- **State as `[data-*]` attributes is unmeasured.** The gate keys contexts on
+  BEM `--modifier` classes. The first draft used `[data-status]` and
+  `[data-current]`, and the filled current indicator and every error colour
+  produced no pairing at all — not failing, not passing, absent.
+- **A system colour in `@media (forced-colors)` replaces the real value.** The
+  gate flattens at-rules, so `background-color: Highlight` overwrote
+  `surface/primary` in its model and white-on-primary went unmeasured. It is a
+  heavier ring now, which is also what actually survives forced colours.
+
+And one false positive the other way: a connector drawn with `background-color`
+on `::after` was read as the ground for the whole step, failing the check glyph
+at 1:1 against its own connector. The connector is a border now.
+
+Enforced pairings 1310 → **1352**.
+
 ## 0.59.0 — 2026-09-16
 
 ### Added — the navigation and forms tiers are drawn in Figma

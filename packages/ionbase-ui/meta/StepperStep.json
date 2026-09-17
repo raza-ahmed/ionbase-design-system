@@ -1,0 +1,58 @@
+{
+  "status": "stable",
+  "summary": "One step in a Stepper: a numbered indicator, a name, and a status carried by shape and text as well as colour.",
+  "useWhen": ["inside a Stepper, once per step"],
+  "useInstead": [
+    {
+      "when": "it is a step an agent is running",
+      "use": "AgentActivityStep"
+    }
+  ],
+  "variants": {
+    "status": {
+      "incomplete": {
+        "use": "the default — not yet answered. Never a link, even with href"
+      },
+      "complete": {
+        "use": "answers accepted by the server, not merely filled in"
+      },
+      "error": {
+        "use": "the step's answers were rejected. Put the reason on the step's fields, not here"
+      }
+    }
+  },
+  "slots": {
+    "children": {
+      "accepts": "text",
+      "note": "the step's name, short — \"Shipping\", not \"Enter your shipping details\""
+    },
+    "description": {
+      "accepts": "text",
+      "note": "what the step asks for, or a summary of the answer once complete"
+    }
+  },
+  "a11y": {
+    "guarantees": [
+      "the current step and incomplete steps render as text, never as links, whatever href or onPress say",
+      "complete and error use different glyphs — a check and an exclamation — so status survives greyscale and forced-colours mode"
+    ],
+    "notes": [
+      "status and isCurrent are separate on purpose: a user who goes Back to step 1 is on a step that is both current and complete"
+    ]
+  },
+  "antiPatterns": [
+    {
+      "dont": "status=\"complete\" as soon as the fields are filled",
+      "do": "mark it complete when the server accepts the step",
+      "why": "a green check on answers that are later rejected sends the user back through a step they were told was finished"
+    },
+    {
+      "dont": "href on every step so users can jump ahead",
+      "why": "incomplete steps ignore it; skipping unanswered steps is what a wizard exists to prevent"
+    },
+    {
+      "dont": "using it outside Stepper",
+      "why": "it renders an <li> and reads its position from the Stepper, and throws without one"
+    }
+  ]
+}
