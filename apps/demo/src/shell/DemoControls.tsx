@@ -1,4 +1,6 @@
-import { Badge, Select, Toggle } from 'ionbase-ui';
+import { useState } from 'react';
+import { Badge, Button, Icon, Popover, Select, Toggle } from 'ionbase-ui';
+import { SlidersHorizontal } from 'ionbase-icons/icons/sliders-horizontal';
 
 import {
   useDemoSettings,
@@ -21,38 +23,68 @@ const LATENCIES: { value: string; label: string }[] = [
 ];
 
 /**
- * Presenter-only bar. Deliberately outside <main> and labelled as a demo
- * affordance, so it is never mistaken for part of Ionbase Ops.
+ * Presenter-only controls. Deliberately outside <main> and labelled as a demo
+ * affordance, so they are never mistaken for part of Ionbase Ops. Folded into
+ * one corner button so they stop covering the page; a forced state shows on
+ * the button itself, so nobody takes a simulated outage for a real one.
  */
 export function DemoControls() {
   const { theme, state, latency, update } = useDemoSettings();
+  const [open, setOpen] = useState(false);
+  const forced = STATES.find((s) => s.value === state);
 
   return (
     <aside className="demo-controls" aria-label="Demo controls">
-      <Badge intent="information" size="sm" shape="rounded">
-        Demo
-      </Badge>
-      <Select
+      <Popover
+        title="Demo controls"
+        placement="top"
         size="sm"
-        aria-label="Screen state"
-        options={STATES}
-        value={state}
-        onChange={(e) => update({ state: e.target.value as ForcedState })}
-      />
-      <Select
-        size="sm"
-        aria-label="Simulated latency"
-        options={LATENCIES}
-        value={String(latency)}
-        onChange={(e) => update({ latency: Number(e.target.value) as Latency })}
-      />
-      <Toggle
-        size="sm"
-        isSelected={theme === 'dark'}
-        onSelectionChange={(on) => update({ theme: on ? 'dark' : 'light' })}
+        isOpen={open}
+        onOpenChange={setOpen}
+        content={
+          <div className="demo-controls__panel">
+            <Select
+              size="sm"
+              label="Screen state"
+              options={STATES}
+              value={state}
+              onChange={(e) => update({ state: e.target.value as ForcedState })}
+            />
+            <Select
+              size="sm"
+              label="Simulated latency"
+              options={LATENCIES}
+              value={String(latency)}
+              onChange={(e) =>
+                update({ latency: Number(e.target.value) as Latency })
+              }
+            />
+            <Toggle
+              size="sm"
+              isSelected={theme === 'dark'}
+              onSelectionChange={(on) =>
+                update({ theme: on ? 'dark' : 'light' })
+              }
+            >
+              Dark mode
+            </Toggle>
+          </div>
+        }
       >
-        Dark mode
-      </Toggle>
+        <Button
+          variant="secondary"
+          size="sm"
+          className="demo-controls__trigger"
+          startIcon={<Icon as={SlidersHorizontal} size="sm" />}
+        >
+          Demo
+        </Button>
+      </Popover>
+      {state !== 'live' && (
+        <Badge intent="warning" size="sm">
+          {`Showing: ${forced?.label}`}
+        </Badge>
+      )}
     </aside>
   );
 }

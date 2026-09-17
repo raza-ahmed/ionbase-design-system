@@ -5,6 +5,8 @@ import {
   BreadcrumbItem,
   Button,
   Link,
+  Stepper,
+  StepperStep,
   useToast,
 } from 'ionbase-ui';
 
@@ -12,7 +14,6 @@ import { createAgent, type AgentDraft } from '../../data/agents';
 import { write } from '../../data/store';
 import { useDemoSettings } from '../../lib/demo-settings';
 import { href, navigate } from '../../lib/router';
-import { StepIndicator } from '../../local/StepIndicator';
 import { clearDraft, EMPTY_DRAFT, loadDraft, saveDraft, STEPS } from './draft';
 import { BasicsStep, GuardrailsStep, ReviewStep, TriggerStep } from './steps';
 import { FIELD_LABELS, validateStep, type FieldErrors } from './validate';
@@ -148,11 +149,29 @@ export function NewAgentWizard() {
         <BreadcrumbItem isCurrent>New agent</BreadcrumbItem>
       </Breadcrumb>
 
-      <h1 id="page-title" className="ion-text-h3">
+      <h1 id="page-title" className="ion-text-h4">
         New agent
       </h1>
 
-      <StepIndicator steps={STEPS} current={step} completed={completed} />
+      <Stepper label="New agent progress">
+        {STEPS.map((name, i) => (
+          <StepperStep
+            key={name}
+            isCurrent={i === step}
+            status={
+              i === step && serverError
+                ? 'error'
+                : i <= completed
+                  ? 'complete'
+                  : 'incomplete'
+            }
+            // Accepted steps can be revisited; the Stepper ignores it elsewhere.
+            onPress={i <= completed ? () => goTo(i) : undefined}
+          >
+            {name}
+          </StepperStep>
+        ))}
+      </Stepper>
 
       {showResumed && (
         <Alert

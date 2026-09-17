@@ -5,7 +5,7 @@ import { href } from '../lib/router';
 export function NotFound() {
   return (
     <div className="demo-page">
-      <h1 id="page-title" className="ion-text-h3">
+      <h1 id="page-title" className="ion-text-h4">
         Page not found
       </h1>
       <EmptyState

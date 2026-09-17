@@ -11,10 +11,11 @@ import {
   Button,
   Drawer,
   EmptyState,
-  Input,
   Link,
+  NumberInput,
   Select,
   StreamingText,
+  ToolCall,
 } from 'ionbase-ui';
 
 import {
@@ -22,6 +23,7 @@ import {
   summaryFor,
   type ApprovalStep,
   type RunStep,
+  type WorkStep,
 } from '../../data/runs';
 import { useDemoSettings } from '../../lib/demo-settings';
 import { href } from '../../lib/router';
@@ -87,7 +89,7 @@ export function RunDetail({ runId }: { runId: string }) {
   if (!script || !summary || !run.state) {
     return (
       <div className="demo-page">
-        <h1 id="page-title" className="ion-text-h3">
+        <h1 id="page-title" className="ion-text-h4">
           Run not found
         </h1>
         <EmptyState
@@ -211,11 +213,7 @@ export function RunDetail({ runId }: { runId: string }) {
                       onReject={run.reject}
                     />
                   ) : step.kind === 'work' ? (
-                    status === 'failed' ? (
-                      step.failure
-                    ) : status === 'done' ? (
-                      step.detail
-                    ) : undefined
+                    <WorkDetail step={step} status={status} />
                   ) : undefined
                 }
               >
@@ -320,8 +318,10 @@ function Gate({
   onApprove: () => void;
   onReject: () => void;
 }) {
-  const [draft, setDraft] = useState(gate.amount ?? '');
-  const valid = /^\d+(\.\d{1,2})?$/.test(draft) && Number(draft) > 0;
+  const [draft, setDraft] = useState<number | null>(
+    gate.amount ? Number(gate.amount) : null,
+  );
+  const valid = draft !== null && draft > 0;
 
   return (
     <ApprovalGate
@@ -352,10 +352,13 @@ function Gate({
         </ul>
         {editing && step.editable && gate.status === 'pending' && (
           <div className="demo-gate-edit">
-            <Input
+            <NumberInput
               size="sm"
               label={step.editable.label}
-              inputMode="decimal"
+              formatOptions={{ style: 'currency', currency: 'USD' }}
+              minValue={0.01}
+              step={0.01}
+              showStepper={false}
               value={draft}
               onChange={setDraft}
               isInvalid={!valid}
@@ -366,7 +369,7 @@ function Gate({
               variant="secondary"
               isDisabled={!valid}
               onClick={() => {
-                onAmount(Number(draft).toFixed(2));
+                onAmount(draft!.toFixed(2));
                 onEditingChange(false);
               }}
             >
@@ -376,5 +379,29 @@ function Gate({
         )}
       </div>
     </ApprovalGate>
+  );
+}
+
+/** The plain-language result first; the tool call underneath is the evidence for it. */
+function WorkDetail({ step, status }: { step: WorkStep; status: StepStatus }) {
+  const text =
+    status === 'failed'
+      ? step.failure
+      : status === 'done'
+        ? step.detail
+        : undefined;
+  if (!step.tool || status === 'pending' || status === 'skipped') return text;
+  return (
+    <span className="demo-work-detail">
+      {text && <span>{text}</span>}
+      <ToolCall
+        title={step.tool.title}
+        name={step.tool.name}
+        status={status}
+        input={step.tool.input}
+        output={status === 'done' ? step.tool.output : undefined}
+        durationMs={status === 'done' ? step.ms : undefined}
+      />
+    </span>
   );
 }

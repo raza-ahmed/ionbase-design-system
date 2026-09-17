@@ -1,4 +1,5 @@
 import { addDays, dayCount, eachDay, type IsoDay } from '../lib/dates';
+import { listRecentRuns, listWaitingRuns, type RunSummary } from './runs';
 
 export interface Kpi {
   value: number;
@@ -18,6 +19,8 @@ export interface OverviewData {
   /** `null` when that source failed — the `partial` state. */
   successRate: Kpi | null;
   awaitingApproval: Kpi;
+  /** Newest first, for the Overview's short list. */
+  recentRuns: RunSummary[];
   medianDurationSec: Kpi;
   /** 7 rows (Mon–Sun) × 24 columns (hour, UTC): run counts. */
   runsByWeekdayHour: number[][];
@@ -83,10 +86,12 @@ export function generateOverview(
       partial || empty
         ? null
         : { value: meanRate, previous: meanRate - 1.5 + random() * 2 },
+    // Now, not over the range — the same count the navigation and Runs show.
     awaitingApproval: {
-      value: empty ? 0 : Math.round(2 + random() * 5),
+      value: empty ? 0 : listWaitingRuns().length,
       previous: Math.round(1 + random() * 4),
     },
+    recentRuns: empty ? [] : listRecentRuns(5),
     medianDurationSec: {
       value: empty ? 0 : Math.round(38 + random() * 20),
       previous: Math.round(40 + random() * 20),

@@ -9,8 +9,72 @@ body {
   font-family: var(--font-family-sans);
 }
 
+/*
+ * The shell: a sticky header across the top, the sidebar column pinned beside
+ * a fluid content column. Only the page scrolls; the sidebar scrolls its own
+ * body when the navigation is taller than the window.
+ */
 .demo-app {
+  --demo-header-height: calc(var(--spacing-48) + var(--spacing-8));
+
+  display: grid;
+  grid-template-columns: calc(var(--spacing-128) * 2) minmax(0, 1fr);
+  grid-template-rows: auto 1fr;
   min-height: 100vh;
+}
+
+.demo-header {
+  /* Flush with the sidebar column, not Header's marketing-page inset. */
+  --ion-header-padding-x: var(--spacing-16);
+
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  grid-column: 1 / -1;
+}
+
+.demo-sidebar {
+  position: sticky;
+  top: var(--demo-header-height);
+  height: calc(100vh - var(--demo-header-height));
+}
+
+.demo-brand-row {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-8);
+}
+
+.demo-nav-toggle {
+  display: none;
+}
+
+.ion-sidebar .demo-workspace {
+  justify-content: flex-start;
+  width: 100%;
+}
+
+.demo-nav-drawer .ion-drawer__body {
+  padding: 0;
+}
+
+.demo-nav-drawer .ion-sidebar {
+  border-inline-end: 0;
+}
+
+/* Header's own breakpoint: below it the sidebar moves into the Drawer. */
+@media (width < 896px) {
+  .demo-app {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .demo-sidebar {
+    display: none;
+  }
+
+  .demo-nav-toggle {
+    display: inline-flex;
+  }
 }
 
 .demo-muted {
@@ -31,19 +95,16 @@ body {
   font-weight: var(--font-weight-semibold);
 }
 
-.demo-nav {
-  display: contents;
-}
-
 .demo-main {
-  max-width: var(--container-max-width);
-  margin: 0 auto;
-  padding: var(--spacing-32) var(--spacing-24) var(--spacing-128);
+  width: 100%;
+  max-width: calc(var(--container-max-width) + var(--spacing-64));
+  padding: var(--spacing-20) var(--spacing-32) var(--spacing-64);
+  box-sizing: border-box;
 }
 
 .demo-page {
   display: grid;
-  gap: var(--spacing-24);
+  gap: var(--spacing-20);
 }
 
 .demo-page h1,
@@ -61,17 +122,17 @@ body {
 
 .demo-stats {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
-  gap: var(--spacing-16);
+  grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+  gap: var(--spacing-12);
   margin: 0;
 }
 
 .demo-stat {
   display: grid;
   gap: var(--spacing-8);
-  padding: var(--spacing-20);
+  padding: var(--spacing-16);
   border: var(--border-width-default) solid var(--border-subtle);
-  border-radius: var(--radius-xl);
+  border-radius: var(--radius-lg);
   background-color: var(--surface-default);
 }
 
@@ -94,7 +155,7 @@ body {
 .demo-grid {
   display: grid;
   grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
-  gap: var(--spacing-16);
+  gap: var(--spacing-12);
   align-items: start;
 }
 
@@ -106,10 +167,10 @@ body {
 
 .demo-panel {
   display: grid;
-  gap: var(--spacing-16);
-  padding: var(--spacing-20);
+  gap: var(--spacing-12);
+  padding: var(--spacing-16);
   border: var(--border-width-default) solid var(--border-subtle);
-  border-radius: var(--radius-xl);
+  border-radius: var(--radius-lg);
   background-color: var(--surface-default);
 }
 
@@ -131,38 +192,32 @@ body {
 
 .demo-loading {
   display: grid;
-  gap: var(--spacing-24);
+  gap: var(--spacing-20);
 }
 
 .demo-controls {
   position: fixed;
+  right: var(--spacing-16);
   bottom: var(--spacing-16);
-  left: 50%;
   z-index: 10;
   display: flex;
-  flex-wrap: wrap;
+  flex-direction: row-reverse;
   align-items: center;
-  gap: var(--spacing-12);
-  padding: var(--spacing-8) var(--spacing-16);
-  border: var(--border-width-default) solid var(--border-default);
-  border-radius: var(--radius-full);
-  background-color: var(--surface-raised);
+  gap: var(--spacing-8);
+}
+
+.demo-controls__trigger {
   box-shadow: var(--ion-shadow-shadow-lg);
-  transform: translateX(-50%);
+}
+
+.demo-controls__panel {
+  display: grid;
+  gap: var(--spacing-12);
 }
 
 @media (width <= 767px) {
   .demo-main {
-    padding: var(--spacing-24) var(--spacing-16) var(--spacing-128);
-  }
-
-  .demo-controls {
-    right: var(--spacing-8);
-    bottom: var(--spacing-8);
-    left: var(--spacing-8);
-    justify-content: center;
-    border-radius: var(--radius-xl);
-    transform: none;
+    padding: var(--spacing-16) var(--spacing-16) var(--spacing-64);
   }
 }
 
@@ -242,57 +297,12 @@ body {
   display: none;
 }
 
-.demo-steps {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--spacing-8) var(--spacing-24);
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.demo-steps__item {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--spacing-8);
-  color: var(--text-tertiary);
-}
-
-.demo-steps__item[data-state='current'] {
-  color: var(--text-default);
-  font-weight: var(--font-weight-semibold);
-}
-
-.demo-steps__item[data-state='done'] {
-  color: var(--text-secondary);
-}
-
-.demo-steps__marker {
-  display: inline-grid;
-  place-items: center;
-  width: var(--spacing-24);
-  height: var(--spacing-24);
-  border: var(--border-width-default) solid var(--border-default);
-  border-radius: var(--radius-full);
-  font-size: var(--type-caption);
-}
-
-.demo-steps__item[data-state='current'] .demo-steps__marker {
-  border-color: var(--border-primary-strong);
-  color: var(--text-primary);
-}
-
-.demo-steps__item[data-state='done'] .demo-steps__marker {
-  border-color: var(--border-success);
-  color: var(--text-success);
-}
-
 .demo-form {
   display: grid;
   gap: var(--spacing-24);
-  padding: var(--spacing-24);
+  padding: var(--spacing-20);
   border: var(--border-width-default) solid var(--border-subtle);
-  border-radius: var(--radius-xl);
+  border-radius: var(--radius-lg);
   background-color: var(--surface-default);
 }
 
@@ -506,20 +516,13 @@ body {
   gap: var(--spacing-8);
 }
 
-.demo-composer__actions .demo-suggestions {
+.demo-composer .demo-suggestions {
   justify-content: flex-start;
 }
 
 .demo-composer {
   display: grid;
   gap: var(--spacing-12);
-}
-
-.demo-composer__actions {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: var(--spacing-8);
 }
 
 .demo-turn {
@@ -558,4 +561,20 @@ body {
   .demo-assistant__rail {
     display: none;
   }
+}
+
+/* A step's result line, then the tool call that produced it. */
+.demo-work-detail {
+  display: grid;
+  gap: var(--spacing-8);
+  margin-block-start: var(--spacing-4);
+}
+
+/* A section heading with its control or link at the far end. */
+.demo-section-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-12);
 }
