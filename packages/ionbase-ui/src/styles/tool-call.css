@@ -1,0 +1,202 @@
+/*
+ * ToolCall
+ *
+ * NOT DRAWN IN FIGMA. The header row is AgentActivity's step one rung up —
+ * same glyphs, same status colours, read from the same module — and the
+ * disclosure chevron and its rotation are Accordion's. The error strip is
+ * Alert's subtle error pairing.
+ *
+ * The card surface is on the BLOCK, not an inner wrapper, so the contrast gate
+ * resolves the header's translucent `surface/hover` against a real ground.
+ * drawer.css records what happens otherwise: the pairing is skipped, silently.
+ */
+.ion-tool-call {
+  overflow: hidden;
+  border: var(--border-width-default) solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  background-color: var(--surface-default);
+  color: var(--text-default);
+  font-family: var(--font-family-sans);
+  font-size: var(--type-body-sm);
+  line-height: var(--type-body-sm-line-height);
+}
+
+.ion-tool-call__header {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-8);
+  width: 100%;
+  margin: 0;
+  padding: var(--spacing-8) var(--spacing-12);
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: start;
+}
+
+button.ion-tool-call__header {
+  cursor: pointer;
+}
+
+@media (hover: hover) {
+  /* The colour is restated so the contrast gate has a pair to measure; with
+   * the background alone the hover state was never checked. */
+  button.ion-tool-call__header:hover {
+    background-color: var(--surface-hover);
+    color: var(--text-default);
+  }
+}
+
+button.ion-tool-call__header:focus-visible {
+  outline: var(--border-width-thick) solid var(--border-focus);
+  outline-offset: calc(-1 * var(--border-width-thick));
+}
+
+.ion-tool-call__glyph {
+  display: inline-flex;
+  flex: none;
+  width: var(--icon-size-sm);
+  height: var(--icon-size-sm);
+  color: var(--icon-tertiary);
+}
+
+.ion-tool-call__glyph svg,
+.ion-tool-call__chevron svg {
+  width: 100%;
+  height: 100%;
+}
+
+.ion-tool-call__heading {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  flex: 1 1 auto;
+  column-gap: var(--spacing-8);
+  min-width: 0;
+}
+
+.ion-tool-call__title {
+  font-weight: var(--font-weight-medium);
+}
+
+.ion-tool-call__name {
+  color: var(--text-tertiary);
+  font-family: var(--font-family-mono);
+  font-size: var(--type-caption);
+  line-height: var(--type-caption-line-height);
+  overflow-wrap: anywhere;
+}
+
+.ion-tool-call__duration {
+  flex: none;
+  color: var(--text-tertiary);
+  font-size: var(--type-caption);
+  line-height: var(--type-caption-line-height);
+  font-variant-numeric: tabular-nums;
+}
+
+.ion-tool-call__chevron {
+  display: inline-flex;
+  flex: none;
+  width: var(--icon-size-sm);
+  height: var(--icon-size-sm);
+  color: var(--icon-secondary);
+  transition: transform var(--ion-duration-base) var(--ion-ease-out);
+}
+
+.ion-tool-call--expanded .ion-tool-call__chevron {
+  transform: rotate(180deg);
+}
+
+/*
+ * Outside the disclosure on purpose: the failure is the one part of a call a
+ * reader must not have to click to find.
+ */
+.ion-tool-call__error {
+  padding: var(--spacing-8) var(--spacing-12);
+  border-top: var(--border-width-default) solid var(--border-error-subtle);
+  background-color: var(--surface-error-subtle);
+  color: var(--text-error);
+}
+
+.ion-tool-call__body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-12);
+  padding: var(--spacing-12);
+  border-top: var(--border-width-default) solid var(--border-subtle);
+}
+
+.ion-tool-call__section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-4);
+}
+
+.ion-tool-call__label {
+  color: var(--text-secondary);
+  font-size: var(--type-caption);
+  line-height: var(--type-caption-line-height);
+  font-weight: var(--font-weight-medium);
+}
+
+/*
+ * Wraps rather than scrolling sideways: a long string in a JSON value would
+ * otherwise force a horizontal scrollbar on a phone. Height is capped, and the
+ * element is focusable (tabIndex 0 in the component) so the cap never hides
+ * content from a keyboard user.
+ */
+.ion-tool-call__payload {
+  max-height: 16rem;
+  margin: 0;
+  padding: var(--spacing-8);
+  overflow: auto;
+  border-radius: var(--radius-sm);
+  background-color: var(--surface-muted);
+  color: var(--text-default);
+  font-family: var(--font-family-mono);
+  font-size: var(--type-caption);
+  line-height: var(--type-caption-line-height);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.ion-tool-call__payload:focus-visible {
+  outline: var(--border-width-thick) solid var(--border-focus);
+  outline-offset: 2px;
+}
+
+/* Status: the colour is the second signal — glyph shape and hidden text first. */
+.ion-tool-call--active .ion-tool-call__glyph {
+  color: var(--icon-primary);
+  animation: ion-tool-call-spin 1.2s linear infinite;
+}
+
+.ion-tool-call--done .ion-tool-call__glyph {
+  color: var(--icon-success);
+}
+
+.ion-tool-call--failed .ion-tool-call__glyph {
+  color: var(--icon-error);
+}
+
+.ion-tool-call--skipped .ion-tool-call__title {
+  color: var(--text-tertiary);
+}
+
+@keyframes ion-tool-call-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ion-tool-call--active .ion-tool-call__glyph {
+    animation: none;
+  }
+
+  .ion-tool-call__chevron {
+    transition: none;
+  }
+}

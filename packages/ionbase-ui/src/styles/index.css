@@ -75,6 +75,7 @@
 @import url('./drawer.css');
 @import url('./stepper.css');
 @import url('./prompt-input.css');
+@import url('./tool-call.css');
 @import url('./file-upload.css');
 @import url('./combobox.css');
 
