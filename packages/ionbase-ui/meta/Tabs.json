@@ -17,6 +17,11 @@
       "why": "tabs hide everything but the active panel, including from Ctrl-F"
     },
     {
+      "when": "the options set a value — a view mode, a range, a unit — and no panel belongs to each",
+      "use": "SegmentedControl",
+      "why": "it looks like the pill type and is a radiogroup: a tab with no panel announces a relationship that does not exist"
+    },
+    {
       "when": "it is navigation between pages rather than panels within one",
       "use": "NavItem"
     }

@@ -1,5 +1,41 @@
 # Changelog
 
+## 0.65.0 — 2026-09-17
+
+### Added — `SegmentedControl`, `SegmentedControlItem`
+
+Pick one of two to five options, all visible at once — a view mode, a range, a
+unit. Until now the nearest thing was Tabs' `pill` type, which looks exactly
+right and is exactly wrong: a tab controls a panel, and a view switch controls
+none, so a screen-reader user was told about a relationship that did not exist.
+
+**It looks like the pill track and behaves like a radio group.** The visual is
+Tabs' pill, token for token, so the two cannot drift into looking almost alike.
+The semantics are `radiogroup`: one tab stop, arrow keys move and select and
+skip disabled segments, and it submits with a form under `name`. Built from real
+radio inputs, visually hidden — not buttons with `aria-pressed`, which cost a tab
+stop per option and announce no mutual exclusion.
+
+`label` is required and is an `aria-label` by default; `showLabel` renders it
+above the track as a form field does. **A disabled selected segment keeps its
+selected surface**, because a disabled control still has a value — the test for
+it was confirmed to fail with the rule removed. `Tabs`' intent file now points
+here, and this one points back, so an agent choosing by appearance is told to
+choose by what changes.
+
+### Found on the way — two more ways CSS hides from the contrast gate
+
+- **`:not(a, b)` is split at the comma.** A hover rule guarded with
+  `:not(--selected, --disabled)` was read as the disabled state and measured
+  disabled text on a hover surface: two failures, for a combination that never
+  renders. The state rules are ordered by specificity instead.
+- **`background-color: transparent` drops the pairing.** It is not a token, the
+  gate cannot resolve it, and it moves on without counting a skip. Disabled text
+  was simply absent. The disabled segment paints the track's own surface, which
+  is identical on screen, and is now measured — under the existing `text/disabled`
+  exemption. **Eighteen other rules across the package set a transparent
+  background**, and some may be hiding pairings the same way. Not audited here.
+
 ## 0.64.0 — 2026-09-17
 
 ### Added — `NumberInput`

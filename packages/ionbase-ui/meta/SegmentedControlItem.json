@@ -1,0 +1,32 @@
+{
+  "status": "stable",
+  "summary": "One segment: a radio drawn as part of the track, with an optional icon.",
+  "useWhen": ["inside a SegmentedControl, once per option"],
+  "useInstead": [
+    {
+      "when": "outside a segmented track",
+      "use": "Radio"
+    }
+  ],
+  "slots": {
+    "children": {
+      "accepts": "text",
+      "note": "one or two words. Segments do not wrap, and a long label truncates"
+    },
+    "icon": {
+      "accepts": "Icon",
+      "note": "decorative beside a label; with no label, pass aria-label"
+    }
+  },
+  "a11y": {
+    "requires": [
+      "`aria-label` when the segment has an icon and no text — the accessible name otherwise comes from its children"
+    ]
+  },
+  "antiPatterns": [
+    {
+      "dont": "using it outside SegmentedControl",
+      "why": "it reads its selection state from the group, and throws without one"
+    }
+  ]
+}

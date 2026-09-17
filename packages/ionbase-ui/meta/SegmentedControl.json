@@ -1,0 +1,82 @@
+{
+  "status": "stable",
+  "summary": "Pick one of two to five options, all visible at once. A radio group drawn as a segmented track — it sets a value and controls no panel.",
+  "useWhen": [
+    "switching how the same content is shown — List / Board / Calendar",
+    "a short, fixed set of mutually exclusive settings — Day / Week / Month, °C / °F",
+    "a filter with a few exclusive choices where seeing every option matters"
+  ],
+  "useInstead": [
+    {
+      "when": "each option shows a different panel of content",
+      "use": "Tabs",
+      "why": "Tabs wires each tab to its panel with tablist/tabpanel semantics. A SegmentedControl controls no region, so a screen-reader user is never told which content changed"
+    },
+    {
+      "when": "there are more than five options, or the labels are long",
+      "use": "Select",
+      "why": "segments do not wrap; a track that overflows hides the options it exists to show"
+    },
+    {
+      "when": "the choice sits in a form with a visible question and descriptions per option",
+      "use": "RadioGroup",
+      "why": "same semantics, but room for a label and helper text on each option"
+    },
+    {
+      "when": "the setting is a single on/off",
+      "use": "Toggle"
+    },
+    {
+      "when": "the options trigger actions rather than set a value — Bold, Italic",
+      "use": "Button",
+      "why": "an action is not a selection; a radio group announces a state that does not exist"
+    }
+  ],
+  "composition": {
+    "order": ["SegmentedControl", "SegmentedControlItem"],
+    "example": "<SegmentedControl label=\"View\" defaultValue=\"list\"><SegmentedControlItem value=\"list\">List</SegmentedControlItem><SegmentedControlItem value=\"board\">Board</SegmentedControlItem></SegmentedControl>"
+  },
+  "variants": {
+    "size": {
+      "sm": { "use": "toolbars and dense panel headers" },
+      "md": { "use": "the default" },
+      "lg": { "use": "a primary view switch at the top of a page" }
+    }
+  },
+  "slots": {
+    "children": {
+      "accepts": "SegmentedControlItem",
+      "note": "two to five. One item is not a choice; six is a Select"
+    }
+  },
+  "a11y": {
+    "role": "radiogroup / radio",
+    "requires": [
+      "`label` — the group's accessible name. Hidden by default; `showLabel` renders it above the track"
+    ],
+    "guarantees": [
+      "one tab stop for the whole control; arrow keys move and select, skipping disabled segments",
+      "built from real radio inputs, so it announces \"2 of 3, selected\" and submits with a form under `name`",
+      "a disabled selected segment keeps its selected surface — a disabled control still has a value"
+    ],
+    "notes": [
+      "it looks exactly like Tabs' pill type on purpose, and behaves differently on purpose. Choose by what changes, not by how it looks"
+    ]
+  },
+  "antiPatterns": [
+    {
+      "dont": "a SegmentedControl that swaps the panel below it",
+      "do": "<Tabs type=\"pill\">",
+      "why": "the panel relationship is exactly what tabpanel semantics announce; without it the content changes silently"
+    },
+    {
+      "dont": "no defaultValue or value",
+      "why": "a segmented track with nothing selected reads as broken, not as a choice still to make"
+    },
+    {
+      "dont": "icon-only segments with no aria-label",
+      "do": "<SegmentedControlItem value=\"grid\" icon={<Grid />} aria-label=\"Grid view\" />",
+      "why": "each segment is a radio, and an unnamed radio is announced as just \"radio button\""
+    }
+  ]
+}
