@@ -635,10 +635,11 @@ reasons do not generalise:
   give a Popover room to open). That is fixture scaffolding, and the off-scale
   values are arbitrary on purpose.
 
-**This repo contains no consumer app code, so that second rule's real target is
-not exercised by `pnpm lint` at all.** Its coverage comes from the plugin's own
-fixtures. If you change it, test it there — a green `pnpm lint` says nothing
-about it.
+**[`apps/demo`](apps/demo/) is the one consumer app, and it runs all five.** It
+takes the plugin and the stylelint config by their package specifiers, exactly
+as a consumer does, with nothing relaxed. It is still a small app, so the
+plugin's own fixtures remain the primary coverage for a rule change — test
+there first. See [docs/demo-app-plan.md](docs/demo-app-plan.md).
 
 ---
 

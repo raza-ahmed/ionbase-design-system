@@ -1,0 +1,15 @@
+body {
+  margin: 0;
+  background-color: var(--surface-page);
+  color: var(--text-default);
+  font-family: var(--font-family-sans);
+}
+
+.demo-placeholder {
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: var(--spacing-24);
+  min-height: 100vh;
+  padding: var(--spacing-32);
+}
