@@ -1,5 +1,44 @@
 # Changelog
 
+## 0.63.0 — 2026-09-17
+
+### Added — `ToolCall`
+
+`AgentActivityStep` tells a person what the agent did, in their language, and
+the patterns forbid raw tool names and JSON there — correctly. But that left
+nowhere for the evidence to go: which tool, with what arguments, and what came
+back. `ToolCall` is where the person checking the account goes next.
+
+- **The title is plain language and required.** The function name goes in
+  `name`, beside it in monospace. The technical detail supplements the account;
+  it does not replace it.
+- **Collapsed by default, except the failure.** `errorMessage` renders outside
+  the disclosure, because evidence that takes a click to reach is evidence
+  nobody reads.
+- **A call with nothing to show is not a button.** With no `input` and no
+  `output` the header renders as text — a disclosure that discloses nothing
+  announces as expandable and does nothing.
+- **Payloads are focusable, named scroll regions**, capped in height and
+  wrapping rather than scrolling sideways. Objects render as formatted JSON; a
+  circular structure falls back to `String()` rather than crashing the thread.
+- **Details unmount when collapsed**, unlike Accordion: a tool call holds no user
+  state and its payloads can be large, multiplied by every call in a run.
+
+It shares `AgentActivityStep`'s status union and glyphs, now in one internal
+module (`agent-status.tsx`) that both import, so a step and the tool call behind
+it cannot disagree about what "failed" looks like or is called. `AgentActivity`
+is otherwise unchanged and its tests pass untouched.
+
+`AgentRun` now composes it: a collapsed ToolCall under any step that called a
+tool, carrying the same status.
+
+### Fixed on the way — a hover state the contrast gate never checked
+
+The header's hover rule set `surface/hover` and no text colour, so the gate had
+nothing to pair it with and the state went unmeasured. It restates the text
+colour now. Same class of hole as the two recorded under 0.61.0: a rule the
+gate cannot pair is a rule it silently skips.
+
 ## 0.62.0 — 2026-09-17
 
 ### Added — `PromptInput`

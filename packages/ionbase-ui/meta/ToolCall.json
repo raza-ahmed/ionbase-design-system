@@ -1,0 +1,71 @@
+{
+  "status": "stable",
+  "summary": "The evidence behind one step of an agent run: which tool, with what input, and what came back — collapsed by default, with any failure shown without a click.",
+  "useWhen": [
+    "a person may need to check how an agent reached a result — which search it ran, which record it wrote",
+    "beneath or beside an AgentActivityStep, for the steps that called a tool",
+    "debugging or audit views where the arguments matter as much as the outcome"
+  ],
+  "useInstead": [
+    {
+      "when": "the reader needs to know what the agent did, not how",
+      "use": "AgentActivityStep",
+      "why": "the plain-language log is the account; ToolCall is the evidence for it, and a thread of tool calls alone is a log nobody but an engineer can read"
+    },
+    {
+      "when": "the call has not happened yet and needs permission",
+      "use": "ApprovalGate",
+      "why": "ToolCall reports a call; it does not ask whether to make one"
+    }
+  ],
+  "variants": {
+    "status": {
+      "pending": { "use": "the default — queued, not started" },
+      "active": { "use": "running now" },
+      "done": { "use": "returned successfully" },
+      "failed": {
+        "use": "errored. Pass `errorMessage`, which shows without expanding"
+      },
+      "skipped": {
+        "use": "not run — rejected at an ApprovalGate, or a cached result was used"
+      }
+    }
+  },
+  "slots": {
+    "errorMessage": {
+      "accepts": "text",
+      "note": "what went wrong, in words — not a stack trace"
+    }
+  },
+  "a11y": {
+    "guarantees": [
+      "the header is a disclosure button with aria-expanded; with no input and no output it is plain text instead, because a disclosure that discloses nothing is a dead control",
+      "status is rendered as visually hidden text inside the header, and the glyph differs in shape per status",
+      "each payload is a focusable, named scroll region, so a keyboard user can scroll a capped payload",
+      "errorMessage renders outside the disclosure, so a failure is never hidden behind a click"
+    ],
+    "notes": [
+      "it does not announce status changes — AgentActivity owns the run's live region, and a second one would talk over it",
+      "the details unmount when collapsed, unlike Accordion: a tool call holds no user state and payloads can be large"
+    ]
+  },
+  "antiPatterns": [
+    {
+      "dont": "title=\"search_invoices\"",
+      "do": "title=\"Searched the invoice archive\" name=\"search_invoices\"",
+      "why": "the function name describes the implementation; the title is what tells a reader whether the step was the right one"
+    },
+    {
+      "dont": "passing input or output with credentials, tokens or personal data still in it",
+      "why": "it renders exactly what it is given, to anyone who can see the thread"
+    },
+    {
+      "dont": "defaultExpanded on every call in a run",
+      "why": "a thread of open JSON buries the answer; open the one the reader is likely to check, or none"
+    },
+    {
+      "dont": "status=\"failed\" with no errorMessage",
+      "why": "a failure the reader cannot diagnose is just a red mark"
+    }
+  ]
+}

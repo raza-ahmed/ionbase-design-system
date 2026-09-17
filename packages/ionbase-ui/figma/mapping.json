@@ -1437,6 +1437,7 @@
     "Stepper": "Not yet drawn. Built code-first like Breadcrumb: the indicator is a 24px circle on the icon-size ladder and the colours are the primary and error roles, so drawing it means one set with Status (incomplete, complete, error) x Current, and the stylesheet decides where the two disagree.",
     "StepperStep": "As Stepper — the step is the thing drawn; the list only supplies position.",
     "ScrollProgress": "Drawn in Figma as its three parts — Line, Progress, Progress Heading — all of which the component owns internally. There is no whole-component frame to map.",
+    "ToolCall": "Not yet drawn. Built code-first from drawn parts: the header row is Agent Activity's step one rung up with the same glyphs, the chevron is Accordion Item's and the error strip is Alert's subtle error pairing. Drawing it means Status (pending, active, done, failed, skipped) x Expanded; the payload is text and needs no axis.",
     "Table": "Figma draws Table Row and Table Cell; the table itself is the caller assembling them. Density, the one property Table owns, is mapped on Table Cell.",
     "TableBody": "As TableHead.",
     "TableHead": "As Table — a code-side grouping element. Figma expresses a header row as a Table Row variant, not a separate component.",

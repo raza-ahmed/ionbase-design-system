@@ -2,8 +2,10 @@
 
 import React, { forwardRef, useEffect, useRef, useState } from 'react';
 
-export type AgentActivityStatus =
-  'pending' | 'active' | 'done' | 'failed' | 'skipped';
+import { STATUS_GLYPHS, STATUS_TEXT } from './agent-status.js';
+import type { AgentActivityStatus } from './agent-status.js';
+
+export type { AgentActivityStatus } from './agent-status.js';
 
 export interface AgentActivityProps extends React.HTMLAttributes<HTMLOListElement> {
   children?: React.ReactNode;
@@ -24,74 +26,6 @@ export interface AgentActivityStepProps extends React.LiHTMLAttributes<HTMLLIEle
   /** The result, a tool name, a count — whatever makes the step checkable. */
   detail?: React.ReactNode;
 }
-
-const STATUS_TEXT: Record<AgentActivityStatus, string> = {
-  pending: 'Not started',
-  active: 'In progress',
-  done: 'Done',
-  failed: 'Failed',
-  skipped: 'Skipped',
-};
-
-const Glyphs: Record<AgentActivityStatus, () => React.ReactElement> = {
-  pending: () => (
-    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false">
-      <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="2" />
-    </svg>
-  ),
-  active: () => (
-    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false">
-      <circle
-        cx="12"
-        cy="12"
-        r="9"
-        stroke="currentColor"
-        strokeWidth="2"
-        opacity="0.3"
-      />
-      <path
-        d="M21 12a9 9 0 0 0-9-9"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-      />
-    </svg>
-  ),
-  done: () => (
-    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false">
-      <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="2" />
-      <path
-        d="m8.5 12 2.5 2.5 4.5-5"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  ),
-  failed: () => (
-    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false">
-      <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="2" />
-      <path
-        d="m9 9 6 6M15 9l-6 6"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-      />
-    </svg>
-  ),
-  skipped: () => (
-    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false">
-      <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="2" />
-      <path
-        d="M8.5 12h7"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-      />
-    </svg>
-  ),
-};
 
 /**
  * AgentActivity — what the agent is doing, in plain language.
@@ -176,7 +110,7 @@ export const AgentActivityStep = forwardRef<
   HTMLLIElement,
   AgentActivityStepProps
 >(({ children, status = 'pending', detail, className, ...rest }, ref) => {
-  const Glyph = Glyphs[status];
+  const Glyph = STATUS_GLYPHS[status];
   return (
     <li
       {...rest}
