@@ -1,0 +1,41 @@
+{
+  "name": "@ionbase-ui/demo",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Ionbase Ops — a fictional AI ops console built only from ionbase-ui and ionbase-icons. Not published. See docs/demo-app-plan.md.",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint . && stylelint \"src/**/*.css\"",
+    "format": "prettier --check .",
+    "coverage": "node scripts/verify-coverage.mjs",
+    "test:smoke": "node scripts/smoke.mjs"
+  },
+  "dependencies": {
+    "@visx/axis": "^4.0.0",
+    "@visx/curve": "^4.0.0",
+    "@visx/group": "^4.0.0",
+    "@visx/heatmap": "^4.0.0",
+    "@visx/responsive": "^4.0.0",
+    "@visx/scale": "^4.0.0",
+    "@visx/shape": "^4.0.0",
+    "ionbase-icons": "workspace:*",
+    "ionbase-ui": "workspace:*",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "@types/react": "^19.2.17",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^6.1.1",
+    "axe-core": "^4.12.1",
+    "playwright": "^1.62.0",
+    "stylelint": "^17.14.1",
+    "stylelint-config-standard": "^40.0.0",
+    "stylelint-declaration-strict-value": "^1.11.1",
+    "vite": "^8.1.5"
+  }
+}

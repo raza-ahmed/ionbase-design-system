@@ -86,6 +86,20 @@ that a test failing only on the runner silently freezes the live site at an old
 commit — that happened for two days in August 2026 and nobody noticed, because
 every check people looked at was on a branch.
 
+**The demo deploys inside the Storybook site, at `/demo/`.** GitHub Pages gives
+a repo one site, so `deploy-storybook` builds [`apps/demo`](apps/demo) into
+`storybook-static/demo/` with `DEMO_BASE_PATH` set, and waits on the `demo` job
+as well. That job is the only place this repo checks an app's landmark
+structure — Storybook's a11y config turns axe's `region` rule off, correctly,
+because a story has no `<main>`. The demo's smoke test runs axe with every rule
+on, over every route in both themes.
+
+**`lib/` in `.gitignore` matches source directories, not just build output.**
+`apps/demo/src/lib/` went uncommitted for three commits because of it; the
+local build passed throughout, because the files existed on disk. There is an
+explicit exception for the demo. A new package with a `src/lib/` needs one too
+— check with `git check-ignore -v <path>`.
+
 ---
 
 ## Interaction tests — hover is a pulse, not a level
@@ -635,10 +649,11 @@ reasons do not generalise:
   give a Popover room to open). That is fixture scaffolding, and the off-scale
   values are arbitrary on purpose.
 
-**This repo contains no consumer app code, so that second rule's real target is
-not exercised by `pnpm lint` at all.** Its coverage comes from the plugin's own
-fixtures. If you change it, test it there — a green `pnpm lint` says nothing
-about it.
+**[`apps/demo`](apps/demo/) is the one consumer app, and it runs all five.** It
+takes the plugin and the stylelint config by their package specifiers, exactly
+as a consumer does, with nothing relaxed. It is still a small app, so the
+plugin's own fixtures remain the primary coverage for a rule change — test
+there first. See [docs/demo-app-plan.md](docs/demo-app-plan.md).
 
 ---
 

@@ -9,6 +9,10 @@ build/
 lib/
 out/
 *.tsbuildinfo
+# `lib/` above means build output, but it matches source directories too. The
+# demo's src/lib/ went uncommitted for three commits because of it, and only a
+# fresh clone would have shown the build was broken.
+!apps/demo/src/lib/
 
 # ---- Turborepo ----
 .turbo/

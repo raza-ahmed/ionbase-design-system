@@ -1,0 +1,88 @@
+/*
+ * Chart colour, as CSS. A CSS `fill` / `stroke` overrides the SVG presentation
+ * attribute visx writes, and it resolves `var()` everywhere — the attribute
+ * does not reliably. See docs/demo-app-plan.md §3.
+ */
+.demo-chart {
+  display: grid;
+  gap: var(--spacing-12);
+  margin: 0;
+}
+
+.demo-chart__caption {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-8);
+}
+
+.demo-chart__tick {
+  fill: var(--text-tertiary);
+  font-family: var(--font-family-sans);
+  font-size: var(--type-caption);
+}
+
+.demo-chart__axis line {
+  stroke: var(--border-default);
+}
+
+.demo-chart__grid {
+  stroke: var(--border-subtle);
+}
+
+.demo-chart__target {
+  stroke: var(--border-stronger);
+  stroke-dasharray: 4 4;
+}
+
+.demo-chart__line {
+  fill: none;
+  stroke: var(--chart-1);
+  stroke-width: 2;
+}
+
+.demo-chart__point {
+  fill: var(--surface-default);
+  stroke: var(--chart-1);
+  stroke-width: 2;
+}
+
+.demo-chart__point--miss {
+  fill: var(--chart-7);
+  stroke: var(--chart-7);
+}
+
+.demo-legend {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-6);
+}
+
+.demo-heat {
+  fill: var(--chart-1);
+}
+
+.demo-heat--0 {
+  fill: var(--surface-sunken);
+}
+
+.demo-heat--1 {
+  fill-opacity: 0.18;
+}
+
+.demo-heat--2 {
+  fill-opacity: 0.36;
+}
+
+.demo-heat--3 {
+  fill-opacity: 0.56;
+}
+
+.demo-heat--4 {
+  fill-opacity: 0.78;
+}
+
+.demo-heat--5 {
+  fill-opacity: 1;
+}
