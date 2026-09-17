@@ -1,0 +1,79 @@
+{
+  "status": "stable",
+  "summary": "Where a person writes to an agent: a growing text field, a send control that becomes the stop control while a run is going, and slots for attachments and tools.",
+  "useWhen": [
+    "a chat or assistant surface where the user's message starts a run",
+    "a command bar that sends free text to an agent"
+  ],
+  "useInstead": [
+    {
+      "when": "the text is a form value submitted with other fields",
+      "use": "Textarea",
+      "why": "Enter-to-send inside a form fights the form's own submit, and a single field of a larger form is not a composer"
+    },
+    {
+      "when": "the input is a single-line search",
+      "use": "Input",
+      "why": "a search box does not grow, does not stop runs, and Enter means search rather than send"
+    },
+    {
+      "when": "the run needs a stop control and was not started from this composer",
+      "use": "AgentStop",
+      "why": "the composer's stop belongs to the run it sent; a run started elsewhere keeps its stop beside its own activity"
+    }
+  ],
+  "variants": {
+    "submitKey": {
+      "enter": {
+        "use": "the default — chat. Enter sends, Shift+Enter is a new line"
+      },
+      "mod-enter": {
+        "use": "long messages, where a stray Enter is expensive. Cmd/Ctrl+Enter sends and Enter is a new line"
+      }
+    }
+  },
+  "slots": {
+    "actions": {
+      "accepts": "Button",
+      "note": "attach, a model picker, a tool toggle — at the start of the toolbar. Icon-only buttons need their own aria-label"
+    },
+    "attachments": {
+      "accepts": "Badge",
+      "note": "what is attached, above the text. Each removable item needs a remove control named for the file"
+    }
+  },
+  "a11y": {
+    "requires": [
+      "`label` — the accessible name of the field. A placeholder is not one: it disappears on the first keystroke"
+    ],
+    "guarantees": [
+      "the send key is described through aria-describedby, so a screen-reader user knows Enter sends before pressing it",
+      "Enter pressed while an IME is composing never sends — Japanese, Chinese and Korean input confirm candidates with Enter",
+      "while `isRunning` with `onStop`, the send control is replaced in place by AgentStop, with its guarantees: it keeps its place while stopping and announces once",
+      "focus stays in the field after sending, so the next message can be typed straight away"
+    ],
+    "notes": [
+      "the field stays editable while a run is going; only submitting is refused",
+      "uncontrolled, the field clears on send and a rejected onSubmit promise restores the text — unless the user has already started typing something new"
+    ]
+  },
+  "antiPatterns": [
+    {
+      "dont": "<Textarea> beside a <Button> with an onKeyDown that checks for Enter",
+      "do": "<PromptInput label=\"Message\" onSubmit={send} />",
+      "why": "the hand-built version sends mid-character for IME users and loses the prompt when sending fails"
+    },
+    {
+      "dont": "a separate AgentStop elsewhere on screen as well as `isRunning` with `onStop`",
+      "why": "two stop controls for one run raises the question of whether they do different things"
+    },
+    {
+      "dont": "`isRunning` without `onStop`",
+      "why": "the send control disables and nothing replaces it — the user can see the agent working and has no way to stop it"
+    },
+    {
+      "dont": "controlled `value` cleared in onSubmit before the request settles",
+      "why": "controlled, restoring the text on failure is the caller's job; clearing early and not restoring loses the message"
+    }
+  ]
+}

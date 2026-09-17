@@ -1,0 +1,126 @@
+/*
+ * PromptInput
+ *
+ * NOT DRAWN IN FIGMA. The box is Textarea's — surface, border, hover and focus
+ * roles unchanged — one radius rung larger, because it holds a toolbar and
+ * reads as a surface rather than a field. The send control is Button `sm`
+ * made square; the stop control is AgentStop `sm`, unmodified.
+ *
+ * The border and focus live on the BOX, not the textarea. The box is what
+ * looks like the field, so it is what shows focus; a ring around only the text
+ * area inside it would draw a field within a field.
+ *
+ * States are BEM modifiers and `:focus-within`, never `[data-*]`, so the
+ * contrast gate measures them — see stepper.css for what happens otherwise.
+ */
+.ion-prompt-input {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-8);
+  padding: var(--spacing-8);
+  border: var(--border-width-default) solid var(--border-default);
+  border-radius: var(--radius-lg);
+  background-color: var(--surface-default);
+  color: var(--text-default);
+  font-family: var(--font-family-sans);
+  cursor: text;
+  transition: border-color var(--ion-duration-base) var(--ion-ease-out);
+}
+
+@media (hover: hover) {
+  .ion-prompt-input:hover:not(.ion-prompt-input--disabled) {
+    border-color: var(--border-strong);
+  }
+}
+
+/*
+ * Same specificity as the hover rule above and declared after it, so focus
+ * wins while the pointer is still over the box — which it always is right
+ * after a click into the field.
+ */
+.ion-prompt-input:focus-within:not(.ion-prompt-input--disabled) {
+  border-color: var(--border-focus);
+}
+
+.ion-prompt-input__attachments {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-8);
+  padding-inline: var(--spacing-4);
+}
+
+.ion-prompt-input__field {
+  display: block;
+  width: 100%;
+  margin: 0;
+
+  /* Lines the text up with the actions' left edge below it. */
+  padding: var(--spacing-4);
+  border: 0;
+  outline: none;
+  background-color: transparent;
+  color: var(--text-default);
+  font: inherit;
+  font-size: var(--type-body);
+  line-height: var(--type-body-line-height);
+
+  /* Height is set from the content, up to maxRows; a grip would fight it. */
+  resize: none;
+}
+
+/* text/tertiary, as Textarea — text/placeholder was retired for 2.38:1. */
+.ion-prompt-input__field::placeholder {
+  color: var(--text-tertiary);
+  opacity: 1;
+}
+
+.ion-prompt-input__toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-8);
+  cursor: default;
+}
+
+.ion-prompt-input__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-4);
+  min-width: 0;
+}
+
+/*
+ * Square, at Button's own `sm` height. Two classes, so it outranks
+ * `.ion-button--sm` without depending on which stylesheet loads first.
+ */
+.ion-prompt-input .ion-prompt-input__send {
+  --ion-button-padding-x: 0;
+
+  flex: none;
+  width: var(--spacing-32);
+}
+
+.ion-prompt-input__stop {
+  flex: none;
+}
+
+.ion-prompt-input--disabled {
+  border-color: var(--border-disabled);
+  background-color: var(--surface-disabled);
+  cursor: not-allowed;
+}
+
+.ion-prompt-input--disabled .ion-prompt-input__field {
+  color: var(--text-disabled);
+  cursor: not-allowed;
+}
+
+.ion-prompt-input--disabled .ion-prompt-input__field::placeholder {
+  color: var(--text-disabled);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ion-prompt-input {
+    transition: none;
+  }
+}
