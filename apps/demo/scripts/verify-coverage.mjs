@@ -17,7 +17,11 @@ import { fileURLToPath } from 'node:url';
 const REQUIRED = [
   // Phase 1 — shell and Overview
   'Header',
-  'NavItem',
+  // NavItem left with the header nav: PageShell forbids listing the same
+  // destinations in a Sidebar and a Header.
+  'Sidebar',
+  'SidebarSection',
+  'SidebarItem',
   'Logo',
   'Avatar',
   'ToastProvider',

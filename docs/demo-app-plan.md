@@ -45,7 +45,7 @@ applies.
 
 | Screen                      | Pattern(s)                        | Components on show                                                                                                                                                          |
 | --------------------------- | --------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| App shell (all screens)     | `PageShell`                       | Header, NavItem, Logo/LogoMark, Avatar, Breadcrumb, Drawer (mobile nav), ToastProvider, Tooltip                                                                             |
+| App shell (all screens)     | `PageShell`                       | Header, Sidebar, SidebarSection, SidebarItem, Logo/LogoMark, Avatar, Popover + Menu (workspace switcher), Breadcrumb, Drawer (mobile nav), ToastProvider, Tooltip           |
 | **Overview**                | `PageShell`                       | StatTile (local stand-in for KPI tiles), Badge, ProgressBar, Skeleton, Alert, DateRangePicker, Tabs, plus visx charts: run heatmap (weekday × hour) and a success-rate line |
 | **Agents**                  | `DataTable`, `DestructiveConfirm` | Table, Pagination, Combobox/Select filters, Checkbox (bulk select), Menu, Modal, EmptyState, Toast                                                                          |
 | **New agent** (from Agents) | `Wizard`, `Form`                  | Input, Textarea, PhoneInput, Radio, Checkbox, DatePicker, FileUpload, Button, ProgressBar                                                                                   |

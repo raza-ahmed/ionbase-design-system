@@ -9,8 +9,72 @@ body {
   font-family: var(--font-family-sans);
 }
 
+/*
+ * The shell: a sticky header across the top, the sidebar column pinned beside
+ * a fluid content column. Only the page scrolls; the sidebar scrolls its own
+ * body when the navigation is taller than the window.
+ */
 .demo-app {
+  --demo-header-height: calc(var(--spacing-48) + var(--spacing-8));
+
+  display: grid;
+  grid-template-columns: calc(var(--spacing-128) * 2) minmax(0, 1fr);
+  grid-template-rows: auto 1fr;
   min-height: 100vh;
+}
+
+.demo-header {
+  /* Flush with the sidebar column, not Header's marketing-page inset. */
+  --ion-header-padding-x: var(--spacing-16);
+
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  grid-column: 1 / -1;
+}
+
+.demo-sidebar {
+  position: sticky;
+  top: var(--demo-header-height);
+  height: calc(100vh - var(--demo-header-height));
+}
+
+.demo-brand-row {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-8);
+}
+
+.demo-nav-toggle {
+  display: none;
+}
+
+.ion-sidebar .demo-workspace {
+  justify-content: flex-start;
+  width: 100%;
+}
+
+.demo-nav-drawer .ion-drawer__body {
+  padding: 0;
+}
+
+.demo-nav-drawer .ion-sidebar {
+  border-inline-end: 0;
+}
+
+/* Header's own breakpoint: below it the sidebar moves into the Drawer. */
+@media (width < 896px) {
+  .demo-app {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .demo-sidebar {
+    display: none;
+  }
+
+  .demo-nav-toggle {
+    display: inline-flex;
+  }
 }
 
 .demo-muted {
@@ -31,14 +95,11 @@ body {
   font-weight: var(--font-weight-semibold);
 }
 
-.demo-nav {
-  display: contents;
-}
-
 .demo-main {
-  max-width: var(--container-max-width);
-  margin: 0 auto;
-  padding: var(--spacing-32) var(--spacing-24) var(--spacing-128);
+  width: 100%;
+  max-width: calc(var(--container-max-width) + var(--spacing-64));
+  padding: var(--spacing-24) var(--spacing-32) var(--spacing-128);
+  box-sizing: border-box;
 }
 
 .demo-page {

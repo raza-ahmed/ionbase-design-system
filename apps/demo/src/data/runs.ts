@@ -279,6 +279,11 @@ export function summaryFor(runId: string): RunSummary | undefined {
   return HISTORY.find((r) => r.id === runId);
 }
 
+/** Runs paused on a person, for the navigation's count. Synchronous: the nav is chrome, and chrome never waits on data. */
+export function listWaitingRuns(): RunSummary[] {
+  return HISTORY.filter((r) => r.outcome === 'waiting');
+}
+
 export async function listRuns(
   settings: CallSettings,
   signal: AbortSignal,
