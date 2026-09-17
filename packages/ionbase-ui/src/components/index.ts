@@ -151,6 +151,13 @@ export type {
 export { Drawer } from './Drawer.js';
 export type { DrawerProps, DrawerPlacement, DrawerSize } from './Drawer.js';
 
+export { SegmentedControl, SegmentedControlItem } from './SegmentedControl.js';
+export type {
+  SegmentedControlProps,
+  SegmentedControlItemProps,
+  SegmentedControlSize,
+} from './SegmentedControl.js';
+
 export { NumberInput } from './NumberInput.js';
 export type { NumberInputProps, NumberInputSize } from './NumberInput.js';
 

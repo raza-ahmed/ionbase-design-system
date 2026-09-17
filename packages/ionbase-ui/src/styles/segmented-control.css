@@ -1,0 +1,179 @@
+/*
+ * SegmentedControl
+ *
+ * NOT DRAWN IN FIGMA. It is Tabs' pill track, token for token: the muted
+ * track, the 2px gap, the default-surface selected segment, the page-surface
+ * selected hover, and the overall height ladder (32/40/48, 12/16/20 padding). Two
+ * components that look identical must not drift into looking almost
+ * identical, so if tabs.css changes its pill, this changes with it.
+ *
+ * Two deliberate differences from the pill track. It is `inline-flex` in every
+ * orientation, because a radiogroup has none. And the track radius is `lg`
+ * rather than `full`, so `--full-width` does not stretch a stadium shape across
+ * a card.
+ *
+ * States are BEM modifiers (`--selected`, `--disabled`, `--focus-visible`),
+ * never `[data-*]`, and the track surface is on the block, so the contrast gate
+ * measures the translucent hover against it — see stepper.css and
+ * number-input.css for the two ways that goes wrong.
+ */
+.ion-segmented-control {
+  --ion-segmented-item-height: var(--spacing-32);
+  --ion-segmented-item-padding-x: var(--spacing-16);
+  --ion-segmented-item-gap: var(--spacing-8);
+  --ion-segmented-icon-size: var(--icon-size-md);
+  --ion-segmented-font-size: var(--type-body);
+  --ion-segmented-line-height: var(--type-body-line-height);
+
+  display: inline-flex;
+  gap: var(--spacing-2);
+  padding: var(--spacing-4);
+  border-radius: var(--radius-lg);
+  background-color: var(--surface-muted);
+  color: var(--text-tertiary);
+  font-family: var(--font-family-sans);
+}
+
+/* Item heights are the pill's 40/32/48 less the track's 4px inset on each side. */
+.ion-segmented-control--sm {
+  --ion-segmented-item-height: var(--spacing-24);
+  --ion-segmented-item-padding-x: var(--spacing-12);
+  --ion-segmented-item-gap: var(--spacing-6);
+  --ion-segmented-icon-size: var(--icon-size-sm);
+  --ion-segmented-font-size: var(--type-body-sm);
+  --ion-segmented-line-height: var(--type-body-sm-line-height);
+}
+
+.ion-segmented-control--lg {
+  --ion-segmented-item-height: var(--spacing-40);
+  --ion-segmented-item-padding-x: var(--spacing-20);
+  --ion-segmented-font-size: var(--type-body-lg);
+  --ion-segmented-line-height: var(--type-body-lg-line-height);
+}
+
+.ion-segmented-control--full-width {
+  display: flex;
+}
+
+.ion-segmented-control__item {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--ion-segmented-item-gap);
+  min-height: var(--ion-segmented-item-height);
+  padding-inline: var(--ion-segmented-item-padding-x);
+  border-radius: var(--radius-md);
+  color: var(--text-tertiary);
+  font-size: var(--ion-segmented-font-size);
+  line-height: var(--ion-segmented-line-height);
+  font-weight: var(--font-weight-medium);
+  white-space: nowrap;
+  cursor: pointer;
+  user-select: none;
+  transition:
+    color var(--ion-duration-base) var(--ion-ease-out),
+    background-color var(--ion-duration-base) var(--ion-ease-out);
+}
+
+.ion-segmented-control--full-width .ion-segmented-control__item {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+.ion-segmented-control__icon {
+  display: inline-flex;
+  flex: none;
+}
+
+.ion-segmented-control__icon svg {
+  width: var(--ion-segmented-icon-size);
+  height: var(--ion-segmented-icon-size);
+}
+
+.ion-segmented-control__label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* `.ion-field` is a column that stretches its children; a labelled control
+ * keeps its own width unless it was asked to fill. */
+.ion-segmented-control-field {
+  align-items: flex-start;
+}
+
+.ion-segmented-control-field--full-width {
+  align-items: stretch;
+}
+
+/*
+ * State order is specificity, not `:not()` lists. The contrast gate splits a
+ * selector at every comma and reads `--disabled` inside `:not(...)` as the
+ * disabled state, so a hover rule guarded with `:not(--selected, --disabled)`
+ * was measured as disabled text on a hover surface — two failures for a
+ * combination that never renders. Plain rules, ordered, say the same thing
+ * and are read correctly:
+ *
+ *   hover (0,2,0) -> selected (0,1,0) -> selected hover (0,2,0)
+ *   -> disabled (0,2,0) -> disabled selected (0,3,0)
+ */
+@media (hover: hover) {
+  .ion-segmented-control__item:hover {
+    background-color: var(--surface-hover);
+    color: var(--text-default);
+  }
+}
+
+.ion-segmented-control__item--selected {
+  background-color: var(--surface-default);
+  color: var(--text-default);
+}
+
+@media (hover: hover) {
+  .ion-segmented-control__item--selected:hover {
+    background-color: var(--surface-page);
+  }
+}
+
+/*
+ * Focus lands on the hidden radio, so the ring is drawn on the segment around
+ * it. Tabs' ring: 2px `ring/focus`, offset by its own width.
+ */
+.ion-segmented-control__item--focus-visible {
+  outline: var(--border-width-thick) solid var(--ring-focus);
+  outline-offset: var(--border-width-thick);
+}
+
+/*
+ * Two classes, so it outranks hover: a disabled segment does not react.
+ *
+ * The track's own surface rather than `transparent` — identical on screen,
+ * because the segment sits on the track. `transparent` is not a token, and the
+ * contrast gate drops a pairing whose background it cannot resolve without
+ * saying so: disabled text was simply absent from its list.
+ */
+.ion-segmented-control .ion-segmented-control__item--disabled {
+  background-color: var(--surface-muted);
+  color: var(--text-disabled);
+  cursor: not-allowed;
+}
+
+/*
+ * A disabled SELECTED segment must still show which one is selected — a
+ * disabled control still has a value. Only the text dims.
+ */
+.ion-segmented-control
+  .ion-segmented-control__item--selected.ion-segmented-control__item--disabled {
+  background-color: var(--surface-default);
+}
+
+@media (forced-colors: active) {
+  .ion-segmented-control__item--selected {
+    outline: var(--border-width-thick) solid;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ion-segmented-control__item {
+    transition: none;
+  }
+}
