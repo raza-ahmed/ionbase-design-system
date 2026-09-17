@@ -147,9 +147,11 @@
  * Two classes, so it outranks hover: a disabled segment does not react.
  *
  * The track's own surface rather than `transparent` — identical on screen,
- * because the segment sits on the track. `transparent` is not a token, and the
- * contrast gate drops a pairing whose background it cannot resolve without
- * saying so: disabled text was simply absent from its list.
+ * because the segment sits on the track. It is explicit for the contrast gate:
+ * with `transparent` the surface is inherited from the block, and the gate
+ * treats a single modifier that takes its surface from the block, while a
+ * compound of it (`--selected` + `--disabled`) supplies its own, as a state
+ * that cannot render — and drops it without counting a skip.
  */
 .ion-segmented-control .ion-segmented-control__item--disabled {
   background-color: var(--surface-muted);
