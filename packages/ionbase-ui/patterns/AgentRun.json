@@ -9,6 +9,7 @@
     "AgentActivity",
     "AgentActivityStep",
     "AgentStop",
+    "PromptInput",
     "StreamingText",
     "Alert",
     "Badge"
@@ -17,6 +18,7 @@
     "A header row carrying the task name and the AgentStop control. The stop is the first thing on screen and it stays there for the whole run.",
     "An AgentActivity list of AgentActivityStep, one per step, in the order they happened. Exactly one step is `active` at a time.",
     "The result below the log, in a StreamingText with `isStreaming` true until the run ends.",
+    "When the run was started from a PromptInput, that composer's `isRunning` stop IS the run's AgentStop. Render one stop control, not two.",
     "An Alert only when the run fails or is stopped — not for ordinary progress, which the step log already carries."
   ],
   "states": {
@@ -41,6 +43,7 @@
     "AgentActivity": ["announceActive"],
     "AgentActivityStep": ["status", "detail"],
     "AgentStop": ["onStop", "isStopping", "label", "size", "stopOnEscape"],
+    "PromptInput": ["label", "onSubmit", "isRunning", "onStop", "isStopping"],
     "StreamingText": ["isStreaming", "minLines", "label", "hideCursor"],
     "Alert": ["intent", "title"],
     "Badge": ["intent", "size"]

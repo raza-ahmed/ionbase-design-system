@@ -1,5 +1,42 @@
 # Changelog
 
+## 0.62.0 — 2026-09-17
+
+### Added — `PromptInput`
+
+The agentic tier could show a run, stop it and cite its answer, but had no
+place for a person to write to the agent. Every product assembles one from a
+Textarea and a Button, and every one re-implements the same four bugs. This
+component exists to not have them.
+
+- **Enter during IME composition does not send.** Japanese, Chinese and Korean
+  input confirm a candidate with Enter; a handler that ignores `isComposing`
+  sends the message mid-character. Invisible on an English keyboard, and it
+  excludes whole languages. `keyCode 229` covers Safari, which reports the
+  keydown before setting the flag.
+- **A failed send restores the prompt.** Uncontrolled, the field clears straight
+  away — waiting on the server makes a composer feel broken — and a rejected
+  `onSubmit` promise puts the text back, unless the user has already started a
+  new message.
+- **Send becomes stop, in place.** While `isRunning` with `onStop`, the send
+  control is replaced by `AgentStop` with its guarantees intact. The field stays
+  editable; only submitting is refused.
+- **The keyboard contract is announced.** "Press Enter to send, Shift and Enter
+  for a new line" is the field's description, because a screen-reader user who
+  presses Enter expecting a newline has just sent a message.
+
+`label` is required: a placeholder is not an accessible name. `submitKey` is
+`enter` (chat) or `mod-enter` (long messages). `actions` and `attachments` are
+slots — what a product attaches and which tools it offers are its decisions.
+
+`AgentRun` now composes it, with one rule: the composer's stop IS the run's
+AgentStop, so a run started from it renders one stop control, not two.
+
+Screenshots caught what the tests could not: `:hover:not(--disabled)` outranked
+`:focus-within`, and the pointer is always over the box right after clicking
+into it — so the focus border never showed. The IME and restore tests were each
+confirmed to fail with their guard removed.
+
 ## 0.61.0 — 2026-09-17
 
 ### Added — `Stepper`, `StepperStep`

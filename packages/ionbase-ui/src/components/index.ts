@@ -151,6 +151,9 @@ export type {
 export { Drawer } from './Drawer.js';
 export type { DrawerProps, DrawerPlacement, DrawerSize } from './Drawer.js';
 
+export { PromptInput } from './PromptInput.js';
+export type { PromptInputProps, PromptInputSubmitKey } from './PromptInput.js';
+
 export { Stepper, StepperStep } from './Stepper.js';
 export type {
   StepperProps,
