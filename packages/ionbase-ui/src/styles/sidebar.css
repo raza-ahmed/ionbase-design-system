@@ -1,0 +1,304 @@
+/*
+ * Sidebar
+ *
+ * NOT DRAWN IN FIGMA. Rows take Menu Item's rhythm — 32px, 8px inset, `md`
+ * radius — because a sidebar row and a menu row are the same density of
+ * choice. Hover and current are fills (`surface/hover`, `surface/selected`),
+ * which is exactly where this parts company with NavItem: NavItem was measured
+ * as a header link that recolours and never fills.
+ *
+ * Written against the contrast gate's known limits (AGENTS.md, "How a
+ * stylesheet goes unmeasured"): state is BEM modifiers, the sidebar's surface
+ * is on the block so the translucent hover has a ground in this file, and there
+ * are no `:not()` lists.
+ */
+.ion-sidebar {
+  display: flex;
+  flex-direction: column;
+  inline-size: 100%;
+  block-size: 100%;
+  min-block-size: 0;
+  border-inline-end: var(--border-width-default) solid var(--border-subtle);
+  background-color: var(--surface-page);
+  color: var(--text-secondary);
+  font-family: var(--font-family-sans);
+  font-size: var(--type-body-sm);
+  line-height: var(--type-body-sm-line-height);
+}
+
+.ion-sidebar__header,
+.ion-sidebar__footer {
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  gap: var(--spacing-8);
+  padding: var(--spacing-12);
+}
+
+.ion-sidebar__header {
+  border-block-end: var(--border-width-default) solid var(--border-subtle);
+}
+
+.ion-sidebar__footer {
+  border-block-start: var(--border-width-default) solid var(--border-subtle);
+}
+
+/* Only the middle scrolls, so the switcher and Invite stay put. */
+.ion-sidebar__body {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: var(--spacing-16);
+  min-block-size: 0;
+  padding: var(--spacing-12) var(--spacing-8);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+/* ---------------------------------------------------------------- section */
+
+.ion-sidebar__section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2);
+}
+
+.ion-sidebar__section-header {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-4);
+  min-block-size: var(--spacing-24);
+  padding-inline: var(--spacing-8) var(--spacing-4);
+}
+
+.ion-sidebar__section-title {
+  display: inline-flex;
+  flex: 1 1 auto;
+  align-items: center;
+  gap: var(--spacing-4);
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-xs);
+  background: none;
+  color: var(--text-tertiary);
+  font: inherit;
+  font-size: var(--type-caption);
+  line-height: var(--type-caption-line-height);
+  font-weight: var(--font-weight-medium);
+  text-align: start;
+}
+
+button.ion-sidebar__section-title {
+  cursor: pointer;
+}
+
+.ion-sidebar__section-actions {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: var(--spacing-2);
+}
+
+/* -------------------------------------------------------------------- list */
+
+.ion-sidebar__list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/*
+ * Indentation accumulates by nesting, so depth needs no prop and no inline
+ * style: each level is one more padded list inside the last.
+ */
+.ion-sidebar__list--nested {
+  margin-block-start: var(--spacing-2);
+  padding-inline-start: var(--spacing-16);
+}
+
+/* A hidden list is `hidden`; the display above must not override it. */
+.ion-sidebar__list[hidden] {
+  display: none;
+}
+
+/* --------------------------------------------------------------------- row */
+
+.ion-sidebar__row {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  min-block-size: var(--spacing-32);
+  padding-inline-end: var(--spacing-4);
+  border-radius: var(--radius-md);
+  color: var(--text-secondary);
+}
+
+.ion-sidebar__link {
+  display: flex;
+  flex: 1 1 auto;
+  align-items: center;
+  gap: var(--spacing-8);
+  min-inline-size: 0;
+  min-block-size: var(--spacing-32);
+  margin: 0;
+  padding: 0 var(--spacing-8);
+  border: 0;
+  border-radius: var(--radius-md);
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: start;
+  text-decoration: none;
+}
+
+a.ion-sidebar__link,
+button.ion-sidebar__link {
+  cursor: pointer;
+}
+
+.ion-sidebar__icon {
+  display: inline-flex;
+  flex: none;
+  color: var(--icon-secondary);
+}
+
+.ion-sidebar__icon svg,
+.ion-sidebar__chevron svg {
+  width: var(--icon-size-sm);
+  height: var(--icon-size-sm);
+}
+
+/* Long names truncate; the full text is still the link's accessible name. */
+.ion-sidebar__label {
+  flex: 1 1 auto;
+  min-inline-size: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ion-sidebar__badge {
+  flex: none;
+  color: var(--text-tertiary);
+  font-size: var(--type-caption);
+  line-height: var(--type-caption-line-height);
+  font-variant-numeric: tabular-nums;
+}
+
+.ion-sidebar__chevron {
+  display: inline-flex;
+  flex: none;
+  color: var(--icon-tertiary);
+  transition: transform var(--ion-duration-base) var(--ion-ease-out);
+}
+
+.ion-sidebar__chevron--expanded,
+.ion-sidebar__section-title--expanded .ion-sidebar__chevron {
+  transform: rotate(90deg);
+}
+
+/* The separate expand button of a row that is also a link. */
+.ion-sidebar__toggle {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: var(--spacing-24);
+  height: var(--spacing-24);
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: none;
+  color: inherit;
+  cursor: pointer;
+}
+
+/*
+ * Row actions. Hidden until the row is hovered or holds focus — `opacity`,
+ * not `display` or `visibility`, so they stay in the tab order and appear the
+ * moment focus reaches them. Always shown where there is no hover to reveal
+ * them, or a touch user could never find them.
+ */
+.ion-sidebar__actions {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: var(--spacing-2);
+  opacity: 0;
+}
+
+.ion-sidebar__row:hover .ion-sidebar__actions,
+.ion-sidebar__row:focus-within .ion-sidebar__actions {
+  opacity: 1;
+}
+
+@media (hover: none) {
+  .ion-sidebar__actions {
+    opacity: 1;
+  }
+}
+
+/* ------------------------------------------------------------------ states */
+
+@media (hover: hover) {
+  .ion-sidebar__row:hover {
+    background-color: var(--surface-hover);
+    color: var(--text-default);
+  }
+}
+
+.ion-sidebar__row--current {
+  background-color: var(--surface-selected);
+  color: var(--text-default);
+  font-weight: var(--font-weight-medium);
+}
+
+.ion-sidebar__row--current .ion-sidebar__icon {
+  color: var(--icon-primary);
+}
+
+@media (hover: hover) {
+  .ion-sidebar__row--current:hover {
+    background-color: var(--surface-selected-hover);
+  }
+}
+
+/*
+ * Two classes, so a disabled row does not react to hover. The page surface is
+ * repeated rather than `transparent`, which the contrast gate would read as an
+ * inherited surface and drop — see the note in segmented-control.css.
+ */
+.ion-sidebar .ion-sidebar__row--disabled {
+  background-color: var(--surface-page);
+  color: var(--text-disabled);
+  cursor: not-allowed;
+}
+
+.ion-sidebar .ion-sidebar__row--disabled .ion-sidebar__icon {
+  color: var(--icon-disabled);
+}
+
+.ion-sidebar__link:focus-visible,
+.ion-sidebar__toggle:focus-visible,
+.ion-sidebar__section-title:focus-visible {
+  outline: var(--border-width-thick) solid var(--border-focus);
+  outline-offset: calc(-1 * var(--border-width-thick));
+}
+
+@media (forced-colors: active) {
+  .ion-sidebar__row--current {
+    outline: var(--border-width-default) solid;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ion-sidebar__chevron {
+    transition: none;
+  }
+}

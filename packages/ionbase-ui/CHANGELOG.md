@@ -1,5 +1,46 @@
 # Changelog
 
+## 0.67.0 — 2026-09-17
+
+### Added — `Sidebar`, `SidebarSection`, `SidebarItem`
+
+An application's navigation as a column, modelled on two reference workspace
+products: a pinned header and footer that take any component — a workspace
+switcher, icon buttons, an Invite button, a trial notice — around a scrolling
+body of titled, collapsible sections and nested items that expand.
+
+**Disclosure navigation, not `role="tree"`.** The file-tree look invites the
+tree role, and it would have ruled out the feature both references lean on
+most: a treeview takes the arrow keys, allows one tab stop, and forbids
+interactive content inside an item, so the `…` and `+` on a row could not exist.
+This is the WAI-ARIA disclosure navigation pattern — nested lists of links, each
+level behind a real button with `aria-expanded`, everything reachable with Tab.
+
+- **A link that also expands gets two controls.** A button cannot sit inside a
+  link, so a row with `href` and children renders the link and a separate expand
+  button beside it. A row with children and no `href` is one button.
+- **The current page is never folded away.** A row whose subtree holds the
+  current page starts open — tested two levels deep, and the test fails with the
+  rule removed.
+- **Row actions appear on hover or focus.** `opacity`, not `display`, so they stay
+  in the tab order and show the moment focus reaches them; always visible where
+  there is no hover. The focus half is tested and fails with the rule removed.
+- **Only the body scrolls.** Header and footer stay put.
+
+Rows are fills — `surface/hover`, `surface/selected` — which is exactly where this
+parts from `NavItem`, measured as a header link that recolours without filling.
+`SidebarItem` and `NavItem` point at each other in their intent files.
+
+`PageShell` now describes the sidebar layout: Sidebar beside `<main>` as the
+primary navigation, Header keeping brand and account, and below the tablet
+breakpoint the same Sidebar inside a Drawer — one copy, not two.
+
+Written against the contrast gate's documented limits from the start — BEM
+modifier state, the surface on the block, no `:not()` lists. 56 new pairings
+measured, 0 unexpected, and `dropped` held at 2.
+
+Not in this release: an icon-only collapsed rail, and drawing it in Figma.
+
 ## 0.66.0 — 2026-09-17
 
 ### Fixed — the contrast gate was not measuring what it reported green

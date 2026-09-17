@@ -1,0 +1,62 @@
+{
+  "status": "stable",
+  "summary": "One sidebar row: a link or a button, with an icon, a count, actions revealed on hover or focus, and nested items that expand.",
+  "useWhen": ["inside a SidebarSection, or nested inside another SidebarItem"],
+  "useInstead": [
+    {
+      "when": "it is a link in a header bar",
+      "use": "NavItem",
+      "why": "NavItem recolours on hover without a fill, as measured for the header; sidebar rows fill"
+    },
+    {
+      "when": "it is a row in a dropdown",
+      "use": "MenuItem"
+    }
+  ],
+  "slots": {
+    "icon": {
+      "accepts": "Icon",
+      "note": "decorative; label names the row"
+    },
+    "badge": {
+      "accepts": "text",
+      "note": "a count or short status, trailing"
+    },
+    "actions": {
+      "accepts": "Button",
+      "note": "icon-only Buttons with aria-label, or a Menu trigger for more. Keep to two"
+    },
+    "children": {
+      "accepts": "SidebarItem",
+      "note": "nested items; their presence makes the row expandable"
+    }
+  },
+  "a11y": {
+    "requires": [
+      "`label` — the row's name, and the name of its expand button when it has children"
+    ],
+    "guarantees": [
+      "`isCurrent` sets aria-current=\"page\" on the link",
+      "a row with `href` and children renders the link and a separate expand button beside it — a button cannot be nested in a link",
+      "a row with children and no `href` is a single button with aria-expanded",
+      "a row whose subtree holds the current page starts expanded",
+      "actions stay in the tab order and become visible when focus reaches them; they are always visible on touch screens"
+    ]
+  },
+  "antiPatterns": [
+    {
+      "dont": "onClick on a row to navigate",
+      "do": "href",
+      "why": "a real link opens in a new tab, shows its address and is announced as a link"
+    },
+    {
+      "dont": "actions nested inside the label or icon",
+      "do": "the actions prop",
+      "why": "interactive content inside a link is invalid and unreachable by keyboard in most browsers"
+    },
+    {
+      "dont": "marking a parent isCurrent because a child page is open",
+      "why": "only the page the user is on is current; its ancestors are opened for them instead"
+    }
+  ]
+}
