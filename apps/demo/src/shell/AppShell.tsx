@@ -9,7 +9,6 @@ import {
   Tooltip,
 } from 'ionbase-ui';
 import { Bell } from 'ionbase-icons/icons/bell';
-import { PanelLeft } from 'ionbase-icons/icons/panel-left';
 
 import { href, type Route } from '../lib/router';
 import { DemoControls } from './DemoControls';
@@ -29,39 +28,28 @@ export function AppShell({
   route: Route | null;
   children: ReactNode;
 }) {
-  const [menuOpen, setMenuOpen] = useState(false);
   const [navOpen, setNavOpen] = useState(false);
 
-  // Navigating from either mobile surface should close it.
-  useEffect(() => {
-    setMenuOpen(false);
-    setNavOpen(false);
-  }, [route]);
+  // Navigating from the mobile drawer should close it.
+  useEffect(() => setNavOpen(false), [route]);
 
   return (
     <div className="demo-app">
+      {/*
+       * menuType="dialog": the Header's own toggle opens the navigation Drawer,
+       * and the account actions stay in the bar at every width.
+       */}
       <Header
         className="demo-header"
-        menuLabel="Account menu"
-        open={menuOpen}
-        onOpenChange={setMenuOpen}
+        menuType="dialog"
+        menuLabel="Open navigation"
+        open={navOpen}
+        onOpenChange={setNavOpen}
         brand={
-          <span className="demo-brand-row">
-            {/* GAP: Header's own toggle can only open its own menu. */}
-            <span className="demo-nav-toggle">
-              <Button
-                variant="tertiary"
-                size="sm"
-                aria-label="Open navigation"
-                startIcon={<Icon as={PanelLeft} size="sm" />}
-                onPress={() => setNavOpen(true)}
-              />
-            </span>
-            <a href={href('overview')} className="demo-brand">
-              <Logo size="sm" wordmark="vector" />
-              <span className="demo-brand__product">Ops</span>
-            </a>
-          </span>
+          <a href={href('overview')} className="demo-brand">
+            <Logo size="sm" wordmark="vector" />
+            <span className="demo-brand__product">Ops</span>
+          </a>
         }
         end={
           <>

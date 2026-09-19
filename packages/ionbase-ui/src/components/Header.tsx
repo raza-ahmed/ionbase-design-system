@@ -46,6 +46,16 @@ export interface HeaderProps extends Omit<
   onOpenChange?: (open: boolean) => void;
   /** Accessible name for the mobile menu toggle. */
   menuLabel?: string;
+  /**
+   * What the mobile toggle opens.
+   *
+   * `panel` (default) is Figma's Mobile-Open: `center` and `end` drop below the
+   * bar. `dialog` is for an app whose navigation lives in a Sidebar: the toggle
+   * sits at the start of the bar and only reports `onOpenChange`, the caller
+   * opens a Drawer with it, and `center` and `end` stay in the bar at every
+   * width — so keep `center` empty and `end` short.
+   */
+  menuType?: 'panel' | 'dialog';
   children?: React.ReactNode;
 }
 
@@ -95,6 +105,7 @@ export const Header = forwardRef<HTMLElement, HeaderProps>(
       defaultOpen = false,
       onOpenChange,
       menuLabel = 'Menu',
+      menuType = 'panel',
       className,
       children,
       ...rest
@@ -118,19 +129,51 @@ export const Header = forwardRef<HTMLElement, HeaderProps>(
      * and it is handled on the header rather than the document so a header that
      * is never open never listens.
      */
+    const isDialog = menuType === 'dialog';
+
     const handleKeyDown = (event: React.KeyboardEvent<HTMLElement>) => {
-      if (event.key === 'Escape' && isOpen) toggle();
+      // A dialog owns its own Escape; the header only closes its own panel.
+      if (event.key === 'Escape' && isOpen && !isDialog) toggle();
       rest.onKeyDown?.(event);
     };
+
+    /*
+     * As a panel the toggle discloses the menu wrapper, which is always in the
+     * DOM, so aria-controls can point at it. As a dialog it opens something the
+     * caller mounts only while open — an aria-controls pointing at a missing id
+     * is an error — so it says what it opens with aria-haspopup instead.
+     */
+    const toggleButton = (
+      <button
+        type="button"
+        className="ion-header__toggle"
+        aria-expanded={isOpen}
+        aria-controls={isDialog ? undefined : menuId}
+        aria-haspopup={isDialog ? 'dialog' : undefined}
+        aria-label={menuLabel}
+        onClick={toggle}
+      >
+        {isOpen && !isDialog ? <CloseGlyph /> : <MenuGlyph />}
+      </button>
+    );
 
     return (
       <header
         {...rest}
         onKeyDown={handleKeyDown}
         ref={ref}
-        data-open={isOpen || undefined}
-        className={['ion-header', className].filter(Boolean).join(' ')}
+        data-open={(isOpen && !isDialog) || undefined}
+        className={[
+          'ion-header',
+          isDialog ? 'ion-header--dialog-menu' : '',
+          className,
+        ]
+          .filter(Boolean)
+          .join(' ')}
       >
+        {/* Start of the bar, in DOM order too, so focus order matches what is seen. */}
+        {isDialog && toggleButton}
+
         {brand && <div className="ion-header__brand">{brand}</div>}
 
         {/*
@@ -144,16 +187,7 @@ export const Header = forwardRef<HTMLElement, HeaderProps>(
 
         {children}
 
-        <button
-          type="button"
-          className="ion-header__toggle"
-          aria-expanded={isOpen}
-          aria-controls={menuId}
-          aria-label={menuLabel}
-          onClick={toggle}
-        >
-          {isOpen ? <CloseGlyph /> : <MenuGlyph />}
-        </button>
+        {!isDialog && toggleButton}
       </header>
     );
   },

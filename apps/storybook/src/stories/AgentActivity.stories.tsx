@@ -1,7 +1,7 @@
 import React from 'react';
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { expect } from 'storybook/test';
-import { AgentActivity, AgentActivityStep } from 'ionbase-ui';
+import { AgentActivity, AgentActivityStep, ToolCall } from 'ionbase-ui';
 
 const meta: Meta<typeof AgentActivity> = {
   title: 'Components/AgentActivity',
@@ -83,5 +83,42 @@ export const AnnouncesTheActiveStep: Story = {
     await expect(canvas.getByRole('status')).toHaveTextContent(
       'Drafting the summary',
     );
+  },
+};
+
+/**
+ * AgentRun puts a ToolCall under a step, and the ApprovalGate goes there too.
+ * Both are block content, so the detail and the body around it are divs: a
+ * <div> inside a <span> is invalid HTML that browsers only tolerate.
+ */
+export const DetailTakesBlockContent: Story = {
+  render: () => (
+    <AgentActivity>
+      <AgentActivityStep
+        status="done"
+        detail={
+          <ToolCall
+            title="Searched the invoice archive"
+            name="search_invoices"
+            status="done"
+            input={{ customer: 'C-221' }}
+            output={{ count: 2 }}
+          />
+        }
+      >
+        Found two overdue invoices
+      </AgentActivityStep>
+    </AgentActivity>
+  ),
+  play: async ({ canvasElement, canvas }) => {
+    const detail = canvasElement.querySelector(
+      '.ion-agent-activity__detail',
+    ) as HTMLElement;
+    await expect(detail.tagName).toBe('DIV');
+    await expect(detail.parentElement?.tagName).toBe('DIV');
+    await expect(canvasElement.querySelectorAll('span div')).toHaveLength(0);
+    await expect(
+      canvas.getByRole('button', { name: /Searched the invoice archive/ }),
+    ).toBeVisible();
   },
 };
