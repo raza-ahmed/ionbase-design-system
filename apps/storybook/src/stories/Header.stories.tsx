@@ -1,6 +1,6 @@
 import React from 'react';
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { expect, userEvent, within } from 'storybook/test';
+import { expect, fn, userEvent, within } from 'storybook/test';
 import { Header, Button, Divider, Logo, NavItem } from 'ionbase-ui';
 
 const meta: Meta<typeof Header> = {
@@ -210,5 +210,70 @@ export const SlotsAreNotDuplicatedAcrossBreakpoints: Story = {
     await expect(
       canvasElement.querySelectorAll('.ion-header__end'),
     ).toHaveLength(1);
+  },
+};
+
+const navToggled = fn();
+
+/**
+ * `menuType="dialog"` — for an app whose navigation is a Sidebar in a Drawer.
+ * The toggle leads the bar in DOM order, says it opens a dialog rather than
+ * pointing aria-controls at a Drawer that is not mounted, reports the press,
+ * and never opens the header's own panel. Escape belongs to the Drawer.
+ *
+ * Queried by class for the same reason as ToggleOpensTheMobileMenu: above the
+ * mobile breakpoint the toggle is `display: none`.
+ */
+export const DialogMenuOpensTheCallersDrawer: Story = {
+  render: () => (
+    <Header
+      menuType="dialog"
+      menuLabel="Open navigation"
+      onOpenChange={navToggled}
+      brand={<Logo size="sm" wordmark="vector" />}
+      end={actions}
+    />
+  ),
+  play: async ({ canvasElement }) => {
+    navToggled.mockClear();
+    const header = canvasElement.querySelector('.ion-header') as HTMLElement;
+    const toggle = canvasElement.querySelector(
+      '.ion-header__toggle',
+    ) as HTMLElement;
+
+    await expect(header.firstElementChild).toBe(toggle);
+    await expect(toggle).toHaveAttribute('aria-haspopup', 'dialog');
+    await expect(toggle).not.toHaveAttribute('aria-controls');
+    await expect(toggle).toHaveAttribute('aria-expanded', 'false');
+
+    await userEvent.click(toggle);
+    await expect(navToggled).toHaveBeenCalledWith(true);
+    await expect(toggle).toHaveAttribute('aria-expanded', 'true');
+    await expect(header).not.toHaveAttribute('data-open');
+
+    (canvasElement.querySelector('.ion-header button') as HTMLElement).focus();
+    await userEvent.keyboard('{Escape}');
+    await expect(navToggled).toHaveBeenCalledTimes(1);
+  },
+};
+
+/** Only one menu button exists in either mode. */
+export const OneToggleInEitherMode: Story = {
+  render: () => (
+    <>
+      <Header brand={<Logo size="sm" wordmark="vector" />} end={actions} />
+      <Header
+        menuType="dialog"
+        brand={<Logo size="sm" wordmark="vector" />}
+        end={actions}
+      />
+    </>
+  ),
+  play: async ({ canvasElement }) => {
+    for (const header of canvasElement.querySelectorAll('.ion-header')) {
+      await expect(header.querySelectorAll('.ion-header__toggle')).toHaveLength(
+        1,
+      );
+    }
   },
 };

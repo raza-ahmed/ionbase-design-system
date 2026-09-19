@@ -22,7 +22,7 @@
     "One <main> content region, named, holding the page's own heading as its h1.",
     "ToastProvider mounted once around the whole shell, not per route.",
     "Breadcrumbs, when present, sit inside <main> above the h1 — they describe where the content is, not where the chrome is.",
-    "When navigation is hierarchical or longer than a header row holds, a Sidebar replaces the NavItems in Header's `center`: Header keeps the brand and account actions, and the Sidebar sits beside <main> as the primary navigation. Below the tablet breakpoint the same Sidebar moves into a Drawer opened from Header — one copy, not two."
+    "When navigation is hierarchical or longer than a header row holds, a Sidebar replaces the NavItems in Header's `center`: Header keeps the brand and account actions, and the Sidebar sits beside <main> as the primary navigation. Below the tablet breakpoint the same Sidebar moves into a Drawer opened by Header's own toggle with `menuType=\"dialog\"` — one copy, not two, and one menu button."
   ],
   "states": {
     "loading": {
@@ -39,7 +39,15 @@
     }
   },
   "propsUsed": {
-    "Header": ["brand", "center", "end", "open", "onOpenChange", "menuLabel"],
+    "Header": [
+      "brand",
+      "center",
+      "end",
+      "open",
+      "onOpenChange",
+      "menuLabel",
+      "menuType"
+    ],
     "NavItem": ["icon", "showChevron", "href"],
     "Sidebar": ["label", "header", "footer"],
     "SidebarSection": ["title", "isCollapsible", "actions"],
@@ -50,7 +58,12 @@
     "LogoMark": ["size", "label"]
   },
   "variantsUsed": {
-    "ToastProvider": { "placement": ["top-right"] }
+    "ToastProvider": {
+      "placement": ["top-right"]
+    },
+    "Header": {
+      "menuType": ["dialog"]
+    }
   },
   "a11y": {
     "requires": [

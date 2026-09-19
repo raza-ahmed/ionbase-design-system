@@ -188,6 +188,32 @@
 }
 
 /*
+ * menuType="dialog": the toggle opens the caller's Drawer, so there is no
+ * panel. The slots keep their bar layout below the breakpoint, and the end
+ * slot is pushed to the far edge because the toggle now leads.
+ */
+@media (width < 896px) {
+  .ion-header.ion-header--dialog-menu .ion-header__menu {
+    display: contents;
+  }
+
+  .ion-header--dialog-menu .ion-header__center {
+    flex-direction: row;
+    align-items: center;
+    width: auto;
+  }
+
+  .ion-header--dialog-menu .ion-header__end {
+    width: auto;
+    margin-inline-start: auto;
+  }
+
+  .ion-header--dialog-menu .ion-header__end > * {
+    flex: none;
+  }
+}
+
+/*
  * Forced-colors: box-shadow is dropped by the OS, so the toggle would lose its
  * only edge. A border in ButtonText keeps it visible.
  */

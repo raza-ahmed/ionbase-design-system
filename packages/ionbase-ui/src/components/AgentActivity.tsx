@@ -127,10 +127,15 @@ export const AgentActivityStep = forwardRef<
       <span className="ion-agent-activity__glyph" aria-hidden="true">
         <Glyph />
       </span>
-      <span className="ion-agent-activity__body">
+      {/*
+       * Divs, not spans: `detail` takes block content — the ToolCall and
+       * ApprovalGate the AgentRun pattern puts under a step — and a <div> inside
+       * a <span> is invalid HTML that browsers merely tolerate.
+       */}
+      <div className="ion-agent-activity__body">
         <span className="ion-agent-activity__label">{children}</span>
-        {detail && <span className="ion-agent-activity__detail">{detail}</span>}
-      </span>
+        {detail && <div className="ion-agent-activity__detail">{detail}</div>}
+      </div>
       {/* Status as text, not only as a coloured shape. */}
       <span className="ion-visually-hidden">{STATUS_TEXT[status]}</span>
     </li>

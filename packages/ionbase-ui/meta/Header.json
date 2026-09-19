@@ -35,7 +35,8 @@
     "guarantees": [
       "the mobile toggle carries `aria-expanded` and `aria-controls` pointing at the menu container",
       "Escape closes the open mobile menu — and the listener sits on the header, so a header that never opens never listens",
-      "the slots are rendered once, so no nav link exists twice in the accessibility tree"
+      "the slots are rendered once, so no nav link exists twice in the accessibility tree",
+      "with `menuType=\"dialog\"` the toggle carries `aria-haspopup=\"dialog\"` instead of `aria-controls` — the Drawer it opens is not in the DOM while closed — and comes first in DOM order as well as on screen"
     ],
     "requires": [
       "`menuLabel` — the mobile toggle is icon-only and has no other name"
@@ -56,6 +57,25 @@
     {
       "dont": "passing `open` without `onOpenChange`",
       "why": "controlled with no handler means the toggle can never change it"
+    },
+    {
+      "dont": "a second menu button in `brand` to open a navigation Drawer",
+      "do": "<Header menuType=\"dialog\" open={navOpen} onOpenChange={setNavOpen} />",
+      "why": "the built-in toggle still renders, so a phone shows two menu buttons that open different things"
+    },
+    {
+      "dont": "NavItems in `center` with `menuType=\"dialog\"`",
+      "why": "nothing collapses them any more — they overflow a phone, and they duplicate the Sidebar the dialog opens"
     }
-  ]
+  ],
+  "variants": {
+    "menuType": {
+      "panel": {
+        "use": "the default, Figma's Mobile-Open — `center` and `end` drop into a panel below the bar"
+      },
+      "dialog": {
+        "use": "the app's navigation is a Sidebar. The toggle moves to the start of the bar and only reports `onOpenChange`; open a Drawer holding the same Sidebar with it. `center` and `end` stay in the bar at every width"
+      }
+    }
+  }
 }

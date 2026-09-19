@@ -44,7 +44,14 @@ const meta: Meta<typeof Sidebar> = {
   tags: ['autodocs'],
   decorators: [
     (Story) => (
-      <div style={{ width: '280px', height: '720px' }}>
+      <div
+        style={{
+          width: '280px',
+          height: '720px',
+          padding: '0 16px 0 0',
+          background: 'var(--surface-page)',
+        }}
+      >
         <Story />
       </div>
     ),

@@ -1,5 +1,45 @@
 # Changelog
 
+## 0.68.0 — 2026-09-19
+
+Two gaps the demo app logged against the system while it was rebuilt as a
+dashboard, and the sidebar's surface.
+
+### Added — `Header` `menuType="dialog"`
+
+PageShell says that below the tablet breakpoint the Sidebar moves into a
+Drawer "opened from Header", but nothing in Header could open one: its toggle
+only ever opened its own panel. The demo had to add a second menu button in
+`brand`, so a phone showed two menu buttons that opened different things.
+
+`menuType="dialog"` hands the toggle to the caller. It sits at the start of the
+bar in DOM order as well as on screen, reports presses through `onOpenChange`,
+and never opens the header's panel; `center` and `end` stay in the bar at every
+width. It carries `aria-haspopup="dialog"` instead of `aria-controls`, because
+the Drawer it opens is not in the DOM while closed and an `aria-controls`
+pointing at a missing id is an error. Escape is left to the Drawer. The default,
+`panel`, is unchanged.
+
+PageShell's sidebar structure now names it, and Header's intent file lists a
+second menu button in `brand` as an anti-pattern. Tested; the test fails with
+the toggle returned to the end of the bar.
+
+### Fixed — `AgentActivityStep` detail is a `<div>`
+
+`detail` rendered in a `<span>`, inside another `<span>`. AgentRun puts a
+ToolCall under a step, and an ApprovalGate waits there too — both block
+content, so every run log produced a `<div>` inside a `<span>`: invalid HTML
+that browsers tolerate and no check caught. The body and detail are divs now,
+and the intent file says the slot accepts ToolCall and ApprovalGate. The
+rendered layout is identical. Tested; the test fails with the span restored.
+
+### Changed — `Sidebar` sits on `surface/default`
+
+The column was `surface/page`, the same as the page beside it, so only its
+border separated the two. It is `surface/default` now — the step a card takes
+against the page — and the disabled row repeats the new surface. Contrast gate:
+1556 pairings, 0 unexpected, `dropped` still 2.
+
 ## 0.67.0 — 2026-09-17
 
 ### Added — `Sidebar`, `SidebarSection`, `SidebarItem`
