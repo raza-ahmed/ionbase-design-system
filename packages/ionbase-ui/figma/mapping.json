@@ -989,7 +989,11 @@
       "code": "NavItem",
       "props": {
         "State": {
-          "ignore": "Default and Hover are CSS and React Aria's useHover, not props"
+          "prop": "isCurrent",
+          "when": {
+            "Current": true
+          },
+          "note": "Default and Hover are CSS and React Aria useHover, not props."
         },
         "Label#53:0": {
           "prop": "children"

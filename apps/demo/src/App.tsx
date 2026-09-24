@@ -27,6 +27,11 @@ const NewAgentWizard = lazy(() =>
 const RunsScreen = lazy(() =>
   import('./screens/runs/RunsScreen').then((m) => ({ default: m.RunsScreen })),
 );
+const AgentDetail = lazy(() =>
+  import('./screens/agent-detail/AgentDetail').then((m) => ({
+    default: m.AgentDetail,
+  })),
+);
 const RunDetail = lazy(() =>
   import('./screens/runs/RunDetail').then((m) => ({ default: m.RunDetail })),
 );
@@ -58,6 +63,13 @@ export function App() {
             {route === 'overview' && <Overview />}
             {route === 'agents' && <AgentsScreen />}
             {route === 'agents/new' && <NewAgentWizard />}
+            {route?.startsWith('agents/') && route !== 'agents/new' && (
+              <AgentDetail
+                key={route.split('/')[1]}
+                id={route.split('/')[1]}
+                tab={route.endsWith('/runs') ? 'runs' : 'overview'}
+              />
+            )}
             {route === 'runs' && <RunsScreen />}
             {route?.startsWith('runs/') && (
               <RunDetail key={route} runId={route.slice('runs/'.length)} />

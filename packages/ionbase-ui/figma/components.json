@@ -1141,7 +1141,7 @@
         },
         "State": {
           "type": "VARIANT",
-          "options": ["Default", "Hover"],
+          "options": ["Default", "Hover", "Current"],
           "default": "Default"
         }
       }

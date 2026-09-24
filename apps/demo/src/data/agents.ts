@@ -381,3 +381,107 @@ export async function createAgent(
   agents = [agent, ...agents];
   return agent;
 }
+
+/* ------------------------------------------------------------ one agent */
+
+export interface AgentDay {
+  day: IsoDay;
+  completed: number;
+  failed: number;
+  stopped: number;
+}
+
+export interface AgentRunRow {
+  id: string;
+  day: IsoDay;
+  outcome: 'completed' | 'failed' | 'stopped';
+  durationSec: number;
+}
+
+export interface AgentDetail {
+  agent: Agent;
+  /** Runs per day for the last 14 days, oldest first. `null` when the metrics source failed. */
+  daily: AgentDay[] | null;
+  /** Newest first. */
+  recentRuns: AgentRunRow[];
+  medianDurationSec: number | null;
+}
+
+/** Deterministic noise, so a reload shows the same fortnight. */
+const noise = (seed: number) => {
+  const x = Math.sin(seed * 9301 + 49297) * 233280;
+  return x - Math.floor(x);
+};
+
+/** `null` is "no agent with this id" — the screen's not-found, not an error. */
+export async function getAgent(
+  id: string,
+  settings: CallSettings,
+  signal: AbortSignal,
+): Promise<AgentDetail | null> {
+  await read(
+    settings,
+    signal,
+    'The agents service did not respond (HTTP 503).',
+  );
+  const agent = agents.find((a) => a.id === id);
+  if (!agent) return null;
+
+  const seed = [...id].reduce((n, c) => n + c.charCodeAt(0), 0);
+  const idle =
+    settings.state === 'empty' ||
+    agent.status === 'draft' ||
+    agent.status === 'paused';
+  const failRate = 1 - (agent.successRate ?? 95) / 100;
+  const perDay = idle ? 0 : Math.max(4, Math.round((agent.runs7d ?? 70) / 7));
+
+  const daily: AgentDay[] = Array.from({ length: 14 }, (_, i) => {
+    const day = addDays(today(), i - 13);
+    if (idle) return { day, completed: 0, failed: 0, stopped: 0 };
+    const total = Math.round(perDay * (0.6 + noise(seed + i) * 0.8));
+    // Each run draws its own outcome at the agent's own rates, so the chart
+    // agrees with the success-rate tile. Rounding a rate per day instead
+    // gave 0 failures on every day of a 93% agent.
+    let failed = 0;
+    let stopped = 0;
+    for (let j = 0; j < total; j++) {
+      const r = noise(seed + i * 31 + j);
+      if (r < failRate) failed += 1;
+      else if (r > 0.98) stopped += 1;
+    }
+    return {
+      day,
+      completed: Math.max(0, total - failed - stopped),
+      failed,
+      stopped,
+    };
+  });
+
+  const recentRuns: AgentRunRow[] = idle
+    ? []
+    : Array.from({ length: 12 }, (_, i) => {
+        const r = noise(seed + i * 11);
+        return {
+          id: `${id}-r${120 - i}`,
+          day: addDays(today(), -Math.floor(i / 3)),
+          outcome: r < failRate ? 'failed' : r > 0.96 ? 'stopped' : 'completed',
+          durationSec: 20 + Math.round(noise(seed + i * 7) * 200),
+        };
+      });
+  const sorted = recentRuns.map((r) => r.durationSec).sort((a, b) => a - b);
+
+  return {
+    // Empty is a brand-new agent: nothing has run, so no rate and no last run
+    // either — a 93% success rate beside "no runs" is a page contradicting itself.
+    agent:
+      settings.state === 'empty'
+        ? { ...agent, runs7d: 0, successRate: null, lastRun: null }
+        : agent,
+    // Partial: the agent loaded, its metrics did not — the page still works.
+    daily: settings.state === 'partial' ? null : daily,
+    recentRuns,
+    medianDurationSec: sorted.length
+      ? sorted[Math.floor(sorted.length / 2)]
+      : null,
+  };
+}

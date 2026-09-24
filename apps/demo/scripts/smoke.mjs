@@ -32,6 +32,10 @@ const ROUTES = [
   'overview',
   'agents',
   'agents/new',
+  // A failing agent, so the chart has all three series and the table has
+  // every outcome badge.
+  'agents/agt_wx',
+  'agents/agt_wx/runs',
   'runs',
   'runs/run_4821',
   'assistant',

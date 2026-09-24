@@ -50,6 +50,7 @@ applies.
 | **Agents**                  | `DataTable`, `DestructiveConfirm` | Table, Pagination, Combobox/Select filters, Checkbox (bulk select), Menu, Modal, EmptyState, Toast                                                                          |
 | **New agent** (from Agents) | `Wizard`, `Form`                  | Input, Textarea, PhoneInput, Radio, Checkbox, DatePicker, FileUpload, Button, ProgressBar                                                                                   |
 | **Settings**                | `SettingsPanel`                   | Toggle, Select, Accordion, Divider, Link, Popover                                                                                                                           |
+| **Agent detail**            | `PageShell`                       | NavItem (`isCurrent` section switcher), FullCard, Badge, Button, StatGroup/StatTile, Table, EmptyState, plus a visx stacked bar chart with ChartLegend and ChartTooltip     |
 | **Agent runs**              | `AgentRun`, `HumanApproval`       | AgentActivity, AgentStop, ApprovalGate, ConfidenceIndicator, Spinner, StreamingText                                                                                         |
 | **Assistant**               | `AssistantAnswer`                 | StreamingText, Citation, ConfidenceIndicator, Textarea, ScrollProgress                                                                                                      |
 

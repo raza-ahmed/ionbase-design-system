@@ -3,6 +3,7 @@ import {
   Avatar,
   Badge,
   Button,
+  Link,
   Icon,
   Menu,
   MenuItem,
@@ -26,6 +27,7 @@ import {
   type AgentStatus,
 } from '../../data/agents';
 import { formatDay } from '../../lib/dates';
+import { href } from '../../lib/router';
 
 const STATUS_INTENT: Record<
   AgentStatus,
@@ -125,7 +127,12 @@ export function AgentsTable({
             >
               <TableCell>
                 <span className="demo-cell-stack">
-                  <span className="ion-text--semibold">{a.name}</span>
+                  <Link
+                    href={href(`agents/${a.id}`)}
+                    className="ion-text--semibold"
+                  >
+                    {a.name}
+                  </Link>
                   <span className="ion-text-caption demo-muted">
                     {a.purpose}
                   </span>

@@ -1,5 +1,38 @@
 # Changelog
 
+## 0.76.0 — 2026-09-25
+
+### Added — `NavItem` `isCurrent`
+
+A section switcher built from NavItems could not say which section you were
+in: NavItem had Default and Hover and nothing else, while Sidebar Item has had
+a Current state all along. Found by building the demo's agent page, whose
+Overview / Runs switcher is navigation — each tab its own URL — and so is
+NavItems, not Tabs.
+
+- `isCurrent` sets `aria-current="page"` and draws the indicator Tabs'
+  underline variant already uses: `text/default` over a `border-width/thick`
+  rule in `border/primary`. NavItem never fills, so it takes Tabs' current
+  state rather than Sidebar's. The rule is an inset shadow, so the current
+  item is no taller than the others; forced-colours mode, which drops
+  shadows, gets a text underline instead.
+- Figma: `Nav Item` gains `State=Current`, mapped to `isCurrent`, with its Dev
+  Mode block re-applied and all 67 verified.
+
+### Fixed — NavItem's weight
+
+Figma binds the label to `font/weight/medium` in every state; the stylesheet
+had read regular since the July package merge. Every NavItem — the header nav
+included — is now medium, as drawn.
+
+### Demo
+
+- A new agent page, `#/agents/:id` and its `/runs` tab, linked from the
+  Agents table: FullCard presenting the agent with its 14-day stacked run chart
+  in the media frame, ChartLegend and ChartTooltip on it, StatTiles, and a
+  recent-runs Table. Loading, error, not-found, empty and partial are all
+  real. The demo now shows **75 of 75** components.
+
 ## 0.75.0 — 2026-09-25
 
 ### Added — `useAgentRun`, the state behind an agent run
