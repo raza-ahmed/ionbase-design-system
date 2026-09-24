@@ -6,6 +6,7 @@ import {
   Breadcrumb,
   BreadcrumbItem,
   Button,
+  Card,
   EmptyState,
   FullCard,
   Icon,
@@ -359,14 +360,10 @@ function Runs({ data }: { data: Detail }) {
     );
   }
   return (
-    // A plain container, not a named <section>: the Table's scroll region is
-    // already a landmark named by this heading, and two landmarks with one
-    // name are two doors with the same sign.
-    <div className="demo-panel">
-      <h2 id="runs-title" className="ion-text-h6">
-        Recent runs
-      </h2>
-      <Table aria-labelledby="runs-title">
+    // Not a region: the Table's scroll region is already a landmark with this
+    // name, and two landmarks with one name are two doors with the same sign.
+    <Card title="Recent runs" isRegion={false}>
+      <Table aria-label="Recent runs">
         <TableHead>
           <TableRow>
             <TableCell>Run</TableCell>
@@ -392,7 +389,7 @@ function Runs({ data }: { data: Detail }) {
           ))}
         </TableBody>
       </Table>
-    </div>
+    </Card>
   );
 }
 

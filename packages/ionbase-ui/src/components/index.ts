@@ -106,6 +106,8 @@ export type {
   ScrollProgressSection,
   ScrollProgressPlacement,
 } from './ScrollProgress.js';
+export { Card } from './Card.js';
+export type { CardProps, CardHeadingLevel, CardIntent } from './Card.js';
 export { FullCard } from './FullCard.js';
 export type {
   FullCardProps,

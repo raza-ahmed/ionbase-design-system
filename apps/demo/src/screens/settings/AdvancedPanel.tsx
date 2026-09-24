@@ -3,6 +3,7 @@ import {
   AccordionItem,
   Badge,
   Button,
+  Card,
   Icon,
   Input,
   Link,
@@ -24,10 +25,7 @@ export function AdvancedPanel({
 }) {
   const enterprise = plan === 'Enterprise';
   return (
-    <section className="demo-panel" aria-labelledby="advanced-title">
-      <h2 id="advanced-title" className="ion-text-h6">
-        Advanced
-      </h2>
+    <Card title="Advanced">
       <Accordion headingLevel={3} allowsMultiple>
         <AccordionItem id="api" title="API access">
           <div className="demo-form__fields">
@@ -96,6 +94,6 @@ export function AdvancedPanel({
           )}
         </AccordionItem>
       </Accordion>
-    </section>
+    </Card>
   );
 }

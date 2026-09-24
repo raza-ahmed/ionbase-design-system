@@ -1,0 +1,75 @@
+{
+  "status": "stable",
+  "since": "0.77.0",
+  "summary": "A bordered surface that groups one part of a page, with an optional title row. A titled card is a named region; an untitled one is a plain surface.",
+  "useWhen": [
+    "a page is several distinct groups — settings sections, dashboard panels, a log beside a chart",
+    "a group needs a title, a one-line description or a single action like \"All runs\"",
+    "a loading placeholder needs the same frame as the content it stands in for"
+  ],
+  "useInstead": [
+    {
+      "when": "it is a feature row with a headline, text and a media panel",
+      "use": "FullCard"
+    },
+    {
+      "when": "it is one headline figure and how it moved",
+      "use": "StatTile"
+    },
+    {
+      "when": "the content is a list of settings, each with a label and a control",
+      "use": "SettingRow"
+    },
+    {
+      "when": "the message needs the user's attention now rather than a place on the page",
+      "use": "Alert"
+    }
+  ],
+  "composition": {
+    "note": "The title row is built from props — `title`, `description`, `action` — so every card lays it out the same way. The body is `children`, spaced 12 apart by the card's grid.",
+    "example": "<Card title=\"Recent runs\" action={<Link variant=\"standalone\" href=\"/runs\">All runs</Link>}><Table aria-label=\"Recent runs\">…</Table></Card>"
+  },
+  "variants": {
+    "intent": {
+      "default": {
+        "use": "every card that is not a danger zone"
+      },
+      "danger": {
+        "use": "a card of irreversible actions — delete the workspace, transfer ownership. The rule turns red; the title must still say what is at stake"
+      }
+    }
+  },
+  "a11y": {
+    "guarantees": [
+      "a titled card renders a <section> named by its heading, so it is a landmark a screen reader can jump to",
+      "an untitled card renders a <div>, never an unnamed <section>",
+      "the danger intent is a border colour only, so the meaning stays in the words"
+    ],
+    "requires": [
+      "the right `headingLevel` for where the card sits in the page outline",
+      "`isRegion={false}` when the card's only content is a landmark named by the same words, such as a Table labelled by the card's title"
+    ],
+    "notes": [
+      "`headingLevel` takes 2-6 and defaults to 2. It is a number rather than a variant because it is an outline decision, not a visual one: the title looks the same at every level.",
+      "`description` renders only under a `title`. An untitled card has no title row to put it in."
+    ]
+  },
+  "antiPatterns": [
+    {
+      "dont": "a heading passed in `children` instead of `title`",
+      "why": "the card does not become a named region, and the title row loses its layout for `description` and `action`"
+    },
+    {
+      "dont": "several buttons in `action`",
+      "why": "the title row wraps and the card reads as a toolbar; `action` is for one control — put the rest in the body"
+    },
+    {
+      "dont": "relying on `intent=\"danger\"` alone to warn",
+      "why": "a red border is not read aloud and is easy to miss; the title and the button labels must say what cannot be undone"
+    },
+    {
+      "dont": "cards nested inside cards",
+      "why": "border inside border reads as a mistake; group the inner content with a heading or a Divider instead"
+    }
+  ]
+}

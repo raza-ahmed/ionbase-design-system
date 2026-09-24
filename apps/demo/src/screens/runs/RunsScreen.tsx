@@ -5,6 +5,7 @@ import {
   AvatarGroup,
   Badge,
   Button,
+  Card,
   EmptyState,
   Link,
   SegmentedControl,
@@ -54,9 +55,9 @@ export function RunsScreen() {
           </p>
           <div className="demo-queue">
             {[0, 1, 2].map((i) => (
-              <div key={i} className="demo-panel">
+              <Card key={i}>
                 <Skeleton variant="text" lines={3} />
-              </div>
+              </Card>
             ))}
           </div>
           <Skeleton variant="rect" height="var(--spacing-128)" />
@@ -118,24 +119,30 @@ function WaitingQueue({ runs }: { runs: RunSummary[] }) {
               (s) => s.kind === 'approval',
             );
             return (
-              <li key={r.id} className="demo-panel">
-                <div className="demo-queue__head">
-                  <h3 className="ion-text-h6">{r.task}</h3>
+              <li key={r.id}>
+                {/* Not a region each: the list already groups them, and a
+                    landmark per queued run would bury the page's own. */}
+                <Card
+                  className="demo-queue__card"
+                  title={r.task}
+                  headingLevel={3}
+                  isRegion={false}
+                  description={`${r.agent} · started ${ago(r.startedMinutesAgo)}`}
+                  action={
+                    gate?.kind === 'approval' && (
+                      <Badge size="sm" intent={RISK_INTENT[gate.risk]}>
+                        {`${gate.risk[0].toUpperCase()}${gate.risk.slice(1)} risk`}
+                      </Badge>
+                    )
+                  }
+                >
                   {gate?.kind === 'approval' && (
-                    <Badge size="sm" intent={RISK_INTENT[gate.risk]}>
-                      {`${gate.risk[0].toUpperCase()}${gate.risk.slice(1)} risk`}
-                    </Badge>
+                    <p className="ion-text-body-sm">{gate.title()}</p>
                   )}
-                </div>
-                <p className="ion-text-body-sm demo-muted">
-                  {r.agent} · started {ago(r.startedMinutesAgo)}
-                </p>
-                {gate?.kind === 'approval' && (
-                  <p className="ion-text-body-sm">{gate.title()}</p>
-                )}
-                <Link variant="standalone" href={href(`runs/${r.id}`)}>
-                  {`Review: ${r.task}`}
-                </Link>
+                  <Link variant="standalone" href={href(`runs/${r.id}`)}>
+                    {`Review: ${r.task}`}
+                  </Link>
+                </Card>
               </li>
             );
           })}

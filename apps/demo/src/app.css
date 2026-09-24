@@ -119,20 +119,7 @@ body {
   }
 }
 
-.demo-panel {
-  display: grid;
-  gap: var(--spacing-12);
-  padding: var(--spacing-16);
-  border: var(--border-width-default) solid var(--border-subtle);
-  border-radius: var(--radius-lg);
-  background-color: var(--surface-default);
-}
-
-.demo-panel h2 {
-  margin: 0;
-}
-
-.demo-panel__body {
+.demo-tab-body {
   padding-top: var(--spacing-16);
 }
 
@@ -314,12 +301,9 @@ body {
   margin: 0;
 }
 
-.demo-panel p {
+/* The demo's own reset: Card leaves its children's margins alone. */
+.ion-card p {
   margin: 0;
-}
-
-.demo-panel--danger {
-  border-color: var(--border-error-subtle);
 }
 
 .demo-savebar {
@@ -401,16 +385,8 @@ body {
   list-style: none;
 }
 
-.demo-queue .demo-panel {
-  gap: var(--spacing-8);
-  align-content: start;
-}
-
-.demo-queue__head {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: var(--spacing-8);
+.demo-queue__card {
+  height: 100%;
 }
 
 .demo-assistant {
