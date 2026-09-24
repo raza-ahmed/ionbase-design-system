@@ -1,5 +1,41 @@
 # Changelog
 
+## 0.75.0 — 2026-09-25
+
+### Added — `useAgentRun`, the state behind an agent run
+
+AgentActivity, ApprovalGate, StreamingText and AgentStop each render one state
+well, and nothing connected them: every product hand-built the logic that turns
+"step 3 started" into the right props on all four, and got a different edge
+wrong. That logic now ships once.
+
+- **Events in, props out.** A run reports `run-started`, `step-started`,
+  `step-done`, `step-failed`, `approval-requested`, `approval-resolved`,
+  `output`, `run-finished`, `run-failed`, `run-stopped`. `useAgentRun` returns
+  `log`, `stopProps`, `outputProps` and `approvalProps` to spread. The events
+  are plain JSON, so a backend can emit them and a run log can store them.
+- **The patterns' rules, enforced.** Exactly one step is active. A stop keeps
+  what was done and skips the rest. An approval nobody answered — stopped or
+  expired — is never a yes. A decision that did not reach the server stays
+  pending with its error. An ended run ignores late events.
+- **Live, replayed or rebuilt.** `dispatch` for a live run, `replay(recording)`
+  for a stored one, `agentRunFrom(events)` for a history page.
+- **Server-safe core.** `agentRunReducer`, `agentRunFrom` and `replayAgentRun`
+  have no React; only the hook is a client module.
+- Patterns: AgentRun and HumanApproval carry a `drivenBy` block naming the
+  hook and, for AgentRun, the full event list. `build-patterns` checks the hook
+  exists. `llms.txt` gains "Driving an agent run?".
+- Storybook: **Patterns/Agent run** — replay, approve, a decision that fails,
+  stop at the gate, and the reducer's rules without React.
+
+### Changed
+
+- The demo's run engine now reports events to `useAgentRun` instead of
+  computing statuses itself (422 → 303 lines). Every scenario was re-checked in
+  a browser: approve, reject, fail after approval, a decision that fails once,
+  expiry, stop at the gate, stop early, and all four recorded outcomes.
+- The demo's gap list is empty.
+
 ## 0.74.0 — 2026-09-25
 
 ### Added — chart styling for visx

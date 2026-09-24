@@ -39,7 +39,9 @@ if (!existsSync(DOC)) {
   process.exit(1);
 }
 
-const components = JSON.parse(readFileSync(DOC, 'utf8')).components;
+const doc = JSON.parse(readFileSync(DOC, 'utf8'));
+const components = doc.components;
+const hooks = doc.hooks ?? [];
 const version = JSON.parse(
   readFileSync(join(PKG, 'package.json'), 'utf8'),
 ).version;
@@ -75,6 +77,21 @@ for (const file of readdirSync(SRC)
   for (const c of composes)
     if (!components[c])
       err(name, `composes "${c}", which is not an exported component`);
+
+  /* 1b. A pattern whose states ship as code names the hook, and it must exist.
+   * Without this, a renamed hook leaves the recipe pointing at nothing. */
+  if (p.drivenBy) {
+    if (!hooks.includes(p.drivenBy.hook))
+      err(
+        name,
+        `drivenBy names "${p.drivenBy.hook}", which is not an exported hook`,
+      );
+    if (!p.drivenBy.note)
+      err(
+        name,
+        'drivenBy has no note — say what the hook owns and what it does not',
+      );
+  }
 
   /* 2. Every prop it names must be real, on a component it actually composes. */
   for (const [comp, props] of Object.entries(p.propsUsed ?? {})) {
@@ -179,6 +196,7 @@ const index = {
       {
         summary: p.summary,
         composes: p.composes,
+        ...(p.drivenBy ? { drivenBy: p.drivenBy.hook } : {}),
         states: Object.keys(p.states ?? {}),
         detail: `dist/meta/patterns/${name}.json`,
       },

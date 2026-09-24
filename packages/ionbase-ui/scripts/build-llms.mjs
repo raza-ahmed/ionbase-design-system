@@ -393,7 +393,9 @@ function renderPattern(name) {
   p();
   p(
     'A pattern is a documented composition of components, not a component. ' +
-      'Nothing here ships as code — build it from the pieces below.',
+      (c.drivenBy
+        ? `The markup is yours to build from the pieces below; its state ships as \`${c.drivenBy.hook}\`.`
+        : 'Nothing here ships as code — build it from the pieces below.'),
   );
   p();
   p(
@@ -404,6 +406,17 @@ function renderPattern(name) {
   p();
   p(`[Machine-readable version](./index.html.json)`);
   p();
+
+  if (c.drivenBy) {
+    p('## State');
+    p();
+    p(`Driven by \`${c.drivenBy.hook}\`. ${c.drivenBy.note}`);
+    p();
+    if (c.drivenBy.events?.length) {
+      p(list(c.drivenBy.events));
+      p();
+    }
+  }
 
   if (c.useWhen?.length) {
     p('## Use it when');
@@ -580,6 +593,7 @@ function hostedIndex() {
   }
 
   chartSection(p);
+  agentRunSection(p);
   p('## Coming from a Figma design?');
   p();
   p(
@@ -604,6 +618,24 @@ function hostedIndex() {
   p();
 
   return out.join('\n');
+}
+
+/* The agent components render states; this says what drives them. */
+function agentRunSection(p) {
+  p('## Driving an agent run?');
+  p();
+  p(
+    'Do not hand-build the state behind AgentActivity, ApprovalGate, ' +
+      'StreamingText and AgentStop. `useAgentRun()` takes the events a run ' +
+      'reports — `step-started`, `approval-requested`, `output`, ' +
+      '`run-stopped` and the rest — and returns `log`, `stopProps`, ' +
+      '`outputProps` and `approvalProps` to spread. It applies the AgentRun ' +
+      'and HumanApproval patterns: one active step, a stop keeps what was ' +
+      'done, an unanswered approval is never a yes. `replay(recording)` plays ' +
+      'a stored run; `agentRunFrom(events)` rebuilds a finished one. The full ' +
+      'event list is in `dist/meta/patterns/AgentRun.json` under `drivenBy`.',
+  );
+  p();
 }
 
 /*
@@ -720,6 +752,7 @@ function tarballIndex() {
   }
 
   chartSection(p);
+  agentRunSection(p);
   p('## Coming from a Figma design?');
   p();
   p(

@@ -269,3 +269,30 @@ export type {
   ChartTooltipProps,
   ChartTooltipRow,
 } from './Chart.js';
+
+/*
+ * Agent run state. One reducer turns what a run reports into the props
+ * AgentActivity, ApprovalGate, StreamingText and AgentStop take, so the
+ * AgentRun and HumanApproval patterns' rules live in code, once. The reducer
+ * and replay are server-safe; only the hook needs a client.
+ */
+export {
+  agentRunFrom,
+  agentRunHasEnded,
+  agentRunLog,
+  agentRunReducer,
+  initialAgentRunState,
+  replayAgentRun,
+} from './agent-run.js';
+export type {
+  AgentRunApproval,
+  AgentRunEvent,
+  AgentRunPhase,
+  AgentRunRecording,
+  AgentRunState,
+  AgentRunStep,
+  AgentRunStepStatus,
+  ReplayAgentRunOptions,
+} from './agent-run.js';
+export { useAgentRun } from './use-agent-run.js';
+export type { UseAgentRunOptions, UseAgentRunResult } from './use-agent-run.js';

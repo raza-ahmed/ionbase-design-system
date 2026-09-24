@@ -15,6 +15,20 @@
     "Alert",
     "Badge"
   ],
+  "drivenBy": {
+    "hook": "useAgentRun",
+    "note": "It turns the events a run reports into the props on AgentActivityStep (`status`), StreamingText (`outputProps`), AgentStop (`stopProps`) and ApprovalGate (`approvalProps`), and applies this pattern's states on the way: one active step, a stop keeps what was done and skips the rest, a failure marks the step that was running. It owns state, not markup or copy — which steps to show is `log`, and every sentence is yours. Feed it with `dispatch` from a live run or `replay(recording)` from a stored one; `agentRunFrom(events)` rebuilds a finished run without playing it.",
+    "events": [
+      "`run-started` — optionally with `steps: [{ id, label }]`, the plan, so steps the run never reaches can be named as not done",
+      "`step-started` { id, label? } — closes whichever step was active; exactly one is active at a time",
+      "`step-done` / `step-skipped` { id }",
+      "`step-failed` { id, error? }",
+      "`approval-requested` { id } — the step becomes the ApprovalGate; the run is `awaiting`",
+      "`approval-resolved` { id, decision: approved | rejected | expired, resolution? } — `expired` ends the run without acting",
+      "`output` { text } — appended; `output-done` ends streaming",
+      "`run-finished`, `run-failed` { error? }, `run-stopped` { resolution? } — the three ends a producer sends; after any end, later events are ignored"
+    ]
+  },
   "structure": [
     "A header row carrying the task name and the AgentStop control. The stop is the first thing on screen and it stays there for the whole run.",
     "An AgentActivity list of AgentActivityStep, one per step, in the order they happened. Exactly one step is `active` at a time.",
@@ -55,10 +69,18 @@
     "AgentActivityStep": {
       "status": ["pending", "active", "done", "failed", "skipped"]
     },
-    "AgentStop": { "size": ["sm", "md"] },
-    "ToolCall": { "status": ["active", "done", "failed", "skipped"] },
-    "Alert": { "intent": ["error", "warning"] },
-    "Badge": { "intent": ["neutral", "success", "error"] }
+    "AgentStop": {
+      "size": ["sm", "md"]
+    },
+    "ToolCall": {
+      "status": ["active", "done", "failed", "skipped"]
+    },
+    "Alert": {
+      "intent": ["error", "warning"]
+    },
+    "Badge": {
+      "intent": ["neutral", "success", "error"]
+    }
   },
   "a11y": {
     "requires": [

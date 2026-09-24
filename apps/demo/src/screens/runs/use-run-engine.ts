@@ -1,9 +1,22 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import {
+  useAgentRun,
+  type AgentRunEvent,
+  type AgentRunStepStatus,
+} from 'ionbase-ui';
 
 import type { RunOutcome, RunScript } from '../../data/runs';
 import type { DemoSettings } from '../../lib/demo-settings';
 
-export type StepStatus = 'pending' | 'active' | 'done' | 'failed' | 'skipped';
+/*
+ * The pretend backend. It plays a run script on timers and reports what
+ * happens as IonBase `AgentRunEvent`s; `useAgentRun` turns those into state.
+ * Everything here is the demo's — scenarios, latency, copy. What a stop, a
+ * failure or an unanswered approval MEANS for the step log is not decided here
+ * any more; that is the library's reducer, the same one a real product uses.
+ */
+
+export type StepStatus = AgentRunStepStatus;
 export type Scenario = 'approve' | 'fails' | 'submit-fails' | 'expires';
 export type Phase =
   | 'starting'
@@ -14,408 +27,276 @@ export type Phase =
   | 'stopped'
   | 'expired';
 
-export interface GateState {
-  status: 'pending' | 'approved' | 'rejected' | 'expired';
-  isSubmitting: boolean;
-  error: string | null;
-  resolution: string | null;
-  amount: string | undefined;
-}
-
-export interface RunState {
-  phase: Phase;
-  statuses: StepStatus[];
-  gate: GateState | null;
-  decision: 'approved' | 'rejected' | null;
-  output: string;
-  streaming: boolean;
-  isStopping: boolean;
-  /** Last step that began, or -1. The log shows steps up to here and no further. */
-  lastStarted: number;
-}
-
 /** Expiry window for the "expires" scenario — short, so it can be watched. */
 export const EXPIRY_SECONDS = 15;
 
-const initial = (script: RunScript): RunState => ({
-  phase: 'starting',
-  statuses: script.steps.map(() => 'pending'),
-  gate: null,
-  decision: null,
-  output: '',
-  streaming: false,
-  isStopping: false,
-  lastStarted: -1,
-});
+const STOPPED_UNDECIDED =
+  'The run was stopped before anyone decided, so nothing was sent.';
 
 const clock = () =>
   new Date().toLocaleTimeString('en', { hour: '2-digit', minute: '2-digit' });
 
-const setAt = <T>(list: T[], i: number, value: T) =>
-  list.map((v, j) => (j === i ? value : v));
+const plan = (script: RunScript) =>
+  script.steps.map((_, i) => ({ id: String(i) }));
 
-/** Everything after `from` that never ran is marked skipped, so no step still looks queued. */
-const skipRest = (statuses: StepStatus[], from: number): StepStatus[] =>
-  statuses.map((s, j) =>
-    j >= from && (s === 'pending' || s === 'active') ? 'skipped' : s,
-  );
-
-/** A finished run from the history, rebuilt without playing it. */
-function recorded(
+/** A finished run from the history, as the events it would have logged. */
+function recordedEvents(
   script: RunScript,
   outcome: Exclude<RunOutcome, 'waiting'>,
-): RunState {
+): AgentRunEvent[] {
+  const events: AgentRunEvent[] = [
+    { type: 'run-started', steps: plan(script) },
+  ];
   const gateAt = script.steps.findIndex((s) => s.kind === 'approval');
-  const sendAt = gateAt + 1;
-  const last = script.steps.length - 1;
-  const outputStep = script.steps[last];
-  const done = script.steps.map((): StepStatus => 'done');
-  const gate = (
-    status: GateState['status'],
-    resolution: string,
-  ): GateState => ({
-    status,
-    isSubmitting: false,
-    error: null,
-    resolution,
-    amount: undefined,
-  });
-  const text = (rejected: boolean) =>
-    outputStep.kind === 'output'
-      ? rejected
-        ? outputStep.outputIfRejected
-        : outputStep.output
-      : '';
-  const base = { ...initial(script), streaming: false, lastStarted: last };
+  const rejected = outcome === 'rejected';
 
-  switch (outcome) {
-    case 'completed':
-      return {
-        ...base,
-        phase: 'finished',
-        statuses: done,
-        decision: 'approved',
-        gate: gate('approved', 'Approved.'),
-        output: text(false),
-      };
-    case 'rejected':
-      return {
-        ...base,
-        phase: 'finished',
-        statuses: setAt(setAt(done, gateAt, 'skipped'), sendAt, 'skipped'),
-        decision: 'rejected',
-        gate: gate('rejected', 'Rejected. Nothing was changed.'),
-        output: text(true),
-      };
-    case 'failed':
-      return {
-        ...base,
-        lastStarted: sendAt,
-        phase: 'failed',
-        statuses: skipRest(
-          setAt(done, sendAt, 'failed').map((s, j) =>
-            j > sendAt ? 'pending' : s,
-          ),
-          sendAt + 1,
-        ),
-        decision: 'approved',
-        gate: gate('approved', 'Approved, then the run failed before acting.'),
-      };
-    case 'stopped':
-      return {
-        ...base,
-        lastStarted: 1,
-        phase: 'stopped',
-        statuses: skipRest(
-          done.map((s, j) => (j >= 1 ? 'pending' : s)),
-          1,
-        ),
-      };
+  if (outcome === 'stopped') {
+    events.push(
+      { type: 'step-started', id: '0' },
+      { type: 'step-done', id: '0' },
+      { type: 'step-started', id: '1' },
+      { type: 'run-stopped' },
+    );
+    return events;
   }
+
+  for (const [i, step] of script.steps.entries()) {
+    const id = String(i);
+    if (step.kind === 'approval') {
+      events.push(
+        { type: 'approval-requested', id },
+        {
+          type: 'approval-resolved',
+          id,
+          decision: rejected ? 'rejected' : 'approved',
+          resolution: rejected
+            ? 'Rejected. Nothing was changed.'
+            : outcome === 'failed'
+              ? 'Approved, then the run failed before acting.'
+              : 'Approved.',
+        },
+      );
+      continue;
+    }
+    events.push({ type: 'step-started', id });
+    if (i === gateAt + 1 && rejected) {
+      events.push({ type: 'step-skipped', id });
+      continue;
+    }
+    if (i === gateAt + 1 && outcome === 'failed') {
+      events.push({ type: 'step-failed', id }, { type: 'run-failed' });
+      return events;
+    }
+    if (step.kind === 'output') {
+      events.push(
+        {
+          type: 'output',
+          text: rejected ? step.outputIfRejected : step.output,
+        },
+        { type: 'output-done' },
+      );
+    }
+    events.push({ type: 'step-done', id });
+  }
+  events.push({ type: 'run-finished' });
+  return events;
 }
 
-class Stopped extends Error {}
+class Cancelled extends Error {}
 
-/**
- * Plays a run script on timers. The effect's controller ends a playback when
- * the page changes; `stop()` ends it the way a user would, which is a
- * different outcome and is recorded as one.
- */
 export function useRunEngine(
   script: RunScript | undefined,
   outcome: RunOutcome | undefined,
   scenario: Scenario,
   settings: Pick<DemoSettings, 'state' | 'latency'>,
 ) {
-  const [state, setState] = useState<RunState | null>(() =>
-    script ? initial(script) : null,
-  );
+  const latency = settings.latency;
   const [generation, setGeneration] = useState(0);
+  const [amount, setAmount] = useState<string | undefined>();
 
-  const stopRequested = useRef(false);
-  const wake = useRef<(() => void) | null>(null);
+  // The current playback. Bumping `token` cancels whatever is sleeping.
+  const token = useRef(0);
+  const wakers = useRef(new Set<() => void>());
   const decide = useRef<((d: 'approved' | 'rejected') => void) | null>(null);
   const submitAttempts = useRef(0);
-  const latency = settings.latency;
+
+  const cancelPlayback = () => {
+    token.current += 1;
+    for (const wake of wakers.current) wake();
+    wakers.current.clear();
+    decide.current = null;
+  };
+
+  const sleep = (ms: number, mine: number) =>
+    new Promise<void>((resolve, reject) => {
+      const t = window.setTimeout(done, ms);
+      const wake = () => {
+        window.clearTimeout(t);
+        done();
+      };
+      wakers.current.add(wake);
+      function done() {
+        wakers.current.delete(wake);
+        if (token.current !== mine) reject(new Cancelled());
+        else resolve();
+      }
+    });
+
+  const run = useAgentRun({
+    onStop: async () => {
+      // Stopping takes as long as a request does; the control says so meanwhile.
+      await new Promise((r) => window.setTimeout(r, Math.max(500, latency)));
+      cancelPlayback();
+      run.dispatch({ type: 'run-stopped', resolution: STOPPED_UNDECIDED });
+    },
+    onDecision: async (_id, decision) => {
+      await new Promise((r) => window.setTimeout(r, Math.max(600, latency)));
+      if (scenario === 'submit-fails' && submitAttempts.current++ === 0) {
+        throw new Error(
+          'Your decision didn’t reach the server, so nothing happened. Try again.',
+        );
+      }
+      // Next task, not now: the hook records the decision when this returns,
+      // and the script must not start the next step before it has.
+      const resume = decide.current;
+      window.setTimeout(() => resume?.(decision), 0);
+      return `${decision === 'approved' ? 'Approved' : 'Rejected'} by Ada Reyes at ${clock()}.`;
+    },
+  });
+  const { dispatch, reset } = run;
 
   useEffect(() => {
     if (!script || !outcome) return;
+    cancelPlayback();
+    reset();
     if (outcome !== 'waiting') {
-      setState(recorded(script, outcome));
+      for (const e of recordedEvents(script, outcome)) dispatch(e);
       return;
     }
-    setState(initial(script));
+    const mine = token.current;
+    submitAttempts.current = 0;
+    const gate = script.steps.find((s) => s.kind === 'approval');
+    setAmount(gate?.kind === 'approval' ? gate.editable?.initial : undefined);
+    dispatch({ type: 'run-started', steps: plan(script) });
     // Forced "loading": the run never gets past starting — header and stop only.
     if (settings.state === 'loading') return;
-
-    let alive = true;
-    stopRequested.current = false;
-    submitAttempts.current = 0;
-    const patch = (fn: (s: RunState) => RunState) => {
-      if (alive) setState((s) => (s ? fn(s) : s));
-    };
-
-    const sleep = (ms: number) =>
-      new Promise<void>((resolve, reject) => {
-        const t = window.setTimeout(done, ms);
-        function done() {
-          wake.current = null;
-          if (!alive) reject(new Error('reset'));
-          else if (stopRequested.current) reject(new Stopped());
-          else resolve();
-        }
-        wake.current = () => {
-          window.clearTimeout(t);
-          done();
-        };
-      });
 
     async function play() {
       if (!script) return;
       const steps = script.steps;
-      let current = 0;
       let decision: 'approved' | 'rejected' | null = null;
-      try {
-        await sleep(Math.max(900, latency));
-        for (current = 0; current < steps.length; current++) {
-          const step = steps[current];
-          const i = current;
-          patch((s) => ({
-            ...s,
-            phase: 'running',
-            lastStarted: i,
-            statuses: setAt(s.statuses, i, 'active'),
-          }));
+      await sleep(Math.max(900, latency), mine);
+      for (const [i, step] of steps.entries()) {
+        const id = String(i);
 
-          if (step.kind === 'work') {
-            const isTheAction =
-              decision !== null && steps[i - 1]?.kind === 'approval';
-            if (isTheAction && decision === 'rejected') {
-              patch((s) => ({
-                ...s,
-                statuses: setAt(s.statuses, i, 'skipped'),
-              }));
-              continue;
-            }
-            await sleep(step.ms);
-            if (isTheAction && scenario === 'fails') {
-              patch((s) => ({
-                ...s,
-                phase: 'failed',
-                statuses: skipRest(setAt(s.statuses, i, 'failed'), i + 1),
-              }));
-              return;
-            }
-            patch((s) => ({ ...s, statuses: setAt(s.statuses, i, 'done') }));
-          }
-
-          if (step.kind === 'approval') {
-            patch((s) => ({
-              ...s,
-              phase: 'awaiting',
-              gate: {
-                status: 'pending',
-                isSubmitting: false,
-                error: null,
-                resolution: null,
-                amount: step.editable?.initial,
-              },
-            }));
-            const waiting = new Promise<'approved' | 'rejected'>((resolve) => {
-              decide.current = resolve;
+        if (step.kind === 'approval') {
+          dispatch({ type: 'approval-requested', id });
+          const waiting = new Promise<'approved' | 'rejected'>((resolve) => {
+            decide.current = resolve;
+          });
+          const expiry =
+            scenario === 'expires'
+              ? sleep(EXPIRY_SECONDS * 1000, mine).then(
+                  () => 'expired' as const,
+                )
+              : new Promise<never>(() => {});
+          const result = await Promise.race([waiting, expiry]);
+          decide.current = null;
+          if (result === 'expired') {
+            dispatch({
+              type: 'approval-resolved',
+              id,
+              decision: 'expired',
+              resolution: `No one decided within ${EXPIRY_SECONDS} seconds, so nothing was sent. The run ended safely.`,
             });
-            const expiry =
-              scenario === 'expires'
-                ? sleep(EXPIRY_SECONDS * 1000).then(() => 'expired' as const)
-                : new Promise<never>(() => {});
-            const result = await Promise.race([waiting, expiry]);
-            decide.current = null;
-            if (result === 'expired') {
-              // Silence is not consent: the safe default is not doing the thing.
-              patch((s) => ({
-                ...s,
-                phase: 'expired',
-                statuses: skipRest(s.statuses, i),
-                gate: s.gate && {
-                  ...s.gate,
-                  status: 'expired',
-                  resolution: `No one decided within ${EXPIRY_SECONDS} seconds, so nothing was sent. The run ended safely.`,
-                },
-              }));
-              return;
-            }
-            decision = result;
-            patch((s) => ({
-              ...s,
-              phase: 'running',
-              decision: result,
-              statuses: setAt(
-                s.statuses,
-                i,
-                result === 'approved' ? 'done' : 'skipped',
-              ),
-            }));
-          }
-
-          if (step.kind === 'output') {
-            const full =
-              decision === 'rejected' ? step.outputIfRejected : step.output;
-            patch((s) => ({ ...s, streaming: true, output: '' }));
-            const words = full.split(/(?<= )/);
-            for (const word of words) {
-              await sleep(45);
-              patch((s) => ({ ...s, output: s.output + word }));
-            }
-            patch((s) => ({
-              ...s,
-              streaming: false,
-              statuses: setAt(s.statuses, i, 'done'),
-            }));
-          }
-        }
-        patch((s) => ({ ...s, phase: 'finished' }));
-      } catch (e) {
-        if (!(e instanceof Stopped)) return;
-        const at = current;
-        patch((s) => ({
-          ...s,
-          phase: 'stopped',
-          isStopping: false,
-          streaming: false,
-          statuses: skipRest(s.statuses, at),
-          gate:
-            s.gate && s.gate.status === 'pending'
-              ? {
-                  ...s.gate,
-                  isSubmitting: false,
-                  status: 'expired',
-                  resolution:
-                    'The run was stopped before anyone decided, so nothing was sent.',
-                }
-              : s.gate,
-        }));
-      }
-    }
-
-    void play();
-    return () => {
-      alive = false;
-      wake.current?.();
-    };
-  }, [script, outcome, scenario, settings.state, latency, generation]);
-
-  const stop = useCallback(() => {
-    setState((s) => (s ? { ...s, isStopping: true } : s));
-    // Stopping takes as long as a request does; the control stays put meanwhile.
-    window.setTimeout(
-      () => {
-        stopRequested.current = true;
-        wake.current?.();
-        // A run parked on an approval is waiting on a promise, not a timer.
-        if (decide.current) {
-          setState(
-            (s) =>
-              s && {
-                ...s,
-                phase: 'stopped',
-                isStopping: false,
-                statuses: skipRest(s.statuses, s.statuses.indexOf('active')),
-                gate: s.gate && {
-                  ...s.gate,
-                  status: 'expired',
-                  resolution:
-                    'The run was stopped before anyone decided, so nothing was sent.',
-                },
-              },
-          );
-        }
-      },
-      Math.max(500, latency),
-    );
-  }, [latency]);
-
-  const submit = useCallback(
-    (d: 'approved' | 'rejected') => {
-      setState(
-        (s) =>
-          s &&
-          s.gate && {
-            ...s,
-            gate: { ...s.gate, isSubmitting: true, error: null },
-          },
-      );
-      window.setTimeout(
-        () => {
-          if (scenario === 'submit-fails' && submitAttempts.current === 0) {
-            submitAttempts.current += 1;
-            // The action must not proceed: status stays pending, buttons come back.
-            setState(
-              (s) =>
-                s &&
-                s.gate && {
-                  ...s,
-                  gate: {
-                    ...s.gate,
-                    isSubmitting: false,
-                    error:
-                      'Your decision didn’t reach the server, so nothing happened. Try again.',
-                  },
-                },
-            );
             return;
           }
-          setState(
-            (s) =>
-              s &&
-              s.gate && {
-                ...s,
-                gate: {
-                  ...s.gate,
-                  isSubmitting: false,
-                  status: d,
-                  resolution: `${d === 'approved' ? 'Approved' : 'Rejected'} by Ada Reyes at ${clock()}.`,
-                },
-              },
-          );
-          decide.current?.(d);
-        },
-        Math.max(600, latency),
-      );
-    },
-    [scenario, latency],
-  );
+          decision = result;
+          continue;
+        }
 
-  const setAmount = useCallback((amount: string) => {
-    setState((s) => s && s.gate && { ...s, gate: { ...s.gate, amount } });
-  }, []);
+        dispatch({ type: 'step-started', id });
+
+        if (step.kind === 'work') {
+          const isTheAction =
+            decision !== null && steps[i - 1]?.kind === 'approval';
+          if (isTheAction && decision === 'rejected') {
+            dispatch({ type: 'step-skipped', id });
+            continue;
+          }
+          await sleep(step.ms, mine);
+          if (isTheAction && scenario === 'fails') {
+            dispatch({ type: 'step-failed', id, error: step.failure });
+            dispatch({ type: 'run-failed' });
+            return;
+          }
+          dispatch({ type: 'step-done', id });
+        }
+
+        if (step.kind === 'output') {
+          const full =
+            decision === 'rejected' ? step.outputIfRejected : step.output;
+          for (const word of full.split(/(?<= )/)) {
+            await sleep(45, mine);
+            dispatch({ type: 'output', text: word });
+          }
+          dispatch({ type: 'output-done' });
+          dispatch({ type: 'step-done', id });
+        }
+      }
+      dispatch({ type: 'run-finished' });
+    }
+
+    play().catch((e) => {
+      if (!(e instanceof Cancelled)) throw e;
+    });
+    return cancelPlayback;
+  }, [script, outcome, scenario, settings.state, latency, generation]);
 
   const replay = useCallback(() => setGeneration((g) => g + 1), []);
 
+  /*
+   * The shape RunDetail reads. The library's state is keyed by step id; the
+   * screen indexes by position, because its copy lives on the script.
+   */
+  const { state: s } = run;
+  const state = useMemo(() => {
+    if (!script) return null;
+    const byId = new Map(s.steps.map((step) => [step.id, step]));
+    const statuses = script.steps.map(
+      (_, i): StepStatus => byId.get(String(i))?.status ?? 'pending',
+    );
+    const lastStarted = script.steps.reduce(
+      (last, _, i) => (byId.get(String(i))?.started ? i : last),
+      -1,
+    );
+    const approval = s.approval;
+    return {
+      phase: (s.phase === 'idle' ? 'starting' : s.phase) as Phase,
+      statuses,
+      lastStarted,
+      output: s.output,
+      streaming: s.isStreaming,
+      isStopping: s.isStopping,
+      decision:
+        approval?.status === 'approved' || approval?.status === 'rejected'
+          ? approval.status
+          : null,
+      gate: approval && {
+        status: approval.status,
+        isSubmitting: approval.isSubmitting,
+        error: approval.error ?? null,
+        resolution: approval.resolution ?? null,
+        amount,
+      },
+    };
+  }, [script, s, amount]);
+
   return {
     state,
-    stop,
-    approve: () => submit('approved'),
-    reject: () => submit('rejected'),
+    stop: run.stop,
+    approve: run.approve,
+    reject: run.reject,
     setAmount,
     replay,
   };
