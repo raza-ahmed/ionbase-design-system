@@ -19,7 +19,7 @@
   ],
   "file": "gaLbGd0QNb1fUl6BjSpfBA",
   "appliedOn": "2026-09-24",
-  "verifiedInFigma": 62,
+  "verifiedInFigma": 64,
   "applied": {
     "1360:267": {
       "figmaComponent": "Accordion",
@@ -270,6 +270,16 @@
       "figmaComponent": "Spinner",
       "component": "Spinner",
       "hash": "09d382723b3c47ce"
+    },
+    "1412:344": {
+      "figmaComponent": "Stat Group",
+      "component": "StatGroup",
+      "hash": "ff3a3a74bc18bd5c"
+    },
+    "1412:343": {
+      "figmaComponent": "Stat Tile",
+      "component": "StatTile",
+      "hash": "6d9d0a3d5c48ab2b"
     },
     "1391:431": {
       "figmaComponent": "Stepper",

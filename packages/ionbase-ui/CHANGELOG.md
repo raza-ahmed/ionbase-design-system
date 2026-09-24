@@ -1,5 +1,47 @@
 # Changelog
 
+## 0.71.0 — 2026-09-24
+
+### Added — `StatTile`, `StatGroup`
+
+One headline figure and how it moved against a comparison period — the KPI
+tile every dashboard leads with. Promoted from the demo app's Overview row,
+where it was built as a stand-in and survived three phases unchanged; the demo
+now uses this one and its local copy is deleted.
+
+```tsx
+<StatGroup aria-label="This week">
+  <StatTile
+    label="Success rate"
+    value="96.2%"
+    change={1.1}
+    changeUnit="points"
+  />
+  <StatTile label="Median run time" value="41s" change={12} goodWhen="down" />
+</StatGroup>
+```
+
+**Good and bad are not up and down.** A rising run time is bad news and a
+rising success rate good, so the badge colour comes from `goodWhen` and the sign
+together. `neutral` never colours. The verdict is also spoken as visually
+hidden text — "better" or "worse" — so it never rests on colour. The change is
+rounded before it is judged, so −0.04 reads "No change" rather than a red
+"−0.0%"; a percentage metric can move in `points`, so 95% to 96% is +1.0 pts
+rather than a misleading +1.1%.
+
+**Two components, like Table.** `StatGroup` is the `<dl>` and a grid that wraps
+by tile width, so four tiles are one row on a desktop and two on a phone with
+no breakpoint in the caller's code. `StatTile` is a `<dt>` and `<dd>` inside it.
+`isLoading` keeps the label and shows a Skeleton the height of the figure.
+
+**Drawn in Figma the same day** as `Stat Tile` (1412:343: `Change` × `State`,
+reusing Badge and Skeleton) and `Stat Group` (1412:344), so it never joined the
+"not yet drawn" list. `Change` names what the badge says — Better or Worse, Up
+or Down — and the mapping says how code derives it from `change` and
+`goodWhen`.
+
+12 interaction tests. Figma map: 64 mapped, 295 properties, 0 errors.
+
 ## 0.70.0 — 2026-09-24
 
 Three defects the demo app logged against the system. Each had a stand-in in

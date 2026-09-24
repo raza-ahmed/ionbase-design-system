@@ -9,6 +9,8 @@ import {
   Link,
   ProgressBar,
   Skeleton,
+  StatGroup,
+  StatTile,
   TabItem,
   Table,
   TableBody,
@@ -28,7 +30,6 @@ import { href } from '../lib/router';
 import { useResource } from '../lib/use-resource';
 import { RunHeatmap } from '../local/charts/RunHeatmap';
 import { SuccessRateChart } from '../local/charts/SuccessRateChart';
-import { StatTile } from '../local/StatTile';
 import { ago, OUTCOME } from './runs/outcome';
 
 const PRESETS = [
@@ -163,7 +164,7 @@ function OverviewReady({
         </Alert>
       )}
 
-      <dl className="demo-stats">
+      <StatGroup aria-label="This period">
         <StatTile
           label="Runs"
           value={compact.format(data.runs.value)}
@@ -180,7 +181,7 @@ function OverviewReady({
               ? data.successRate.value - data.successRate.previous
               : undefined
           }
-          unit="pts"
+          changeUnit="points"
         />
         <StatTile
           label="Awaiting approval"
@@ -194,7 +195,7 @@ function OverviewReady({
           change={change(data.medianDurationSec)}
           goodWhen="down"
         />
-      </dl>
+      </StatGroup>
 
       <div className="demo-grid">
         <section className="demo-panel" aria-labelledby="activity-title">
@@ -301,20 +302,24 @@ function OverviewReady({
   );
 }
 
+const KPI_LABELS = [
+  'Runs',
+  'Success rate',
+  'Awaiting approval',
+  'Median run time',
+];
+
 function OverviewLoading() {
   return (
     <div className="demo-loading" aria-busy="true">
       <p className="ion-visually-hidden" role="status">
         Loading overview
       </p>
-      <div className="demo-stats">
-        {Array.from({ length: 4 }, (_, i) => (
-          <div key={i} className="demo-stat">
-            <Skeleton variant="text" width="40%" />
-            <Skeleton variant="rect" height="var(--spacing-32)" width="60%" />
-          </div>
+      <StatGroup aria-label="This period">
+        {KPI_LABELS.map((label) => (
+          <StatTile key={label} label={label} value={null} isLoading />
         ))}
-      </div>
+      </StatGroup>
       <div className="demo-grid">
         <div className="demo-panel">
           <Skeleton variant="text" width="30%" />

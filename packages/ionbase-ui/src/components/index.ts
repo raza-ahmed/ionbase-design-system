@@ -236,3 +236,11 @@ export type {
  * public value type is not react-aria's `CalendarDate`.
  */
 export type { IsoDate } from './iso-date.js';
+
+export { StatGroup, StatTile } from './StatTile.js';
+export type {
+  StatGroupProps,
+  StatTileProps,
+  StatTileGoodWhen,
+  StatTileChangeUnit,
+} from './StatTile.js';

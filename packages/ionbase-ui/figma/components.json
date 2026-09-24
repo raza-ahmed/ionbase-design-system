@@ -1503,6 +1503,47 @@
         }
       }
     },
+    "Stat Group": {
+      "page": "Stat Tile",
+      "id": "1412:344",
+      "kind": "COMPONENT",
+      "props": {}
+    },
+    "Stat Tile": {
+      "page": "Stat Tile",
+      "id": "1412:343",
+      "kind": "SET",
+      "props": {
+        "Change": {
+          "type": "VARIANT",
+          "options": [
+            "Better Up",
+            "Better Down",
+            "Worse Up",
+            "Worse Down",
+            "Neutral Up",
+            "Neutral Down",
+            "No Change",
+            "None"
+          ],
+          "default": "Better Up"
+        },
+        "Comparison#1412:20": {
+          "type": "TEXT"
+        },
+        "Label#1412:0": {
+          "type": "TEXT"
+        },
+        "State": {
+          "type": "VARIANT",
+          "options": ["Default", "Loading"],
+          "default": "Default"
+        },
+        "Value#1412:10": {
+          "type": "TEXT"
+        }
+      }
+    },
     "Stepper": {
       "page": "Stepper",
       "id": "1391:431",
