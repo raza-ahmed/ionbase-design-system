@@ -113,6 +113,8 @@ export type {
   ScrollProgressSection,
   ScrollProgressPlacement,
 } from './ScrollProgress.js';
+export { TagGroup, Tag } from './TagGroup.js';
+export type { TagGroupProps, TagGroupSize } from './TagGroup.js';
 export { Card } from './Card.js';
 export type { CardProps, CardHeadingLevel, CardIntent } from './Card.js';
 export { FullCard } from './FullCard.js';

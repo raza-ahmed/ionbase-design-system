@@ -1,5 +1,39 @@
 # Changelog
 
+## 0.79.0 — 2026-09-25
+
+### Added — `TagGroup` and `Tag`
+
+A SaaS table's active filters, a record's labels and a message's recipients
+had nothing to render them. Badge is a status the system reports, so it is not
+removable and its colours carry meaning.
+
+- **Removable, neutral labels.** Pass `onRemove` and every tag gets a remove
+  button named "Remove" plus its label. Leave it out and the tags are
+  read-only. The group removes nothing itself: `onRemove` hands back the keys,
+  and you drop them from your list. There are no intent colours, so a
+  "Status: Failing" filter never looks like a failure.
+- **Built on React Aria's `useTagGroup`.** The group is one tab stop with
+  arrow keys between tags. Delete or Backspace removes the focused tag, and
+  focus moves to its neighbour. React Aria leaves one case open, the last tag:
+  focus would fall to the page. The group takes it instead, as a named group
+  that reads `emptyLabel`.
+- `size` is `sm` (24) or `md` (32), set once on the group. `Tag` is the
+  collection Item, like `TabItem`.
+- DataTable now shows active filters as a TagGroup under the toolbar, beside a
+  Clear all button.
+- Figma: a new Tag page. `Tag` (1448:290) is Size by State with Label and Show
+  Remove. `Tag Group` (1448:333) is Small and Medium. Label insets match the
+  code at 8 and 12, which needed the tag's border kept out of the Figma layout.
+  All 71 Dev Mode blocks are verified.
+
+### Demo
+
+- The Agents toolbar shows the active filters as tags, each removable on its
+  own, with a Clear all button. Removing a tag resets its control. Removing
+  the last one takes the row away, so focus moves to the search box rather
+  than the page. The demo shows **78 of 78** components.
+
 ## 0.78.0 — 2026-09-25
 
 ### Added — sortable table headers, and `useTableSort`

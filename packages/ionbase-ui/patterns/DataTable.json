@@ -14,10 +14,12 @@
     "Button",
     "Badge",
     "Alert",
-    "Input"
+    "Input",
+    "TagGroup"
   ],
   "structure": [
     "A toolbar above the table: a search Input, filter controls, and the bulk-action Buttons that appear once something is selected.",
+    "Under the toolbar, once any filter is applied: a TagGroup of the active filters, each removable on its own, beside a Clear all Button. When the last one goes the row goes with it, so move focus to the search Input.",
     "Table with a TableHead whose first cell carries the select-all Checkbox, and a TableBody whose rows each carry their own.",
     "Sortable columns: every header that sorts gets `sortDirection` — the current direction on the sorted column, `none` on the others — so each shows it can be sorted before anyone tries.",
     "One region below the table for pagination or a load-more Button.",
@@ -55,7 +57,8 @@
     "Checkbox": ["isIndeterminate", "isDisabled"],
     "Button": ["variant", "size"],
     "Alert": ["intent", "title", "actions"],
-    "Input": ["leadingIcon"]
+    "Input": ["leadingIcon"],
+    "TagGroup": ["label", "items", "onRemove"]
   },
   "variantsUsed": {
     "Alert": {

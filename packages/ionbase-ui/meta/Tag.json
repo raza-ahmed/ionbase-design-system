@@ -1,0 +1,31 @@
+{
+  "status": "stable",
+  "since": "0.79.0",
+  "summary": "One tag in a TagGroup. Re-exported from react-stately's collection Item — `key` identifies it, children are its label.",
+  "useWhen": ["a child of TagGroup — it is not usable anywhere else"],
+  "useInstead": [{ "when": "it is a status label on its own", "use": "Badge" }],
+  "composition": {
+    "order": ["TagGroup", "Tag"],
+    "note": "A collection item, not a rendered component: TagGroup reads it to build the collection, so it never appears in the DOM itself. That is why it exposes no props of its own here — `key` and `textValue` are the collection's API.",
+    "example": "<Tag key=\"team:finance\">Team: Finance</Tag>"
+  },
+  "a11y": {
+    "guarantees": [
+      "the row, cell and remove-button roles and names are supplied by TagGroup, not by this element"
+    ],
+    "requires": [
+      "a stable `key` — it is what `onRemove` hands back",
+      "`textValue` when the label is not plain text, so type-ahead and the remove button's name have words to use"
+    ]
+  },
+  "antiPatterns": [
+    {
+      "dont": "array indexes as keys in a list that shrinks",
+      "why": "removing the first tag renumbers the rest, and the next removal drops the wrong one"
+    },
+    {
+      "dont": "wrapping Tag in a <div> or a fragment inside TagGroup",
+      "why": "TagGroup reads the collection from its direct children; a wrapper makes the tag invisible to it"
+    }
+  ]
+}
