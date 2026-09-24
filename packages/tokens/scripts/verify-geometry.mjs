@@ -82,8 +82,8 @@ const NOT_GEOMETRY = [
   /^grid\//,
   /^container\//,
   /^section\//,
-  /^(text|icon|surface|border|ring)\//,
-  /^(primary|neutral|success|warning|error|information|chart|palette|base|alpha)\//,
+  /^(text|icon|surface|border|ring|chart)\//,
+  /^(primary|neutral|success|warning|error|information|palette|base|alpha)\//,
 ];
 
 const offScale = [];

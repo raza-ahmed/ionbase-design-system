@@ -1,5 +1,38 @@
 # Changelog
 
+## 0.73.0 — 2026-09-24
+
+### Changed — chart colours theme
+
+`--chart-1` … `--chart-8` now have dark-mode values. They lived in the
+single-mode Semantics collection, so the dark theme drew the light colours —
+and `--chart-3` (purple) fell to 2.02–2.81:1 against the dark grounds, under
+the 3:1 a series mark needs. Light values are unchanged; the property names are
+unchanged.
+
+### Added — `--chart-sequential-1` … `--chart-sequential-5`
+
+One hue, low to high, for magnitude — a heatmap, a density grid. Pale to deep
+in Light, deep to pale in Dark, with `--surface-sunken` as zero. Replaces
+faking a ramp with opacity, which reads differently on every ground.
+
+### Added — a gate for chart colour
+
+No component draws a chart, so the contrast gate never measured these.
+`tokens:chart` (in `tokens:gate`) now checks every series at 3:1 against
+`surface/default`, `page` and `raised` in both modes, and that each ramp step
+moves away from the ground and is distinct from the last.
+
+### Tokens
+
+- Interface: `chart/*` is a sixth element — a series paints fill and stroke
+  and must be one colour in both. 13 roles, all aliasing the palette ladder.
+- Semantics: `chart/1…8` retired; `palette/1…7` gain `/400` and `/500`;
+  `palette/8` (yellow) added. 462 → 490 variables.
+- Figma: new **Chart Colours** page with both modes side by side.
+- `llms.txt`: a "Drawing a chart?" section, so an agent colours a chart from
+  the tokens instead of picking hex.
+
 ## 0.72.0 — 2026-09-24
 
 ### Added — `SettingRow`

@@ -572,6 +572,7 @@ function hostedIndex() {
     p();
   }
 
+  chartSection(p);
   p('## Coming from a Figma design?');
   p();
   p(
@@ -596,6 +597,33 @@ function hostedIndex() {
   p();
 
   return out.join('\n');
+}
+
+/*
+ * Charts are drawn by the product, not by a component, so no contract carries
+ * their colours and an agent drawing one would otherwise pick hex. Both
+ * indexes say it once, from here.
+ */
+function chartSection(p) {
+  p('## Drawing a chart?');
+  p();
+  p(
+    'There is no chart component — use your charting library, and colour it ' +
+      'from these tokens so it themes and passes contrast:',
+  );
+  p();
+  p(
+    '- `--chart-1` … `--chart-8` — categorical series, in order. Each clears ' +
+      '3:1 against `--surface-default`, `--surface-page` and ' +
+      '`--surface-raised` in Light and Dark. Set them as CSS `fill` / ' +
+      '`stroke`, not SVG attributes, which do not reliably resolve `var()`.',
+  );
+  p(
+    '- `--chart-sequential-1` … `--chart-sequential-5` — one hue, low to ' +
+      'high, for magnitude (a heatmap). Use `--surface-sunken` for zero. Do ' +
+      'not fake a ramp with opacity: it reads differently on every ground.',
+  );
+  p();
 }
 
 /*
@@ -652,6 +680,7 @@ function tarballIndex() {
     p();
   }
 
+  chartSection(p);
   p('## Coming from a Figma design?');
   p();
   p(

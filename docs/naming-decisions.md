@@ -8,6 +8,32 @@ Newest first.
 
 ---
 
+## 2026-09-24 — `chart` is a sixth Interface element
+
+**`chart/1…8` leaves Semantics for Interface, and gains `chart/sequential-1…5`.
+Semantics 156 -> 171, Interface 133 -> 146, 462 -> 490.**
+
+The element list was closed on the claim that five elements cover every
+paintable property. They do — and that is the problem for a data series, which
+is not a property but a colour that must be the same on a bar's fill and a
+line's stroke. Naming it twice (`surface/chart-1`, `border/chart-1`) makes two
+tokens that nothing keeps equal, and the legend is only true while they are.
+So the element is the thing being coloured, not the property, and its roles
+are a closed index rather than the neutral/accent vocabulary.
+
+The values come from `palette/<n>/<rung>`, not from the intent ramps and not
+from a new chart ramp: the palette section in AGENTS.md already said a second
+categorical palette must reuse the first. Reusing it cost 23 Semantics rungs —
+`/400` and `/500` for seven hues, and yellow as `palette/8` — which are values
+the ladder did not carry, the growth v2 expects.
+
+Rejected: `surface/palette-<n>-strong` as the chart colour. Grammatically
+clean, but it removes the series order (`chart/1` is the first series; a
+palette index is not) and it would have broken `--chart-1…8` for everyone
+using them.
+
+---
+
 ## 2026-09-03 (later) — two gates existed, nothing ran them, and one was lying
 
 **`palette` joins the Semantics groups (107 -> 114 variables, 384 -> 391).

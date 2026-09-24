@@ -24,8 +24,27 @@ import { loadCollections } from './figma-to-dtcg.mjs';
 // -- Interface vocabulary ---------------------------------------------------
 
 /** First slot of an Interface token. Closed, and effectively never grows —
- *  five elements cover every paintable property Figma exposes. */
-export const ELEMENTS = new Set(['text', 'icon', 'surface', 'border', 'ring']);
+ *  five elements cover every paintable property Figma exposes.
+ *
+ *  `chart` is the one element that is not a property, and it earned the slot:
+ *  a data series paints the fill of a bar AND the stroke of a line, and it has
+ *  to be the same colour in both or the legend lies. As `surface/` + `border/`
+ *  it would be two names per series that nothing keeps in step. Its roles are
+ *  its own closed list — see `isChartRole`. */
+export const ELEMENTS = new Set([
+  'text',
+  'icon',
+  'surface',
+  'border',
+  'ring',
+  'chart',
+]);
+
+/** `chart/<n>` — categorical series, in order. `chart/sequential-<n>` — one hue,
+ *  low to high, for magnitude (a heatmap). Both indexed, so both ladders; a
+ *  chart role named for a chart type (`chart/bar-fill`) is the recipe failure. */
+export const CHART_SERIES = 8;
+export const CHART_SEQUENTIAL = 5;
 
 /** Second slot: prominence within the neutrals, or a structural layer. */
 export const NEUTRAL_ROLES = new Set([
@@ -80,8 +99,10 @@ export const ACCENTS = new Set([
 export const ACCENT_SUFFIXES = new Set(['strong', 'subtle', 'tint']);
 
 /**
- * Categorical identity colour — seven hues that mean nothing except "not the
- * other six". Deliberately NOT accents: an accent carries a meaning and moves
+ * Categorical identity colour — eight hues that mean nothing except "not the
+ * other seven". Seven were added for AvatarGradient; the eighth, yellow, and the
+ * 400/500 rungs came with the chart roles, which pick from this same ladder
+ * rather than growing a second one. Deliberately NOT accents: an accent carries a meaning and moves
  * when the brand's meaning moves, so binding an avatar's hue to `error` would
  * make a person's colour change when the error red is re-branded. These are
  * indexed rather than named, which keeps them a ladder — a component picks an
@@ -90,7 +111,7 @@ export const ACCENT_SUFFIXES = new Set(['strong', 'subtle', 'tint']);
  * They take the same weight suffixes as accents, and the same weight meanings:
  * bare is the deepest, `-tint` the middle, `-subtle` the palest.
  */
-export const PALETTE_SIZE = 7;
+export const PALETTE_SIZE = 8;
 
 /** Third slot. `default` is implicit and never written. */
 export const STATE_ORDER = [
@@ -118,7 +139,6 @@ export const SEMANTIC_GROUPS = new Set([
   'warning',
   'error',
   'information',
-  'chart',
   'palette',
   'base',
   'alpha',
@@ -143,6 +163,8 @@ export const SEMANTIC_GROUPS = new Set([
  */
 export const RETIRED_SEM_GROUPS = {
   control: 'bind spacing/* directly, or icon-size/* for icons',
+  chart:
+    'series colours must theme, and Semantics has one mode — they are Interface chart/<n>, aliasing palette/<n>/<rung>',
 };
 
 /** Families allowed at the head of a Primitives name. All value-keyed —
@@ -208,6 +230,12 @@ export function auditNames(collections) {
     return m[2] === undefined || ACCENT_SUFFIXES.has(m[2]);
   }
 
+  function isChartRole(s) {
+    const m = /^(?:(sequential)-)?([1-9]\d*)$/.exec(s ?? '');
+    if (!m) return false;
+    return Number(m[2]) <= (m[1] ? CHART_SEQUENTIAL : CHART_SERIES);
+  }
+
   function isState(s) {
     if (STATES.has(s)) return true;
     const parts = s.split('-');
@@ -227,6 +255,19 @@ export function auditNames(collections) {
         `'${element}' is not an element`,
         `one of: ${[...ELEMENTS].join(', ')}`,
       );
+      return;
+    }
+    if (element === 'chart') {
+      if (!isChartRole(role) || rest.length > 0) {
+        report(
+          'error',
+          name,
+          collection,
+          'R-chart',
+          `'${name}' is not a chart role — series take no weight and no state`,
+          `chart/1..${CHART_SERIES} or chart/sequential-1..${CHART_SEQUENTIAL}`,
+        );
+      }
       return;
     }
     if (role === undefined) {

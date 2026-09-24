@@ -2,7 +2,7 @@
 
 > IonBase is a React design system for enterprise SaaS, built to be consumed by an agent rather than read by a developer. Every component ships a machine-readable contract carrying the judgement a type signature cannot: when to use it, what to use instead, the anti-patterns, and what it guarantees for accessibility versus what it requires of you.
 
-Version 0.72.0. 73 components.
+Version 0.73.0. 73 components.
 
 ## Read these, in this order
 
@@ -20,6 +20,13 @@ Both are importable: `ionbase-ui/meta/index` and `ionbase-ui/meta/<Name>.json`. 
 Compositions of the components above, in `dist/meta/patterns/`. Read `dist/meta/patterns/index.json`, then one recipe. They are the only place the empty, loading and error states are specified — no component owns those, which is why they are the part that gets left out.
 
 `AgentRun`, `AssistantAnswer`, `DataTable`, `DestructiveConfirm`, `Form`, `HumanApproval`, `PageShell`, `SettingsPanel`, `Wizard`
+
+## Drawing a chart?
+
+There is no chart component — use your charting library, and colour it from these tokens so it themes and passes contrast:
+
+- `--chart-1` … `--chart-8` — categorical series, in order. Each clears 3:1 against `--surface-default`, `--surface-page` and `--surface-raised` in Light and Dark. Set them as CSS `fill` / `stroke`, not SVG attributes, which do not reliably resolve `var()`.
+- `--chart-sequential-1` … `--chart-sequential-5` — one hue, low to high, for magnitude (a heatmap). Use `--surface-sunken` for zero. Do not fake a ramp with opacity: it reads differently on every ground.
 
 ## Coming from a Figma design?
 
