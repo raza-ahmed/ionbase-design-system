@@ -1,8 +1,10 @@
 /*
  * Citation
  *
- * NOT DRAWN IN FIGMA. The inline marker borrows Badge's pill geometry at the
- * smallest size; the footer list borrows the Table's row rhythm.
+ * Drawn in Figma as `Citation` (1167:247), `Citation List` (1168:246) and
+ * `Citation List Item` (1168:241). The inline marker borrows Badge's pill
+ * geometry at the smallest size; the footer list borrows the Table's row
+ * rhythm.
  */
 .ion-citation {
   display: inline-flex;
