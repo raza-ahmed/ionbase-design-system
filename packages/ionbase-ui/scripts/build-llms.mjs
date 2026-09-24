@@ -623,6 +623,20 @@ function chartSection(p) {
       'high, for magnitude (a heatmap). Use `--surface-sunken` for zero. Do ' +
       'not fake a ramp with opacity: it reads differently on every ground.',
   );
+  p(
+    '- **Bin a wide range into the five steps; do not ask for more.** Like ' +
+      "GitHub's contribution graph (four steps and empty): zero is its own " +
+      'level, and the non-zero values split into five equal groups by rank, ' +
+      'each cut the top of its group — rank, so one outlier does not flatten ' +
+      'the rest. Past five to seven steps of one hue, readers cannot tell ' +
+      'neighbours apart.',
+  );
+  p(
+    '- **Continuous scale?** Blend neighbouring steps in CSS, which still ' +
+      'themes: `color-mix(in oklab, var(--chart-sequential-2) 60%, ' +
+      'var(--chart-sequential-3))`. A JS colour scale cannot read `var()`. ' +
+      'Pair it with a labelled axis or tooltip.',
+  );
   p();
 }
 
