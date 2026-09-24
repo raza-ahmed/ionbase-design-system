@@ -207,6 +207,7 @@
   color: inherit;
   font: inherit;
   text-align: inherit;
+
   /* The arrow beside a two-line label reads as belonging to one line of it.
      The table scrolls sideways before it squeezes a header this far. */
   white-space: nowrap;
