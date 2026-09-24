@@ -1388,6 +1388,43 @@
         }
       }
     },
+    "Stat Group": {
+      "code": "StatGroup",
+      "props": {}
+    },
+    "Stat Tile": {
+      "code": "StatTile",
+      "props": {
+        "Label#1412:0": {
+          "prop": "label"
+        },
+        "Value#1412:10": {
+          "prop": "value"
+        },
+        "Comparison#1412:20": {
+          "prop": "comparison"
+        },
+        "State": {
+          "prop": "isLoading",
+          "values": {
+            "Default": false,
+            "Loading": true
+          }
+        },
+        "Change": {
+          "prop": "goodWhen",
+          "when": {
+            "Better Up": "up",
+            "Better Down": "down",
+            "Worse Up": "down",
+            "Worse Down": "up",
+            "Neutral Up": "neutral",
+            "Neutral Down": "neutral"
+          },
+          "note": "Figma draws what the badge SAYS; code derives it from two props. The direction is the sign of `change` (Up is positive), and Better or Worse follows from that and goodWhen — so Worse Up is a rise where down was good. No Change is a `change` that rounds to zero; None is `change` omitted. The badge text itself is computed from `change` and `changeUnit`."
+        }
+      }
+    },
     "Stepper": {
       "code": "Stepper",
       "props": {

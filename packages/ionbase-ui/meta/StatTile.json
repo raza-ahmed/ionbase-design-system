@@ -1,0 +1,72 @@
+{
+  "status": "stable",
+  "since": "0.71.0",
+  "summary": "One headline figure and how it moved against a comparison period. Good and bad come from `goodWhen`, never from the sign alone.",
+  "useWhen": [
+    "a dashboard or overview leads with a handful of key numbers",
+    "a change against a previous period is part of what the number means"
+  ],
+  "useInstead": [
+    {
+      "when": "it is a summary with text and media rather than a number",
+      "use": "FullCard"
+    },
+    {
+      "when": "the figure is progress toward a known total",
+      "use": "ProgressBar"
+    },
+    {
+      "when": "there are more than about six figures, or they need comparing across rows",
+      "use": "Table"
+    }
+  ],
+  "composition": {
+    "order": ["StatGroup", "StatTile"],
+    "note": "Always inside a StatGroup: the tile renders a <dt> and a <dd>, which are only valid inside a <dl>.",
+    "example": "<StatGroup><StatTile label=\"Success rate\" value=\"96.2%\" change={1.1} changeUnit=\"points\" /></StatGroup>"
+  },
+  "variants": {
+    "goodWhen": {
+      "up": {
+        "use": "the default — revenue, success rate, anything where more is better"
+      },
+      "down": {
+        "use": "costs, durations, error counts and queues, where a rise is bad news"
+      },
+      "neutral": {
+        "use": "a change that is neither — run volume, traffic — so it is never coloured"
+      }
+    },
+    "changeUnit": {
+      "percent": { "use": "the default — a relative change" },
+      "points": {
+        "use": "the metric is itself a percentage: 95% to 96% is +1.0 pts, not +1.1%"
+      }
+    }
+  },
+  "a11y": {
+    "guarantees": [
+      "the verdict is spoken as text (\"better\" or \"worse\") after the change, so it never rests on the badge's colour",
+      "the direction is in the text as a sign as well as in the arrow",
+      "`isLoading` marks the tile aria-busy while its placeholder shows"
+    ],
+    "requires": [
+      "`value` already formatted — the tile cannot know the locale, precision or unit",
+      "the right `goodWhen` for the metric; the default `up` colours a rising cost green"
+    ]
+  },
+  "antiPatterns": [
+    {
+      "dont": "leaving `goodWhen` at `up` for a duration, cost or error count",
+      "why": "a slower, costlier or more error-prone week is shown green and announced as better"
+    },
+    {
+      "dont": "a percentage change for a metric that is already a percentage",
+      "why": "95% to 96% is +1 point; +1.1% misreports it — use changeUnit=\"points\""
+    },
+    {
+      "dont": "passing a change of 0 to mean \"no data\"",
+      "why": "0 renders \"No change\", a claim; omit `change` when there is nothing to compare"
+    }
+  ]
+}

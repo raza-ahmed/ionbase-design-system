@@ -1,0 +1,37 @@
+{
+  "status": "stable",
+  "since": "0.71.0",
+  "summary": "A row of StatTiles, as a description list. Wraps on its own — no breakpoints in the caller's code.",
+  "useWhen": ["two or more headline figures shown side by side"],
+  "useInstead": [
+    {
+      "when": "the figures are rows of records to compare field by field",
+      "use": "Table"
+    }
+  ],
+  "composition": {
+    "order": ["StatGroup", "StatTile"],
+    "note": "StatGroup renders the <dl>; each StatTile renders a <dt> and a <dd> inside it. A StatTile outside a StatGroup is invalid HTML.",
+    "example": "<StatGroup><StatTile label=\"Runs\" value=\"1.2k\" change={4.1} goodWhen=\"neutral\" /><StatTile label=\"Median run time\" value=\"38s\" change={-6.2} goodWhen=\"down\" /></StatGroup>"
+  },
+  "slots": {
+    "children": {
+      "accepts": ["StatTile"],
+      "note": "StatTiles only — the group is a <dl>, so anything else inside it is invalid"
+    }
+  },
+  "a11y": {
+    "guarantees": [
+      "a <dl>, so each label is announced as the term for its figure"
+    ],
+    "notes": [
+      "Give the group a heading or aria-label when the page has more than one, so a screen reader can tell them apart."
+    ]
+  },
+  "antiPatterns": [
+    {
+      "dont": "adding media queries to change the column count",
+      "why": "the grid already wraps by tile width; a breakpoint fights it"
+    }
+  ]
+}

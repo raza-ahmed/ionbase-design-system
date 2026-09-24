@@ -1,0 +1,66 @@
+/*
+ * StatTile, StatGroup
+ *
+ * Promoted from the demo app's Overview KPI row, where the measurements were
+ * settled against a real dashboard rather than invented here: a card on
+ * `surface/default` with a `border/subtle` rule and the `lg` radius, the label
+ * a rung down in `text/secondary`, the figure on the h4 rung, and the change as
+ * a small Badge beside a caption.
+ *
+ * THE GRID NEEDS NO BREAKPOINT
+ *
+ * `auto-fit` with a minimum tile width wraps on its own: four tiles in a row on
+ * a desktop, two on a phone. The minimum is `min(100%, 10rem)` so a single tile
+ * in a container narrower than 10rem shrinks instead of overflowing it.
+ */
+.ion-stat-group {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 10rem), 1fr));
+  gap: var(--spacing-12);
+  margin: 0;
+}
+
+.ion-stat-tile {
+  display: grid;
+  align-content: start;
+  gap: var(--spacing-8);
+  padding: var(--spacing-16);
+  border: var(--border-width-default) solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  background-color: var(--surface-default);
+  font-family: var(--font-family-sans);
+}
+
+.ion-stat-tile__label {
+  color: var(--text-secondary);
+  font-size: var(--type-body-sm);
+  line-height: var(--type-body-sm-line-height);
+}
+
+.ion-stat-tile__body {
+  display: grid;
+  gap: var(--spacing-6);
+  margin: 0;
+}
+
+/* Tabular figures, so a row of tiles lines its digits up as values change. */
+.ion-stat-tile__value {
+  color: var(--text-default);
+  font-size: var(--type-h4);
+  line-height: var(--type-h4-line-height);
+  font-weight: var(--font-weight-semibold);
+  font-variant-numeric: tabular-nums;
+}
+
+.ion-stat-tile__change {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--spacing-6);
+}
+
+.ion-stat-tile__comparison {
+  color: var(--text-tertiary);
+  font-size: var(--type-caption);
+  line-height: var(--type-caption-line-height);
+}
