@@ -1270,6 +1270,28 @@
         }
       }
     },
+    "Setting Row": {
+      "code": "SettingRow",
+      "props": {
+        "Label#1418:0": {
+          "prop": "label"
+        },
+        "Description#1418:3": {
+          "prop": "description"
+        },
+        "Show Description#1418:6": {
+          "prop": "description",
+          "note": "false means description is omitted"
+        },
+        "Control#1418:9": {
+          "prop": "children",
+          "note": "the control is the row’s child; in code it is named and described by the row automatically, so turn its own label off in Figma too"
+        },
+        "Layout": {
+          "ignore": "not a prop: the row stacks below 30rem of its own width through a container query, the same call Header makes for its Device axis"
+        }
+      }
+    },
     "Sidebar": {
       "code": "Sidebar",
       "props": {

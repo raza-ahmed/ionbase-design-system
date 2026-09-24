@@ -76,7 +76,7 @@ Where a brand becomes itself. Every token aliases a primitive.
 | Group               | Count | Aliases                                                                |
 | ------------------- | ----- | ---------------------------------------------------------------------- |
 | Colour ramps        | 60    | `primary` `neutral` `success` `warning` `error` `information` × 50–900 |
-| `chart/1…8`         | 8     | Categorical series colours                                             |
+| ~~`chart/1…8`~~     | —     | Moved to Interface `chart/*` on 24 Sep 2026 — one mode cannot theme    |
 | `base/*`, `alpha/*` | 9     | white, black, and the seven alphas                                     |
 | `radius/*`          | 13    | `none 2xs xs sm md lg xl 2xl 3xl 4xl 5xl 6xl full` → `scale/*`         |
 | `border-width/*`    | 3     | `default` 1 · `thick` 2 · `thicker` 4                                  |
@@ -329,6 +329,16 @@ disappears.
 
 **Total Interface: 17 text + 13 icon + 46 surface + 24 border + 3 ring = 103.**
 Verified against the live file, 29 Jul 2026.
+
+## 3.6 `chart/*` — 13 (added 24 Sep 2026)
+
+A data series paints fill and stroke, so it is its own element. All alias
+`palette/<n>/<rung>`; see AGENTS.md "Charts reuse the palette ladder".
+
+| Token                       | Light                                                                            | Dark                            |
+| --------------------------- | -------------------------------------------------------------------------------- | ------------------------------- |
+| `chart/1` … `chart/8`       | blue green purple orange pink yellow red gray — `/500`, purple and yellow `/600` | same hues `/400`, yellow `/500` |
+| `chart/sequential-1` … `-5` | blue 300 400 500 700 900                                                         | blue 800 700 500 400 200        |
 
 Shadows stay effect styles — Figma variables cannot hold them.
 

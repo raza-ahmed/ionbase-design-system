@@ -1393,6 +1393,30 @@
         }
       }
     },
+    "Setting Row": {
+      "page": "Setting Row",
+      "id": "1418:260",
+      "kind": "SET",
+      "props": {
+        "Control#1418:9": {
+          "type": "INSTANCE_SWAP"
+        },
+        "Description#1418:3": {
+          "type": "TEXT"
+        },
+        "Label#1418:0": {
+          "type": "TEXT"
+        },
+        "Layout": {
+          "type": "VARIANT",
+          "options": ["Inline", "Stacked"],
+          "default": "Inline"
+        },
+        "Show Description#1418:6": {
+          "type": "BOOLEAN"
+        }
+      }
+    },
     "Sidebar": {
       "page": "Sidebar",
       "id": "1396:502",

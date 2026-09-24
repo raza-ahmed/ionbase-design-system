@@ -1,10 +1,9 @@
 import { useState } from 'react';
-import { Alert, Button, Divider, Input, Modal } from 'ionbase-ui';
+import { Alert, Button, Divider, Input, Modal, SettingRow } from 'ionbase-ui';
 
 import { scheduleDeletion } from '../../data/settings';
 import { formatDay } from '../../lib/dates';
 import { useDemoSettings } from '../../lib/demo-settings';
-import { SettingRow } from '../../local/SettingRow';
 
 /** DestructiveConfirm at its highest consequence: the workspace name must be typed exactly. */
 export function DangerZone({
@@ -77,16 +76,14 @@ export function DangerZone({
         label="Delete workspace"
         description="Removes every agent, run log and knowledge file after 7 days."
       >
-        {() => (
-          <Button
-            variant="destructive"
-            size="sm"
-            isDisabled={!workspaceName || Boolean(scheduledFor)}
-            onClick={() => setOpen(true)}
-          >
-            Delete workspace…
-          </Button>
-        )}
+        <Button
+          variant="destructive"
+          size="sm"
+          isDisabled={!workspaceName || Boolean(scheduledFor)}
+          onClick={() => setOpen(true)}
+        >
+          Delete workspace…
+        </Button>
       </SettingRow>
 
       {open && workspaceName && (

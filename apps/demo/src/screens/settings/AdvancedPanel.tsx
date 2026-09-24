@@ -8,10 +8,9 @@ import {
   Link,
   Popover,
   Select,
+  SettingRow,
 } from 'ionbase-ui';
 import { Info } from 'ionbase-icons/icons/info';
-
-import { SettingRow } from '../../local/SettingRow';
 
 /**
  * Less-used settings, collapsed. Data residency is the pattern's `empty` rule:
@@ -79,20 +78,16 @@ export function AdvancedPanel({
                 : 'Your Team plan stores data in the US. Choosing a region needs the Enterprise plan.'
             }
           >
-            {({ labelId, descriptionId }) => (
-              <Select
-                size="sm"
-                aria-labelledby={labelId}
-                aria-describedby={descriptionId}
-                isDisabled={!enterprise}
-                options={[
-                  { value: 'us', label: 'United States' },
-                  { value: 'eu', label: 'European Union' },
-                  { value: 'ap', label: 'Asia Pacific' },
-                ]}
-                defaultValue="us"
-              />
-            )}
+            <Select
+              size="sm"
+              isDisabled={!enterprise}
+              options={[
+                { value: 'us', label: 'United States' },
+                { value: 'eu', label: 'European Union' },
+                { value: 'ap', label: 'Asia Pacific' },
+              ]}
+              defaultValue="us"
+            />
           </SettingRow>
           {!enterprise && (
             <Link variant="standalone" href="https://example.com/pricing">

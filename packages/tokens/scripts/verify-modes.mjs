@@ -36,6 +36,17 @@ const ACCENTS = ['primary', 'success', 'warning', 'error', 'information'];
 
 const SAME_ON_PURPOSE = [
   {
+    roles: ['chart/sequential-3'],
+    reason:
+      'The midpoint of a ramp that turns round. A sequential scale runs from ' +
+      'the ground outward — pale to deep on a light page, deep to pale on a ' +
+      'dark one — so Dark is Light reversed, and the step both directions ' +
+      'pass through is the same step. It is blue/500, the one rung that clears ' +
+      '3:1 against both grounds (4.09 Light, 3.84 Dark). The other four steps ' +
+      'all theme, and if the ramp is ever made asymmetric this entry fails the ' +
+      'build and should go.',
+  },
+  {
     roles: ['text/disabled', 'icon/disabled'],
     reason:
       'Disabled is one mid grey in both themes. It has to read as unavailable ' +

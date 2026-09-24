@@ -47,8 +47,9 @@
     "tokens:tier": "node scripts/verify-tier.mjs",
     "tokens:modes": "node scripts/verify-modes.mjs",
     "tokens:bindings": "node scripts/verify-bindings.mjs",
-    "tokens:gate": "pnpm run tokens:audit && pnpm run tokens:tier && pnpm run tokens:modes && pnpm run tokens:verify && pnpm run tokens:bindings && pnpm run tokens:geometry",
-    "tokens:geometry": "node scripts/verify-geometry.mjs"
+    "tokens:gate": "pnpm run tokens:audit && pnpm run tokens:tier && pnpm run tokens:modes && pnpm run tokens:chart && pnpm run tokens:verify && pnpm run tokens:bindings && pnpm run tokens:geometry",
+    "tokens:geometry": "node scripts/verify-geometry.mjs",
+    "tokens:chart": "node scripts/verify-chart.mjs"
   },
   "devDependencies": {
     "style-dictionary": "^4"

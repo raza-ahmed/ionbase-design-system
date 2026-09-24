@@ -139,6 +139,19 @@
     "surface/palette-7-subtle": {"type": "COLOR", "scopes": ["FRAME_FILL", "SHAPE_FILL"], "codeSyntax": "var(--surface-palette-7-subtle)", "values": {"Light": "{palette.7.50}", "Dark": "{palette.7.900}"}},
     "text/palette-7": {"type": "COLOR", "scopes": ["TEXT_FILL"], "codeSyntax": "var(--text-palette-7)", "values": {"Light": "{palette.7.800}", "Dark": "{palette.7.200}"}},
     "surface/sheen": {"type": "COLOR", "scopes": ["FRAME_FILL", "SHAPE_FILL"], "codeSyntax": "var(--surface-sheen)", "values": {"Light": "{alpha.white-20}", "Dark": "{alpha.white-05}"}},
-    "surface/sheen-subtle": {"type": "COLOR", "scopes": ["FRAME_FILL", "SHAPE_FILL"], "codeSyntax": "var(--surface-sheen-subtle)", "values": {"Light": "{alpha.white-05}", "Dark": "{alpha.white-05}"}}
+    "surface/sheen-subtle": {"type": "COLOR", "scopes": ["FRAME_FILL", "SHAPE_FILL"], "codeSyntax": "var(--surface-sheen-subtle)", "values": {"Light": "{alpha.white-05}", "Dark": "{alpha.white-05}"}},
+    "chart/1": {"type": "COLOR", "scopes": ["FRAME_FILL", "SHAPE_FILL", "STROKE_COLOR"], "codeSyntax": "var(--chart-1)", "values": {"Light": "{palette.2.500}", "Dark": "{palette.2.400}"}},
+    "chart/2": {"type": "COLOR", "scopes": ["FRAME_FILL", "SHAPE_FILL", "STROKE_COLOR"], "codeSyntax": "var(--chart-2)", "values": {"Light": "{palette.6.500}", "Dark": "{palette.6.400}"}},
+    "chart/3": {"type": "COLOR", "scopes": ["FRAME_FILL", "SHAPE_FILL", "STROKE_COLOR"], "codeSyntax": "var(--chart-3)", "values": {"Light": "{palette.3.600}", "Dark": "{palette.3.400}"}},
+    "chart/4": {"type": "COLOR", "scopes": ["FRAME_FILL", "SHAPE_FILL", "STROKE_COLOR"], "codeSyntax": "var(--chart-4)", "values": {"Light": "{palette.5.500}", "Dark": "{palette.5.400}"}},
+    "chart/5": {"type": "COLOR", "scopes": ["FRAME_FILL", "SHAPE_FILL", "STROKE_COLOR"], "codeSyntax": "var(--chart-5)", "values": {"Light": "{palette.4.500}", "Dark": "{palette.4.400}"}},
+    "chart/6": {"type": "COLOR", "scopes": ["FRAME_FILL", "SHAPE_FILL", "STROKE_COLOR"], "codeSyntax": "var(--chart-6)", "values": {"Light": "{palette.8.600}", "Dark": "{palette.8.500}"}},
+    "chart/7": {"type": "COLOR", "scopes": ["FRAME_FILL", "SHAPE_FILL", "STROKE_COLOR"], "codeSyntax": "var(--chart-7)", "values": {"Light": "{palette.7.500}", "Dark": "{palette.7.400}"}},
+    "chart/8": {"type": "COLOR", "scopes": ["FRAME_FILL", "SHAPE_FILL", "STROKE_COLOR"], "codeSyntax": "var(--chart-8)", "values": {"Light": "{palette.1.500}", "Dark": "{palette.1.400}"}},
+    "chart/sequential-1": {"type": "COLOR", "scopes": ["FRAME_FILL", "SHAPE_FILL", "STROKE_COLOR"], "codeSyntax": "var(--chart-sequential-1)", "values": {"Light": "{palette.2.300}", "Dark": "{palette.2.800}"}},
+    "chart/sequential-2": {"type": "COLOR", "scopes": ["FRAME_FILL", "SHAPE_FILL", "STROKE_COLOR"], "codeSyntax": "var(--chart-sequential-2)", "values": {"Light": "{palette.2.400}", "Dark": "{palette.2.700}"}},
+    "chart/sequential-3": {"type": "COLOR", "scopes": ["FRAME_FILL", "SHAPE_FILL", "STROKE_COLOR"], "codeSyntax": "var(--chart-sequential-3)", "values": {"Light": "{palette.2.500}", "Dark": "{palette.2.500}"}},
+    "chart/sequential-4": {"type": "COLOR", "scopes": ["FRAME_FILL", "SHAPE_FILL", "STROKE_COLOR"], "codeSyntax": "var(--chart-sequential-4)", "values": {"Light": "{palette.2.700}", "Dark": "{palette.2.400}"}},
+    "chart/sequential-5": {"type": "COLOR", "scopes": ["FRAME_FILL", "SHAPE_FILL", "STROKE_COLOR"], "codeSyntax": "var(--chart-sequential-5)", "values": {"Light": "{palette.2.900}", "Dark": "{palette.2.200}"}}
   }
 }

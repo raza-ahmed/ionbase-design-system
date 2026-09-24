@@ -1,5 +1,85 @@
 # Changelog
 
+## 0.73.0 — 2026-09-24
+
+### Changed — chart colours theme
+
+`--chart-1` … `--chart-8` now have dark-mode values. They lived in the
+single-mode Semantics collection, so the dark theme drew the light colours —
+and `--chart-3` (purple) fell to 2.02–2.81:1 against the dark grounds, under
+the 3:1 a series mark needs. Light values are unchanged; the property names are
+unchanged.
+
+### Added — `--chart-sequential-1` … `--chart-sequential-5`
+
+One hue, low to high, for magnitude — a heatmap, a density grid. Pale to deep
+in Light, deep to pale in Dark, with `--surface-sunken` as zero. Replaces
+faking a ramp with opacity, which reads differently on every ground.
+
+### Added — a gate for chart colour
+
+No component draws a chart, so the contrast gate never measured these.
+`tokens:chart` (in `tokens:gate`) now checks every series at 3:1 against
+`surface/default`, `page` and `raised` in both modes, and that each ramp step
+moves away from the ground and is distinct from the last.
+
+### Tokens
+
+- Interface: `chart/*` is a sixth element — a series paints fill and stroke
+  and must be one colour in both. 13 roles, all aliasing the palette ladder.
+- Semantics: `chart/1…8` retired; `palette/1…7` gain `/400` and `/500`;
+  `palette/8` (yellow) added. 462 → 490 variables.
+- Figma: new **Chart Colours** page with both modes side by side.
+- `llms.txt`: a "Drawing a chart?" section, so an agent colours a chart from
+  the tokens instead of picking hex.
+
+## 0.72.0 — 2026-09-24
+
+### Added — `SettingRow`
+
+One setting: its name and what it does on the left, the control on the right —
+the row the SettingsPanel pattern has described since it was written, and
+which the demo app built four times over from a local stand-in. The pattern now
+names it.
+
+```tsx
+<SettingRow label="Weekly digest" description="A Monday summary of runs.">
+  <Toggle />
+</SettingRow>
+```
+
+**The wiring is the point, not the layout.** A label placed beside a Toggle
+looks labelled and is not: a screen reader says "switch, off". The demo's
+stand-in passed ids to a render function, which still left the wiring as a
+step to remember. Here the child is cloned with `aria-labelledby` and
+`aria-describedby` set, so the row cannot be used without them. A name the
+caller wires explicitly is kept. A function child still receives the ids, for a
+control that needs them somewhere else.
+
+**A control with its own text keeps its own name.** A Button reading "Delete
+workspace…" is announced by those words — WCAG 2.5.3 wants the visible text in
+the accessible name — and the row's label and description become its
+description instead.
+
+**It stacks by its own width**, through a container query below 30rem, not by
+the viewport — the demo's version stacked at a 767px viewport, which left the
+same row cramped in a narrow drawer on a desktop.
+
+**`needs-accessible-name` knows about it.** The lint rule flagged every control
+inside a SettingRow as unnamed. A contract can now declare `a11y.namesChild`,
+and a control directly inside such a component is skipped — read from the
+contracts like every other rule input, not hardcoded. A bare `<Toggle />`
+outside one is still reported.
+
+**Drawn in Figma the same day** as `Setting Row` (1418:260): `Layout` (Inline,
+Stacked — ignored in the mapping, since code decides it by width) and a
+`Control` instance swap preferring Toggle and Button.
+
+The demo drops its local copy, its CSS and the gap-list row; all four settings
+panels use this one, and their controls lose the hand-written aria wiring.
+
+7 interaction tests. Figma map: 65 mapped, 300 properties, 0 errors.
+
 ## 0.71.0 — 2026-09-24
 
 ### Added — `StatTile`, `StatGroup`

@@ -3,12 +3,12 @@ import { HeatmapRect } from '@visx/heatmap';
 import { useParentSize } from '@visx/responsive';
 
 /**
- * LOCAL STAND-IN — gap list: IonBase has categorical `chart/1…8` tokens but no
- * sequential ramp, so intensity is `chart/1` at six fixed opacity steps. Steps,
- * not a continuous visx colour scale: a scale interpolates colours in JS and
- * cannot interpolate `var(--…)`, while a class per step themes with the page.
- * All colour is in charts.css, as CSS — CSS beats SVG presentation attributes,
- * which is also why nothing here passes `fill`.
+ * Intensity is IonBase's `chart/sequential-1…5`, with `surface/sunken` for an
+ * hour that had no runs. Steps, not a continuous visx colour scale: a scale
+ * interpolates colours in JS and cannot interpolate `var(--…)`, while a class
+ * per step themes with the page — the ramp runs pale-to-deep in Light and
+ * deep-to-pale in Dark. All colour is in charts.css, as CSS — CSS beats SVG
+ * presentation attributes, which is also why nothing here passes `fill`.
  */
 const WEEKDAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 const STEPS = 6;
@@ -91,7 +91,7 @@ export function RunHeatmap({ data }: { data: number[][] }) {
                   cells.flat().map((cell) => (
                     <rect
                       key={`${cell.row}-${cell.column}`}
-                      className={`demo-heat demo-heat--${step(cell.count ?? 0)}`}
+                      className={`demo-heat--${step(cell.count ?? 0)}`}
                       x={cell.x}
                       y={cell.y}
                       width={Math.max(0, cell.width)}
@@ -119,7 +119,7 @@ export function RunHeatmap({ data }: { data: number[][] }) {
             {Array.from({ length: STEPS }, (_, i) => (
               <rect
                 key={i}
-                className={`demo-heat demo-heat--${i}`}
+                className={`demo-heat--${i}`}
                 x={i * 14}
                 width={12}
                 height={12}

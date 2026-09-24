@@ -1,12 +1,11 @@
 import { useState } from 'react';
-import { Alert, Toggle } from 'ionbase-ui';
+import { Alert, SettingRow, Toggle } from 'ionbase-ui';
 
 import {
   saveNotification,
   type NotificationSettings,
 } from '../../data/settings';
 import { useDemoSettings } from '../../lib/demo-settings';
-import { SettingRow } from '../../local/SettingRow';
 
 const ROWS: {
   key: keyof NotificationSettings;
@@ -97,15 +96,11 @@ export function NotificationsPanel({
           label={row.label}
           description={row.description}
         >
-          {({ labelId, descriptionId }) => (
-            <Toggle
-              aria-labelledby={labelId}
-              aria-describedby={descriptionId}
-              isSelected={values?.[row.key] ?? false}
-              isDisabled={!values || saving === row.key}
-              onSelectionChange={(on) => void change(row.key, on, row.label)}
-            />
-          )}
+          <Toggle
+            isSelected={values?.[row.key] ?? false}
+            isDisabled={!values || saving === row.key}
+            onSelectionChange={(on) => void change(row.key, on, row.label)}
+          />
         </SettingRow>
       ))}
     </section>

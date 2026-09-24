@@ -322,22 +322,6 @@ body {
   border-color: var(--border-error-subtle);
 }
 
-.demo-setting {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--spacing-16);
-}
-
-.demo-setting__text {
-  display: grid;
-  gap: var(--spacing-2);
-}
-
-.demo-setting__control {
-  flex-shrink: 0;
-}
-
 .demo-savebar {
   display: flex;
   flex-wrap: wrap;
@@ -357,11 +341,6 @@ body {
   .demo-form__pair,
   .demo-review__row {
     grid-template-columns: minmax(0, 1fr);
-  }
-
-  .demo-setting {
-    align-items: flex-start;
-    flex-direction: column;
   }
 
   .demo-toolbar__bulk {

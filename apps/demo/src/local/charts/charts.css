@@ -59,30 +59,26 @@
   gap: var(--spacing-6);
 }
 
-.demo-heat {
-  fill: var(--chart-1);
-}
-
 .demo-heat--0 {
   fill: var(--surface-sunken);
 }
 
 .demo-heat--1 {
-  fill-opacity: 0.18;
+  fill: var(--chart-sequential-1);
 }
 
 .demo-heat--2 {
-  fill-opacity: 0.36;
+  fill: var(--chart-sequential-2);
 }
 
 .demo-heat--3 {
-  fill-opacity: 0.56;
+  fill: var(--chart-sequential-3);
 }
 
 .demo-heat--4 {
-  fill-opacity: 0.78;
+  fill: var(--chart-sequential-4);
 }
 
 .demo-heat--5 {
-  fill-opacity: 1;
+  fill: var(--chart-sequential-5);
 }

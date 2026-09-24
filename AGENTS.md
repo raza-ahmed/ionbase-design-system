@@ -752,17 +752,17 @@ Reasoning: [docs/naming-decisions.md](docs/naming-decisions.md).
 ```
 Primitives   143  Value                value-keyed scales only
    ↓
-Semantics    156  IonBase              brand identity — ramps, radius, border-width, icon-size
+Semantics    171  IonBase              brand identity — ramps, radius, border-width, icon-size
    ↓
-Interface    134  Light / Dark         text · icon · surface · border · ring · palette
+Interface    146  Light / Dark         text · icon · surface · border · ring · palette · chart
    ↓
 components + CSS
 
 Breakpoint    30  Desktop/Tablet/Mobile   (parallel — type and grid only)
 ```
 
-Sync state: names `3716173117`, 463 variables (verified against Figma 4 Sep 2026
-— MATCH). Re-run `figma/checksum.js` + `scripts/verify-export.mjs` rather than
+Sync state: 490 variables, names `3426282479`, values `1525173145` (verified
+against Figma 24 Sep 2026 — MATCH). Re-run `figma/checksum.js` + `scripts/verify-export.mjs` rather than
 trusting the numbers here; this line has been stale twice.
 
 **The name checksum does not see values.** It hashes names and `codeSyntax`, so a
@@ -792,7 +792,7 @@ on `spacing/*` or a ladder) and `figma/audit-geometry.js` (raw numbers in Figma,
 which no export can see — that is how a literal 10px padding and a whole
 component's unbound stroke weights both shipped).
 
-**463 variables, and that number does not grow with the component count.** A new
+**490 variables (24 Sep 2026), and that number does not grow with the component count.** A new
 brand adds a _mode_, not tokens. So does a new theme. It grew by two on
 2026-08-06 — `spacing/14` and an `icon-size` rung — and that is the shape of
 growth to expect: a new _value_ the ladders did not carry, not a new component.
@@ -1222,6 +1222,40 @@ Checked before committing to it: a single themed veil over the existing pale dis
 was two roles instead of seventy, and it collapsed the seven hues to a closest
 pair of dE 4.5 — gray `#1f1f20`, blue `#161e23`, purple `#181822`. The ladder
 holds them at dE 18.9 against today's 23.2.
+
+### Charts reuse the palette ladder — 24 Sep 2026
+
+`chart/1…8` lived in Semantics, which has one mode, so it could not theme: the
+dark theme drew the light values, and `chart/3` (`purple/600`) measured 2.02 to
+2.81:1 against the three dark grounds — under the 3:1 a series mark needs. No
+gate saw it, because no component draws a chart and the contrast gate only
+measures pairings a stylesheet writes.
+
+The rule from the section above held: a second categorical palette would have
+been `control/<size>/*` again, so charts pick from `palette/<n>/<rung>`.
+
+```
+Semantics   palette/1..7 gain /400 and /500; palette/8 = yellow, full ladder
+Interface   chart/1..8             series in order   Light /500 (purple, yellow /600)   Dark /400 (yellow /500)
+            chart/sequential-1..5  blue, low → high  Light 300 400 500 700 900         Dark 800 700 500 400 200
+```
+
+- **`chart` is a sixth Interface element**, with its own closed roles and no
+  weight or state. A series paints a bar's fill and a line's stroke and must be
+  one colour in both, so `surface/` + `border/` would be two names per series
+  that nothing keeps in step. Semantics `chart/` is retired in `audit-names.mjs`
+  so it cannot come back.
+- **The CSS names did not change.** `--chart-1…8` are the same properties;
+  they now carry a dark value. Light values are byte-identical.
+- **`palette/8` has no avatar roles.** The ladder slot exists for charts;
+  `surface/palette-8*` would be four names nothing binds.
+- **The sequential ramp turns round at its midpoint**, so `chart/sequential-3`
+  is `blue/500` in both modes and is declared in `verify-modes.mjs`.
+- **`tokens:chart` measures it**, in `tokens:gate`: every series against
+  `surface/default`, `page` and `raised` at 3:1 in both modes, and the ramp
+  moving away from the ground with each step at least 1.3:1 from the last,
+  starting from `surface/sunken` (zero). Negative-tested: the old values fail
+  it on `chart/3`, and a ramp with a step swapped fails it.
 
 ### The gloss was NOT an accessibility control, and this section said it was
 
