@@ -572,6 +572,13 @@ function hostedIndex() {
     p();
   }
 
+  if (index.helpers?.length) {
+    p('## Helpers');
+    p();
+    for (const h of index.helpers) p(`- \`${h}\``);
+    p();
+  }
+
   chartSection(p);
   p('## Coming from a Figma design?');
   p();
@@ -608,10 +615,28 @@ function chartSection(p) {
   p('## Drawing a chart?');
   p();
   p(
-    'There is no chart component — use your charting library, and colour it ' +
-      'from these tokens so it themes and passes contrast:',
+    'Draw it with visx — IonBase does not draw charts and does not depend on ' +
+      'visx — and style it with these, so it themes and passes contrast:',
   );
   p();
+  p(
+    '- `<AxisBottom {...chartAxisProps} />`, `<GridRows {...chartGridProps} />` ' +
+      '— axes and gridlines take the tokens instead of the `#222` visx writes.',
+  );
+  p(
+    '- `className={chartSeriesClass(n)}` on a series group, with ' +
+      '`ion-chart__line`, `__area`, `__bar` or `__point` on its marks; ' +
+      '`ion-chart__reference` for a target line; `ion-chart__heat--0…5` for a ' +
+      'heatmap cell.',
+  );
+  p(
+    '- `ChartTooltip` inside `<TooltipWithBounds {...chartTooltipProps}>`, and ' +
+      '`ChartLegend` for more than one series. Read their contracts.',
+  );
+  p(
+    '- Always a text summary and the values in a table: the tooltip is ' +
+      'pointer-only.',
+  );
   p(
     '- `--chart-1` … `--chart-8` — categorical series, in order. Each clears ' +
       '3:1 against `--surface-default`, `--surface-page` and ' +

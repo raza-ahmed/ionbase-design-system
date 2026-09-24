@@ -2,7 +2,7 @@
 
 > IonBase is a React design system for enterprise SaaS, built to be consumed by an agent rather than read by a developer. Every component ships a machine-readable contract carrying the judgement a type signature cannot: when to use it, what to use instead, the anti-patterns, and what it guarantees for accessibility versus what it requires of you.
 
-Version 0.73.0. 73 components.
+Version 0.74.0. 75 components.
 
 ## Read these, in this order
 
@@ -13,7 +13,7 @@ Both are importable: `ionbase-ui/meta/index` and `ionbase-ui/meta/<Name>.json`. 
 
 ## Components
 
-`Accordion`, `AccordionItem`, `AgentActivity`, `AgentActivityStep`, `AgentStop`, `Alert`, `ApprovalGate`, `Avatar`, `AvatarGradient`, `AvatarGroup`, `Badge`, `Breadcrumb`, `BreadcrumbItem`, `Button`, `Checkbox`, `Citation`, `CitationList`, `CitationListItem`, `Combobox`, `ConfidenceIndicator`, `DatePicker`, `DateRangePicker`, `Divider`, `Drawer`, `EmptyState`, `FileUpload`, `FullCard`, `Header`, `Icon`, `Input`, `Link`, `Logo`, `LogoMark`, `Menu`, `MenuItem`, `Modal`, `NavItem`, `NumberInput`, `Pagination`, `PhoneInput`, `Popover`, `ProgressBar`, `PromptInput`, `Radio`, `RadioGroup`, `ScrollProgress`, `SegmentedControl`, `SegmentedControlItem`, `Select`, `SettingRow`, `Sidebar`, `SidebarItem`, `SidebarSection`, `Skeleton`, `Spinner`, `StatGroup`, `StatTile`, `Stepper`, `StepperStep`, `StreamingText`, `TabItem`, `Table`, `TableBody`, `TableCell`, `TableHead`, `TableRow`, `Tabs`, `Textarea`, `Toast`, `ToastProvider`, `Toggle`, `ToolCall`, `Tooltip`
+`Accordion`, `AccordionItem`, `AgentActivity`, `AgentActivityStep`, `AgentStop`, `Alert`, `ApprovalGate`, `Avatar`, `AvatarGradient`, `AvatarGroup`, `Badge`, `Breadcrumb`, `BreadcrumbItem`, `Button`, `ChartLegend`, `ChartTooltip`, `Checkbox`, `Citation`, `CitationList`, `CitationListItem`, `Combobox`, `ConfidenceIndicator`, `DatePicker`, `DateRangePicker`, `Divider`, `Drawer`, `EmptyState`, `FileUpload`, `FullCard`, `Header`, `Icon`, `Input`, `Link`, `Logo`, `LogoMark`, `Menu`, `MenuItem`, `Modal`, `NavItem`, `NumberInput`, `Pagination`, `PhoneInput`, `Popover`, `ProgressBar`, `PromptInput`, `Radio`, `RadioGroup`, `ScrollProgress`, `SegmentedControl`, `SegmentedControlItem`, `Select`, `SettingRow`, `Sidebar`, `SidebarItem`, `SidebarSection`, `Skeleton`, `Spinner`, `StatGroup`, `StatTile`, `Stepper`, `StepperStep`, `StreamingText`, `TabItem`, `Table`, `TableBody`, `TableCell`, `TableHead`, `TableRow`, `Tabs`, `Textarea`, `Toast`, `ToastProvider`, `Toggle`, `ToolCall`, `Tooltip`
 
 ## Patterns
 
@@ -23,8 +23,12 @@ Compositions of the components above, in `dist/meta/patterns/`. Read `dist/meta/
 
 ## Drawing a chart?
 
-There is no chart component — use your charting library, and colour it from these tokens so it themes and passes contrast:
+Draw it with visx — IonBase does not draw charts and does not depend on visx — and style it with these, so it themes and passes contrast:
 
+- `<AxisBottom {...chartAxisProps} />`, `<GridRows {...chartGridProps} />` — axes and gridlines take the tokens instead of the `#222` visx writes.
+- `className={chartSeriesClass(n)}` on a series group, with `ion-chart__line`, `__area`, `__bar` or `__point` on its marks; `ion-chart__reference` for a target line; `ion-chart__heat--0…5` for a heatmap cell.
+- `ChartTooltip` inside `<TooltipWithBounds {...chartTooltipProps}>`, and `ChartLegend` for more than one series. Read their contracts.
+- Always a text summary and the values in a table: the tooltip is pointer-only.
 - `--chart-1` … `--chart-8` — categorical series, in order. Each clears 3:1 against `--surface-default`, `--surface-page` and `--surface-raised` in Light and Dark. Set them as CSS `fill` / `stroke`, not SVG attributes, which do not reliably resolve `var()`.
 - `--chart-sequential-1` … `--chart-sequential-5` — one hue, low to high, for magnitude (a heatmap). Use `--surface-sunken` for zero. Do not fake a ramp with opacity: it reads differently on every ground.
 - **Bin a wide range into the five steps; do not ask for more.** Like GitHub's contribution graph (four steps and empty): zero is its own level, and the non-zero values split into five equal groups by rank, each cut the top of its group — rank, so one outlier does not flatten the rest. Past five to seven steps of one hue, readers cannot tell neighbours apart.

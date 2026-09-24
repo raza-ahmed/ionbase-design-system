@@ -1,5 +1,38 @@
 # Changelog
 
+## 0.74.0 — 2026-09-25
+
+### Added — chart styling for visx
+
+IonBase does not draw charts and does not depend on visx; it styles them. The
+demo app's last chart gap — axes, gridlines and tooltips — is closed.
+
+- **`chart.css`** — classes for everything visx draws: `ion-chart__tick`,
+  `__axis-line`, `__grid`, `__reference`, `__crosshair`, `__line`, `__area`,
+  `__bar`, `__point`, `__heat--0…5`. visx writes `#222` and `#eaf0f6` as SVG
+  attributes; a class overrides them, so the chart themes.
+- **`chartAxisProps`, `chartGridProps`, `chartTooltipProps`** — spread onto
+  visx's `Axis*`, `Grid*` and `Tooltip*` so nobody types the class names.
+- **`chartSeriesClass(n)`** — one class colours a series' line, points and
+  legend swatch from the same `--chart-<n>`, so the legend cannot drift from
+  the line.
+- **`ChartTooltip`** — the hover panel, drawn like Popover (raised, rimmed,
+  lg shadow), with rows as a `<dl>`. Its contract says what it is not: the
+  accessible route to the data. Every chart still needs a summary and a table.
+- **`ChartLegend`** — `square` or `line` swatches, as a list.
+- Figma: `Chart Tooltip` and `Chart Legend` on the **Chart** page (renamed from
+  Chart Colours), mapped, with their Dev Mode blocks applied and verified.
+- `llms.txt` "Drawing a chart?" now says how to wire all of the above.
+
+### Changed
+
+- `dist/meta` lists lower-case exports under `helpers`, beside `hooks`. They
+  used to be read as components, so exporting a props object would have
+  demanded a contract for it.
+- The demo's charts use all of the above; its local chart CSS is down to one
+  caption layout, and the gap-list row is gone. The success-rate chart gained a
+  real tooltip, and its last date label no longer clips.
+
 ## 0.73.0 — 2026-09-24
 
 ### Changed — chart colours theme

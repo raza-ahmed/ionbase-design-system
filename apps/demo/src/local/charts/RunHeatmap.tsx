@@ -7,7 +7,7 @@ import { useParentSize } from '@visx/responsive';
  * hour that had no runs. Steps, not a continuous visx colour scale: a scale
  * interpolates colours in JS and cannot interpolate `var(--…)`, while a class
  * per step themes with the page — the ramp runs pale-to-deep in Light and
- * deep-to-pale in Dark. All colour is in charts.css, as CSS — CSS beats SVG
+ * deep-to-pale in Dark. All colour is IonBase's chart.css (`ion-chart__heat--0…5`), as CSS — CSS beats SVG
  * presentation attributes, which is also why nothing here passes `fill`.
  */
 const WEEKDAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
@@ -51,14 +51,14 @@ export function RunHeatmap({ data }: { data: number[][] }) {
   const height = binHeight * 7 + BOTTOM;
 
   return (
-    <figure className="demo-chart">
+    <figure className="ion-chart">
       <div ref={parentRef}>
         {width > 0 && (
           <svg width={width} height={height} aria-hidden="true">
             {WEEKDAYS.map((d, i) => (
               <text
                 key={d}
-                className="demo-chart__tick"
+                className="ion-chart__tick"
                 x={0}
                 y={i * binHeight + binHeight / 2}
                 dominantBaseline="middle"
@@ -69,7 +69,7 @@ export function RunHeatmap({ data }: { data: number[][] }) {
             {[0, 6, 12, 18].map((h) => (
               <text
                 key={h}
-                className="demo-chart__tick"
+                className="ion-chart__tick"
                 x={LEFT + h * binWidth}
                 y={height - 4}
               >
@@ -91,7 +91,7 @@ export function RunHeatmap({ data }: { data: number[][] }) {
                   cells.flat().map((cell) => (
                     <rect
                       key={`${cell.row}-${cell.column}`}
-                      className={`demo-heat--${step(cell.count ?? 0)}`}
+                      className={`ion-chart__heat--${step(cell.count ?? 0)}`}
                       x={cell.x}
                       y={cell.y}
                       width={Math.max(0, cell.width)}
@@ -119,7 +119,7 @@ export function RunHeatmap({ data }: { data: number[][] }) {
             {Array.from({ length: STEPS }, (_, i) => (
               <rect
                 key={i}
-                className={`demo-heat--${i}`}
+                className={`ion-chart__heat--${i}`}
                 x={i * 14}
                 width={12}
                 height={12}

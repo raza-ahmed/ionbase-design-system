@@ -199,6 +199,18 @@ meta/<Name>.json          hand-authored INTENT   committed, reviewed
    = dist/meta/<Name>.json + components.json + index.json
 ```
 
+**What counts as a component is decided by the name.** `build-meta.mjs` reads
+every exported value: `use*` is a hook, any other lower-case name is a helper
+(`chartAxisProps`, `chartSeriesClass`), and only PascalCase gets a contract.
+Both lists ship in `index.json`. Before 0.74.0 there was no helper case, so
+exporting a props object would have demanded a `meta/chartAxisProps.json` —
+keep helpers lower-case.
+
+**Charts are visx's, not ours.** IonBase ships `chart.css`, the helpers above,
+`ChartTooltip` and `ChartLegend`, and does not depend on visx. Do not add a
+chart component: the moment one wraps a visx primitive, every visx prop is a
+prop to re-type and keep in step.
+
 **Intent files carry judgement; they never carry API.** `props`, `tokens`,
 `stylesheet`, `source`, `import`, `name` and `propsType` are generated, and
 `verify-meta.mjs` rejects an intent file that sets any of them. A hand-kept prop

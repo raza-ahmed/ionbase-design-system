@@ -247,3 +247,25 @@ export type {
 
 export { SettingRow } from './SettingRow.js';
 export type { SettingRowProps, SettingRowIds } from './SettingRow.js';
+
+/*
+ * Chart parts. IonBase does not draw charts — visx does — so besides the two
+ * components this exports the class names visx needs as spreadable props.
+ * They are values, not components; build-meta lists them as helpers.
+ */
+export {
+  ChartLegend,
+  ChartTooltip,
+  chartAxisProps,
+  chartGridProps,
+  chartSeriesClass,
+  chartTooltipProps,
+} from './Chart.js';
+export type {
+  ChartLegendItem,
+  ChartLegendProps,
+  ChartLegendShape,
+  ChartSeries,
+  ChartTooltipProps,
+  ChartTooltipRow,
+} from './Chart.js';

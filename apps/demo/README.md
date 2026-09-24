@@ -28,5 +28,4 @@ to the design system.
 
 | Gap                                                                                                               | Where it showed up | Stand-in                                                                                                                      |
 | ----------------------------------------------------------------------------------------------------------------- | ------------------ | ----------------------------------------------------------------------------------------------------------------------------- |
-| No chart primitives: axis, gridline and tooltip styling.                                                          | Success-rate line  | visx, with classes in [`charts.css`](src/local/charts/charts.css)                                                             |
 | No way to present a scripted or recorded agent run. The agentic components render states but nothing drives them. | Runs               | [`src/screens/runs/use-run-engine.ts`](src/screens/runs/use-run-engine.ts). Worth considering as a documented pattern helper. |
