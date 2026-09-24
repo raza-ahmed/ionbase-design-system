@@ -557,6 +557,29 @@
         }
       }
     },
+    "Date Picker": {
+      "code": "DatePicker",
+      "props": {
+        "Size": {
+          "prop": "size",
+          "values": {
+            "Small": "sm",
+            "Medium": "md",
+            "Large": "lg"
+          }
+        },
+        "State": {
+          "prop": "isInvalid",
+          "when": {
+            "Invalid": true
+          },
+          "note": "Hover, Focus and Filled are CSS or content; Disabled is isDisabled and Read-only is isReadOnly — the same split as Input, whose box this is."
+        },
+        "Type": {
+          "ignore": "Single is DatePicker; Range is DateRangePicker, which takes the same size and state props. A Figma set maps to one code component, so the range picker is reached through this axis — see codeUnmapped.DateRangePicker."
+        }
+      }
+    },
     "Drawer": {
       "code": "Drawer",
       "props": {
@@ -979,6 +1002,33 @@
         }
       }
     },
+    "Number Input": {
+      "code": "NumberInput",
+      "props": {
+        "Size": {
+          "prop": "size",
+          "values": {
+            "Small": "sm",
+            "Medium": "md",
+            "Large": "lg"
+          }
+        },
+        "State": {
+          "prop": "isInvalid",
+          "when": {
+            "Invalid": true
+          },
+          "note": "Hover, Focus and Filled are CSS or content; Disabled is isDisabled and Read-only is isReadOnly. The same split Input records, because the box is Input’s."
+        },
+        "Stepper#1389:0": {
+          "prop": "showStepper"
+        },
+        "Value#1389:22": {
+          "prop": "value",
+          "note": "A number in code; Figma’s text is its formatted display, and the placeholder until one is entered."
+        }
+      }
+    },
     "Pagination": {
       "code": "Pagination",
       "props": {
@@ -1085,6 +1135,34 @@
         }
       }
     },
+    "Prompt Input": {
+      "code": "PromptInput",
+      "props": {
+        "State": {
+          "prop": "isDisabled",
+          "when": {
+            "Disabled": true
+          },
+          "note": "Hover and Focus are CSS. Filled is content — a non-empty value — and is the only state in which send is live."
+        },
+        "Running": {
+          "prop": "isRunning",
+          "values": {
+            "True": true,
+            "False": false
+          },
+          "note": "with onStop, which is what swaps send for AgentStop"
+        },
+        "Value#1393:0": {
+          "prop": "value",
+          "note": "Figma’s text is whatever the field shows: the placeholder until something is typed, then the value."
+        },
+        "Show Actions#1393:11": {
+          "prop": "actions",
+          "note": "false means actions is omitted; the attach button drawn there is an example, not part of the component"
+        }
+      }
+    },
     "Radio": {
       "code": "Radio",
       "props": {
@@ -1119,6 +1197,55 @@
         }
       }
     },
+    "Segmented Control": {
+      "code": "SegmentedControl",
+      "props": {
+        "Size": {
+          "prop": "size",
+          "values": {
+            "Small": "sm",
+            "Medium": "md",
+            "Large": "lg"
+          }
+        },
+        "Full Width": {
+          "prop": "isFullWidth",
+          "values": {
+            "True": true,
+            "False": false
+          }
+        }
+      }
+    },
+    "Segmented Control Item": {
+      "code": "SegmentedControlItem",
+      "props": {
+        "Label#1390:0": {
+          "prop": "children"
+        },
+        "Show Icon#1390:19": {
+          "prop": "icon",
+          "note": "false means icon is omitted"
+        },
+        "Icon#1390:38": {
+          "prop": "icon"
+        },
+        "Size": {
+          "ignore": "set on the parent SegmentedControl, not per item"
+        },
+        "State": {
+          "prop": "isDisabled",
+          "when": {
+            "Disabled": true,
+            "Selected-Disabled": true
+          },
+          "note": "Default and Hover are CSS. Selected is the parent SegmentedControl’s value — the item never owns selection, the same split Tabs Item records."
+        },
+        "Focused#1390:57": {
+          "ignore": "drawn focus ring; :focus-visible in code"
+        }
+      }
+    },
     "Select": {
       "code": "Select",
       "props": {
@@ -1140,6 +1267,91 @@
         "Value#82:18": {
           "prop": "placeholder",
           "note": "Figma's text is the collapsed display value. In code that is `placeholder` when nothing is chosen; once something is, the label comes from the `options` array."
+        }
+      }
+    },
+    "Sidebar": {
+      "code": "Sidebar",
+      "props": {
+        "Show Header#1396:105": {
+          "prop": "header",
+          "note": "false means header is omitted; the logo drawn there is an example"
+        },
+        "Show Footer#1396:106": {
+          "prop": "footer",
+          "note": "false means footer is omitted; the Settings row drawn there is an example"
+        }
+      }
+    },
+    "Sidebar Item": {
+      "code": "SidebarItem",
+      "props": {
+        "State": {
+          "prop": "isCurrent",
+          "when": {
+            "Current": true,
+            "Current-Hover": true
+          },
+          "note": "Default and Hover are CSS; Disabled is isDisabled."
+        },
+        "Has Children": {
+          "prop": "children",
+          "when": {
+            "True": true
+          },
+          "note": "True means nested SidebarItems are passed as children; Figma draws them as sibling instances indented 16px."
+        },
+        "Expanded": {
+          "prop": "isExpanded",
+          "values": {
+            "True": true,
+            "False": false
+          },
+          "note": "or defaultExpanded; only meaningful with children"
+        },
+        "Label#1396:0": {
+          "prop": "label"
+        },
+        "Show Icon#1396:16": {
+          "prop": "icon",
+          "note": "false means icon is omitted"
+        },
+        "Icon#1396:32": {
+          "prop": "icon"
+        },
+        "Show Badge#1396:48": {
+          "prop": "badge",
+          "note": "false means badge is omitted"
+        },
+        "Badge#1396:64": {
+          "prop": "badge"
+        },
+        "Actions Visible#1396:80": {
+          "prop": "actions",
+          "note": "code renders them always but reveals them on hover and focus (always on touch); Figma shows or hides them"
+        }
+      }
+    },
+    "Sidebar Section": {
+      "code": "SidebarSection",
+      "props": {
+        "Title#1396:96": {
+          "prop": "title"
+        },
+        "Collapsible#1396:99": {
+          "prop": "isCollapsible"
+        },
+        "Collapsed": {
+          "prop": "isExpanded",
+          "values": {
+            "False": true,
+            "True": false
+          },
+          "note": "the names invert: Figma says Collapsed, code says isExpanded (or defaultExpanded)"
+        },
+        "Show Actions#1396:102": {
+          "prop": "actions",
+          "note": "false means actions is omitted"
         }
       }
     },
@@ -1173,6 +1385,57 @@
         "Show Label#1341:4": {
           "prop": "isLabelVisible",
           "note": "controls only whether the label is VISIBLE. The label is announced either way — turning this off in Figma does not remove it from the accessibility tree, and `isDecorative` is the prop that silences the component"
+        }
+      }
+    },
+    "Stepper": {
+      "code": "Stepper",
+      "props": {
+        "Orientation": {
+          "prop": "orientation",
+          "values": {
+            "Horizontal": "horizontal",
+            "Vertical": "vertical"
+          }
+        }
+      }
+    },
+    "Stepper Step": {
+      "code": "StepperStep",
+      "props": {
+        "Status": {
+          "prop": "status",
+          "values": {
+            "Incomplete": "incomplete",
+            "Complete": "complete",
+            "Error": "error"
+          }
+        },
+        "Current": {
+          "prop": "isCurrent",
+          "values": {
+            "True": true,
+            "False": false
+          }
+        },
+        "Label#1391:0": {
+          "prop": "children"
+        },
+        "Description#1391:13": {
+          "prop": "description"
+        },
+        "Show Description#1391:26": {
+          "prop": "description",
+          "note": "false means description is omitted"
+        },
+        "Number#1391:39": {
+          "ignore": "the step’s position in the list; code numbers steps itself"
+        },
+        "Orientation": {
+          "ignore": "set on the parent Stepper, not per step — drawn per step only because the connector’s geometry differs"
+        },
+        "Show Connector#1391:52": {
+          "ignore": "code draws a connector after every step but the last; Figma needs it switched off by hand on the last instance"
         }
       }
     },
@@ -1391,6 +1654,53 @@
         }
       }
     },
+    "Tool Call": {
+      "code": "ToolCall",
+      "props": {
+        "Status": {
+          "prop": "status",
+          "values": {
+            "Pending": "pending",
+            "Active": "active",
+            "Done": "done",
+            "Failed": "failed",
+            "Skipped": "skipped"
+          }
+        },
+        "Expanded": {
+          "prop": "isExpanded",
+          "values": {
+            "True": true,
+            "False": false
+          },
+          "note": "or defaultExpanded, uncontrolled"
+        },
+        "Title#1392:0": {
+          "prop": "title"
+        },
+        "Name#1392:11": {
+          "prop": "name"
+        },
+        "Show Name#1392:22": {
+          "prop": "name",
+          "note": "false means name is omitted"
+        },
+        "Duration#1392:33": {
+          "prop": "durationMs",
+          "note": "milliseconds in code; Figma shows the formatted text (“1.2s”, “340ms”)"
+        },
+        "Show Duration#1392:44": {
+          "prop": "durationMs",
+          "note": "false means durationMs is omitted"
+        },
+        "Has Details#1392:55": {
+          "ignore": "not a prop: code shows the chevron and makes the header a button when input or output is passed"
+        },
+        "Error Message#1392:66": {
+          "prop": "errorMessage"
+        }
+      }
+    },
     "Tooltip": {
       "code": "Tooltip",
       "props": {
@@ -1417,6 +1727,8 @@
   },
   "unmapped": {
     ".Status Indicator": "The dot Avatar draws in its corners. Avatar owns both instances — Top is Intent=Primary with the check glyph, Bottom is Intent=Success with Show Icon off — and exposes them as `topIndicator` / `bottomIndicator`.\n\nThe leading dot in the name is Figma's own marker for a private component: it is excluded from the published library, so a designer cannot place one on a canvas even if they wanted to. That settles a question this entry used to argue: it is internal by the file's own declaration, not merely by our reading of it. The same call Line, Progress and Progress Heading get for being internal to ScrollProgress — with better evidence.\n\nMap it only if the dot is ever removed.",
+    "Calendar": "The open calendar both pickers render internally — Calendar and CalendarPopover are not exported, because a grid with no field to own its value is not a control a caller should mount. Mode=Single is DatePicker’s, Mode=Range is DateRangePicker’s; Months=Two is `visibleMonths={2}`, Show Presets is `presets` and Show Clear is `isClearable`, all on DateRangePicker. Drawn separately because a frame cannot both hug a field and overlay a grid on it — the same reason Combobox Menu is its own frame.",
+    "Calendar Day": "A day cell inside Calendar — internal to it the way Pagination Item is internal to Pagination. A caller never places one; `isDateUnavailable`, `minValue` and `maxValue` on the pickers decide which state each day draws in.",
     "Combobox Menu": "The list Combobox opens. It is not a separate export: the React component renders its own menu, because the two are one control and splitting them would let a caller mount a listbox with no combobox to own it. Drawn separately in Figma because a frame cannot both hug a field and overlay a list on top of it.",
     "Form Field": "Label, helper text and error wiring are built into Input and Select rather than a separate wrapper — the wrapper is how Figma composes them, not how React does.",
     "Line": "An internal part of the Scroll Progress rail, not a component a caller composes.",
@@ -1428,22 +1740,11 @@
     "Table/Cell Text": "TableCell covers Figma's Table Cell and Cell Text together; the two are never used apart in the design. Recorded in TableCell's contract."
   },
   "codeUnmapped": {
-    "DatePicker": "Not yet drawn. Built React-first, the same way the agentic tier was: the field is Input's box unchanged, the overlay borrows Combobox Menu's surface and the day cell borrows Menu's row metrics, so the drawing has values to change rather than a structure to invent. Drawing it means one component set for the field (Size x State, as Input carries) and a second for the open calendar, which is the same split Combobox and Combobox Menu already needed — a frame cannot both hug a field and overlay a grid on top of it.",
-    "DateRangePicker": "As DatePicker, and drawn at the same time as it: the calendar frame is shared, with the range band, the preset rail and the two-month layout as variants of that one set rather than a third component.",
+    "DateRangePicker": "Drawn, but not as a set of its own: its field is Date Picker Type=Range and its calendar is Calendar Mode=Range. A Figma set maps to exactly one code component, and splitting one field into two sets to satisfy that would draw the same box twice. Read Date Picker’s Type note for the handoff.",
     "Icon": "Figma has no Icon component; icons are vector assets dropped into slots. Icon is the React wrapper that gives any of them a size rung and an accessible label, so there is nothing on the Figma side to point at.",
     "LogoMark": "Logo-Ionbase maps to Logo. Figma spells the no-wordmark case as that component's Type axis rather than a separate component; LogoMark is how code spells the same thing.",
-    "NumberInput": "Not yet drawn. The box IS Input — the component renders Input's classes — so drawing it means an Input instance with a trailing − and + pair, and a Stepper boolean. The step buttons are the only new geometry: field height minus 8, side by side.",
-    "PromptInput": "Not yet drawn. Built code-first from parts that are drawn: the box is Textarea's roles one radius rung up, the send control is Button sm made square and the stop is Agent Stop sm. Drawing it means one set with State (default, hover, focus, disabled) x Running, composing those instances rather than redrawing them.",
     "RadioGroup": "Figma draws Radio only. The group is the thing that owns the selected value, which a static frame cannot express — Figma's Radio State axis is ignored for exactly this reason.",
-    "SegmentedControl": "Not yet drawn. It is the Tabs pill track token for token, with a radius-lg track instead of radius-full — so drawing it means a Tabs-derived set with Size x Full Width, and a Segmented Control Item with Selected x State x Icon. Kept separate from Tabs in Figma for the same reason as in code: one controls panels, the other sets a value.",
-    "SegmentedControlItem": "As SegmentedControl — drawn with its parent.",
-    "Sidebar": "Not yet drawn. Built code-first from two reference products rather than a frame. Drawing it means a Sidebar frame with Header and Footer slots, and a Sidebar Item set with State (default, hover, current, disabled) x Has Children x Expanded x Actions Visible — the section header is the item's title row and needs no set of its own.",
-    "SidebarItem": "As Sidebar — the row is the thing drawn; nesting is instances inside instances.",
-    "SidebarSection": "As Sidebar — a title row above a stack of Sidebar Item instances, with a Collapsed boolean.",
-    "Stepper": "Not yet drawn. Built code-first like Breadcrumb: the indicator is a 24px circle on the icon-size ladder and the colours are the primary and error roles, so drawing it means one set with Status (incomplete, complete, error) x Current, and the stylesheet decides where the two disagree.",
-    "StepperStep": "As Stepper — the step is the thing drawn; the list only supplies position.",
     "ScrollProgress": "Drawn in Figma as its three parts — Line, Progress, Progress Heading — all of which the component owns internally. There is no whole-component frame to map.",
-    "ToolCall": "Not yet drawn. Built code-first from drawn parts: the header row is Agent Activity's step one rung up with the same glyphs, the chevron is Accordion Item's and the error strip is Alert's subtle error pairing. Drawing it means Status (pending, active, done, failed, skipped) x Expanded; the payload is text and needs no axis.",
     "Table": "Figma draws Table Row and Table Cell; the table itself is the caller assembling them. Density, the one property Table owns, is mapped on Table Cell.",
     "TableBody": "As TableHead.",
     "TableHead": "As Table — a code-side grouping element. Figma expresses a header row as a Table Row variant, not a separate component.",

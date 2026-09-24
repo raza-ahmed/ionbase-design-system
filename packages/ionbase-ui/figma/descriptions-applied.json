@@ -18,8 +18,8 @@
     "returns 0 missing, then run: pnpm --filter ionbase-ui figma:applied"
   ],
   "file": "gaLbGd0QNb1fUl6BjSpfBA",
-  "appliedOn": "2026-09-16",
-  "verifiedInFigma": 51,
+  "appliedOn": "2026-09-24",
+  "verifiedInFigma": 62,
   "applied": {
     "1360:267": {
       "figmaComponent": "Accordion",
@@ -126,6 +126,11 @@
       "component": "ConfidenceIndicator",
       "hash": "37749d2f3023ab3d"
     },
+    "1394:536": {
+      "figmaComponent": "Date Picker",
+      "component": "DatePicker",
+      "hash": "04d975589b87b9d3"
+    },
     "1365:2404": {
       "figmaComponent": "Drawer",
       "component": "Drawer",
@@ -196,6 +201,11 @@
       "component": "NavItem",
       "hash": "808349e1526bfc6b"
     },
+    "1389:473": {
+      "figmaComponent": "Number Input",
+      "component": "NumberInput",
+      "hash": "6adc2d15e13d253c"
+    },
     "1291:503": {
       "figmaComponent": "Pagination",
       "component": "Pagination",
@@ -211,15 +221,45 @@
       "component": "ProgressBar",
       "hash": "b05185a273f6eae5"
     },
+    "1393:387": {
+      "figmaComponent": "Prompt Input",
+      "component": "PromptInput",
+      "hash": "fd3ff774dfc662db"
+    },
     "89:314": {
       "figmaComponent": "Radio",
       "component": "Radio",
       "hash": "3eef9529655a0368"
     },
+    "1390:435": {
+      "figmaComponent": "Segmented Control",
+      "component": "SegmentedControl",
+      "hash": "d6fe39d315ec442b"
+    },
+    "1390:332": {
+      "figmaComponent": "Segmented Control Item",
+      "component": "SegmentedControlItem",
+      "hash": "c5bed2219035411f"
+    },
     "82:379": {
       "figmaComponent": "Select",
       "component": "Select",
       "hash": "6f30dd4afd7565f5"
+    },
+    "1396:502": {
+      "figmaComponent": "Sidebar",
+      "component": "Sidebar",
+      "hash": "1595b6e77587a522"
+    },
+    "1396:412": {
+      "figmaComponent": "Sidebar Item",
+      "component": "SidebarItem",
+      "hash": "c549f6e1b2ddc33f"
+    },
+    "1396:501": {
+      "figmaComponent": "Sidebar Section",
+      "component": "SidebarSection",
+      "hash": "70dfc94bc84bb6ac"
     },
     "1345:248": {
       "figmaComponent": "Skeleton",
@@ -230,6 +270,16 @@
       "figmaComponent": "Spinner",
       "component": "Spinner",
       "hash": "09d382723b3c47ce"
+    },
+    "1391:431": {
+      "figmaComponent": "Stepper",
+      "component": "Stepper",
+      "hash": "1e783d608682dd53"
+    },
+    "1391:356": {
+      "figmaComponent": "Stepper Step",
+      "component": "StepperStep",
+      "hash": "5b0ee1a0c8df5a86"
     },
     "1164:248": {
       "figmaComponent": "Streaming Text",
@@ -270,6 +320,11 @@
       "figmaComponent": "Toggle",
       "component": "Toggle",
       "hash": "a59081fe0eb3dc62"
+    },
+    "1392:391": {
+      "figmaComponent": "Tool Call",
+      "component": "ToolCall",
+      "hash": "bbe3a7a72e4a1e73"
     },
     "801:68": {
       "figmaComponent": "Tooltip",
