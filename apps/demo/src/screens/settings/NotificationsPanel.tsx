@@ -71,7 +71,7 @@ export function NotificationsPanel({
     <section className="demo-panel" aria-labelledby="notifications-title">
       <div>
         <h2 id="notifications-title" className="ion-text-h6">
-          Email and alerts
+          Notifications
         </h2>
         <p className="ion-text-body-sm demo-muted">
           Changes apply as soon as you make them.

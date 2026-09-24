@@ -104,6 +104,7 @@ export { ScrollProgress } from './ScrollProgress.js';
 export type {
   ScrollProgressProps,
   ScrollProgressSection,
+  ScrollProgressPlacement,
 } from './ScrollProgress.js';
 export { FullCard } from './FullCard.js';
 export type {

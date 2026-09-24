@@ -34,7 +34,8 @@
       "`limit` drops the oldest toasts, so the stack can never cover the page"
     ],
     "requires": [
-      "mounting exactly one ToastProvider — a second live region competes with the first"
+      "mounting exactly one ToastProvider — a second live region competes with the first",
+      "a `label` that is unique among the page's landmarks when the app has its own section called Notifications — the region is a landmark, and two with one name fail axe `landmark-unique`"
     ]
   },
   "antiPatterns": [

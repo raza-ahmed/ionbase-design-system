@@ -1,5 +1,46 @@
 # Changelog
 
+## 0.70.0 — 2026-09-24
+
+Three defects the demo app logged against the system. Each had a stand-in in
+the demo; all three stand-ins are gone and their gap-list rows with them.
+
+### Fixed — `Table` cell content widened the page
+
+`.ion-table-container` scrolls but was not a containing block, so absolutely
+positioned content in a cell — a checkbox's real input, `.ion-visually-hidden`
+text, avatar media — was placed against an ancestor outside the table, ignored
+its `overflow-x`, and widened the page: 382px of sideways scroll on a 390px
+phone. It is `position: relative` now. The demo's CSS override is deleted.
+
+### Fixed — `ScrollProgress` closed panel widened the page; added `placement`
+
+The closed panel was hidden with `visibility` alone, which still counts toward
+the page's scrollable overflow, so a rail on the right edge widened the page by
+152px. Closed is `display: none` now; the fade survives through
+`transition-behavior: allow-discrete` and `@starting-style`, and a browser
+without them shows and hides the panel without it.
+
+`placement="left"` opens the list leftward, for a rail on the page's right edge
+where the default would run off the screen. `right` is the default and the old
+behaviour. The demo's assistant rail moves back to the right of the thread,
+where it was meant to be.
+
+Three existing tests measured the panel while it was closed — its width, its
+height cap, its row truncation. They open it first now; a `display: none`
+element has no geometry to measure.
+
+### Added — `ToastProvider` `label`
+
+The live region is a landmark named "Notifications", with no way to change it,
+so any app with its own Notifications section failed axe `landmark-unique` on
+every page that had one. `label` names the region; the default is unchanged.
+The demo's settings section is called Notifications again.
+
+Four new tests, each failing against 0.69.0: the page stays narrow around a
+wide table, a closed rail on the right edge takes no space, `placement="left"`
+opens inside the rail's right edge, and `label` renames the region.
+
 ## 0.69.0 — 2026-09-24
 
 ### Added — everything built since 0.59.0 is drawn in Figma

@@ -15,6 +15,9 @@ export interface ScrollProgressSection {
   label: string;
 }
 
+/** Which side of the rail the section list opens toward. */
+export type ScrollProgressPlacement = 'right' | 'left';
+
 export interface ScrollProgressProps extends Omit<
   React.HTMLAttributes<HTMLDivElement>,
   'onSelect'
@@ -31,6 +34,10 @@ export interface ScrollProgressProps extends Omit<
    *  itself; matching Menu, it reports the choice and lets the caller decide
    *  what "select this section" means for their page. */
   onSelect?: (id: string) => void;
+  /** Which way the section list opens. `right` suits a rail on the left of the
+   *  content; a rail against the right edge of the page needs `left`, or the
+   *  open list runs off the screen. */
+  placement?: ScrollProgressPlacement;
 }
 
 /**
@@ -47,7 +54,15 @@ export interface ScrollProgressProps extends Omit<
  */
 export const ScrollProgress = forwardRef<HTMLDivElement, ScrollProgressProps>(
   (
-    { progress, sections, activeId, onSelect, className, ...rest },
+    {
+      progress,
+      sections,
+      activeId,
+      onSelect,
+      placement = 'right',
+      className,
+      ...rest
+    },
     forwardedRef,
   ) => {
     const [isOpen, setIsOpen] = useState(false);
@@ -181,7 +196,7 @@ export const ScrollProgress = forwardRef<HTMLDivElement, ScrollProgressProps>(
         <div
           {...panelHoverProps}
           id={panelId}
-          className="ion-scroll-progress__panel"
+          className={`ion-scroll-progress__panel ion-scroll-progress__panel--${placement}`}
           data-open={isOpen || undefined}
         >
           {sections.map((section) => (

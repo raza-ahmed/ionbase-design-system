@@ -46,7 +46,7 @@ export function App() {
 
   return (
     <DemoSettingsProvider>
-      <ToastProvider placement="top-right">
+      <ToastProvider placement="top-right" label="Status messages">
         <AppShell route={route}>
           <Suspense
             fallback={

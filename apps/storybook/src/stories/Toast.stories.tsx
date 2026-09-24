@@ -146,6 +146,29 @@ export const RegionExistsBeforeAnyToast: Story = {
   },
 };
 
+/**
+ * `label` renames the live region.
+ *
+ * The region is a landmark, and landmark names must be unique. An app with its
+ * own section called Notifications failed axe `landmark-unique` on every page
+ * that had one, and the only way out was renaming the app's section.
+ */
+export const RegionNameIsConfigurable: Story = {
+  render: () => (
+    <ToastProvider label="Alerts">
+      <Trigger />
+    </ToastProvider>
+  ),
+  play: async ({ canvas }) => {
+    await expect(
+      canvas.getByRole('region', { name: 'Alerts' }),
+    ).toBeInTheDocument();
+    await expect(
+      canvas.queryByRole('region', { name: 'Notifications' }),
+    ).toBeNull();
+  },
+};
+
 /** `useToast()` pushes into the queue, and dismissing removes it. */
 export const QueueAddsAndRemoves: Story = {
   render: () => <Demo />,
