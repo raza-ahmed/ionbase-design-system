@@ -323,13 +323,9 @@ export const HoverRevealsPanel: Story = {
       await expect(getComputedStyle(panel).visibility).toBe('visible');
     });
 
-    // Leave BOTH regions — the panel stays open while either is hovered.
-    // Unhovering only the trigger failed intermittently (locally and on CI,
-    // 0.73–0.75). The likely cause: Chromium sends real hover events to an
-    // element that appears under the browser's resting cursor, so the panel
-    // could count as hovered without the test touching it. Not proven.
+    // Fails if the real cursor rests where the panel opens: Chromium hovers it
+    // for real and it stays open. `parkMouse` (vitest.config.ts) prevents that.
     await userEvent.unhover(trigger);
-    await userEvent.unhover(panel);
     await waitFor(
       async () => {
         await expect(trigger).toHaveAttribute('aria-expanded', 'false');
