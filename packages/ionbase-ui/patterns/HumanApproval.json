@@ -12,6 +12,10 @@
     "AgentStop",
     "Alert"
   ],
+  "drivenBy": {
+    "hook": "useAgentRun",
+    "note": "`approvalProps` carries the gate's `status`, `isSubmitting` and `resolution`, and `onApprove`/`onReject` when `onDecision` is given. A decision that throws stays pending with `state.approval.error` set — show it, because a decision the server never received must not look made. A stop or an expiry while pending resolves the gate as `expired`, never as approved."
+  },
   "structure": [
     "The gate appears in place, where the run reached it — inside the step log, not in a dialog that covers it.",
     "The AgentActivityStep that is waiting stays `active`; the ApprovalGate is its `detail`.",
@@ -60,9 +64,15 @@
       "risk": ["low", "medium", "high"],
       "status": ["pending", "approved", "rejected", "expired"]
     },
-    "AgentActivityStep": { "status": ["active", "done", "skipped"] },
-    "Alert": { "intent": ["error", "warning"] },
-    "AgentStop": { "size": ["sm"] }
+    "AgentActivityStep": {
+      "status": ["active", "done", "skipped"]
+    },
+    "Alert": {
+      "intent": ["error", "warning"]
+    },
+    "AgentStop": {
+      "size": ["sm"]
+    }
   },
   "a11y": {
     "requires": [

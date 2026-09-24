@@ -551,6 +551,20 @@ from the accessibility tree, so an announcement placed in one is never made.
 
 ---
 
+### What drives them — `useAgentRun`
+
+The agent components render a state; `agent-run.ts` decides which. It is a
+reducer over plain-JSON events, and every rule in it is one the AgentRun or
+HumanApproval pattern states — one active step, a stop skips rather than
+erases, an unanswered approval is `expired` and never `approved`, an ended run
+ignores late events. **Change a rule there, not in a consumer**, and change the
+pattern's text in the same commit: the reducer is the pattern made executable,
+and the two drifting is how a product gets told one thing and shown another.
+
+`RulesHoldWithoutReact` in `AgentRun.stories.tsx` checks the reducer directly;
+the other stories check it through the hook. Negative-tested: letting a stop
+leave an approval pending fails `StopKeepsWhatWasDone`.
+
 ## Patterns — the tier that owns the states nothing else does
 
 `patterns/*.json` describes compositions. Six for classic screens — `DataTable`,

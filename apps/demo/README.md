@@ -26,6 +26,9 @@ pnpm --filter @ionbase-ui/demo test:smoke # every route × theme in Chromium: er
 What the demo needed that IonBase does not provide. This is the demo's feedback
 to the design system.
 
-| Gap                                                                                                               | Where it showed up | Stand-in                                                                                                                      |
-| ----------------------------------------------------------------------------------------------------------------- | ------------------ | ----------------------------------------------------------------------------------------------------------------------------- |
-| No way to present a scripted or recorded agent run. The agentic components render states but nothing drives them. | Runs               | [`src/screens/runs/use-run-engine.ts`](src/screens/runs/use-run-engine.ts). Worth considering as a documented pattern helper. |
+**Empty.** Every gap the demo found has been answered by the system: table
+scrolling, toast naming and scroll-progress placement (0.70), StatTile
+(0.71), SettingRow (0.72), themed chart colours and a sequential ramp (0.73),
+chart styling for visx (0.74), and `useAgentRun` for driving a run (0.75).
+Add a row here — `| Gap | Where it showed up | Stand-in |` — when the next one
+turns up.
