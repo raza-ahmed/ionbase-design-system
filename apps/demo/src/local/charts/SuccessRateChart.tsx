@@ -1,19 +1,29 @@
 import { AxisBottom, AxisLeft } from '@visx/axis';
 import { curveMonotoneX } from '@visx/curve';
+import { GridRows } from '@visx/grid';
 import { Group } from '@visx/group';
 import { useParentSize } from '@visx/responsive';
 import { scaleLinear, scaleUtc } from '@visx/scale';
-import { LinePath } from '@visx/shape';
+import { Bar, Line, LinePath } from '@visx/shape';
+import { TooltipWithBounds, useTooltip } from '@visx/tooltip';
+import {
+  ChartTooltip,
+  chartAxisProps,
+  chartGridProps,
+  chartSeriesClass,
+  chartTooltipProps,
+} from 'ionbase-ui';
 
 import { formatDay, type IsoDay } from '../../lib/dates';
 
 /**
- * LOCAL STAND-IN — gap list: no line-chart primitive. Axis and gridline colour
- * come from classes in charts.css, not from visx's `stroke`/`fill` props, so
- * the chart follows `data-theme` like everything else.
+ * Drawn with visx, styled by IonBase: `chartAxisProps` and `chartGridProps`
+ * theme the axes and gridlines, the series takes `chartSeriesClass`, and the
+ * hover panel is `ChartTooltip`. The tooltip is a convenience for a pointer —
+ * the caption and the hidden table below are how everyone else reads it.
  */
 const TARGET = 95;
-const MARGIN = { top: 12, right: 12, bottom: 28, left: 40 };
+const MARGIN = { top: 12, right: 28, bottom: 28, left: 40 };
 const HEIGHT = 220;
 
 interface Point {
@@ -46,62 +56,91 @@ export function SuccessRateChart({ data }: { data: Point[] }) {
   });
   const yTicks = y.ticks(4);
 
+  const {
+    tooltipOpen,
+    tooltipData,
+    tooltipLeft,
+    tooltipTop,
+    showTooltip,
+    hideTooltip,
+  } = useTooltip<Point>();
+  const onMove = (e: React.MouseEvent<SVGRectElement>) => {
+    const px = e.clientX - e.currentTarget.getBoundingClientRect().left;
+    const at = x.invert(px).getTime();
+    const p = data.reduce((best, q) =>
+      Math.abs(dateOf(q).getTime() - at) < Math.abs(dateOf(best).getTime() - at)
+        ? q
+        : best,
+    );
+    showTooltip({
+      tooltipData: p,
+      tooltipLeft: MARGIN.left + x(dateOf(p)),
+      tooltipTop: MARGIN.top + y(p.rate),
+    });
+  };
+
   return (
-    <figure className="demo-chart">
-      <div ref={parentRef}>
+    <figure className="ion-chart">
+      <div ref={parentRef} style={{ position: 'relative' }}>
         {width > 0 && (
           <svg width={width} height={HEIGHT} aria-hidden="true">
             <Group left={MARGIN.left} top={MARGIN.top}>
-              {yTicks.map((t) => (
-                <line
-                  key={t}
-                  className="demo-chart__grid"
-                  x1={0}
-                  x2={innerWidth}
-                  y1={y(t)}
-                  y2={y(t)}
-                />
-              ))}
-              <line
-                className="demo-chart__target"
-                x1={0}
-                x2={innerWidth}
-                y1={y(TARGET)}
-                y2={y(TARGET)}
+              <GridRows
+                scale={y}
+                width={innerWidth}
+                tickValues={yTicks}
+                {...chartGridProps}
               />
-              <text className="demo-chart__tick" x={4} y={y(TARGET) - 6}>
+              <Line
+                className="ion-chart__reference"
+                from={{ x: 0, y: y(TARGET) }}
+                to={{ x: innerWidth, y: y(TARGET) }}
+              />
+              <text
+                className="ion-chart__reference-label"
+                x={4}
+                y={y(TARGET) - 6}
+              >
                 Target {TARGET}%
               </text>
-              <LinePath<Point>
-                className="demo-chart__line"
-                data={data}
-                x={(p) => x(dateOf(p))}
-                y={(p) => y(p.rate)}
-                curve={curveMonotoneX}
-              />
-              {data.map((p) => (
-                <circle
-                  key={p.day}
-                  className={
-                    p.rate < TARGET
-                      ? 'demo-chart__point demo-chart__point--miss'
-                      : 'demo-chart__point'
-                  }
-                  cx={x(dateOf(p))}
-                  cy={y(p.rate)}
-                  r={3}
-                >
-                  <title>{`${formatDay(p.day)} — ${p.rate.toFixed(1)}%`}</title>
-                </circle>
-              ))}
+              {tooltipData && (
+                <Line
+                  className="ion-chart__crosshair"
+                  from={{ x: x(dateOf(tooltipData)), y: 0 }}
+                  to={{ x: x(dateOf(tooltipData)), y: innerHeight }}
+                />
+              )}
+              <g className={chartSeriesClass(1)}>
+                <LinePath<Point>
+                  className="ion-chart__line"
+                  data={data}
+                  x={(p) => x(dateOf(p))}
+                  y={(p) => y(p.rate)}
+                  curve={curveMonotoneX}
+                />
+                {data.map((p) => (
+                  <circle
+                    key={p.day}
+                    className={
+                      p.rate < TARGET
+                        ? `ion-chart__point ion-chart__point--active ${chartSeriesClass(7)}`
+                        : p === tooltipData
+                          ? 'ion-chart__point ion-chart__point--active'
+                          : 'ion-chart__point'
+                    }
+                    cx={x(dateOf(p))}
+                    cy={y(p.rate)}
+                    r={p === tooltipData ? 4 : 3}
+                  />
+                ))}
+              </g>
               <AxisLeft
                 scale={y}
                 tickValues={yTicks}
                 tickFormat={(v) => `${v}%`}
                 hideAxisLine
                 hideTicks
-                axisClassName="demo-chart__axis"
-                tickLabelProps={{ className: 'demo-chart__tick' }}
+                {...chartAxisProps}
               />
               <AxisBottom
                 top={innerHeight}
@@ -111,15 +150,39 @@ export function SuccessRateChart({ data }: { data: Point[] }) {
                   formatDay((d as Date).toISOString().slice(0, 10))
                 }
                 hideTicks
-                axisClassName="demo-chart__axis"
-                tickLabelProps={{ className: 'demo-chart__tick' }}
+                {...chartAxisProps}
+              />
+              <Bar
+                width={innerWidth}
+                height={innerHeight}
+                fill="transparent"
+                onMouseMove={onMove}
+                onMouseLeave={hideTooltip}
               />
             </Group>
           </svg>
         )}
+        {tooltipOpen && tooltipData && (
+          <TooltipWithBounds
+            left={tooltipLeft}
+            top={tooltipTop}
+            {...chartTooltipProps}
+          >
+            <ChartTooltip
+              title={formatDay(tooltipData.day)}
+              rows={[
+                {
+                  label: 'Success rate',
+                  value: `${tooltipData.rate.toFixed(1)}%`,
+                  series: tooltipData.rate < TARGET ? 7 : 1,
+                },
+              ]}
+            />
+          </TooltipWithBounds>
+        )}
       </div>
 
-      <figcaption className="ion-text-body-sm demo-muted demo-chart__caption">
+      <figcaption className="ion-chart__caption">
         Average {mean.toFixed(1)}%. Lowest {lowest.rate.toFixed(1)}% on{' '}
         {formatDay(lowest.day)}.{' '}
         {below === 0

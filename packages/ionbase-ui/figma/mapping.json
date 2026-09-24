@@ -1782,12 +1782,46 @@
           "prop": "title"
         }
       }
+    },
+    "Chart Tooltip": {
+      "code": "ChartTooltip",
+      "props": {
+        "Title#1432:18": {
+          "prop": "title"
+        },
+        "Show Row 2#1432:19": {
+          "prop": "rows",
+          "note": "true draws a second entry in rows; the row count is the length of the array"
+        },
+        "Show Row 3#1432:20": {
+          "prop": "rows",
+          "note": "true draws a third entry in rows"
+        }
+      }
+    },
+    "Chart Legend": {
+      "code": "ChartLegend",
+      "props": {
+        "Shape": {
+          "prop": "shape",
+          "values": {
+            "Square": "square",
+            "Line": "line"
+          }
+        },
+        "Show Item 3#1432:38": {
+          "prop": "items",
+          "note": "true draws a third entry in items; the entry count is the length of the array"
+        }
+      }
     }
   },
   "unmapped": {
     ".Status Indicator": "The dot Avatar draws in its corners. Avatar owns both instances — Top is Intent=Primary with the check glyph, Bottom is Intent=Success with Show Icon off — and exposes them as `topIndicator` / `bottomIndicator`.\n\nThe leading dot in the name is Figma's own marker for a private component: it is excluded from the published library, so a designer cannot place one on a canvas even if they wanted to. That settles a question this entry used to argue: it is internal by the file's own declaration, not merely by our reading of it. The same call Line, Progress and Progress Heading get for being internal to ScrollProgress — with better evidence.\n\nMap it only if the dot is ever removed.",
     "Calendar": "The open calendar both pickers render internally — Calendar and CalendarPopover are not exported, because a grid with no field to own its value is not a control a caller should mount. Mode=Single is DatePicker’s, Mode=Range is DateRangePicker’s; Months=Two is `visibleMonths={2}`, Show Presets is `presets` and Show Clear is `isClearable`, all on DateRangePicker. Drawn separately because a frame cannot both hug a field and overlay a grid on it — the same reason Combobox Menu is its own frame.",
     "Calendar Day": "A day cell inside Calendar — internal to it the way Pagination Item is internal to Pagination. A caller never places one; `isDateUnavailable`, `minValue` and `maxValue` on the pickers decide which state each day draws in.",
+    "Chart Legend Item": "One entry of Chart Legend — `items[n]` in code, `{ label, series }`. Its Shape follows the legend’s `shape`; Series picks chart/1…8. Internal to the legend.",
+    "Chart Tooltip Row": "One entry of Chart Tooltip — `rows[n]` in code, `{ label, value, series }`. Series picks the swatch from chart/1…8, exactly as `series` does. Internal to the tooltip the way Pagination Item is internal to Pagination.",
     "Combobox Menu": "The list Combobox opens. It is not a separate export: the React component renders its own menu, because the two are one control and splitting them would let a caller mount a listbox with no combobox to own it. Drawn separately in Figma because a frame cannot both hug a field and overlay a list on top of it.",
     "Form Field": "Label, helper text and error wiring are built into Input and Select rather than a separate wrapper — the wrapper is how Figma composes them, not how React does.",
     "Line": "An internal part of the Scroll Progress rail, not a component a caller composes.",

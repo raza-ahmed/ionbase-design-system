@@ -1,0 +1,48 @@
+{
+  "status": "stable",
+  "since": "0.74.0",
+  "summary": "Which colour is which series, for a chart drawn with visx. The swatch reads the same token as the series.",
+  "useWhen": [
+    "a chart has more than one series",
+    "a single-series chart sits beside others and its colour needs naming"
+  ],
+  "useInstead": [
+    {
+      "when": "the lines are few and there is room to label each at its end",
+      "use": "direct labels in the SVG, with the series class on the text"
+    },
+    {
+      "when": "the scale is a magnitude ramp (a heatmap), not categories",
+      "use": "a Less-to-More row of .ion-chart__heat--0…5 cells"
+    }
+  ],
+  "composition": {
+    "note": "Items are listed in the order the series are drawn, with the same series numbers the chart uses. Place it above or below the plot inside the same .ion-chart figure.",
+    "example": "<ChartLegend shape=\"line\" items={[{ label: 'Production', series: 1 }, { label: 'Staging', series: 2 }]} />"
+  },
+  "variants": {
+    "shape": {
+      "square": { "use": "the default — bars, areas and heatmap-like marks" },
+      "line": { "use": "line charts, so the key looks like the mark it names" }
+    }
+  },
+  "a11y": {
+    "guarantees": [
+      "a list, so a screen reader announces how many series there are",
+      "swatches are aria-hidden; every series is named in text"
+    ],
+    "requires": [
+      "series numbers matching the chart — the legend cannot see the chart"
+    ]
+  },
+  "antiPatterns": [
+    {
+      "dont": "a multi-series chart with no legend and no direct labels",
+      "why": "colour becomes the only way to tell series apart, which fails SC 1.4.1 and fails anyone who cannot tell blue from purple"
+    },
+    {
+      "dont": "listing series in a different order from the chart",
+      "why": "the reader matches legend to chart by position as much as by colour"
+    }
+  ]
+}

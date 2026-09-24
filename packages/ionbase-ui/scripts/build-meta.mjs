@@ -268,6 +268,7 @@ for (const sym of exported) {
 const components = {};
 const warnings = [];
 const hooks = [];
+const helpers = [];
 
 for (const [name, sym] of [...values].sort((a, b) =>
   a[0].localeCompare(b[0]),
@@ -276,6 +277,13 @@ for (const [name, sym] of [...values].sort((a, b) =>
   // has no `useToastProps` and never will.
   if (/^use[A-Z]/.test(name)) {
     hooks.push(name);
+    continue;
+  }
+  // A lower-case value that is not a hook is a helper — `chartAxisProps` is a
+  // props object for visx, not a component. Components are PascalCase, so
+  // anything else listed here would get a contract it can never satisfy.
+  if (/^[a-z]/.test(name)) {
+    helpers.push(name);
     continue;
   }
 
@@ -341,6 +349,7 @@ const doc = {
   generated:
     'by scripts/build-meta.mjs — do not edit; intent lives in meta/*.json',
   hooks,
+  helpers,
   components,
 };
 writeFileSync(
@@ -366,6 +375,7 @@ const index = {
   usage:
     'Pick a component here, then read dist/meta/<Name>.json for its full contract.',
   hooks,
+  helpers,
   components: Object.fromEntries(
     Object.entries(components).map(([name, c]) => [
       name,

@@ -10,7 +10,7 @@
     "Do not hand-edit. Re-export when the Figma components change."
   ],
   "file": "gaLbGd0QNb1fUl6BjSpfBA",
-  "exported": "2026-09-24",
+  "exported": "2026-09-25",
   "components": {
     ".Status Indicator": {
       "page": "Avatar",
@@ -470,6 +470,75 @@
             "Range End"
           ],
           "default": "Default"
+        }
+      }
+    },
+    "Chart Legend": {
+      "page": "Chart",
+      "id": "1432:369",
+      "kind": "SET",
+      "props": {
+        "Shape": {
+          "type": "VARIANT",
+          "options": ["Square", "Line"],
+          "default": "Square"
+        },
+        "Show Item 3#1432:38": {
+          "type": "BOOLEAN"
+        }
+      }
+    },
+    "Chart Legend Item": {
+      "page": "Chart",
+      "id": "1432:348",
+      "kind": "SET",
+      "props": {
+        "Label#1432:21": {
+          "type": "TEXT"
+        },
+        "Series": {
+          "type": "VARIANT",
+          "options": ["1", "2", "3", "4", "5", "6", "7", "8"],
+          "default": "1"
+        },
+        "Shape": {
+          "type": "VARIANT",
+          "options": ["Square", "Line"],
+          "default": "Square"
+        }
+      }
+    },
+    "Chart Tooltip": {
+      "page": "Chart",
+      "id": "1432:282",
+      "kind": "COMPONENT",
+      "props": {
+        "Show Row 2#1432:19": {
+          "type": "BOOLEAN"
+        },
+        "Show Row 3#1432:20": {
+          "type": "BOOLEAN"
+        },
+        "Title#1432:18": {
+          "type": "TEXT"
+        }
+      }
+    },
+    "Chart Tooltip Row": {
+      "page": "Chart",
+      "id": "1432:281",
+      "kind": "SET",
+      "props": {
+        "Label#1432:0": {
+          "type": "TEXT"
+        },
+        "Series": {
+          "type": "VARIANT",
+          "options": ["1", "2", "3", "4", "5", "6", "7", "8"],
+          "default": "1"
+        },
+        "Value#1432:9": {
+          "type": "TEXT"
         }
       }
     },

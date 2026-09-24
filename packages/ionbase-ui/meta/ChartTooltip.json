@@ -1,0 +1,51 @@
+{
+  "status": "stable",
+  "since": "0.74.0",
+  "summary": "The panel showing the values under the pointer on a visx chart. visx positions it; this draws it.",
+  "useWhen": [
+    "a chart drawn with visx shows exact values on hover",
+    "several series share an x value and the reader compares them at a point"
+  ],
+  "useInstead": [
+    {
+      "when": "it explains a control rather than a data point",
+      "use": "Tooltip"
+    },
+    {
+      "when": "it holds interactive content",
+      "use": "Popover"
+    },
+    {
+      "when": "the reader needs every value, or needs them without a pointer",
+      "use": "Table"
+    }
+  ],
+  "composition": {
+    "note": "Render it inside visx's Tooltip, TooltipWithBounds or TooltipInPortal with {...chartTooltipProps}, which turns off visx's own box so this one is the only panel. Axes take {...chartAxisProps} and gridlines {...chartGridProps}; a series takes className={chartSeriesClass(n)} plus ion-chart__line, __area, __bar or __point.",
+    "example": "<TooltipWithBounds top={top} left={left} {...chartTooltipProps}><ChartTooltip title=\"12 Sep\" rows={[{ label: 'Success rate', value: '96.2%', series: 1 }]} /></TooltipWithBounds>"
+  },
+  "a11y": {
+    "guarantees": [
+      "rows are a <dl>, so each value is announced with its label",
+      "the series swatch is aria-hidden; the label carries the name"
+    ],
+    "requires": [
+      "a text summary and the values in a table (visually hidden is fine) — the tooltip appears on hover, so keyboard and screen-reader users never reach it",
+      "`value` already formatted — the tooltip cannot know the unit or precision"
+    ]
+  },
+  "antiPatterns": [
+    {
+      "dont": "making the tooltip the only way to read a value",
+      "why": "it exists only under a mouse pointer; without a table the data is invisible to keyboard and screen-reader users"
+    },
+    {
+      "dont": "leaving visx's default tooltip styles on",
+      "why": "it draws a second white box with a hardcoded shadow around this one, and that box does not theme"
+    },
+    {
+      "dont": "a swatch colour that does not match the series",
+      "why": "pass the same `series` number the line or bar uses — the swatch reads the same token only if it is told the same index"
+    }
+  ]
+}

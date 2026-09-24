@@ -1,0 +1,275 @@
+/*
+ * Chart — styling for charts drawn with visx
+ *
+ * IonBase does not draw charts. visx does: it owns scales, shapes, axes and
+ * layout, and this file owns what they look like. Every rule is a class the
+ * product puts on a visx element — `chartAxisProps` and `chartGridProps` carry
+ * the axis and grid ones — so a chart themes with the page like everything
+ * else.
+ *
+ * CSS, NOT PROPS
+ *
+ * visx writes colour as SVG presentation attributes: `stroke="#222"` on an
+ * axis, `fill="#222"` and `font-family="Arial"` on a tick label, `#eaf0f6` on a
+ * grid line. A presentation attribute loses to any CSS declaration, so a class
+ * overrides all of them without a prop — and a CSS `var()` resolves in every
+ * browser, where a var() written into an attribute does not reliably.
+ *
+ * SERIES COLOUR IS ONE CUSTOM PROPERTY
+ *
+ * `.ion-chart-series-<n>` sets `--ion-chart-series` to `--chart-<n>`, and the
+ * line, area, bar, point and swatch rules read it. So a series is coloured in
+ * one place and its line, its points and its legend swatch cannot disagree —
+ * a legend that does not match its line is a chart that lies.
+ */
+
+.ion-chart {
+  display: grid;
+  gap: var(--spacing-12);
+  margin: 0;
+  min-width: 0;
+  font-family: var(--font-family-sans);
+}
+
+.ion-chart__caption {
+  color: var(--text-secondary);
+  font-size: var(--type-body-sm);
+  line-height: var(--type-body-sm-line-height);
+}
+
+/* ---------------------------------------------------------------- axes */
+
+/* Tabular figures, so tick values line up down a vertical axis. */
+.ion-chart__tick {
+  fill: var(--text-tertiary);
+  font-family: var(--font-family-sans);
+  font-size: var(--type-caption);
+  font-variant-numeric: tabular-nums;
+}
+
+.ion-chart__axis-label {
+  fill: var(--text-secondary);
+  font-family: var(--font-family-sans);
+  font-size: var(--type-caption);
+}
+
+.ion-chart__axis-line,
+.ion-chart__axis-tick line {
+  stroke: var(--border-default);
+}
+
+/* ---------------------------------------------------- gridlines, markers */
+
+/* visx puts the class on the group; the lines inside inherit nothing. */
+.ion-chart__grid line {
+  stroke: var(--border-subtle);
+}
+
+/* A target, a threshold, an average — a line the data is read against. */
+.ion-chart__reference {
+  stroke: var(--border-stronger);
+  stroke-dasharray: 4 4;
+}
+
+.ion-chart__reference-label {
+  fill: var(--text-secondary);
+  font-family: var(--font-family-sans);
+  font-size: var(--type-caption);
+}
+
+/* The vertical rule under the pointer while a tooltip is open. */
+.ion-chart__crosshair {
+  stroke: var(--border-strong);
+  pointer-events: none;
+}
+
+/* -------------------------------------------------------------- series */
+
+.ion-chart-series-1 {
+  --ion-chart-series: var(--chart-1);
+}
+
+.ion-chart-series-2 {
+  --ion-chart-series: var(--chart-2);
+}
+
+.ion-chart-series-3 {
+  --ion-chart-series: var(--chart-3);
+}
+
+.ion-chart-series-4 {
+  --ion-chart-series: var(--chart-4);
+}
+
+.ion-chart-series-5 {
+  --ion-chart-series: var(--chart-5);
+}
+
+.ion-chart-series-6 {
+  --ion-chart-series: var(--chart-6);
+}
+
+.ion-chart-series-7 {
+  --ion-chart-series: var(--chart-7);
+}
+
+.ion-chart-series-8 {
+  --ion-chart-series: var(--chart-8);
+}
+
+.ion-chart__line {
+  fill: none;
+  stroke: var(--ion-chart-series, var(--chart-1));
+  stroke-width: 2;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+
+/*
+ * An area is the series at low opacity. The one place opacity is right: the
+ * fill sits behind its own full-strength line, which carries the 3:1 — the
+ * wash only says "this much".
+ */
+.ion-chart__area {
+  fill: var(--ion-chart-series, var(--chart-1));
+  fill-opacity: 0.16;
+  stroke: none;
+}
+
+.ion-chart__bar {
+  fill: var(--ion-chart-series, var(--chart-1));
+}
+
+/* A hollow point, ringed in the series and filled with the ground. */
+.ion-chart__point {
+  fill: var(--surface-default);
+  stroke: var(--ion-chart-series, var(--chart-1));
+  stroke-width: 2;
+}
+
+.ion-chart__point--active {
+  fill: var(--ion-chart-series, var(--chart-1));
+}
+
+/* ------------------------------------------------------------- heatmap */
+
+.ion-chart__heat--0 {
+  fill: var(--surface-sunken);
+}
+
+.ion-chart__heat--1 {
+  fill: var(--chart-sequential-1);
+}
+
+.ion-chart__heat--2 {
+  fill: var(--chart-sequential-2);
+}
+
+.ion-chart__heat--3 {
+  fill: var(--chart-sequential-3);
+}
+
+.ion-chart__heat--4 {
+  fill: var(--chart-sequential-4);
+}
+
+.ion-chart__heat--5 {
+  fill: var(--chart-sequential-5);
+}
+
+/* -------------------------------------------------------------- swatch */
+
+/* A series key: a square for bars and areas, a short rule for lines. */
+.ion-chart-swatch {
+  display: inline-block;
+  flex-shrink: 0;
+  width: 0.625rem;
+  height: 0.625rem;
+  border-radius: var(--radius-2xs);
+  background-color: var(--ion-chart-series, var(--chart-1));
+}
+
+.ion-chart-swatch--line {
+  height: 0.1875rem;
+  width: 0.875rem;
+  border-radius: var(--radius-full);
+}
+
+/* -------------------------------------------------------------- legend */
+
+.ion-chart-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-4) var(--spacing-16);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-family: var(--font-family-sans);
+}
+
+.ion-chart-legend__item {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-6);
+  color: var(--text-secondary);
+  font-size: var(--type-body-sm);
+  line-height: var(--type-body-sm-line-height);
+}
+
+/* ------------------------------------------------------------- tooltip */
+
+/*
+ * The panel Popover and Toast use: raised, a subtle rim and the lg shadow, so
+ * a tooltip over a chart reads as the same family as every other floating
+ * surface. Pass visx's Tooltip `unstyled` and `applyPositionStyle` — this
+ * component is the box, visx only places it.
+ */
+.ion-chart-tooltip {
+  display: grid;
+  gap: var(--spacing-6);
+  min-width: 8rem;
+  max-width: 16rem;
+  padding: var(--spacing-8) var(--spacing-12);
+  border: var(--border-width-default) solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  background-color: var(--surface-raised);
+  box-shadow: var(--ion-shadow-shadow-lg);
+  color: var(--text-default);
+  font-family: var(--font-family-sans);
+  font-size: var(--type-caption);
+  line-height: var(--type-caption-line-height);
+  pointer-events: none;
+}
+
+.ion-chart-tooltip__title {
+  color: var(--text-default);
+  font-weight: var(--font-weight-semibold);
+}
+
+.ion-chart-tooltip__rows {
+  display: grid;
+  gap: var(--spacing-4);
+  margin: 0;
+}
+
+.ion-chart-tooltip__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-12);
+}
+
+.ion-chart-tooltip__label {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-6);
+  margin: 0;
+  color: var(--text-secondary);
+}
+
+.ion-chart-tooltip__value {
+  margin: 0;
+  color: var(--text-default);
+  font-weight: var(--font-weight-medium);
+  font-variant-numeric: tabular-nums;
+}

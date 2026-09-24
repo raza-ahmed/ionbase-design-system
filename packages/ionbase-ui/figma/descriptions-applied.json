@@ -19,7 +19,7 @@
   ],
   "file": "gaLbGd0QNb1fUl6BjSpfBA",
   "appliedOn": "2026-09-24",
-  "verifiedInFigma": 65,
+  "verifiedInFigma": 67,
   "applied": {
     "1360:267": {
       "figmaComponent": "Accordion",
@@ -345,6 +345,16 @@
       "figmaComponent": "Tooltip",
       "component": "Tooltip",
       "hash": "7ad87137b8699fb8"
+    },
+    "1432:282": {
+      "figmaComponent": "Chart Tooltip",
+      "component": "ChartTooltip",
+      "hash": "d35bbac5de722a83"
+    },
+    "1432:369": {
+      "figmaComponent": "Chart Legend",
+      "component": "ChartLegend",
+      "hash": "64683cc4fc5d57df"
     }
   }
 }
