@@ -234,10 +234,14 @@ export const STATUS_LABEL: Record<AgentStatus, string> = {
   draft: 'Draft',
 };
 
+export type AgentSortColumn = 'name' | 'runs7d' | 'successRate' | 'lastRun';
+
 export interface AgentQuery {
   search: string;
   status: AgentStatus | 'all';
   team: string | null;
+  /** Applied to every match before paging — sorting one page would lie. */
+  sort: { column: AgentSortColumn; direction: 'ascending' | 'descending' };
   page: number;
   pageSize: number;
 }
@@ -273,6 +277,18 @@ export async function listAgents(
         a.name.toLowerCase().includes(needle) ||
         a.purpose.toLowerCase().includes(needle)),
   );
+
+  const { column, direction } = query.sort;
+  const sign = direction === 'ascending' ? 1 : -1;
+  matching.sort((a, b) => {
+    const x = a[column];
+    const y = b[column];
+    // Missing metrics sort last in both directions: an unknown is not a zero.
+    if (x === null || y === null) return x === y ? 0 : x === null ? 1 : -1;
+    const order =
+      typeof x === 'string' ? x.localeCompare(y as string) : x - (y as number);
+    return order * sign || a.name.localeCompare(b.name);
+  });
 
   let rows = matching.slice(
     (query.page - 1) * query.pageSize,

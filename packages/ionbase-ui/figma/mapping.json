@@ -1606,6 +1606,20 @@
         }
       }
     },
+    "Table Sort Indicator": {
+      "code": "TableCell",
+      "props": {
+        "Direction": {
+          "prop": "sortDirection",
+          "values": {
+            "None": "none",
+            "Ascending": "ascending",
+            "Descending": "descending"
+          },
+          "note": "drawn in a header Cell Text’s Trailing Icon slot; in code the header cell draws it and the label is a button. Set sortDirection on every sortable header and wire onSort, or use useTableSort’s sortProps(column)"
+        }
+      }
+    },
     "Tabs": {
       "code": "Tabs",
       "props": {

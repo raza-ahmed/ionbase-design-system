@@ -68,6 +68,7 @@ const failures = [];
 const fail = (where, what) => failures.push(`${where}: ${what}`);
 
 let browser;
+let loadingChecked = 0;
 try {
   await waitForServer();
   browser = await chromium.launch();
@@ -153,12 +154,43 @@ try {
       await context.close();
     }
   }
+
+  /*
+   * The loading states, at phone width. With no latency a skeleton is gone
+   * before anything can measure it, and a skeleton is laid out differently
+   * from the content it stands in for — the Agents skeleton once pushed the
+   * page 527px sideways while the loaded table fit. A long latency holds each
+   * screen in its loading state long enough to check.
+   */
+  const slow = await browser.newContext({
+    viewport: { width: 390, height: 844 },
+  });
+  await slow.addInitScript(() =>
+    localStorage.setItem(
+      'ionbase-ops:demo-settings',
+      JSON.stringify({ theme: 'light', latency: 20_000 }),
+    ),
+  );
+  for (const route of ROUTES) {
+    const where = `#/${route} (loading, mobile)`;
+    const page = await slow.newPage();
+    await page.goto(`${BASE}/#/${route}`);
+    await page.locator('#page-title').waitFor({ timeout: 10_000 });
+    await page.waitForTimeout(300);
+    const overflow = await page.evaluate(
+      () => document.documentElement.scrollWidth - window.innerWidth,
+    );
+    if (overflow > 0) fail(where, `scrolls sideways by ${overflow}px`);
+    loadingChecked++;
+    await page.close();
+  }
+  await slow.close();
 } finally {
   await browser?.close();
   server.kill();
 }
 
-const checked = ROUTES.length * THEMES.length * 2;
+const checked = ROUTES.length * THEMES.length * 2 + loadingChecked;
 if (failures.length) {
   console.error(
     `Demo smoke: ${failures.length} failures across ${checked} page loads\n`,

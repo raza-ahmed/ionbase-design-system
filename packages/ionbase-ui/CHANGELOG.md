@@ -1,5 +1,45 @@
 # Changelog
 
+## 0.78.0 — 2026-09-25
+
+### Added — sortable table headers, and `useTableSort`
+
+The DataTable pattern said tables get sorted, and nothing shipped to do it:
+TableCell had no sort state and no `aria-sort`, and the demo's Agents table
+could be filtered but not ordered.
+
+- **`sortDirection` and `onSort` on a header TableCell.** Set
+  `sortDirection` on every sortable column — the direction on the sorted
+  one, `none` on the rest — and the header's label becomes a real `<button>`
+  inside the `<th>`, with a neutral, up or down indicator. Only the sorted
+  column gets `aria-sort`, following the WAI-ARIA sortable table. The label
+  darkens on the sorted column so the sort reads from more than the arrow.
+- **`useTableSort`** holds the column and direction; `sortProps(column)`
+  returns both props for a header. A new column starts in its
+  `firstDirection` (ascending unless set) and a second press reverses it —
+  never a third, silent "unsorted". It does not reorder rows: they may be one
+  page of a server's thousands, so sorting is the caller's.
+- The DataTable pattern is now `drivenBy` `useTableSort`, with two new
+  anti-patterns: sortable columns with no indicator until clicked, and
+  sorting only the current page.
+- Figma: `Table Sort Indicator` (1444:761), `Direction` None, Ascending and
+  Descending, offered as a preferred value in Cell Text's Trailing Icon slot
+  and shown on the Table example. Mapped to `sortDirection`; all 69 Dev Mode
+  blocks verified.
+
+### Demo
+
+- The Agents table sorts by agent, runs, success and last run. The sort goes
+  to the fake API with the filters and is applied to every match before
+  paging. Runs and last run start newest or largest first, success lowest
+  first, so the failing agents come to the top.
+- **A phone-width bug the smoke test could not see.** The loading skeleton
+  pushed the Agents page 527px sideways. The page grid's `1fr` column never
+  shrinks below its widest child, and it is now `minmax(0, 1fr)`. The smoke
+  test only measured loaded pages. It now also loads every route at phone
+  width with a long latency and checks each skeleton, and it fails on this
+  bug when the fix is removed.
+
 ## 0.77.0 — 2026-09-25
 
 ### Added — `Card`

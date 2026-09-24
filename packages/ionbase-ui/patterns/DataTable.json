@@ -19,9 +19,14 @@
   "structure": [
     "A toolbar above the table: a search Input, filter controls, and the bulk-action Buttons that appear once something is selected.",
     "Table with a TableHead whose first cell carries the select-all Checkbox, and a TableBody whose rows each carry their own.",
+    "Sortable columns: every header that sorts gets `sortDirection` — the current direction on the sorted column, `none` on the others — so each shows it can be sorted before anyone tries.",
     "One region below the table for pagination or a load-more Button.",
     "The table region is replaced — not overlaid — by the empty, loading and error states."
   ],
+  "drivenBy": {
+    "hook": "useTableSort",
+    "note": "It holds which column the rows are sorted by and which way, and `sortProps(column)` gives each sortable header TableCell its `sortDirection` and `onSort`. Choosing a new column sorts it in its `firstDirection` (ascending unless set — pass `descending` for dates and amounts); choosing it again reverses it. It does not reorder rows: sort them yourself from `sort`, or send it to the server when the table is paged. Only the sorted column gets `aria-sort`."
+  },
   "states": {
     "loading": {
       "must": "Render the table's header row and a fixed number of skeleton rows, keeping the column widths.",
@@ -46,23 +51,30 @@
   "propsUsed": {
     "Table": ["density", "isStriped"],
     "TableRow": ["selection", "isSelected"],
-    "TableCell": ["scope", "align", "variant"],
+    "TableCell": ["scope", "align", "variant", "sortDirection", "onSort"],
     "Checkbox": ["isIndeterminate", "isDisabled"],
     "Button": ["variant", "size"],
     "Alert": ["intent", "title", "actions"],
     "Input": ["leadingIcon"]
   },
   "variantsUsed": {
-    "Alert": { "intent": ["error"] },
-    "Button": { "variant": ["primary-brand", "secondary", "destructive"] },
-    "TableCell": { "align": ["trailing"] }
+    "Alert": {
+      "intent": ["error"]
+    },
+    "Button": {
+      "variant": ["primary-brand", "secondary", "destructive"]
+    },
+    "TableCell": {
+      "align": ["trailing"]
+    }
   },
   "a11y": {
     "requires": [
       "`aria-label` on Table — it names the scroll region, which is keyboard reachable",
       "`scope=\"col\"` on every header cell",
       "an `aria-label` on every row-selection Checkbox, and `isIndeterminate` on the select-all when the selection is partial",
-      "a live region announcing the row count after a filter or search changes it — otherwise a screen-reader user has no idea the table changed"
+      "a live region announcing the row count after a filter or search changes it — otherwise a screen-reader user has no idea the table changed",
+      "a sortable header's label is its accessible name — the button inside the <th> reads the column name, and `aria-sort` on the sorted <th> says the direction"
     ],
     "notes": [
       "Bulk-action Buttons appearing on selection is a change of available actions, not just of styling. Announce it."
@@ -91,6 +103,15 @@
     {
       "dont": "wrapping Table in your own scroll container",
       "why": "Table already owns one and makes it keyboard reachable; a second is unreachable"
+    },
+    {
+      "dont": "a sortable column with no indicator until it is clicked",
+      "do": "`sortDirection=\"none\"` on every sortable header, so the neutral arrows show which columns sort",
+      "why": "a header that sorts but looks like plain text is only found by accident"
+    },
+    {
+      "dont": "sorting only the current page of a paged table",
+      "why": "the reader sees \"A–Z\" and takes it as the whole list; send the sort to the server, which knows every row"
     }
   ]
 }

@@ -159,6 +159,11 @@ export const TableRow = forwardRef<HTMLTableRowElement, TableRowProps>(
 TableRow.displayName = 'TableRow';
 
 export type TableCellAlign = 'leading' | 'trailing' | 'center';
+/**
+ * A sortable column's state. `none` means sortable but not the current sort —
+ * the column shows the neutral indicator and no `aria-sort`.
+ */
+export type TableSortDirection = 'ascending' | 'descending' | 'none';
 export type TableCellScope = 'col' | 'row' | 'colgroup' | 'rowgroup';
 
 export interface TableCellProps extends Omit<
@@ -183,8 +188,42 @@ export interface TableCellProps extends Omit<
   /** Figma's `Leading Icon` / `Trailing Icon` slots on `Cell Text`. */
   icon?: React.ReactNode;
   trailingIcon?: React.ReactNode;
+  /**
+   * Makes a header cell a sort control. Set it on every sortable column:
+   * `ascending` or `descending` on the one the rows are sorted by, `none` on
+   * the rest. Header cells only — ignored on a body cell. `useTableSort`
+   * returns this and `onSort` for each column.
+   */
+  sortDirection?: TableSortDirection;
+  /**
+   * Called when the header is activated. The table does not reorder rows:
+   * sorting is the caller's, since only it knows whether the data is local
+   * or paged from a server.
+   */
+  onSort?: () => void;
   children?: React.ReactNode;
 }
+
+const SortIcon = ({ direction }: { direction: TableSortDirection }) => (
+  <svg
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    aria-hidden="true"
+    focusable="false"
+  >
+    {direction === 'ascending' ? (
+      <path d="m5 12 7-7 7 7M12 19V5" />
+    ) : direction === 'descending' ? (
+      <path d="M12 5v14m7-7-7 7-7-7" />
+    ) : (
+      <path d="m7 15 5 5 5-5M7 9l5-5 5 5" />
+    )}
+  </svg>
+);
 
 /**
  * One component covers Figma's `Table Cell` + `Cell Text`: the two are never
@@ -206,6 +245,8 @@ export const TableCell = forwardRef<HTMLTableCellElement, TableCellProps>(
       showDivider,
       icon,
       trailingIcon,
+      sortDirection,
+      onSort,
       className,
       children,
       ...rest
@@ -214,6 +255,7 @@ export const TableCell = forwardRef<HTMLTableCellElement, TableCellProps>(
   ) => {
     const section = useContext(TableSectionContext);
     const Tag = header ? 'th' : 'td';
+    const isSortable = header && sortDirection !== undefined;
     // `scope` is only valid on `<th>` — never put it on a `<td>`.
     const scope = header
       ? (scopeProp ?? (section === 'body' ? 'row' : 'col'))
@@ -221,35 +263,67 @@ export const TableCell = forwardRef<HTMLTableCellElement, TableCellProps>(
     const contentClassNames = [
       'ion-table__cell-content',
       variant === 'link' ? 'ion-table__cell-content--link' : '',
+      isSortable ? 'ion-table__sort' : '',
+      isSortable && sortDirection !== 'none' ? 'ion-table__sort--active' : '',
     ]
       .filter(Boolean)
       .join(' ');
 
-    return (
-      <Tag
-        {...rest}
-        ref={ref}
-        {...(scope ? { scope } : {})}
-        data-align={align !== 'leading' ? align : undefined}
-        data-divider={showDivider || undefined}
-        className={className}
-      >
-        <span className={contentClassNames}>
-          {icon && (
-            <span className="ion-table__cell-icon" aria-hidden="true">
-              {icon}
-            </span>
-          )}
-          {children}
-          {trailingIcon && (
+    const content = (
+      <>
+        {icon && (
+          <span className="ion-table__cell-icon" aria-hidden="true">
+            {icon}
+          </span>
+        )}
+        {children}
+        {isSortable ? (
+          <span
+            className="ion-table__cell-icon ion-table__cell-icon--trailing ion-table__sort-icon"
+            aria-hidden="true"
+          >
+            <SortIcon direction={sortDirection} />
+          </span>
+        ) : (
+          trailingIcon && (
             <span
               className="ion-table__cell-icon ion-table__cell-icon--trailing"
               aria-hidden="true"
             >
               {trailingIcon}
             </span>
-          )}
-        </span>
+          )
+        )}
+      </>
+    );
+
+    return (
+      <Tag
+        {...rest}
+        ref={ref}
+        {...(scope ? { scope } : {})}
+        // Only the sorted column carries aria-sort: the WAI-ARIA sortable
+        // table puts it on one header at a time, and `none` on the rest is
+        // noise a screen reader reads out on every column.
+        aria-sort={
+          isSortable && sortDirection !== 'none'
+            ? sortDirection
+            : rest['aria-sort']
+        }
+        data-align={align !== 'leading' ? align : undefined}
+        data-divider={showDivider || undefined}
+        className={className}
+      >
+        {isSortable ? (
+          // A real button inside the <th>, not a clickable <th>: the header
+          // keeps its column-header role and the button gets focus, Enter
+          // and Space for free.
+          <button type="button" className={contentClassNames} onClick={onSort}>
+            {content}
+          </button>
+        ) : (
+          <span className={contentClassNames}>{content}</span>
+        )}
       </Tag>
     );
   },

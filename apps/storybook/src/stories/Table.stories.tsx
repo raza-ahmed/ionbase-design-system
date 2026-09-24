@@ -8,6 +8,8 @@ import {
   TableRow,
   TableCell,
   Icon,
+  useTableSort,
+  type TableSort,
 } from 'ionbase-ui';
 import { ArrowUpRight, Mail } from 'lucide-react';
 
@@ -422,5 +424,192 @@ export const CellContentStaysInsideTheScroller: Story = {
     await expect(scroller.scrollWidth).toBeGreaterThan(scroller.clientWidth);
     // …and the page around it does not.
     await expect(page.scrollWidth).toBeLessThanOrEqual(page.clientWidth);
+  },
+};
+
+const INVOICES = [
+  { name: 'Invoice #1024', amount: 240, due: '2026-10-12' },
+  { name: 'Invoice #1025', amount: 80, due: '2026-09-30' },
+  { name: 'Invoice #1026', amount: 512, due: '2026-11-02' },
+];
+type InvoiceColumn = 'name' | 'amount' | 'due';
+
+function SortableInvoices({
+  initial = null,
+}: {
+  initial?: TableSort<InvoiceColumn> | null;
+}) {
+  const { sort, sortProps } = useTableSort<InvoiceColumn>(initial);
+  // The table never reorders rows — the caller does, from `sort`.
+  const rows = [...INVOICES].sort((a, b) => {
+    if (!sort) return 0;
+    const x = a[sort.column];
+    const y = b[sort.column];
+    const order = x < y ? -1 : x > y ? 1 : 0;
+    return sort.direction === 'ascending' ? order : -order;
+  });
+  return (
+    <Table aria-label="Invoices">
+      <TableHead>
+        <TableRow>
+          <TableCell header {...sortProps('name')}>
+            Invoice
+          </TableCell>
+          <TableCell
+            header
+            align="trailing"
+            {...sortProps('amount', { firstDirection: 'descending' })}
+          >
+            Amount
+          </TableCell>
+          <TableCell header {...sortProps('due')}>
+            Due
+          </TableCell>
+        </TableRow>
+      </TableHead>
+      <TableBody>
+        {rows.map((r) => (
+          <TableRow key={r.name}>
+            <TableCell>{r.name}</TableCell>
+            <TableCell align="trailing">${r.amount.toFixed(2)}</TableCell>
+            <TableCell>{r.due}</TableCell>
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
+  );
+}
+
+const firstColumn = (canvasElement: HTMLElement) =>
+  [...canvasElement.querySelectorAll('tbody tr')].map(
+    (tr) => tr.querySelector('td')?.textContent,
+  );
+
+/**
+ * `sortDirection` on a header cell makes its label a button; `useTableSort`
+ * holds which column and which way. The rows are sorted by the story, not the
+ * table — the same as a real product, whose rows may be paged from a server.
+ */
+export const SortableColumns: Story = {
+  render: () => (
+    <SortableInvoices initial={{ column: 'name', direction: 'ascending' }} />
+  ),
+};
+
+export const OnlyTheSortedColumnHasAriaSort: Story = {
+  render: () => (
+    <SortableInvoices initial={{ column: 'name', direction: 'ascending' }} />
+  ),
+  play: async ({ canvasElement }) => {
+    const headers = [...canvasElement.querySelectorAll('th')];
+    await expect(headers.map((th) => th.getAttribute('aria-sort'))).toEqual([
+      'ascending',
+      null,
+      null,
+    ]);
+    // Every sortable header is still a column header, with a button inside.
+    for (const th of headers) {
+      await expect(th.getAttribute('scope')).toBe('col');
+      await expect(th.querySelector('button')).not.toBeNull();
+    }
+  },
+};
+
+export const ChoosingAColumnSortsThenReverses: Story = {
+  render: () => <SortableInvoices />,
+  play: async ({ canvasElement, canvas, userEvent }) => {
+    const due = canvas.getByRole('button', { name: 'Due' });
+
+    await userEvent.click(due);
+    await expect(due.closest('th')).toHaveAttribute('aria-sort', 'ascending');
+    await expect(firstColumn(canvasElement)).toEqual([
+      'Invoice #1025',
+      'Invoice #1024',
+      'Invoice #1026',
+    ]);
+
+    await userEvent.click(due);
+    await expect(due.closest('th')).toHaveAttribute('aria-sort', 'descending');
+    await expect(firstColumn(canvasElement)[0]).toBe('Invoice #1026');
+
+    // A third press reverses again — it never silently drops the sort.
+    await userEvent.click(due);
+    await expect(due.closest('th')).toHaveAttribute('aria-sort', 'ascending');
+  },
+};
+
+export const FirstDirectionIsPerColumn: Story = {
+  render: () => <SortableInvoices />,
+  play: async ({ canvasElement, canvas, userEvent }) => {
+    const amount = canvas.getByRole('button', {
+      name: 'Amount',
+    });
+    await userEvent.click(amount);
+    // Amounts start largest-first: that is what people look for.
+    await expect(amount.closest('th')).toHaveAttribute(
+      'aria-sort',
+      'descending',
+    );
+    await expect(firstColumn(canvasElement)[0]).toBe('Invoice #1026');
+  },
+};
+
+export const SortsFromTheKeyboard: Story = {
+  render: () => <SortableInvoices />,
+  play: async ({ canvas, userEvent }) => {
+    const invoice = canvas.getByRole('button', {
+      name: 'Invoice',
+    });
+    invoice.focus();
+    await userEvent.keyboard('{Enter}');
+    await expect(invoice.closest('th')).toHaveAttribute(
+      'aria-sort',
+      'ascending',
+    );
+    await userEvent.keyboard(' ');
+    await expect(invoice.closest('th')).toHaveAttribute(
+      'aria-sort',
+      'descending',
+    );
+  },
+};
+
+/** The sorted column reads from its label as well as its arrow. */
+export const SortedLabelIsDarker: Story = {
+  render: () => (
+    <SortableInvoices initial={{ column: 'name', direction: 'ascending' }} />
+  ),
+  play: async ({ canvasElement }) => {
+    const [sorted, other] = [
+      ...canvasElement.querySelectorAll('th button'),
+    ] as HTMLElement[];
+    await expect(getComputedStyle(sorted).color).not.toBe(
+      getComputedStyle(other).color,
+    );
+    await expect(
+      sorted
+        .querySelector('.ion-table__sort-icon')
+        ?.getAttribute('aria-hidden'),
+    ).toBe('true');
+  },
+};
+
+export const HeaderWithoutSortDirectionIsPlainText: Story = {
+  render: () => (
+    <Table aria-label="Invoices">
+      <TableHead>
+        <TableRow>
+          <TableCell header onSort={() => {}}>
+            Invoice
+          </TableCell>
+        </TableRow>
+      </TableHead>
+    </Table>
+  ),
+  play: async ({ canvasElement }) => {
+    await expect(canvasElement.querySelector('th button')).toBeNull();
+    await expect(
+      canvasElement.querySelector('th')?.hasAttribute('aria-sort'),
+    ).toBe(false);
   },
 };

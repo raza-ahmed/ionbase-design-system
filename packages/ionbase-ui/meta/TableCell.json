@@ -11,39 +11,75 @@
   ],
   "variants": {
     "scope": {
-      "col": { "use": "a column header — inferred inside TableHead" },
+      "col": {
+        "use": "a column header — inferred inside TableHead"
+      },
       "row": {
         "use": "a row header, e.g. the name column — inferred for a `header` cell in TableBody"
       },
-      "colgroup": { "use": "a header spanning several columns, with colspan" },
-      "rowgroup": { "use": "a header spanning several rows, with rowspan" }
+      "colgroup": {
+        "use": "a header spanning several columns, with colspan"
+      },
+      "rowgroup": {
+        "use": "a header spanning several rows, with rowspan"
+      }
     },
     "align": {
-      "leading": { "use": "the default — text, names, identifiers" },
+      "leading": {
+        "use": "the default — text, names, identifiers"
+      },
       "trailing": {
         "use": "numbers, currency and dates, so digits line up column-wise"
       },
-      "center": { "use": "icons, short status marks, checkboxes" }
+      "center": {
+        "use": "icons, short status marks, checkboxes"
+      }
     },
     "variant": {
-      "default": { "use": "the default — body text and icon colours" },
+      "default": {
+        "use": "the default — body text and icon colours"
+      },
       "link": {
         "use": "recolours the content to `text/link` / `icon/primary` for a cell whose content navigates"
+      }
+    },
+    "sortDirection": {
+      "ascending": {
+        "use": "the column the rows are sorted by, smallest or earliest first"
+      },
+      "descending": {
+        "use": "the column the rows are sorted by, largest or newest first"
+      },
+      "none": {
+        "use": "a column that can be sorted but is not the current sort — it shows the neutral indicator"
       }
     }
   },
   "slots": {
-    "icon": { "accepts": "Icon", "note": "leading icon; omit its `label`" },
-    "trailingIcon": { "accepts": "Icon", "note": "trailing icon; same rule" },
-    "children": { "accepts": "any" }
+    "icon": {
+      "accepts": "Icon",
+      "note": "leading icon; omit its `label`"
+    },
+    "trailingIcon": {
+      "accepts": "Icon",
+      "note": "trailing icon; same rule"
+    },
+    "children": {
+      "accepts": "any"
+    }
   },
   "a11y": {
     "guarantees": [
       "`scope` is inferred when omitted — `col` in TableHead, `row` in TableBody — and can be set explicitly when the inference is wrong",
-      "`header` decides the element directly rather than a `type` prop that could disagree with where the cell sits"
+      "`header` decides the element directly rather than a `type` prop that could disagree with where the cell sits",
+      "a sortable header renders a real <button> inside the <th>, so it is focusable and answers Enter and Space, and the header keeps its column-header role",
+      "`aria-sort` is set on the sorted header only, never `none` on the rest"
     ],
     "requires": [
       "`scope=\"col\"` on header cells — inferred inside TableHead, but explicit for a header rendered outside it"
+    ],
+    "notes": [
+      "`useTableSort` returns `sortDirection` and `onSort` for each column. The table never reorders rows itself: they may be one page of a server's thousands."
     ]
   },
   "antiPatterns": [
@@ -58,6 +94,14 @@
     {
       "dont": "`showDivider` on every cell",
       "why": "it is a column rule, not a row rule — on every cell it becomes a grid"
+    },
+    {
+      "dont": "`onSort` on a header without `sortDirection`",
+      "why": "the cell stays plain text, so nothing can be clicked; `sortDirection` is what makes it a sort control — pass `none` for an unsorted column"
+    },
+    {
+      "dont": "`trailingIcon` on a sortable header",
+      "why": "the sort indicator takes the trailing slot; the icon is not rendered"
     }
   ]
 }
