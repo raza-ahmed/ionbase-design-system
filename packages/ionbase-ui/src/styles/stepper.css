@@ -1,10 +1,10 @@
 /*
  * Stepper
  *
- * NOT DRAWN IN FIGMA. Built code-first, like Breadcrumb: the indicator is a
- * circle at the `lg` icon rung, the label type is Breadcrumb's, and the colours
- * are the primary and error roles every other status in the system uses. When
- * it is drawn, the drawing follows this file.
+ * Drawn in Figma as `Stepper` (1391:431) and `Stepper Step` (1391:356), from
+ * this file. Built code-first, like Breadcrumb: the indicator is a circle at the
+ * `lg` icon rung, the label type is Breadcrumb's, and the colours are the primary
+ * and error roles every other status in the system uses.
  *
  * Status is never colour alone. `complete` draws a check and `error` an
  * exclamation, and both carry their name as visually hidden text.

@@ -1,7 +1,8 @@
 /*
  * PromptInput
  *
- * NOT DRAWN IN FIGMA. The box is Textarea's — surface, border, hover and focus
+ * Drawn in Figma as `Prompt Input` (1393:387), from this file, composing Icon
+ * Button and Agent Stop instances rather than redrawing them. The box is Textarea's — surface, border, hover and focus
  * roles unchanged — one radius rung larger, because it holds a toolbar and
  * reads as a surface rather than a field. The send control is Button `sm`
  * made square; the stop control is AgentStop `sm`, unmodified.

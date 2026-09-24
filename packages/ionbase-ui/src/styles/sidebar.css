@@ -1,9 +1,12 @@
 /*
  * Sidebar
  *
- * NOT DRAWN IN FIGMA. Rows take Menu Item's rhythm — 32px, 8px inset, `md`
+ * Drawn in Figma as `Sidebar` (1396:502), `Sidebar Section` (1396:501) and
+ * `Sidebar Item` (1396:412), from this file. Rows take Menu Item's rhythm — 32px, 8px inset, `md`
  * radius — because a sidebar row and a menu row are the same density of
- * choice. Hover and current are fills (`surface/hover`, `surface/selected`),
+ * choice. The column is `surface/default` against the page's `surface/page`,
+ * the same step a card takes. Hover and current are fills (`surface/hover`,
+ * `surface/selected`),
  * which is exactly where this parts company with NavItem: NavItem was measured
  * as a header link that recolours and never fills.
  *
@@ -19,7 +22,7 @@
   block-size: 100%;
   min-block-size: 0;
   border-inline-end: var(--border-width-default) solid var(--border-subtle);
-  background-color: var(--surface-page);
+  background-color: var(--surface-default);
   color: var(--text-secondary);
   font-family: var(--font-family-sans);
   font-size: var(--type-body-sm);
@@ -270,12 +273,12 @@ button.ion-sidebar__link {
 }
 
 /*
- * Two classes, so a disabled row does not react to hover. The page surface is
- * repeated rather than `transparent`, which the contrast gate would read as an
+ * Two classes, so a disabled row does not react to hover. The sidebar's surface
+ * is repeated rather than `transparent`, which the contrast gate would read as an
  * inherited surface and drop — see the note in segmented-control.css.
  */
 .ion-sidebar .ion-sidebar__row--disabled {
-  background-color: var(--surface-page);
+  background-color: var(--surface-default);
   color: var(--text-disabled);
   cursor: not-allowed;
 }

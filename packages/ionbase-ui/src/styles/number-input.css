@@ -1,7 +1,8 @@
 /*
  * NumberInput
  *
- * NOT DRAWN IN FIGMA. The box is `.ion-input` itself — the component renders
+ * Drawn in Figma as `Number Input` (1389:473), from this file — Input's 21
+ * variants cloned, so the box keeps Input's bindings. The box is `.ion-input` itself — the component renders
  * Input's classes, so every size and state comes from input.css and cannot
  * drift from it. This file owns only what Input does not have: the − and +
  * buttons, and tabular figures.

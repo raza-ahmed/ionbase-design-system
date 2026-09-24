@@ -2,8 +2,10 @@
  * DatePicker — the segmented field, the calendar grid and the overlay that
  * holds it. `date-range-picker.css` carries only what the range adds.
  *
- * NOT YET DRAWN IN FIGMA. Measurements are borrowed rather than invented, the
- * same way AgentStop borrowed Button's and ApprovalGate borrowed Alert's:
+ * Drawn in Figma as `Date Picker` (1394:536, the field — Type=Range is
+ * DateRangePicker's), `Calendar` (1395:1102) and `Calendar Day` (1395:318), from
+ * this file. Measurements were borrowed rather than invented, the same way
+ * AgentStop borrowed Button's and ApprovalGate borrowed Alert's:
  *
  *   the field    Input's box, unchanged — `.ion-date-picker` rides on
  *                `.ion-input` rather than restating a border, a radius and
@@ -11,9 +13,8 @@
  *   the overlay  Combobox Menu's surface, border, radius and shadow
  *   a day cell   Menu's row metrics, squared off to the icon ladder
  *
- * That bet has now held for seven components: the drawing changed values, not
- * structure. When this one IS drawn, the numbers move in Figma and come back
- * through the token pipeline; nothing about the shape below should need to.
+ * The bet held here too: the drawing changed no structure. From now on the
+ * numbers move in Figma and come back through the token pipeline.
  *
  * WHY THE SPLIT ACROSS TWO FILES IS NOT ARBITRARY
  *

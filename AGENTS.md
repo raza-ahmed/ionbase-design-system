@@ -336,17 +336,20 @@ rather than guarded by a gate: the gate cannot run at all until the file is
 clean.
 
 **Adding a React component means answering the Figma question too.** Map it, or
-put it in `codeUnmapped` with a reason. Eight sit there now, and all eight are
+put it in `codeUnmapped` with a reason. Eight of the entries there are
 permanent: `Table`, `TableHead`, `TableBody`, `RadioGroup`, `ToastProvider`,
 `Icon`, `LogoMark` and `ScrollProgress` are code-side composition or runtime
-behaviour, with nothing in Figma to point at.
+behaviour, with nothing in Figma to point at. `DateRangePicker` is drawn, but as
+`Date Picker` Type=Range and `Calendar` Mode=Range rather than a set of its own,
+because a Figma set maps to exactly one code component.
 
-As of 16 Sep 2026 there are no to-dos in the list: the navigation tier
-(`Breadcrumb`, `Accordion`, `Drawer`) and the forms tier (`FileUpload`,
-`Combobox`) were drawn and mapped the day after they were built. Do not trust
-that sentence — it has been wrong twice, in both directions. Read the reasons in
-`figma/mapping.json`, which is the only copy that moves when the work does, or
-run the gate, which prints the real figures.
+As of 24 Sep 2026 there are no to-dos in the list: `NumberInput`,
+`SegmentedControl`, `Stepper`, `ToolCall`, `PromptInput`, `DatePicker` and
+`Sidebar` were drawn from their stylesheets and mapped. Twelve undrawn
+components had accumulated in `codeUnmapped` while this paragraph still said
+"eight, all permanent" — the third time it has gone stale. Do not trust it. Read
+the reasons in `figma/mapping.json`, which is the only copy that moves when the
+work does, or run the gate, which prints the real figures.
 
 **This paragraph said seventeen, of which nine were the undrawn agentic tier.
 That was true when it was written and is not now.** The tier was drawn, exported
@@ -357,15 +360,15 @@ the duplicate that takes the whole export down for every component at once.
 
 A count in prose is stale the moment the thing it counts changes, and nothing
 announces it. `pnpm --filter ionbase-ui figma:map` prints the real figures on
-every build — 40 mapped, 9 unmapped, 198 properties checked — and that is the
-number to trust over this or any other sentence.
+every build — 62 mapped, 12 unmapped, 290 properties checked on 24 Sep 2026 —
+and that is the number to trust over this or any other sentence.
 
 ### The snippets are in the Figma descriptions too
 
 `figma/apply-descriptions.js` writes the generated block into each component's
 description, fenced by markers, so Dev Mode shows the real component on **any**
-plan. All 38 carry one, over 29,794 characters of hand-written prose that the
-markers keep intact. Re-running replaces only the fenced block; the text above
+plan. All 62 mapped components carry one (24 Sep 2026), below hand-written
+prose that the markers keep intact. Re-running replaces only the fenced block; the text above
 it — Link's is nearly 3,000 characters of real design reasoning — is untouched.
 
 **Generating a block is not applying it, and for a while nothing knew the
@@ -392,6 +395,16 @@ pnpm --filter ionbase-ui figma:applied --verified <count>
 
 `--verified` must equal the number of generated blocks, so a partial apply
 cannot be signed off as a complete one.
+
+**"Carries a block" is not the audit — "carries THIS block" is.** The record
+hashes what the build generated, not what Figma holds, so a countersign after
+checking only that each node has a fenced block stays green forever over a
+stale one. `Avatar` and `Badge` sat in Figma with blocks from ionbase-ui@0.22.0
+— missing `ring`, both indicators, and Badge's `size` and `shape` — through
+every release to 0.68.0, found on 24 Sep 2026 by reading each block back and
+hashing it against `dist/figma-descriptions.json` with the `Generated from` line
+dropped. Do that before `--verified`. Markdown stores `*` and `_` as `\*` and
+`\_`, so escape those before comparing or `File Upload` reads as a false alarm.
 
 **Use `descriptionMarkdown`, never `description`.** The plain setter HTML-escapes
 on write: `<Button x="a">'` goes in at 16 characters and comes back at 40 as

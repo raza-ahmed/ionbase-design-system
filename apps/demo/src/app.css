@@ -39,16 +39,6 @@ body {
   height: calc(100vh - var(--demo-header-height));
 }
 
-.demo-brand-row {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--spacing-8);
-}
-
-.demo-nav-toggle {
-  display: none;
-}
-
 .ion-sidebar .demo-workspace {
   justify-content: flex-start;
   width: 100%;
@@ -70,10 +60,6 @@ body {
 
   .demo-sidebar {
     display: none;
-  }
-
-  .demo-nav-toggle {
-    display: inline-flex;
   }
 }
 

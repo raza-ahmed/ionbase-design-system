@@ -392,7 +392,7 @@ function WorkDetail({ step, status }: { step: WorkStep; status: StepStatus }) {
         : undefined;
   if (!step.tool || status === 'pending' || status === 'skipped') return text;
   return (
-    <span className="demo-work-detail">
+    <div className="demo-work-detail">
       {text && <span>{text}</span>}
       <ToolCall
         title={step.tool.title}
@@ -402,6 +402,6 @@ function WorkDetail({ step, status }: { step: WorkStep; status: StepStatus }) {
         output={status === 'done' ? step.tool.output : undefined}
         durationMs={status === 'done' ? step.ms : undefined}
       />
-    </span>
+    </div>
   );
 }
