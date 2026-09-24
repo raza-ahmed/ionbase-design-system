@@ -473,6 +473,39 @@
         }
       }
     },
+    "Card": {
+      "page": "Card",
+      "id": "1441:294",
+      "kind": "SET",
+      "props": {
+        "Action#1441:15": {
+          "type": "INSTANCE_SWAP"
+        },
+        "Description#1441:3": {
+          "type": "TEXT"
+        },
+        "Intent": {
+          "type": "VARIANT",
+          "options": ["Default", "Danger"],
+          "default": "Default"
+        },
+        "Show Action#1441:12": {
+          "type": "BOOLEAN"
+        },
+        "Show Body#1441:18": {
+          "type": "BOOLEAN"
+        },
+        "Show Description#1441:9": {
+          "type": "BOOLEAN"
+        },
+        "Show Header#1441:6": {
+          "type": "BOOLEAN"
+        },
+        "Title#1441:0": {
+          "type": "TEXT"
+        }
+      }
+    },
     "Chart Legend": {
       "page": "Chart",
       "id": "1432:369",

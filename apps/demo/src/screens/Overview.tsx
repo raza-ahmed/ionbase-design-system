@@ -3,6 +3,7 @@ import {
   Alert,
   Badge,
   Button,
+  Card,
   DateRangePicker,
   EmptyState,
   Icon,
@@ -198,18 +199,15 @@ function OverviewReady({
       </StatGroup>
 
       <div className="demo-grid">
-        <section className="demo-panel" aria-labelledby="activity-title">
-          <h2 id="activity-title" className="ion-text-h6">
-            Activity
-          </h2>
+        <Card title="Activity">
           <Tabs aria-label="Activity charts" type="underline" size="sm">
             <TabItem key="volume" title="Run volume">
-              <div className="demo-panel__body">
+              <div className="demo-tab-body">
                 <RunHeatmap data={data.runsByWeekdayHour} />
               </div>
             </TabItem>
             <TabItem key="reliability" title="Success rate">
-              <div className="demo-panel__body">
+              <div className="demo-tab-body">
                 {data.successByDay ? (
                   <SuccessRateChart data={data.successByDay} />
                 ) : (
@@ -225,12 +223,9 @@ function OverviewReady({
               </div>
             </TabItem>
           </Tabs>
-        </section>
+        </Card>
 
-        <section className="demo-panel" aria-labelledby="budget-title">
-          <h2 id="budget-title" className="ion-text-h6">
-            Token budget by agent
-          </h2>
+        <Card title="Token budget by agent">
           <ul className="demo-budgets">
             {data.budgets.map((b) => {
               const ratio = b.usedTokens / b.limitTokens;
@@ -255,18 +250,17 @@ function OverviewReady({
               );
             })}
           </ul>
-        </section>
+        </Card>
       </div>
 
-      <section className="demo-panel" aria-labelledby="recent-title">
-        <div className="demo-section-head">
-          <h2 id="recent-title" className="ion-text-h6">
-            Recent runs
-          </h2>
+      <Card
+        title="Recent runs"
+        action={
           <Link variant="standalone" href={href('runs')}>
             All runs
           </Link>
-        </div>
+        }
+      >
         <Table aria-label="Five most recent finished runs">
           <TableHead>
             <TableRow>
@@ -297,7 +291,7 @@ function OverviewReady({
             ))}
           </TableBody>
         </Table>
-      </section>
+      </Card>
     </>
   );
 }
@@ -321,13 +315,13 @@ function OverviewLoading() {
         ))}
       </StatGroup>
       <div className="demo-grid">
-        <div className="demo-panel">
+        <Card>
           <Skeleton variant="text" width="30%" />
           <Skeleton variant="rect" height="var(--spacing-128)" />
-        </div>
-        <div className="demo-panel">
+        </Card>
+        <Card>
           <Skeleton variant="text" lines={4} />
-        </div>
+        </Card>
       </div>
     </div>
   );

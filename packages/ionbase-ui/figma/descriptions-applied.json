@@ -19,7 +19,7 @@
   ],
   "file": "gaLbGd0QNb1fUl6BjSpfBA",
   "appliedOn": "2026-09-24",
-  "verifiedInFigma": 67,
+  "verifiedInFigma": 68,
   "applied": {
     "1360:267": {
       "figmaComponent": "Accordion",
@@ -145,6 +145,11 @@
       "figmaComponent": "File Upload",
       "component": "FileUpload",
       "hash": "a01c7ee7eacae214"
+    },
+    "1441:294": {
+      "figmaComponent": "Card",
+      "component": "Card",
+      "hash": "f64bc008242965dd"
     },
     "592:857": {
       "figmaComponent": "Full Card",

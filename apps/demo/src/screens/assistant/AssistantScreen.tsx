@@ -3,6 +3,7 @@ import {
   Alert,
   AvatarGradient,
   Button,
+  Card,
   Citation,
   CitationList,
   CitationListItem,
@@ -290,7 +291,7 @@ function TurnView({ turn }: { turn: Turn }) {
         </h2>
       </div>
 
-      <div className="demo-turn__answer demo-panel">
+      <Card className="demo-turn__answer">
         <div className="demo-turn__meta">
           <LogoMark size="sm" label="Ionbase assistant" />
           {complete && answer.confidence && (
@@ -344,7 +345,7 @@ function TurnView({ turn }: { turn: Turn }) {
             ))}
           </CitationList>
         )}
-      </div>
+      </Card>
     </section>
   );
 }

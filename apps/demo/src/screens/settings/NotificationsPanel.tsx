@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Alert, SettingRow, Toggle } from 'ionbase-ui';
+import { Alert, Card, SettingRow, Toggle } from 'ionbase-ui';
 
 import {
   saveNotification,
@@ -67,15 +67,10 @@ export function NotificationsPanel({
   }
 
   return (
-    <section className="demo-panel" aria-labelledby="notifications-title">
-      <div>
-        <h2 id="notifications-title" className="ion-text-h6">
-          Notifications
-        </h2>
-        <p className="ion-text-body-sm demo-muted">
-          Changes apply as soon as you make them.
-        </p>
-      </div>
+    <Card
+      title="Notifications"
+      description="Changes apply as soon as you make them."
+    >
       <p className="ion-visually-hidden" role="status">
         {announcement}
       </p>
@@ -103,6 +98,6 @@ export function NotificationsPanel({
           />
         </SettingRow>
       ))}
-    </section>
+    </Card>
   );
 }

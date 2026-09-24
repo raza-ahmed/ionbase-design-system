@@ -1,5 +1,13 @@
 import { useState } from 'react';
-import { Alert, Button, Divider, Input, Modal, SettingRow } from 'ionbase-ui';
+import {
+  Alert,
+  Button,
+  Card,
+  Divider,
+  Input,
+  Modal,
+  SettingRow,
+} from 'ionbase-ui';
 
 import { scheduleDeletion } from '../../data/settings';
 import { formatDay } from '../../lib/dates';
@@ -37,14 +45,7 @@ export function DangerZone({
   }
 
   return (
-    <section
-      className="demo-panel demo-panel--danger"
-      aria-labelledby="danger-title"
-    >
-      <h2 id="danger-title" className="ion-text-h6">
-        Danger zone
-      </h2>
-
+    <Card title="Danger zone" intent="danger">
       {scheduledFor && (
         <Alert
           intent="warning"
@@ -134,6 +135,6 @@ export function DangerZone({
           </div>
         </Modal>
       )}
-    </section>
+    </Card>
   );
 }

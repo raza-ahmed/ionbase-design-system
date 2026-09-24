@@ -1,0 +1,75 @@
+/*
+ * Card
+ *
+ * Promoted from the demo app's `.demo-panel`, which nine screens used
+ * unchanged — the measurements are the ones StatTile already settled: a
+ * `surface/default` card with a `border/subtle` rule and the `lg` radius,
+ * 16 of padding, 12 between the parts.
+ *
+ *   title         the H6 text style, `text/default`
+ *   description   body-sm, `text/secondary`, 2 under the title
+ *   action        end of the title row; wraps under it below ~12rem of title
+ *   danger        the rule turns `border/error-subtle`; nothing else changes,
+ *                 so the warning stays in the card's words and not its colour
+ *
+ * The block carries its own background, so the contrast gate measures the
+ * title and description against the card rather than the page behind it.
+ */
+.ion-card {
+  display: grid;
+  align-content: start;
+  gap: var(--spacing-12);
+  min-width: 0;
+  padding: var(--spacing-16);
+  border: var(--border-width-default) solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  background-color: var(--surface-default);
+  color: var(--text-default);
+  font-family: var(--font-family-sans);
+}
+
+.ion-card--danger {
+  border-color: var(--border-error-subtle);
+}
+
+.ion-card__header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--spacing-8) var(--spacing-12);
+}
+
+/*
+ * A 12rem basis, not the title's own width: a long title shrinks and wraps
+ * beside the action, the way Figma's FILL heading does, and the action only
+ * drops to its own line when the card is too narrow for both.
+ */
+.ion-card__heading {
+  display: grid;
+  flex: 1 1 12rem;
+  gap: var(--spacing-2);
+  min-width: 0;
+}
+
+.ion-card__title {
+  margin: 0;
+  color: var(--text-default);
+  font-size: var(--type-h6);
+  line-height: var(--type-h6-line-height);
+  font-weight: var(--font-weight-semibold);
+}
+
+.ion-card__description {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: var(--type-body-sm);
+  line-height: var(--type-body-sm-line-height);
+}
+
+.ion-card__action {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: var(--spacing-8);
+}

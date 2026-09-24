@@ -1,5 +1,33 @@
 # Changelog
 
+## 0.77.0 — 2026-09-25
+
+### Added — `Card`
+
+The most common surface in a SaaS app had no component: only FullCard, a
+feature row with media. The demo hand-wrote the same bordered panel as
+`.demo-panel` in nine screens — settings groups, chart panels, the runs log,
+the danger zone.
+
+- **A title row from props.** `title`, `description` and one `action` (a
+  standalone Link or a small Button) are laid out the same way in every card;
+  the body is `children`. `headingLevel` defaults to 2.
+- **The title decides the element.** A titled card is a `<section>` named by
+  its heading, so it is a landmark; an untitled one is a `<div>`, for loading
+  placeholders. `isRegion={false}` keeps the heading but drops the landmark,
+  for a card whose only content is a Table named the same way.
+- **`intent="danger"`** turns the border red and changes nothing else, so the
+  warning stays in the words.
+- Figma: a new `Card` set (1441:294) on the Card page, `Intent` Default and
+  Danger, mapped prop for prop. Its Dev Mode block is applied and all 68 are
+  verified.
+
+### Demo
+
+- Every `.demo-panel` is now a Card, and the class is gone. The approval queue
+  on Runs uses a card per run with the risk Badge as its action, not a region
+  each: the list already groups them. The demo shows **76 of 76** components.
+
 ## 0.76.0 — 2026-09-25
 
 ### Added — `NavItem` `isCurrent`

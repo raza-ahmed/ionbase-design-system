@@ -2,6 +2,7 @@ import { useState } from 'react';
 import {
   Alert,
   Button,
+  Card,
   Checkbox,
   Radio,
   RadioGroup,
@@ -71,15 +72,10 @@ export function DefaultsPanel({
   }
 
   return (
-    <section className="demo-panel" aria-labelledby="defaults-title">
-      <div>
-        <h2 id="defaults-title" className="ion-text-h6">
-          Workspace defaults
-        </h2>
-        <p className="ion-text-body-sm demo-muted">
-          Applied to agents created from now on. Saved together.
-        </p>
-      </div>
+    <Card
+      title="Workspace defaults"
+      description="Applied to agents created from now on. Saved together."
+    >
       <p className="ion-visually-hidden" role="status">
         {announcement}
       </p>
@@ -167,6 +163,6 @@ export function DefaultsPanel({
           </Button>
         </div>
       )}
-    </section>
+    </Card>
   );
 }

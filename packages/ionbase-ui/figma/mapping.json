@@ -691,6 +691,44 @@
         }
       }
     },
+    "Card": {
+      "code": "Card",
+      "props": {
+        "Intent": {
+          "prop": "intent",
+          "values": {
+            "Default": "default",
+            "Danger": "danger"
+          }
+        },
+        "Title#1441:0": {
+          "prop": "title"
+        },
+        "Show Header#1441:6": {
+          "prop": "title",
+          "note": "false hides the whole title row. In code, omit title: the card renders a <div> rather than a named <section>, and description goes with it"
+        },
+        "Description#1441:3": {
+          "prop": "description"
+        },
+        "Show Description#1441:9": {
+          "prop": "description",
+          "note": "false means description is omitted"
+        },
+        "Action#1441:15": {
+          "prop": "action",
+          "note": "a standalone Link in the design; a small Button also fits. One control only"
+        },
+        "Show Action#1441:12": {
+          "prop": "action",
+          "note": "false means action is omitted"
+        },
+        "Show Body#1441:18": {
+          "prop": "children",
+          "note": "the body frame is a placeholder; in code the card’s children follow the title row"
+        }
+      }
+    },
     "Full Card": {
       "code": "FullCard",
       "props": {

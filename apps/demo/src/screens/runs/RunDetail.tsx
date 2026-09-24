@@ -9,6 +9,7 @@ import {
   Breadcrumb,
   BreadcrumbItem,
   Button,
+  Card,
   Drawer,
   EmptyState,
   Link,
@@ -192,10 +193,7 @@ export function RunDetail({ runId }: { runId: string }) {
 
       {/* The empty state: before the first step exists there is no log at all. */}
       {reached.length > 0 && (
-        <section className="demo-panel" aria-labelledby="log-title">
-          <h2 id="log-title" className="ion-text-h6">
-            What the agent did
-          </h2>
+        <Card title="What the agent did">
           <AgentActivity>
             {reached.map(({ step, i, status }) => (
               <AgentActivityStep
@@ -221,7 +219,7 @@ export function RunDetail({ runId }: { runId: string }) {
               </AgentActivityStep>
             ))}
           </AgentActivity>
-        </section>
+        </Card>
       )}
 
       {failedAt >= 0 && (
@@ -251,14 +249,11 @@ export function RunDetail({ runId }: { runId: string }) {
       )}
 
       {showOutput && (
-        <section className="demo-panel" aria-labelledby="result-title">
-          <h2 id="result-title" className="ion-text-h6">
-            Result
-          </h2>
+        <Card title="Result">
           <StreamingText isStreaming={state.streaming} minLines={4}>
             {state.output}
           </StreamingText>
-        </section>
+        </Card>
       )}
 
       {/* StreamingText is not a live region by design; the end is announced once, here. */}
