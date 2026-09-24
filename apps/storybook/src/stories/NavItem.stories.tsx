@@ -12,7 +12,7 @@ const meta: Meta<typeof NavItem> = {
     docs: {
       description: {
         component:
-          "Measured from Figma `Nav Item` (70:22078). Two states: Default, Hover.\n\nUnlike Button, Menu Item or Table Row, hover recolours text and icon only — no background fill. Reproduced as measured: a primary nav bar sitting directly on the header's own surface has nothing to contrast a hover fill against without inventing a colour Figma never specified.\n\nRenders `<a>` when given `href`, `<button>` otherwise — the same judgment call Menu and Select make about which element the caller is actually building.",
+          "Measured from Figma `Nav Item` (70:22078). States: Default, Hover, Current.\n\nUnlike Button, Menu Item or Table Row, hover recolours text and icon only — no background fill. Reproduced as measured: a primary nav bar sitting directly on the header's own surface has nothing to contrast a hover fill against without inventing a colour Figma never specified.\n\nRenders `<a>` when given `href`, `<button>` otherwise — the same judgment call Menu and Select make about which element the caller is actually building.",
       },
     },
   },
@@ -231,5 +231,39 @@ export const ElementMatchesIntent: Story = {
   play: async ({ canvas }) => {
     await expect(canvas.getByRole('link', { name: 'Link' })).toBeTruthy();
     await expect(canvas.getByRole('button', { name: 'Button' })).toBeTruthy();
+  },
+};
+
+/**
+ * `isCurrent` marks the page the user is on: `aria-current="page"` for a
+ * screen reader, and Tabs' underline — `border/primary`, drawn inside so the
+ * item does not grow — for everyone else. The others stay unmarked.
+ */
+export const CurrentPageIsMarked: Story = {
+  render: () => (
+    <nav aria-label="Agent" style={{ display: 'flex', gap: '0.5rem' }}>
+      <NavItem href="#overview" isCurrent>
+        Overview
+      </NavItem>
+      <NavItem href="#runs">Runs</NavItem>
+    </nav>
+  ),
+  play: async ({ canvas }) => {
+    const current = canvas.getByRole('link', { name: 'Overview' });
+    const other = canvas.getByRole('link', { name: 'Runs' });
+    await expect(current).toHaveAttribute('aria-current', 'page');
+    await expect(other).not.toHaveAttribute('aria-current');
+
+    await expect(getComputedStyle(current).color).toBe(
+      resolveToken('--text-default'),
+    );
+    await expect(getComputedStyle(current).boxShadow).toContain(
+      resolveToken('--border-primary'),
+    );
+    await expect(getComputedStyle(other).boxShadow).toBe('none');
+    // Drawn inside: the current item is no taller than the rest.
+    await expect(current.getBoundingClientRect().height).toBe(
+      other.getBoundingClientRect().height,
+    );
   },
 };

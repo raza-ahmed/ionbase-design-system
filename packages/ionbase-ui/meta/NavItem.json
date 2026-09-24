@@ -26,7 +26,8 @@
     "guarantees": [
       "hover state comes from React Aria's pointer-aware `useHover`, so a tap does not stay hovered until the next tap elsewhere",
       "the focus ring shows for keyboard navigation only",
-      "the CSS keeps its own `:hover` / `:focus-visible` rules, so the styling survives without React"
+      "the CSS keeps its own `:hover` / `:focus-visible` rules, so the styling survives without React",
+      "`isCurrent` sets `aria-current=\"page\"`, and the current item is marked by an underline as well as colour, which survives forced-colours mode"
     ],
     "requires": [
       "an accessible name — `children`, or `aria-label` on an icon-only item"
@@ -44,6 +45,10 @@
       "dont": "marking the current page with colour only",
       "do": "`aria-current=\"page\"`",
       "why": "a screen-reader user is otherwise never told where they are"
+    },
+    {
+      "dont": "marking the current page with a className or colour of your own instead of `isCurrent`",
+      "why": "a screen reader hears nothing without `aria-current`, and a colour-only marker fails anyone who cannot see the difference"
     }
   ],
   "deprecated": [

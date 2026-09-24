@@ -13,14 +13,20 @@ export const ROUTES = [
   'assistant',
   'settings',
 ] as const;
-/** A run's detail page carries its id: `#/runs/run_4821`. */
-export type Route = (typeof ROUTES)[number] | `runs/${string}`;
+/**
+ * Detail pages carry an id: `#/runs/run_4821`, `#/agents/agt_rs` and its
+ * `#/agents/agt_rs/runs` tab. `agents/new` is a route of its own and wins.
+ */
+export type Route =
+  (typeof ROUTES)[number] | `runs/${string}` | `agents/${string}`;
 
 export const href = (route: Route) => `#/${route}`;
 
 function parse(hash: string): Route | null {
   const path = hash.replace(/^#\/?/, '') || 'overview';
   if (/^runs\/[\w-]+$/.test(path)) return path as Route;
+  if (path !== 'agents/new' && /^agents\/[\w-]+(\/runs)?$/.test(path))
+    return path as Route;
   return (ROUTES as readonly string[]).includes(path) ? (path as Route) : null;
 }
 

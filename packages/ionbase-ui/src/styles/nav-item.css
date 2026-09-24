@@ -1,7 +1,7 @@
 /*
  * Nav Item
  *
- * Measured from Figma `Nav Item` (70:22078). Two states only: Default, Hover.
+ * Measured from Figma `Nav Item` (70:22078): Default, Hover and Current.
  *
  * NO BACKGROUND ON HOVER — TEXT AND ICON RECOLOUR ONLY
  *
@@ -33,7 +33,10 @@
   font-family: var(--font-family-sans);
   font-size: var(--type-body-sm);
   line-height: var(--type-body-sm-line-height);
-  font-weight: var(--font-weight-regular);
+
+  /* Figma binds `font/weight/medium` in every state; this read regular from
+     the July package merge until 0.76.0. */
+  font-weight: var(--font-weight-medium);
   text-decoration: none;
   cursor: pointer;
   user-select: none;
@@ -60,6 +63,38 @@
 .ion-nav-item[data-focused='true'] {
   outline: var(--border-width-thick) solid var(--border-focus);
   outline-offset: 2px;
+}
+
+/*
+ * CURRENT — THE TABS UNDERLINE, NOT THE SIDEBAR FILL
+ *
+ * Sidebar marks its current row with `surface/selected`, but NavItem never
+ * fills (see above), so it takes the other current state the system already
+ * has: Tabs' underline — `text/default` over a `border-width/thick` rule in
+ * `border/primary`. The rule is an inset shadow, not a border, so the current
+ * item is exactly as tall as the rest and a nav bar does not jump when the
+ * page changes. The weight does not change either, for the same reason.
+ *
+ * Colour alone would not do: `text/secondary` to `text/default` is a step a
+ * reader can miss. The rule is the part that is not colour.
+ */
+.ion-nav-item--current {
+  color: var(--text-default);
+  box-shadow: inset 0 calc(-1 * var(--border-width-thick)) 0
+    var(--border-primary);
+}
+
+.ion-nav-item--current .ion-nav-item__icon {
+  color: var(--icon-primary);
+}
+
+/* Forced colours drop box-shadow, which would erase the indicator entirely. */
+@media (forced-colors: active) {
+  .ion-nav-item--current {
+    text-decoration: underline;
+    text-decoration-thickness: var(--border-width-thick);
+    text-underline-offset: var(--spacing-4);
+  }
 }
 
 .ion-nav-item--disabled,

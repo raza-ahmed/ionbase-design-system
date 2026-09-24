@@ -24,6 +24,13 @@ interface NavItemOwnProps {
   icon?: React.ReactNode;
   /** Figma's `Show Chevron`. Set on a nav item that opens a menu, not a plain link. */
   showChevron?: boolean;
+  /**
+   * The page the user is on. Marks the item `aria-current="page"` and draws
+   * the same indicator Tabs' underline does — so a section switcher built from
+   * NavItems says where you are, in words for a screen reader and in more than
+   * colour for everyone else.
+   */
+  isCurrent?: boolean;
   isDisabled?: boolean;
   /**
    * @deprecated Use `isDisabled`. Accepted as an alias for one minor version.
@@ -64,6 +71,7 @@ export const NavItem = forwardRef<
   const {
     icon,
     showChevron,
+    isCurrent,
     isDisabled: isDisabledProp,
     disabled,
     children,
@@ -82,6 +90,7 @@ export const NavItem = forwardRef<
 
   const classNames = [
     'ion-nav-item',
+    isCurrent ? 'ion-nav-item--current' : '',
     isDisabled ? 'ion-nav-item--disabled' : '',
     className || '',
   ]
@@ -92,6 +101,7 @@ export const NavItem = forwardRef<
     'data-hovered': isHovered || undefined,
     'data-focused': isFocusVisible || undefined,
     'data-disabled': isDisabled || undefined,
+    'aria-current': isCurrent ? ('page' as const) : undefined,
   };
 
   const content = (
