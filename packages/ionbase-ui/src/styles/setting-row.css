@@ -1,0 +1,58 @@
+/*
+ * SettingRow
+ *
+ * Promoted from the demo app's settings screen: the name and description on the
+ * left in `text/default` and `text/secondary`, the control on the right, 16px
+ * apart. The label is the Body/Default Semibold rung, the description a step
+ * down on body-sm.
+ *
+ * IT STACKS BY ITS OWN WIDTH
+ *
+ * The demo stacked the row below a 767px VIEWPORT, which is the wrong question:
+ * a settings row in a 360px drawer on a desktop is just as cramped as one on a
+ * phone. The row is a size container and the inner flex reads it, so it stacks
+ * wherever it is narrow. Container queries apply to descendants only, which is
+ * why there is an `__inner` at all.
+ */
+.ion-setting-row {
+  container-type: inline-size;
+  font-family: var(--font-family-sans);
+}
+
+.ion-setting-row__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-16);
+}
+
+.ion-setting-row__text {
+  display: grid;
+  gap: var(--spacing-2);
+  min-width: 0;
+}
+
+.ion-setting-row__label {
+  color: var(--text-default);
+  font-size: var(--type-body);
+  line-height: var(--type-body-line-height);
+  font-weight: var(--font-weight-semibold);
+}
+
+.ion-setting-row__description {
+  color: var(--text-secondary);
+  font-size: var(--type-body-sm);
+  line-height: var(--type-body-sm-line-height);
+}
+
+.ion-setting-row__control {
+  flex-shrink: 0;
+}
+
+@container (width < 30rem) {
+  .ion-setting-row__inner {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-8);
+  }
+}

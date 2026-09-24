@@ -19,7 +19,7 @@
   ],
   "file": "gaLbGd0QNb1fUl6BjSpfBA",
   "appliedOn": "2026-09-24",
-  "verifiedInFigma": 64,
+  "verifiedInFigma": 65,
   "applied": {
     "1360:267": {
       "figmaComponent": "Accordion",
@@ -245,6 +245,11 @@
       "figmaComponent": "Select",
       "component": "Select",
       "hash": "6f30dd4afd7565f5"
+    },
+    "1418:260": {
+      "figmaComponent": "Setting Row",
+      "component": "SettingRow",
+      "hash": "4b819b1ff1964b22"
     },
     "1396:502": {
       "figmaComponent": "Sidebar",

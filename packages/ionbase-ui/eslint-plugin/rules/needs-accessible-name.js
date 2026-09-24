@@ -1,4 +1,4 @@
-import { needsAccessibleName, isComponent } from '../meta-data.js';
+import { needsAccessibleName, namesChild, isComponent } from '../meta-data.js';
 
 /**
  * An icon-only control with no `aria-label` is announced as just "button".
@@ -9,6 +9,9 @@ import { needsAccessibleName, isComponent } from '../meta-data.js';
  *
  * Only fires when the element demonstrably has no text: an expression child
  * could be anything, so those are left alone rather than guessed at.
+ *
+ * A control placed directly inside a component whose contract says
+ * `a11y.namesChild` — SettingRow — is named by that parent, so it is skipped.
  */
 export default {
   meta: {
@@ -24,6 +27,15 @@ export default {
   },
   create(context) {
     const named = new Set(needsAccessibleName);
+    const namingParents = new Set(namesChild);
+
+    /** Directly inside a parent that names its child, such as SettingRow. */
+    const namedByParent = (node) => {
+      const parent = node.parent;
+      if (!parent || parent.type !== 'JSXElement') return false;
+      const n = parent.openingElement.name;
+      return n.type === 'JSXIdentifier' && namingParents.has(n.name);
+    };
 
     const hasText = (children) =>
       children.some((c) => {
@@ -52,6 +64,7 @@ export default {
         if (open.name.type !== 'JSXIdentifier') return;
         const name = open.name.name;
         if (!named.has(name)) return;
+        if (namedByParent(node)) return;
 
         const attrs = open.attributes.filter((a) => a.type === 'JSXAttribute');
         // A spread could carry aria-label; do not second-guess it.

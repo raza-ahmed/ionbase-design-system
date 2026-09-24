@@ -91,6 +91,7 @@
 @import url('./date-picker.css');
 @import url('./date-range-picker.css');
 @import url('./stat-tile.css');
+@import url('./setting-row.css');
 
 /*
  * Visually hidden, but not hidden from assistive tech.

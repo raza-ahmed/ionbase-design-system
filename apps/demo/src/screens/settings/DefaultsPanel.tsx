@@ -1,9 +1,16 @@
 import { useState } from 'react';
-import { Alert, Button, Checkbox, Radio, RadioGroup, Select } from 'ionbase-ui';
+import {
+  Alert,
+  Button,
+  Checkbox,
+  Radio,
+  RadioGroup,
+  Select,
+  SettingRow,
+} from 'ionbase-ui';
 
 import { saveDefaults, type WorkspaceDefaults } from '../../data/settings';
 import { useDemoSettings } from '../../lib/demo-settings';
-import { SettingRow } from '../../local/SettingRow';
 
 const MODEL_OPTIONS = [
   { value: 'swift-m', label: 'Swift M' },
@@ -93,17 +100,13 @@ export function DefaultsPanel({
         label="Default model"
         description="Pre-selected when someone creates an agent."
       >
-        {({ labelId, descriptionId }) => (
-          <Select
-            size="sm"
-            aria-labelledby={labelId}
-            aria-describedby={descriptionId}
-            options={MODEL_OPTIONS}
-            value={draft?.defaultModel ?? ''}
-            isDisabled={disabled}
-            onChange={(e) => set({ defaultModel: e.target.value })}
-          />
-        )}
+        <Select
+          size="sm"
+          options={MODEL_OPTIONS}
+          value={draft?.defaultModel ?? ''}
+          isDisabled={disabled}
+          onChange={(e) => set({ defaultModel: e.target.value })}
+        />
       </SettingRow>
 
       <RadioGroup

@@ -1,5 +1,52 @@
 # Changelog
 
+## 0.72.0 — 2026-09-24
+
+### Added — `SettingRow`
+
+One setting: its name and what it does on the left, the control on the right —
+the row the SettingsPanel pattern has described since it was written, and
+which the demo app built four times over from a local stand-in. The pattern now
+names it.
+
+```tsx
+<SettingRow label="Weekly digest" description="A Monday summary of runs.">
+  <Toggle />
+</SettingRow>
+```
+
+**The wiring is the point, not the layout.** A label placed beside a Toggle
+looks labelled and is not: a screen reader says "switch, off". The demo's
+stand-in passed ids to a render function, which still left the wiring as a
+step to remember. Here the child is cloned with `aria-labelledby` and
+`aria-describedby` set, so the row cannot be used without them. A name the
+caller wires explicitly is kept. A function child still receives the ids, for a
+control that needs them somewhere else.
+
+**A control with its own text keeps its own name.** A Button reading "Delete
+workspace…" is announced by those words — WCAG 2.5.3 wants the visible text in
+the accessible name — and the row's label and description become its
+description instead.
+
+**It stacks by its own width**, through a container query below 30rem, not by
+the viewport — the demo's version stacked at a 767px viewport, which left the
+same row cramped in a narrow drawer on a desktop.
+
+**`needs-accessible-name` knows about it.** The lint rule flagged every control
+inside a SettingRow as unnamed. A contract can now declare `a11y.namesChild`,
+and a control directly inside such a component is skipped — read from the
+contracts like every other rule input, not hardcoded. A bare `<Toggle />`
+outside one is still reported.
+
+**Drawn in Figma the same day** as `Setting Row` (1418:260): `Layout` (Inline,
+Stacked — ignored in the mapping, since code decides it by width) and a
+`Control` instance swap preferring Toggle and Button.
+
+The demo drops its local copy, its CSS and the gap-list row; all four settings
+panels use this one, and their controls lose the hand-written aria wiring.
+
+7 interaction tests. Figma map: 65 mapped, 300 properties, 0 errors.
+
 ## 0.71.0 — 2026-09-24
 
 ### Added — `StatTile`, `StatGroup`

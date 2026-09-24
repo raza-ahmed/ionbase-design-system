@@ -41,6 +41,15 @@ export const needsAccessibleName = Object.entries(components)
   )
   .map(([n]) => n);
 
+/**
+ * Components that name the control placed inside them — SettingRow wires its
+ * label to its child with aria-labelledby. A control directly inside one of
+ * these is named even though its own JSX shows no label.
+ */
+export const namesChild = Object.entries(components)
+  .filter(([, c]) => c.a11y?.namesChild === true)
+  .map(([n]) => n);
+
 /** Measured contrast defects, with the prop combination that reaches them. */
 export const contrastIssues = Object.entries(components).flatMap(([n, c]) =>
   (c.a11y?.knownIssues ?? [])

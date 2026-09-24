@@ -244,3 +244,6 @@ export type {
   StatTileGoodWhen,
   StatTileChangeUnit,
 } from './StatTile.js';
+
+export { SettingRow } from './SettingRow.js';
+export type { SettingRowProps, SettingRowIds } from './SettingRow.js';

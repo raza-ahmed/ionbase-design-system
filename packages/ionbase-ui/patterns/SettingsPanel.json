@@ -5,6 +5,7 @@
     "the settings are grouped and the groups are worth naming"
   ],
   "composes": [
+    "SettingRow",
     "Toggle",
     "Checkbox",
     "RadioGroup",
@@ -20,7 +21,7 @@
   ],
   "structure": [
     "Named groups, separated by Divider, each with a heading.",
-    "One row per setting: label and description on the left, control on the right.",
+    "One SettingRow per setting: label and description on the left, control on the right, wired together by the row.",
     "For save-on-submit panels, a save bar that appears only when something is dirty, with save and discard.",
     "Tabs for panels large enough that a single scroll is unreasonable — but never with unsaved changes hidden behind an inactive tab."
   ],

@@ -1,0 +1,50 @@
+{
+  "status": "stable",
+  "since": "0.72.0",
+  "summary": "One setting: its name and description on the left, the control on the right — and the control named and described by them automatically.",
+  "useWhen": [
+    "a settings or preferences panel, one row per setting",
+    "a control whose meaning needs a sentence of explanation beside it"
+  ],
+  "useInstead": [
+    {
+      "when": "it is a form field with its own visible label above it",
+      "use": "Input",
+      "why": "Input, Select and the pickers carry their own label and description; a SettingRow around them names the field twice"
+    },
+    {
+      "when": "a group of options answers one question",
+      "use": "RadioGroup",
+      "why": "the group has its own label; put the RadioGroup under a heading rather than in a row"
+    }
+  ],
+  "slots": {
+    "children": {
+      "accepts": ["Toggle", "Checkbox", "Select", "Button"],
+      "note": "an element is cloned with aria-labelledby and aria-describedby pointing at the row's text; a function receives the ids instead, for a control that needs them somewhere else"
+    }
+  },
+  "a11y": {
+    "namesChild": true,
+    "guarantees": [
+      "an element child with no text of its own — a Toggle, a Checkbox with no label — is named by the row's label and described by its description, so it is announced as \"Weekly digest, switch, off\" plus what it does, not \"switch, off\"",
+      "a child with its own text — a Button — keeps that text as its name (WCAG 2.5.3), and the row's label and description are attached as its description instead",
+      "an aria-labelledby or aria-describedby the caller passes explicitly is kept, never overwritten",
+      "it stacks by its own width, so it reads the same in a page and in a narrow drawer"
+    ],
+    "requires": ["one control per row — the ids name one element"],
+    "notes": [
+      "The label is text, not a <label>, because the control may be a Button; a <label> pointing at a button is invalid."
+    ]
+  },
+  "antiPatterns": [
+    {
+      "dont": "a Toggle or Checkbox with its own visible label inside a SettingRow",
+      "why": "the control then names itself, the row's label becomes a description, and the setting's name is shown twice"
+    },
+    {
+      "dont": "a Checkbox row that saves immediately",
+      "why": "Toggle is immediate and Checkbox is saved with a submit — the SettingsPanel pattern's first rule"
+    }
+  ]
+}
