@@ -17,6 +17,24 @@ const MANY_SECTIONS = Array.from({ length: 40 }, (_, i) => ({
   label: `Section ${i + 1}`,
 }));
 
+/**
+ * Opens the panel and waits for it to finish revealing. A closed panel is
+ * `display: none`, so anything that measures the panel has to open it first.
+ */
+async function openPanel(canvasElement: HTMLElement) {
+  const trigger = canvasElement.querySelector(
+    '.ion-scroll-progress__trigger',
+  ) as HTMLElement;
+  const panel = canvasElement.querySelector(
+    '.ion-scroll-progress__panel',
+  ) as HTMLElement;
+  await fireEvent.click(trigger);
+  await waitFor(() =>
+    expect(getComputedStyle(panel).visibility).toBe('visible'),
+  );
+  return panel;
+}
+
 const meta: Meta<typeof ScrollProgress> = {
   title: 'Components/ScrollProgress',
   component: ScrollProgress,
@@ -85,9 +103,7 @@ export const RenderedGeometryMatchesFigma: Story = {
     ) as HTMLElement;
     await expect(getComputedStyle(rail).rowGap).toBe('8px');
 
-    const panel = canvasElement.querySelector(
-      '.ion-scroll-progress__panel',
-    ) as HTMLElement;
+    const panel = await openPanel(canvasElement);
     const panelStyle = getComputedStyle(panel);
     await expect(panelStyle.rowGap).toBe('4px');
     await expect(Math.round(panel.getBoundingClientRect().width)).toBe(220);
@@ -214,6 +230,7 @@ export const LongHeadingsTruncate: Story = {
     />
   ),
   play: async ({ canvasElement }) => {
+    await openPanel(canvasElement);
     const heading = canvasElement.querySelector(
       '.ion-scroll-progress__heading',
     ) as HTMLElement;
@@ -243,9 +260,7 @@ export const LongListScrollsRatherThanGrowing: Story = {
     <ScrollProgress progress={12} sections={MANY_SECTIONS} activeId="s3" />
   ),
   play: async ({ canvasElement }) => {
-    const panel = canvasElement.querySelector(
-      '.ion-scroll-progress__panel',
-    ) as HTMLElement;
+    const panel = await openPanel(canvasElement);
     const cs = getComputedStyle(panel);
 
     await expect(cs.overflowY).toBe('auto');
@@ -387,6 +402,74 @@ export const EscapeCloses: Story = {
     await waitFor(async () => {
       await expect(trigger).toHaveAttribute('aria-expanded', 'false');
       await expect(getComputedStyle(panel).visibility).toBe('hidden');
+    });
+  },
+};
+
+/**
+ * A closed panel takes no space.
+ *
+ * It used to be hidden with `visibility` alone, which still counts toward the
+ * scroll container's overflow — so a rail against the right edge of a page
+ * widened the page by however far the invisible panel reached past it (152px
+ * in the demo app). The outer box stands in for that page.
+ */
+export const ClosedPanelTakesNoSpace: Story = {
+  render: () => (
+    <div
+      data-testid="page"
+      style={{
+        position: 'relative',
+        width: '200px',
+        overflow: 'auto',
+        display: 'flex',
+        justifyContent: 'flex-end',
+      }}
+    >
+      <ScrollProgress progress={32} sections={SECTIONS} activeId="setup" />
+    </div>
+  ),
+  play: async ({ canvas, canvasElement }) => {
+    const page = canvas.getByTestId('page');
+    const panel = canvasElement.querySelector(
+      '.ion-scroll-progress__panel',
+    ) as HTMLElement;
+
+    await expect(getComputedStyle(panel).display).toBe('none');
+    await expect(page.scrollWidth).toBeLessThanOrEqual(page.clientWidth);
+  },
+};
+
+/**
+ * `placement="left"` opens the list toward the content.
+ *
+ * For a rail on the right edge of a page, where the default rightward panel
+ * would leave the screen. The panel is anchored to the rail's right edge and
+ * grows leftward from it.
+ */
+export const LeftPlacementOpensTowardTheContent: Story = {
+  render: () => (
+    <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+      <ScrollProgress
+        progress={32}
+        sections={SECTIONS}
+        activeId="setup"
+        placement="left"
+      />
+    </div>
+  ),
+  play: async ({ canvasElement }) => {
+    const root = canvasElement.querySelector(
+      '.ion-scroll-progress',
+    ) as HTMLElement;
+    const panel = await openPanel(canvasElement);
+
+    // Inside waitFor: the panel slides 4px as it opens.
+    await waitFor(async () => {
+      const rootBox = root.getBoundingClientRect();
+      const panelBox = panel.getBoundingClientRect();
+      await expect(Math.round(panelBox.right)).toBe(Math.round(rootBox.right));
+      await expect(panelBox.left).toBeLessThan(rootBox.left);
     });
   },
 };

@@ -401,17 +401,6 @@ body {
   }
 }
 
-/*
- * WORKAROUND — gap list, ionbase-ui bug. `.ion-table-container` scrolls but is
- * not a containing block, so absolutely positioned descendants (checkbox
- * inputs, `.ion-visually-hidden` text, avatar media) are placed against the
- * page and widen it: 382px of sideways scroll on a 390px phone. The real fix is
- * `position: relative` in ionbase-ui's table.css; delete this when it ships.
- */
-.ion-table-container {
-  position: relative;
-}
-
 /* ---- Phase 3: runs and assistant ---- */
 
 .demo-run-header {
@@ -479,18 +468,21 @@ body {
 
 .demo-assistant {
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1fr) auto;
   gap: var(--spacing-32);
   align-items: start;
 }
 
 .demo-assistant__thread {
-  grid-column: 2;
+  grid-row: 1;
+  grid-column: 1;
   max-width: calc(var(--container-max-width) * 0.62);
 }
 
 .demo-assistant__rail {
   position: sticky;
+  grid-row: 1;
+  grid-column: 2;
   z-index: 5;
   top: var(--spacing-80);
 }

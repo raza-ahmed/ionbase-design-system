@@ -30,7 +30,16 @@
  * assuming "MIXED" meant "top and bottom". One `border-bottom`, not a
  * 4-sided border that needs collapsing.
  */
+
+/*
+ * `position: relative` makes the scroll container a containing block. Without
+ * it, absolutely positioned content in a cell — the selection checkbox's real
+ * input, `.ion-visually-hidden` text, avatar media — is placed against the
+ * nearest positioned ancestor outside the table, escapes `overflow-x`, and
+ * widens the page: 382px of sideways scroll on a 390px phone in the demo app.
+ */
 .ion-table-container {
+  position: relative;
   width: 100%;
   overflow-x: auto;
   border: var(--border-width-default) solid var(--border-default);

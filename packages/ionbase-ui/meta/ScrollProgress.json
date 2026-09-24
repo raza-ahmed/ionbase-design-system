@@ -15,6 +15,16 @@
       "use": "NavItem"
     }
   ],
+  "variants": {
+    "placement": {
+      "right": {
+        "use": "the default — a rail on the left of the content, opening across it"
+      },
+      "left": {
+        "use": "a rail against the right edge of the page; `right` would open the list off the screen"
+      }
+    }
+  },
   "a11y": {
     "role": "disclosure — a real <button> with aria-expanded and aria-controls",
     "guarantees": [
@@ -42,6 +52,10 @@
     {
       "dont": "expecting every section to be visible at once",
       "why": "the panel caps at 60vh and scrolls — a document-length index would otherwise grow off both edges of the viewport, taking the rows nearest the active one with it"
+    },
+    {
+      "dont": "leaving `placement` at `right` for a rail on the page's right edge",
+      "why": "the open list runs past the viewport; `left` opens it back over the content"
     }
   ]
 }

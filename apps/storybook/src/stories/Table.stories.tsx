@@ -370,3 +370,57 @@ export const ScrollContainerIsKeyboardReachable: Story = {
     await expect(region.getAttribute('aria-label')).toBe('Wide invoices');
   },
 };
+
+/**
+ * The scroll container is a containing block, so nothing in a cell escapes it.
+ *
+ * Absolutely positioned content — a checkbox's real input, visually hidden
+ * text — is placed against the nearest positioned ancestor. Without
+ * `position: relative` on `.ion-table-container` that ancestor was outside
+ * the table, so the content ignored the container's `overflow-x` and widened
+ * the page instead: 382px of sideways scroll on a 390px phone in the demo app.
+ * The outer box here stands in for the page.
+ */
+export const CellContentStaysInsideTheScroller: Story = {
+  render: () => (
+    <div
+      data-testid="page"
+      style={{ position: 'relative', width: '240px', overflow: 'auto' }}
+    >
+      <Table aria-label="Wide invoices">
+        <TableHead>
+          <TableRow>
+            {['Name', 'Status', 'Amount', 'Owner', 'Due'].map((h) => (
+              <TableCell key={h} header>
+                {h}
+              </TableCell>
+            ))}
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          <TableRow>
+            <TableCell>Invoice #1024</TableCell>
+            <TableCell>Paid</TableCell>
+            <TableCell>$240.00</TableCell>
+            <TableCell>Priya Raman</TableCell>
+            <TableCell>
+              12 Oct 2026
+              <span style={{ position: 'absolute' }}>positioned</span>
+            </TableCell>
+          </TableRow>
+        </TableBody>
+      </Table>
+    </div>
+  ),
+  play: async ({ canvas, canvasElement }) => {
+    const page = canvas.getByTestId('page');
+    const scroller = canvasElement.querySelector(
+      '.ion-table-container',
+    ) as HTMLElement;
+
+    // The table is wider than the page, so the scroller really does scroll…
+    await expect(scroller.scrollWidth).toBeGreaterThan(scroller.clientWidth);
+    // …and the page around it does not.
+    await expect(page.scrollWidth).toBeLessThanOrEqual(page.clientWidth);
+  },
+};

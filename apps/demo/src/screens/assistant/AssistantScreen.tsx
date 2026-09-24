@@ -140,15 +140,15 @@ export function AssistantScreen() {
   return (
     <div className="demo-assistant">
       {/*
-       * Left of the thread, not right: ScrollProgress always opens its panel
-       * rightwards, and the closed panel still takes layout width — on the right
-       * edge it widened the page by 152px. Gap list.
+       * On the right edge, so the list opens leftward — back over the thread
+       * rather than off the screen.
        */}
       {turns.length > 1 && (
         <aside className="demo-assistant__rail" aria-label="Thread position">
           <ScrollProgress
             progress={progress}
             activeId={activeId}
+            placement="left"
             sections={turns.map((t) => ({ id: t.id, label: t.question }))}
             onSelect={(id) => {
               const el = document.getElementById(`turn-${id}`);

@@ -207,6 +207,13 @@ export interface ToastProviderProps {
   placement?: ToastPlacement;
   /** Oldest are dropped past this. Prevents an unbounded stack covering the page. */
   limit?: number;
+  /**
+   * The live region's accessible name. The region is a landmark, and landmark
+   * names must be unique on a page: an app with its own section called
+   * "Notifications" fails axe `landmark-unique` on every page that has one
+   * unless this is changed.
+   */
+  label?: string;
 }
 
 /**
@@ -220,6 +227,7 @@ export function ToastProvider({
   children,
   placement = 'bottom-right',
   limit = 4,
+  label = 'Notifications',
 }: ToastProviderProps) {
   const [items, setItems] = useState<ToastItem[]>([]);
   const counter = useRef(0);
@@ -246,7 +254,7 @@ export function ToastProvider({
       <div
         className={`ion-toast-region ion-toast-region--${placement}`}
         role="region"
-        aria-label="Notifications"
+        aria-label={label}
       >
         {items.map((item) => (
           <Toast key={item.id} {...item} onDismiss={dismiss} />

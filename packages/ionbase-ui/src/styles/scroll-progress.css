@@ -160,13 +160,24 @@
  * very percentage the reader opened the panel to act on. Keyboard users are
  * unaffected either way: the rows are real buttons in tab order, so Tab
  * scrolls each one into view without touching the wheel.
+ *
+ * CLOSED IS `display: none`, NOT ONLY INVISIBLE
+ *
+ * `visibility: hidden` removes the panel from sight and from tab order, but a
+ * hidden box still counts toward its scroll container's overflow. A rail near
+ * the right edge of a page therefore widened the page by however far the
+ * closed panel reached past it — 152px in the demo app — and a phone scrolled
+ * sideways into empty space. `display: none` takes it out of layout entirely.
+ * The reveal survives: `transition-behavior: allow-discrete` holds `display`
+ * until the fade-out finishes, and `@starting-style` gives the fade-in a
+ * starting point. A browser without either simply shows and hides it without
+ * the fade. `visibility` stays in the transition for the same browsers.
  */
 .ion-scroll-progress__panel {
   position: absolute;
-  left: 0;
   top: 50%;
   z-index: 10;
-  display: flex;
+  display: none;
   flex-direction: column;
   gap: var(--spacing-4);
   width: 220px;
@@ -181,18 +192,45 @@
   opacity: 0;
   visibility: hidden;
   pointer-events: none;
-  transform: translateY(-50%) translateX(-4px);
+  transform: translateY(-50%) translateX(var(--ion-scroll-progress-slide));
   transition:
     opacity var(--ion-duration-base) var(--ion-ease-out),
     transform var(--ion-duration-base) var(--ion-ease-out),
-    visibility var(--ion-duration-base);
+    visibility var(--ion-duration-base),
+    display var(--ion-duration-base) allow-discrete;
+}
+
+/*
+ * Placement picks the edge the panel is anchored to and the direction it
+ * slides in from — always from the rail outward. `right` is the original
+ * behaviour; `left` is for a rail against the right edge of the page, where a
+ * rightward panel would leave the screen.
+ */
+.ion-scroll-progress__panel--right {
+  --ion-scroll-progress-slide: -4px;
+
+  left: 0;
+}
+
+.ion-scroll-progress__panel--left {
+  --ion-scroll-progress-slide: 4px;
+
+  right: 0;
 }
 
 .ion-scroll-progress__panel[data-open='true'] {
+  display: flex;
   opacity: 1;
   visibility: visible;
   pointer-events: auto;
   transform: translateY(-50%) translateX(0);
+}
+
+@starting-style {
+  .ion-scroll-progress__panel[data-open='true'] {
+    opacity: 0;
+    transform: translateY(-50%) translateX(var(--ion-scroll-progress-slide));
+  }
 }
 
 /*
