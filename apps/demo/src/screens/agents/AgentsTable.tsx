@@ -14,6 +14,7 @@ import {
   TableCell,
   TableHead,
   TableRow,
+  type TableSortProps,
 } from 'ionbase-ui';
 import { Ellipsis } from 'ionbase-icons/icons/ellipsis';
 import { Pause } from 'ionbase-icons/icons/pause';
@@ -24,6 +25,7 @@ import {
   STATUS_LABEL,
   TEAMS,
   type Agent,
+  type AgentSortColumn,
   type AgentStatus,
 } from '../../data/agents';
 import { formatDay } from '../../lib/dates';
@@ -42,15 +44,49 @@ const STATUS_INTENT: Record<
 const teamLabel = (value: string) =>
   TEAMS.find((t) => t.value === value)?.label ?? value;
 
-const COLUMNS = [
-  'Agent',
-  'Status',
-  'Team',
-  'Owner',
-  'Runs (7d)',
-  'Success',
-  'Last run',
+/** `sortProps` from `useTableSort`, wrapped by the screen to re-query. */
+export type HeaderSort = (
+  column: AgentSortColumn,
+  options?: { firstDirection?: 'ascending' | 'descending' },
+) => TableSortProps;
+
+/*
+ * Which columns sort, and which way each starts: runs and last run newest or
+ * largest first, success lowest first — the failing agents are what someone
+ * sorting by success is looking for.
+ */
+const COLUMNS: {
+  label: string;
+  align?: 'trailing';
+  sort?: AgentSortColumn;
+  first?: 'ascending' | 'descending';
+}[] = [
+  { label: 'Agent', sort: 'name' },
+  { label: 'Status' },
+  { label: 'Team' },
+  { label: 'Owner' },
+  {
+    label: 'Runs (7d)',
+    align: 'trailing',
+    sort: 'runs7d',
+    first: 'descending',
+  },
+  { label: 'Success', align: 'trailing', sort: 'successRate' },
+  { label: 'Last run', sort: 'lastRun', first: 'descending' },
 ];
+
+function ColumnHeaders({ sortProps }: { sortProps: HeaderSort }) {
+  return COLUMNS.map((c) => (
+    <TableCell
+      key={c.label}
+      header
+      align={c.align}
+      {...(c.sort && sortProps(c.sort, { firstDirection: c.first }))}
+    >
+      {c.label}
+    </TableCell>
+  ));
+}
 
 /** A metric the partial state failed to load: a dash to see, a word to hear. */
 function Missing() {
@@ -64,12 +100,14 @@ function Missing() {
 
 export function AgentsTable({
   rows,
+  sortProps,
   selected,
   onSelectedChange,
   onPause,
   onDelete,
 }: {
   rows: Agent[];
+  sortProps: HeaderSort;
   selected: ReadonlySet<string>;
   onSelectedChange: (next: ReadonlySet<string>) => void;
   onPause: (agent: Agent, paused: boolean) => void;
@@ -97,15 +135,7 @@ export function AgentsTable({
               onSelectedChange(new Set(on ? rows.map((a) => a.id) : [])),
           }}
         >
-          {COLUMNS.map((c, i) => (
-            <TableCell
-              key={c}
-              header
-              align={i >= 4 && i <= 5 ? 'trailing' : undefined}
-            >
-              {c}
-            </TableCell>
-          ))}
+          <ColumnHeaders sortProps={sortProps} />
           <TableCell header>
             <span className="ion-visually-hidden">Actions</span>
           </TableCell>
@@ -235,7 +265,13 @@ const SKELETON_WIDTH: Record<string, string> = {
   Team: 'var(--spacing-80)',
 };
 
-export function AgentsTableSkeleton({ rows }: { rows: number }) {
+export function AgentsTableSkeleton({
+  rows,
+  sortProps,
+}: {
+  rows: number;
+  sortProps: HeaderSort;
+}) {
   return (
     <div aria-busy="true">
       <p className="ion-visually-hidden" role="status">
@@ -247,11 +283,9 @@ export function AgentsTableSkeleton({ rows }: { rows: number }) {
             <TableCell header>
               <span className="ion-visually-hidden">Select</span>
             </TableCell>
-            {COLUMNS.map((c) => (
-              <TableCell key={c} header>
-                {c}
-              </TableCell>
-            ))}
+            {/* The real headers, sort state and all, so nothing moves when
+                the rows arrive. */}
+            <ColumnHeaders sortProps={sortProps} />
             <TableCell header>
               <span className="ion-visually-hidden">Actions</span>
             </TableCell>
@@ -268,10 +302,10 @@ export function AgentsTableSkeleton({ rows }: { rows: number }) {
                 />
               </TableCell>
               {COLUMNS.map((c) => (
-                <TableCell key={c}>
+                <TableCell key={c.label}>
                   <Skeleton
                     variant="text"
-                    width={SKELETON_WIDTH[c] ?? 'var(--spacing-48)'}
+                    width={SKELETON_WIDTH[c.label] ?? 'var(--spacing-48)'}
                   />
                 </TableCell>
               ))}

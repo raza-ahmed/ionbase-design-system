@@ -90,6 +90,11 @@ body {
 
 .demo-page {
   display: grid;
+
+  /* minmax(0, …), not 1fr: a plain 1fr track never shrinks below its widest
+     child's content, so one wide table — the Agents skeleton, whose sort
+     headers do not wrap — pushed the whole page sideways on a phone. */
+  grid-template-columns: minmax(0, 1fr);
   gap: var(--spacing-20);
 }
 

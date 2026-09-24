@@ -8,6 +8,7 @@ import {
   Link,
   Pagination,
   Select,
+  useTableSort,
   useToast,
 } from 'ionbase-ui';
 import { Pause } from 'ionbase-icons/icons/pause';
@@ -20,6 +21,7 @@ import {
   setPaused,
   TEAMS,
   type Agent,
+  type AgentSortColumn,
   type AgentStatus,
   type DeleteResult,
 } from '../../data/agents';
@@ -27,7 +29,11 @@ import { useDemoSettings } from '../../lib/demo-settings';
 import { href } from '../../lib/router';
 import { useDebounced } from '../../lib/use-debounced';
 import { useResource } from '../../lib/use-resource';
-import { AgentsTable, AgentsTableSkeleton } from './AgentsTable';
+import {
+  AgentsTable,
+  AgentsTableSkeleton,
+  type HeaderSort,
+} from './AgentsTable';
 import { DeleteAgentsModal } from './DeleteAgentsModal';
 
 const STATUS_OPTIONS = [
@@ -57,10 +63,16 @@ export function AgentsScreen() {
   const [toDelete, setToDelete] = useState<Agent[] | null>(null);
   const [notice, setNotice] = useState<DeleteResult | null>(null);
 
+  const { sort, sortProps } = useTableSort<AgentSortColumn>({
+    column: 'name',
+    direction: 'ascending',
+  });
+
   const query = {
     search: useDebounced(search),
     status,
     team: team || null,
+    sort: sort ?? { column: 'name' as const, direction: 'ascending' as const },
     page,
     pageSize,
   };
@@ -76,6 +88,11 @@ export function AgentsScreen() {
     apply();
     setPage(1);
     setSelected(new Set());
+  };
+  // A new order is a new listing: back to page 1, selection dropped.
+  const headerSort: HeaderSort = (column, options) => {
+    const props = sortProps(column, options);
+    return { ...props, onSort: () => requery(props.onSort) };
   };
   const filtered = search !== '' || status !== 'all' || team !== '';
   const clearFilters = () =>
@@ -215,7 +232,9 @@ export function AgentsScreen() {
         {announcement}
       </p>
 
-      {result.status === 'loading' && <AgentsTableSkeleton rows={pageSize} />}
+      {result.status === 'loading' && (
+        <AgentsTableSkeleton rows={pageSize} sortProps={headerSort} />
+      )}
 
       {result.status === 'error' && (
         <Alert
@@ -286,6 +305,7 @@ export function AgentsScreen() {
           )}
           <AgentsTable
             rows={rows}
+            sortProps={headerSort}
             selected={selected}
             onSelectedChange={setSelected}
             onPause={(a, paused) => void pause([a], paused)}

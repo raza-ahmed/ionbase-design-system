@@ -1785,6 +1785,18 @@
         }
       }
     },
+    "Table Sort Indicator": {
+      "page": "Table",
+      "id": "1444:761",
+      "kind": "SET",
+      "props": {
+        "Direction": {
+          "type": "VARIANT",
+          "options": ["None", "Ascending", "Descending"],
+          "default": "None"
+        }
+      }
+    },
     "Table/Cell Text": {
       "page": "Table",
       "id": "173:61",

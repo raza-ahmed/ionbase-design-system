@@ -99,7 +99,14 @@ export type {
   TableCellProps,
   TableCellAlign,
   TableCellScope,
+  TableSortDirection,
 } from './Table.js';
+export { useTableSort } from './use-table-sort.js';
+export type {
+  TableSort,
+  TableSortProps,
+  UseTableSortResult,
+} from './use-table-sort.js';
 export { ScrollProgress } from './ScrollProgress.js';
 export type {
   ScrollProgressProps,

@@ -187,6 +187,57 @@
   color: var(--icon-secondary);
 }
 
+/*
+ * Sortable headers — `sortDirection` on a header TableCell, Figma's
+ * `Table Sort Indicator` in the Cell Text trailing slot.
+ *
+ * The label is a real button inside the <th>, reset to read as header text:
+ * same weight, same `text/secondary`, no chrome. It darkens to `text/default`
+ * on hover and when it is the sorted column, so the current sort reads from
+ * the label as well as the arrow. The unsorted indicator stays
+ * `icon/tertiary`: present enough to say "this sorts", quiet enough that a
+ * row of them is not noise.
+ */
+.ion-table__sort {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-xs);
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: inherit;
+
+  /* The arrow beside a two-line label reads as belonging to one line of it.
+     The table scrolls sideways before it squeezes a header this far. */
+  white-space: nowrap;
+  cursor: pointer;
+  transition: color var(--ion-duration-base) var(--ion-ease-out);
+}
+
+@media (hover: hover) {
+  .ion-table__sort:hover {
+    color: var(--text-default);
+  }
+}
+
+.ion-table__sort:focus-visible {
+  outline: var(--border-width-thick) solid var(--ring-focus);
+  outline-offset: 2px;
+}
+
+.ion-table__sort--active {
+  color: var(--text-default);
+}
+
+.ion-table th .ion-table__sort-icon {
+  color: var(--icon-tertiary);
+}
+
+.ion-table th .ion-table__sort--active .ion-table__sort-icon {
+  color: var(--icon-default);
+}
+
 /* Link cells — Figma's `Type=Link`. */
 .ion-table__cell-content--link {
   color: var(--text-link);
