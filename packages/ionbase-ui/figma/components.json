@@ -10,7 +10,7 @@
     "Do not hand-edit. Re-export when the Figma components change."
   ],
   "file": "gaLbGd0QNb1fUl6BjSpfBA",
-  "exported": "2026-09-16",
+  "exported": "2026-09-24",
   "components": {
     ".Status Indicator": {
       "page": "Avatar",
@@ -420,6 +420,59 @@
         }
       }
     },
+    "Calendar": {
+      "page": "Date Picker",
+      "id": "1395:1102",
+      "kind": "SET",
+      "props": {
+        "Mode": {
+          "type": "VARIANT",
+          "options": ["Single", "Range"],
+          "default": "Single"
+        },
+        "Months": {
+          "type": "VARIANT",
+          "options": ["One", "Two"],
+          "default": "One"
+        },
+        "Show Clear#1395:29": {
+          "type": "BOOLEAN"
+        },
+        "Show Presets#1395:24": {
+          "type": "BOOLEAN"
+        }
+      }
+    },
+    "Calendar Day": {
+      "page": "Date Picker",
+      "id": "1395:318",
+      "kind": "SET",
+      "props": {
+        "Day#1395:0": {
+          "type": "TEXT"
+        },
+        "Focused#1395:12": {
+          "type": "BOOLEAN"
+        },
+        "State": {
+          "type": "VARIANT",
+          "options": [
+            "Default",
+            "Hover",
+            "Today",
+            "Selected",
+            "Selected Today",
+            "Disabled",
+            "Unavailable",
+            "In Range",
+            "In Range Hover",
+            "Range Start",
+            "Range End"
+          ],
+          "default": "Default"
+        }
+      }
+    },
     "Checkbox": {
       "page": "Checkbox",
       "id": "87:350",
@@ -551,6 +604,36 @@
           "type": "VARIANT",
           "options": ["Low", "Medium", "High"],
           "default": "Low"
+        }
+      }
+    },
+    "Date Picker": {
+      "page": "Date Picker",
+      "id": "1394:536",
+      "kind": "SET",
+      "props": {
+        "Size": {
+          "type": "VARIANT",
+          "options": ["Small", "Medium", "Large"],
+          "default": "Small"
+        },
+        "State": {
+          "type": "VARIANT",
+          "options": [
+            "Default",
+            "Hover",
+            "Focus",
+            "Filled",
+            "Invalid",
+            "Disabled",
+            "Read-only"
+          ],
+          "default": "Default"
+        },
+        "Type": {
+          "type": "VARIANT",
+          "options": ["Single", "Range"],
+          "default": "Single"
         }
       }
     },
@@ -994,6 +1077,37 @@
         }
       }
     },
+    "Number Input": {
+      "page": "Number Input",
+      "id": "1389:473",
+      "kind": "SET",
+      "props": {
+        "Size": {
+          "type": "VARIANT",
+          "options": ["Small", "Medium", "Large"],
+          "default": "Small"
+        },
+        "State": {
+          "type": "VARIANT",
+          "options": [
+            "Default",
+            "Hover",
+            "Focus",
+            "Filled",
+            "Invalid",
+            "Disabled",
+            "Read-only"
+          ],
+          "default": "Default"
+        },
+        "Stepper#1389:0": {
+          "type": "BOOLEAN"
+        },
+        "Value#1389:22": {
+          "type": "TEXT"
+        }
+      }
+    },
     "Pagination": {
       "page": "Pagination",
       "id": "1291:503",
@@ -1139,6 +1253,29 @@
         }
       }
     },
+    "Prompt Input": {
+      "page": "Prompt Input",
+      "id": "1393:387",
+      "kind": "SET",
+      "props": {
+        "Running": {
+          "type": "VARIANT",
+          "options": ["False", "True"],
+          "default": "False"
+        },
+        "Show Actions#1393:11": {
+          "type": "BOOLEAN"
+        },
+        "State": {
+          "type": "VARIANT",
+          "options": ["Default", "Hover", "Focus", "Filled", "Disabled"],
+          "default": "Default"
+        },
+        "Value#1393:0": {
+          "type": "TEXT"
+        }
+      }
+    },
     "Radio": {
       "page": "Radio",
       "id": "89:314",
@@ -1176,6 +1313,59 @@
       "kind": "COMPONENT",
       "props": {}
     },
+    "Segmented Control": {
+      "page": "Segmented Control",
+      "id": "1390:435",
+      "kind": "SET",
+      "props": {
+        "Full Width": {
+          "type": "VARIANT",
+          "options": ["False", "True"],
+          "default": "False"
+        },
+        "Size": {
+          "type": "VARIANT",
+          "options": ["Small", "Medium", "Large"],
+          "default": "Small"
+        }
+      }
+    },
+    "Segmented Control Item": {
+      "page": "Segmented Control",
+      "id": "1390:332",
+      "kind": "SET",
+      "props": {
+        "Focused#1390:57": {
+          "type": "BOOLEAN"
+        },
+        "Icon#1390:38": {
+          "type": "INSTANCE_SWAP"
+        },
+        "Label#1390:0": {
+          "type": "TEXT"
+        },
+        "Show Icon#1390:19": {
+          "type": "BOOLEAN"
+        },
+        "Size": {
+          "type": "VARIANT",
+          "options": ["Small", "Medium", "Large"],
+          "default": "Small"
+        },
+        "State": {
+          "type": "VARIANT",
+          "options": [
+            "Default",
+            "Hover",
+            "Selected",
+            "Selected-Hover",
+            "Disabled",
+            "Selected-Disabled"
+          ],
+          "default": "Default"
+        }
+      }
+    },
     "Select": {
       "page": "Select",
       "id": "82:379",
@@ -1199,6 +1389,86 @@
           "default": "Default"
         },
         "Value#82:18": {
+          "type": "TEXT"
+        }
+      }
+    },
+    "Sidebar": {
+      "page": "Sidebar",
+      "id": "1396:502",
+      "kind": "COMPONENT",
+      "props": {
+        "Show Footer#1396:106": {
+          "type": "BOOLEAN"
+        },
+        "Show Header#1396:105": {
+          "type": "BOOLEAN"
+        }
+      }
+    },
+    "Sidebar Item": {
+      "page": "Sidebar",
+      "id": "1396:412",
+      "kind": "SET",
+      "props": {
+        "Actions Visible#1396:80": {
+          "type": "BOOLEAN"
+        },
+        "Badge#1396:64": {
+          "type": "TEXT"
+        },
+        "Expanded": {
+          "type": "VARIANT",
+          "options": ["False", "True"],
+          "default": "False"
+        },
+        "Has Children": {
+          "type": "VARIANT",
+          "options": ["False", "True"],
+          "default": "False"
+        },
+        "Icon#1396:32": {
+          "type": "INSTANCE_SWAP"
+        },
+        "Label#1396:0": {
+          "type": "TEXT"
+        },
+        "Show Badge#1396:48": {
+          "type": "BOOLEAN"
+        },
+        "Show Icon#1396:16": {
+          "type": "BOOLEAN"
+        },
+        "State": {
+          "type": "VARIANT",
+          "options": [
+            "Default",
+            "Hover",
+            "Current",
+            "Current-Hover",
+            "Disabled"
+          ],
+          "default": "Default"
+        }
+      }
+    },
+    "Sidebar Section": {
+      "page": "Sidebar",
+      "id": "1396:501",
+      "kind": "SET",
+      "props": {
+        "Collapsed": {
+          "type": "VARIANT",
+          "options": ["False", "True"],
+          "default": "False"
+        },
+        "Collapsible#1396:99": {
+          "type": "BOOLEAN"
+        },
+        "Show Actions#1396:102": {
+          "type": "BOOLEAN"
+        },
+        "Title#1396:96": {
           "type": "TEXT"
         }
       }
@@ -1230,6 +1500,55 @@
           "type": "VARIANT",
           "options": ["Medium", "Small", "Large"],
           "default": "Medium"
+        }
+      }
+    },
+    "Stepper": {
+      "page": "Stepper",
+      "id": "1391:431",
+      "kind": "SET",
+      "props": {
+        "Orientation": {
+          "type": "VARIANT",
+          "options": ["Horizontal", "Vertical"],
+          "default": "Horizontal"
+        }
+      }
+    },
+    "Stepper Step": {
+      "page": "Stepper",
+      "id": "1391:356",
+      "kind": "SET",
+      "props": {
+        "Current": {
+          "type": "VARIANT",
+          "options": ["False", "True"],
+          "default": "False"
+        },
+        "Description#1391:13": {
+          "type": "TEXT"
+        },
+        "Label#1391:0": {
+          "type": "TEXT"
+        },
+        "Number#1391:39": {
+          "type": "TEXT"
+        },
+        "Orientation": {
+          "type": "VARIANT",
+          "options": ["Horizontal", "Vertical"],
+          "default": "Horizontal"
+        },
+        "Show Connector#1391:52": {
+          "type": "BOOLEAN"
+        },
+        "Show Description#1391:26": {
+          "type": "BOOLEAN"
+        },
+        "Status": {
+          "type": "VARIANT",
+          "options": ["Incomplete", "Complete", "Error"],
+          "default": "Incomplete"
         }
       }
     },
@@ -1397,9 +1716,6 @@
       "id": "1301:334",
       "kind": "SET",
       "props": {
-        "Value#1301:0": {
-          "type": "TEXT"
-        },
         "Size": {
           "type": "VARIANT",
           "options": ["Small", "Medium", "Large"],
@@ -1417,6 +1733,9 @@
             "Read-only"
           ],
           "default": "Default"
+        },
+        "Value#1301:0": {
+          "type": "TEXT"
         }
       }
     },
@@ -1485,6 +1804,44 @@
           "type": "VARIANT",
           "options": ["Off", "On"],
           "default": "Off"
+        }
+      }
+    },
+    "Tool Call": {
+      "page": "Tool Call",
+      "id": "1392:391",
+      "kind": "SET",
+      "props": {
+        "Duration#1392:33": {
+          "type": "TEXT"
+        },
+        "Error Message#1392:66": {
+          "type": "TEXT"
+        },
+        "Expanded": {
+          "type": "VARIANT",
+          "options": ["False", "True"],
+          "default": "False"
+        },
+        "Has Details#1392:55": {
+          "type": "BOOLEAN"
+        },
+        "Name#1392:11": {
+          "type": "TEXT"
+        },
+        "Show Duration#1392:44": {
+          "type": "BOOLEAN"
+        },
+        "Show Name#1392:22": {
+          "type": "BOOLEAN"
+        },
+        "Status": {
+          "type": "VARIANT",
+          "options": ["Pending", "Active", "Done", "Failed", "Skipped"],
+          "default": "Pending"
+        },
+        "Title#1392:0": {
+          "type": "TEXT"
         }
       }
     },

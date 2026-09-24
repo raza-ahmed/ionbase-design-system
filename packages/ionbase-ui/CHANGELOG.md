@@ -1,5 +1,55 @@
 # Changelog
 
+## 0.69.0 — 2026-09-24
+
+### Added — everything built since 0.59.0 is drawn in Figma
+
+Twelve React components had no Figma counterpart. They now have thirteen Figma
+sets between them, and `codeUnmapped` is back to its eight permanent entries
+plus `DateRangePicker`, which is drawn but reached through Date Picker's `Type`
+axis rather than a set of its own — a Figma set maps to exactly one code
+component, and a second set would draw the same box twice.
+
+| Figma                                          | Variants                              | React                                         |
+| ---------------------------------------------- | ------------------------------------- | --------------------------------------------- |
+| `Number Input`                                 | 3 sizes x 7 states                    | `NumberInput`                                 |
+| `Segmented Control` / `Segmented Control Item` | 3 sizes x full width / 6 states       | `SegmentedControl` / `SegmentedControlItem`   |
+| `Stepper` / `Stepper Step`                     | 2 orientations / 3 statuses x current | `Stepper` / `StepperStep`                     |
+| `Tool Call`                                    | 5 statuses x expanded                 | `ToolCall`                                    |
+| `Prompt Input`                                 | 5 states x running                    | `PromptInput`                                 |
+| `Date Picker` / `Calendar` / `Calendar Day`    | 42 / 4 / 11                           | `DatePicker`, `DateRangePicker` / none / none |
+| `Sidebar` / `Sidebar Section` / `Sidebar Item` | 1 / collapsed / 15                    | `Sidebar` / `SidebarSection` / `SidebarItem`  |
+
+**Drawn from the code, and composed from what was already drawn.** Number Input
+and the Date Picker field are Input's twenty-one variants cloned, so every
+binding is Input's. Prompt Input places the real Icon Button and Agent Stop
+rather than redrawing them. Tool Call reuses Agent Activity's glyphs. The
+stylesheet headers now say "Drawn in Figma as…", and the direction decides
+which side wins the next time the two disagree.
+
+**Axes drawn on one side and owned on the other**, as the mapping records:
+Segmented Control Item folds selection into `State` the way Tabs Item does, but
+the value belongs to the parent; Stepper Step carries `Orientation` only
+because the connector's geometry differs; Sidebar Section's `Collapsed` is
+`isExpanded` inverted. `Calendar` and `Calendar Day` are `unmapped` — internal
+to both pickers, the way Combobox Menu is internal to Combobox.
+
+### Fixed
+
+- `Avatar` and `Badge` had shown Dev Mode snippets from 0.22.0 — no `ring`, no
+  indicators, no Badge `size` or `shape` — through every release since. The
+  applied-descriptions gate hashes what the build generates, not what Figma
+  holds, so a countersign that checked only for the presence of a block stayed
+  green over a stale one. Both re-applied; every block was then read back from
+  the file and hashed before countersigning. `AGENTS.md` now says to do that.
+- `figma/components.json` listed Textarea's properties out of the exporter's
+  sorted order — a hand edit the re-export has reverted.
+- `AGENTS.md` still said `codeUnmapped` held "eight, all permanent" while twelve
+  undrawn components sat in it — the fourth time that paragraph has gone stale.
+
+Figma map: 62 mapped, 12 unmapped, 9 codeUnmapped, 290 properties checked both
+directions, 0 errors. 62 description blocks applied and countersigned.
+
 ## 0.68.0 — 2026-09-19
 
 Two gaps the demo app logged against the system while it was rebuilt as a

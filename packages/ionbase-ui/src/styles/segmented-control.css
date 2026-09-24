@@ -1,7 +1,8 @@
 /*
  * SegmentedControl
  *
- * NOT DRAWN IN FIGMA. It is Tabs' pill track, token for token: the muted
+ * Drawn in Figma as `Segmented Control` (1390:435) and `Segmented Control
+ * Item` (1390:332), from this file. It is Tabs' pill track, token for token: the muted
  * track, the 2px gap, the default-surface selected segment, the page-surface
  * selected hover, and the overall height ladder (32/40/48, 12/16/20 padding). Two
  * components that look identical must not drift into looking almost

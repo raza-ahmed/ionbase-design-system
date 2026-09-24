@@ -1,7 +1,8 @@
 /*
  * Sidebar
  *
- * NOT DRAWN IN FIGMA. Rows take Menu Item's rhythm — 32px, 8px inset, `md`
+ * Drawn in Figma as `Sidebar` (1396:502), `Sidebar Section` (1396:501) and
+ * `Sidebar Item` (1396:412), from this file. Rows take Menu Item's rhythm — 32px, 8px inset, `md`
  * radius — because a sidebar row and a menu row are the same density of
  * choice. The column is `surface/default` against the page's `surface/page`,
  * the same step a card takes. Hover and current are fills (`surface/hover`,
