@@ -31,7 +31,13 @@ moves away from the ground and is distinct from the last.
   `palette/8` (yellow) added. 462 → 490 variables.
 - Figma: new **Chart Colours** page with both modes side by side.
 - `llms.txt`: a "Drawing a chart?" section, so an agent colours a chart from
-  the tokens instead of picking hex.
+  the tokens instead of picking hex — including how to bin a wide range into
+  the five steps (GitHub's graph uses four) and how to blend them with
+  `color-mix()` when a scale really is continuous.
+- Storybook: **Foundations/Chart colours** — the palette, a GitHub-style
+  contribution graph binned by rank, and a continuous `color-mix()` strip, with
+  tests that every level is drawn, a bigger day is never lighter, and the ramp
+  turns round in Dark.
 
 ## 0.72.0 — 2026-09-24
 

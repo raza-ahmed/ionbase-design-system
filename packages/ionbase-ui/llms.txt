@@ -27,6 +27,8 @@ There is no chart component — use your charting library, and colour it from th
 
 - `--chart-1` … `--chart-8` — categorical series, in order. Each clears 3:1 against `--surface-default`, `--surface-page` and `--surface-raised` in Light and Dark. Set them as CSS `fill` / `stroke`, not SVG attributes, which do not reliably resolve `var()`.
 - `--chart-sequential-1` … `--chart-sequential-5` — one hue, low to high, for magnitude (a heatmap). Use `--surface-sunken` for zero. Do not fake a ramp with opacity: it reads differently on every ground.
+- **Bin a wide range into the five steps; do not ask for more.** Like GitHub's contribution graph (four steps and empty): zero is its own level, and the non-zero values split into five equal groups by rank, each cut the top of its group — rank, so one outlier does not flatten the rest. Past five to seven steps of one hue, readers cannot tell neighbours apart.
+- **Continuous scale?** Blend neighbouring steps in CSS, which still themes: `color-mix(in oklab, var(--chart-sequential-2) 60%, var(--chart-sequential-3))`. A JS colour scale cannot read `var()`. Pair it with a labelled axis or tooltip.
 
 ## Coming from a Figma design?
 
