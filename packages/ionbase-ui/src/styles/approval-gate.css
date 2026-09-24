@@ -1,9 +1,10 @@
 /*
  * ApprovalGate
  *
- * NOT DRAWN IN FIGMA. Structure is Alert's — icon rail, body, one variable per
- * colour slot — so that when Figma draws it, this file needs values changed
- * rather than rewriting. The action row borrows Button's ramp.
+ * Drawn in Figma as `Approval Gate` (1160:423), Risk × Status. Structure is
+ * Alert's — icon rail, body, one variable per colour slot — which is why
+ * drawing it needed values checked here rather than a rewrite. The action row
+ * borrows Button's ramp.
  *
  * RISK CHANGES EMPHASIS, NOT MEANING
  *

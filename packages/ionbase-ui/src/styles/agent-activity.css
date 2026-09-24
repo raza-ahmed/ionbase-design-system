@@ -1,8 +1,10 @@
 /*
  * AgentActivity
  *
- * NOT DRAWN IN FIGMA. The rail-and-body layout is Alert's, one step down in
- * scale; colours are the status roles used everywhere else in the system.
+ * Drawn in Figma as `Agent Activity` (1162:246) and `Agent Activity Step`
+ * (1161:287), Status × Show Detail. The rail-and-body layout is Alert's, one
+ * step down in scale; colours are the status roles used everywhere else in
+ * the system.
  */
 .ion-agent-activity {
   display: flex;

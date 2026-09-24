@@ -1,8 +1,9 @@
 /*
  * StreamingText
  *
- * NOT DRAWN IN FIGMA. Type and rhythm come from the body tokens, so this is
- * ordinary prose that happens to be arriving late.
+ * Drawn in Figma as `Streaming Text` (1164:248), with a Streaming axis for the
+ * cursor. Type and rhythm come from the body tokens, so this is ordinary prose
+ * that happens to be arriving late.
  */
 .ion-streaming-text {
   color: var(--text-default);

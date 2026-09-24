@@ -1,8 +1,8 @@
 /*
  * ConfidenceIndicator
  *
- * NOT DRAWN IN FIGMA. Three bars and a line of text; the colours are the
- * system's status roles.
+ * Drawn in Figma as `Confidence Indicator` (1166:262), by Level. Three bars and
+ * a line of text; the colours are the system's status roles.
  *
  * THE BARS ARE THE SECOND SIGNAL, NOT THE FIRST. The count of filled bars
  * carries the level, so it reads in greyscale and in forced-colours mode; the
