@@ -30,7 +30,7 @@
 - [x] **Fieldset / CheckboxGroup** — `RadioGroup` moved onto the same shell — 0.86.0
 - [x] **MultiSelect** — the Agents table's Teams filter — 0.87.0
 - [x] **Toolbar** — the Agents table's bulk actions — 0.88.0
-- [ ] **Table: row selection and batch actions** — select-all, indeterminate, batch bar, count announced. _needs Toolbar_
+- [x] **Table: row selection and batch actions** — `useTableSelection` and `TableBatchBar`; select-all across pages as "all except" — 0.89.0
 - [ ] **Toggletip**
 - [ ] **Slider** — single and range
 - [ ] **TreeView**

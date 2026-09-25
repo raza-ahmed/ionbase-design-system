@@ -1,5 +1,88 @@
 # Changelog
 
+## 0.89.0 — 2026-09-25
+
+### Added — `useTableSelection` and `TableBatchBar`
+
+Selecting table rows and acting on them together. The DataTable pattern used
+to leave all of it to the caller, and the demo hand-wired the header's three
+states itself. This is the eighth item on the enterprise checklist.
+
+- **`useTableSelection({ total })`** holds which rows are selected, in one of
+  two forms:
+  - **`keys`:** the rows ticked, which can be on several pages.
+  - **`all`:** every matching row except `except`. "Every row that matches"
+    can't be a list of keys, because rows on pages never loaded have none,
+    so the caller sends the server "all matching these filters, except
+    these".
+- **It returns the checkbox props for the header and each row**:
+  - `headSelection(pageKeys, label)` gives the header's three states. A
+    partly ticked header ticks the whole page when pressed, and is disabled
+    on an empty page.
+  - `rowSelection(key, label)` and `isSelected(key)` cover each row.
+- **The header checkbox selects only the page on screen.** Rows you can't see
+  take a separate "Select all N" press, the same two steps Gmail, Carbon and
+  Lightning use. One tick must never reach thousands of rows nobody has seen.
+- **Unticking every row after "Select all" gives an empty selection.** It
+  does not become "all except every row". Otherwise a row arriving later
+  would come in already ticked, and a bulk delete would reach a row nobody
+  chose. A test adds a row to check this.
+- **`TableBatchBar`** shows the count, "Select all N" (whenever fewer than
+  all matching rows are selected), the bulk actions and "Clear selection".
+  - **Always mounted.** The count is a `role="status"` live region, and a
+    live region added along with its first message is silent in most screen
+    readers. So the bar stays in the page, hidden at zero, and the first tick
+    is announced as "1 selected".
+  - **The actions are a Toolbar** named "Actions for N selected rows".
+  - **Clear selection** puts focus back on the table's select-all checkbox
+    (pass `tableId`), since the bar and the button just pressed disappear.
+  - **Numbers use `Intl.NumberFormat`** in the user's locale, and every
+    string can be replaced through `labels`.
+  - It uses the selected row's tint (`surface/primary-subtle`) and is 40px
+    tall.
+- **Fixed during testing:** the bar first stopped offering "Select all" once
+  every row had been selected, even after one was unticked. The test caught
+  it. The offer now appears whenever fewer than all matching rows are
+  selected.
+
+### Figma
+
+- **New Table Batch Bar component** (1523:753) on the Table page, built from
+  a Toolbar instance and Tertiary Buttons. It has a Count property and a Show
+  Select All switch.
+- **Mapped, and all 81 Dev Mode blocks verified.**
+
+### Patterns
+
+- **DataTable** puts a TableBatchBar between the filters and the table, and
+  holds the selection in `useTableSelection`.
+  - The selection clears when the filters, sort or page size change, but not
+    when the page changes.
+  - Two new anti-patterns: a header checkbox that selects every page, and
+    sending an "all matching" selection as a list of ids.
+
+### Demo
+
+- **The Agents table** uses `useTableSelection` and `TableBatchBar` instead of
+  its own `Set`.
+  - A selection now survives a page change.
+  - "Select all N agents" reaches every match.
+  - Pause and Delete act on every matching agent, fetching the ones not yet
+    seen and leaving out any that were unticked.
+- **The smoke test** now also checks that:
+  - the count reads "1 selected";
+  - the header offers "Select all N agents", which ends at "All N agents
+    selected";
+  - every row on page 2 is ticked;
+  - Clear selection returns focus to the header checkbox.
+
+  I confirmed it fails when focus isn't returned.
+
+- **Demo coverage** now counts a component that another component renders as
+  a documented part of itself. TableBatchBar's actions are a Toolbar, which is
+  how Toolbar is meant to be used. A Toolbar added to a page header just to
+  pass the check would go against Toolbar's own contract.
+
 ## 0.88.0 — 2026-09-25
 
 ### Added — `Toolbar`

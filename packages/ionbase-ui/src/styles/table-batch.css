@@ -1,0 +1,61 @@
+/*
+ * TableBatchBar
+ *
+ * Drawn in Figma as `Table Batch Bar` on the Table page. The bar sits above
+ * the table, in the selected row's tint — `surface/primary-subtle`, the same
+ * fill `.ion-table__row[data-selected]` uses — so it reads as belonging to
+ * the ticked rows rather than as another toolbar.
+ *
+ *   count      body-sm, medium, text/default, 12 from the bar's leading edge
+ *   actions    a Toolbar, Small buttons 8 apart
+ *   clear      tertiary, pushed to the trailing edge
+ *   height     hugs a Small button with 4 above and below — 40
+ *
+ * AT ZERO IT IS HIDDEN, NOT GONE
+ *
+ * The count is a live region that must already be in the page before its
+ * first message — see TableBatchBar.tsx. With nothing selected the bar keeps
+ * only that empty status, clipped to nothing the same way
+ * `.ion-visually-hidden` clips, so it takes no space and draws no tint.
+ */
+.ion-table-batch {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--spacing-8);
+  min-width: 0;
+  padding-block: var(--spacing-4);
+  padding-inline: var(--spacing-12) var(--spacing-4);
+  background-color: var(--surface-primary-subtle);
+  border-radius: var(--radius-md);
+  font-family: var(--font-family-sans);
+}
+
+.ion-table-batch__count {
+  color: var(--text-default);
+  font-size: var(--type-body-sm);
+  line-height: var(--type-body-sm-line-height);
+  font-weight: var(--font-weight-medium);
+  white-space: nowrap;
+}
+
+.ion-table-batch__clear {
+  margin-inline-start: auto;
+}
+
+.ion-table-batch--empty {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  background: none;
+}
+
+@media (forced-colors: active) {
+  .ion-table-batch:not(.ion-table-batch--empty) {
+    border: var(--border-width-default) solid CanvasText;
+  }
+}

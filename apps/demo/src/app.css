@@ -217,13 +217,6 @@ body {
   min-width: 10rem;
 }
 
-.demo-toolbar__bulk {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-8);
-  margin-left: auto;
-}
-
 .demo-table-footer {
   display: flex;
   flex-wrap: wrap;
@@ -358,10 +351,6 @@ body {
   .demo-form__pair,
   .demo-review__row {
     grid-template-columns: minmax(0, 1fr);
-  }
-
-  .demo-toolbar__bulk {
-    margin-left: 0;
   }
 }
 

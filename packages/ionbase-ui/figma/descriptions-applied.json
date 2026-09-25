@@ -19,7 +19,7 @@
   ],
   "file": "gaLbGd0QNb1fUl6BjSpfBA",
   "appliedOn": "2026-09-25",
-  "verifiedInFigma": 80,
+  "verifiedInFigma": 81,
   "applied": {
     "1360:267": {
       "figmaComponent": "Accordion",
@@ -335,6 +335,11 @@
       "figmaComponent": "Streaming Text",
       "component": "StreamingText",
       "hash": "c9565c80a17f6b1f"
+    },
+    "1523:753": {
+      "figmaComponent": "Table Batch Bar",
+      "component": "TableBatchBar",
+      "hash": "71b226354ea3b17d"
     },
     "174:103": {
       "figmaComponent": "Table Cell",
