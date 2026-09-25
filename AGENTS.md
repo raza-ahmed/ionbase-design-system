@@ -20,6 +20,11 @@ announces it. One source, many pointers.
 Durable design decisions belong in [`docs/`](docs/) and the package READMEs, not
 here. This file is the map and the traps; the docs are the reasoning.
 
+**Work in progress:** the enterprise component gap list is tracked in
+[`docs/enterprise-checklist.md`](docs/enterprise-checklist.md), reasoning in
+[`docs/enterprise-components.md`](docs/enterprise-components.md). Take the next
+unchecked item from there. Remove this paragraph when the checklist is deleted.
+
 ---
 
 ## Three packages, two published
