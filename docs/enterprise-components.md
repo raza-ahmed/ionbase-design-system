@@ -57,7 +57,7 @@ IonBase column names the component that covers it.
 | Phone input                       |        |     |      | `PhoneInput`                    |
 | Select                            |   ●    |  ●  |  ●   | `Select`                        |
 | Combobox (single)                 |   ●    |  ◐  |  ●   | `Combobox`                      |
-| Multi-select                      |   ●    |  ◐  |  ●   | —                               |
+| Multi-select                      |   ●    |  ◐  |  ●   | `MultiSelect`                   |
 | Dual listbox / dueling picklist   |        |     |  ●   | —                               |
 | Checkbox                          |   ●    |  ●  |  ●   | `Checkbox`                      |
 | Checkbox group                    |   ●    |     |  ●   | `CheckboxGroup`                 |

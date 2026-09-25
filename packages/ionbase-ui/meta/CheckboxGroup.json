@@ -12,8 +12,8 @@
     },
     {
       "when": "the options are many, or space is tight",
-      "use": "Select",
-      "why": "past about seven options a list of boxes is longer than the form around it"
+      "use": "MultiSelect",
+      "why": "past about seven options a list of boxes is longer than the form around it; MultiSelect filters them and shows the chosen ones as tags"
     },
     {
       "when": "there is one on/off choice",
@@ -32,16 +32,26 @@
   },
   "variants": {
     "size": {
-      "sm": { "use": "dense forms and filter panels" },
-      "md": { "use": "the default" },
-      "lg": { "use": "touch targets and prominent choices" }
+      "sm": {
+        "use": "dense forms and filter panels"
+      },
+      "md": {
+        "use": "the default"
+      },
+      "lg": {
+        "use": "touch targets and prominent choices"
+      }
     },
     "intent": {
-      "brand": { "use": "the default" },
+      "brand": {
+        "use": "the default"
+      },
       "neutral": {
         "use": "facts rather than approvals — the columns shown, the filters applied"
       },
-      "danger": { "use": "a set of destructive consents" }
+      "danger": {
+        "use": "a set of destructive consents"
+      }
     },
     "orientation": {
       "vertical": {
@@ -65,7 +75,9 @@
       "accepts": "text",
       "note": "shown only while `isInvalid` is set"
     },
-    "children": { "accepts": "Checkbox" }
+    "children": {
+      "accepts": "Checkbox"
+    }
   },
   "a11y": {
     "role": "group, from <fieldset> and <legend>",

@@ -15,11 +15,12 @@
     "Badge",
     "Alert",
     "SearchField",
+    "MultiSelect",
     "TagGroup"
   ],
   "structure": [
-    "A toolbar above the table: a SearchField (size sm, with an aria-label naming what it searches), filter controls, and the bulk-action Buttons that appear once something is selected.",
-    "Under the toolbar, once any filter is applied: a TagGroup of the active filters, each removable on its own, beside a Clear all Button. When the last one goes the row goes with it, so move focus to the SearchField.",
+    "A toolbar above the table: a SearchField (size sm, with an aria-label naming what it searches), filter controls — a MultiSelect with `hideTags` for any filter that can match more than one value — and the bulk-action Buttons that appear once something is selected.",
+    "Under the toolbar, once any filter is applied: a TagGroup of the active filters, each removable on its own — one tag per value of a multi-value filter — beside a Clear all Button. When the last one goes the row goes with it, so move focus to the SearchField.",
     "Table with a TableHead whose first cell carries the select-all Checkbox, and a TableBody whose rows each carry their own.",
     "Sortable columns: every header that sorts gets `sortDirection` — the current direction on the sorted column, `none` on the others — so each shows it can be sorted before anyone tries.",
     "One region below the table for pagination or a load-more Button.",
@@ -58,7 +59,16 @@
     "Button": ["variant", "size"],
     "Alert": ["intent", "title", "actions"],
     "TagGroup": ["label", "items", "onRemove"],
-    "SearchField": ["size", "value", "onChange", "placeholder", "aria-label"]
+    "SearchField": ["size", "value", "onChange", "placeholder", "aria-label"],
+    "MultiSelect": [
+      "size",
+      "aria-label",
+      "options",
+      "value",
+      "onChange",
+      "hideTags",
+      "placeholder"
+    ]
   },
   "variantsUsed": {
     "Alert": {
@@ -119,6 +129,11 @@
     {
       "dont": "an Input with type=\"search\" and a magnifier icon as the table's search",
       "why": "it has no searchbox role, no Escape to clear and no labelled clear button — SearchField is the same box with that behaviour"
+    },
+    {
+      "dont": "a multi-value filter as a MultiSelect showing its own tags above the active-filters row",
+      "do": "`hideTags` on the MultiSelect, and one active-filter tag per value",
+      "why": "the same values drawn twice, each removable, in two places that can disagree about focus"
     }
   ]
 }

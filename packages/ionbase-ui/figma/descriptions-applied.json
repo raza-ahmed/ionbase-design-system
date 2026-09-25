@@ -19,7 +19,7 @@
   ],
   "file": "gaLbGd0QNb1fUl6BjSpfBA",
   "appliedOn": "2026-09-25",
-  "verifiedInFigma": 78,
+  "verifiedInFigma": 79,
   "applied": {
     "1360:267": {
       "figmaComponent": "Accordion",
@@ -215,6 +215,11 @@
       "figmaComponent": "Modal",
       "component": "Modal",
       "hash": "a2804ec5efda015a"
+    },
+    "1510:666": {
+      "figmaComponent": "Multi Select",
+      "component": "MultiSelect",
+      "hash": "33ba4c0c0d54a2fc"
     },
     "53:13": {
       "figmaComponent": "Nav Item",

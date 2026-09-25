@@ -1248,6 +1248,40 @@
         }
       }
     },
+    "Multi Select": {
+      "page": "Multi Select",
+      "id": "1510:666",
+      "kind": "SET",
+      "props": {
+        "Show Tags#1510:0": {
+          "type": "BOOLEAN"
+        },
+        "Size": {
+          "type": "VARIANT",
+          "options": ["Medium", "Small", "Large"],
+          "default": "Medium"
+        },
+        "State": {
+          "type": "VARIANT",
+          "options": [
+            "Default",
+            "Hover",
+            "Focus",
+            "Filled",
+            "Invalid",
+            "Disabled",
+            "Read-only"
+          ],
+          "default": "Default"
+        }
+      }
+    },
+    "Multi Select Menu": {
+      "page": "Multi Select",
+      "id": "1510:667",
+      "kind": "COMPONENT",
+      "props": {}
+    },
     "Nav Item": {
       "page": "Nav Item",
       "id": "53:13",

@@ -1,5 +1,86 @@
 # Changelog
 
+## 0.87.0 — 2026-09-25
+
+### Added — `MultiSelect`
+
+A text field that filters a list, with any number of values chosen. The
+chosen values show as removable tags beneath the field. Before this, a
+multi-value choice meant a CheckboxGroup, which runs out of room past about
+seven options, or a native `<select multiple>`, which needs Ctrl or Cmd for a
+second pick and can't filter. It is the sixth item on the enterprise
+checklist.
+
+- **Built on React Aria's own multi-select combobox.** It uses
+  `useComboBoxState` and `useComboBox` in `selectionMode: 'multiple'` rather
+  than a hand-built one. As a result:
+  - the listbox is marked `aria-multiselectable`;
+  - Enter or a click toggles an option, and the list stays open for the next
+    pick;
+  - the filter text clears after each pick;
+  - `isRequired` marks the field required only while nothing is chosen.
+- **The field is Combobox's, which is Input's box.** Its menu is Combobox's
+  menu, with a check box in each row drawn to match the Small Checkbox. A
+  chosen row isn't tinted, because the check shows it's chosen; the
+  background only shows focus.
+- **The chosen values are read with the field.** The input's description
+  lists the chosen labels, joined by `Intl.ListFormat`, so it reads "Billing,
+  Legal, and Operations" in the user's language with no string shipped for
+  it.
+- **The tags are a TagGroup named by the field's label.** Delete or the ×
+  removes one.
+  - Backspace in an empty field removes the last value.
+  - Removing the last tag puts focus back in the field, rather than dropping
+    it on `<body>` along with the TagGroup.
+- **`hideTags`** is for a table's filter bar, where the active-filters row
+  already shows each value as a tag. The values are still read with the
+  field and still marked in the list.
+- **Filtering is locale-aware** and matches the description as well as the
+  label, as Combobox's does.
+- `Combobox`, `Select` and `CheckboxGroup` now point to MultiSelect when more
+  than one value can be picked.
+- **While the list is open, the rest of the page is hidden from assistive
+  technology, tags included.** That is React Aria's combobox pattern.
+  Combobox has always done the same; it's now written down in both contracts.
+- **Found while testing:** I first wrote code to keep `onChange` in the order
+  options were picked. A negative test showed React Stately already does
+  that, so the code is gone. The existing test that asserts the order still
+  covers it.
+
+### Figma
+
+- **New Multi Select page.**
+  - **Multi Select set** (1510:666): Size × State, 21 variants. Each is an
+    instance of the matching Combobox variant with a row of Tag instances
+    beneath it, so the field can't drift from Combobox. There is a Show Tags
+    switch.
+  - **Multi Select Menu** (1510:667): Combobox Menu's rows with a Small
+    Checkbox in front of each.
+- **Mapped.** Show Tags maps to `hideTags`, inverted. Multi Select Menu is
+  recorded as unmapped, for the same reason as Combobox Menu.
+- **All 79 Dev Mode blocks verified.** The audit now unescapes `\_` and
+  `\*` before hashing, so File Upload's `INSTANCE_SWAP` matches without a
+  manual exception.
+
+### Patterns
+
+- **DataTable** uses a MultiSelect with `hideTags` for any filter that can
+  match more than one value, shows one active-filter tag per value, and gains
+  an anti-pattern entry for showing the same tags twice.
+
+### Demo
+
+- **The Agents table's Team filter** is now a MultiSelect called Teams, so
+  one filter can match several teams. Each team gets its own removable
+  active-filter tag, and the agents query takes a list of teams.
+- **The smoke test** picks two teams and checks:
+  - the list is multiselectable and stays open between picks;
+  - there are two team filter tags, and removing one leaves one;
+  - the teams are read with the field.
+
+  I confirmed it fails when the field stops reading them. Axe runs on the
+  field and the list only, for the reason given above.
+
 ## 0.86.0 — 2026-09-25
 
 ### Added — `CheckboxGroup` and `Fieldset`

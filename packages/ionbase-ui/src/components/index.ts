@@ -48,6 +48,12 @@ export type {
 } from './Radio.js';
 export { Toggle } from './Toggle.js';
 export type { ToggleProps, ToggleSize, ToggleIntent } from './Toggle.js';
+export { MultiSelect } from './MultiSelect.js';
+export type {
+  MultiSelectProps,
+  MultiSelectOption,
+  MultiSelectSize,
+} from './MultiSelect.js';
 export { Menu, MenuItem, MenuSection, MenuTrigger } from './Menu.js';
 export type {
   MenuProps,

@@ -20,13 +20,23 @@
       "when": "there are two or three mutually exclusive choices worth showing at once",
       "use": "RadioGroup"
     },
-    { "when": "the user may pick more than one", "use": "Checkbox" }
+    {
+      "when": "the user may pick more than one",
+      "use": "MultiSelect",
+      "why": "a native <select multiple> needs Ctrl or Cmd for a second pick and cannot filter; for a handful of options use CheckboxGroup"
+    }
   ],
   "variants": {
     "size": {
-      "sm": { "use": "dense forms, table filters" },
-      "md": { "use": "the default" },
-      "lg": { "use": "prominent single-field forms" }
+      "sm": {
+        "use": "dense forms, table filters"
+      },
+      "md": {
+        "use": "the default"
+      },
+      "lg": {
+        "use": "prominent single-field forms"
+      }
     }
   },
   "a11y": {
@@ -47,5 +57,10 @@
       "why": "a two-item dropdown costs two interactions to do what one control does in one"
     }
   ],
-  "deprecated": [{ "prop": "disabled", "replacement": "isDisabled" }]
+  "deprecated": [
+    {
+      "prop": "disabled",
+      "replacement": "isDisabled"
+    }
+  ]
 }

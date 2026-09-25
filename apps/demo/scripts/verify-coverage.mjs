@@ -51,6 +51,7 @@ const REQUIRED = [
   'CheckboxGroup',
   'Fieldset',
   'Menu',
+  'MultiSelect',
   'MenuItem',
   'MenuSection',
   'MenuTrigger',

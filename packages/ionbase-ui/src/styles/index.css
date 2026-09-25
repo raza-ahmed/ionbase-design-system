@@ -83,6 +83,7 @@
 @import url('./sidebar.css');
 @import url('./file-upload.css');
 @import url('./combobox.css');
+@import url('./multi-select.css');
 
 /*
  * date-range-picker AFTER date-picker, and the order is load-bearing rather

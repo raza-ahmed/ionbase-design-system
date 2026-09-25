@@ -1083,6 +1083,30 @@
         }
       }
     },
+    "Multi Select": {
+      "code": "MultiSelect",
+      "props": {
+        "Size": {
+          "prop": "size",
+          "values": {
+            "Small": "sm",
+            "Medium": "md",
+            "Large": "lg"
+          }
+        },
+        "State": {
+          "prop": "isInvalid",
+          "when": {
+            "Invalid": true
+          },
+          "note": "Hover, Focus and Filled are CSS or content; Disabled is isDisabled and Read-only is isReadOnly, and both hide the tags’ × buttons. The field is Combobox’s, which is Input’s box — the same split both record."
+        },
+        "Show Tags#1510:0": {
+          "prop": "hideTags",
+          "note": "Inverted: Show Tags off is `hideTags`, for a filter bar whose active-filters row already shows the values. With tags shown, they are the chosen `value`, labelled from `options`, and appear whenever something is chosen."
+        }
+      }
+    },
     "Nav Item": {
       "code": "NavItem",
       "props": {
@@ -2066,7 +2090,8 @@
     "Screen Frame": "The frame FullCard draws around its media slot. The component owns it, so there is nothing for a caller to place.",
     "Side Menu Item": "A 32-tall side-navigation row on the Side Menu page, which predates Sidebar. It shared the name Menu Item with the real one (82:217) until 25 Sep 2026, and because the export keyed on the name it silently replaced it — the mapping, the gates and the Dev Mode block all pointed here. Sidebar Item is the side-navigation row code ships.",
     "Side Menu Section Title": "The section heading of the same pre-Sidebar side menu. Menu Section Title (1468:271) is the menu's own, drawn on the Menu page; Sidebar Section is the side navigation's.",
-    "Table/Cell Text": "TableCell covers Figma's Table Cell and Cell Text together; the two are never used apart in the design. Recorded in TableCell's contract."
+    "Table/Cell Text": "TableCell covers Figma's Table Cell and Cell Text together; the two are never used apart in the design. Recorded in TableCell's contract.",
+    "Multi Select Menu": "The list MultiSelect opens, with a check on each row. Not a separate export, for Combobox Menu's reason: the list and the field are one control, and a listbox with nothing to own it is not a thing a caller should be able to mount. Drawn separately because a frame cannot both hug a field and overlay a list."
   },
   "codeUnmapped": {
     "DateRangePicker": "Drawn, but not as a set of its own: its field is Date Picker Type=Range and its calendar is Calendar Mode=Range. A Figma set maps to exactly one code component, and splitting one field into two sets to satisfy that would draw the same box twice. Read Date Picker’s Type note for the handoff.",
