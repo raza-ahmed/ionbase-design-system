@@ -16,13 +16,15 @@
     "Alert",
     "Badge",
     "Divider",
-    "Modal"
+    "Modal",
+    "DescriptionList",
+    "DescriptionListItem"
   ],
   "structure": [
     "A Stepper naming every step and marking the current one — not Tabs, because the steps are not peers and cannot be visited in any order. Completed steps link back; incomplete ones do not.",
     "One step's fields at a time, each step a Form in its own right.",
     "Back and Next, plus save-and-exit for anything longer than three steps.",
-    "A final review step listing every answer with a link back to the step that set it."
+    "A final review step listing every answer with a link back to the step that set it: one DescriptionList per step under the step's heading, with its Edit button beside the heading. An answer left blank is passed as null, so it is shown as \"—\" and read as \"Not set\" — never a typed dash."
   ],
   "states": {
     "loading": {
@@ -51,13 +53,22 @@
     "RadioGroup": ["label", "value", "onChange"],
     "Alert": ["intent", "title"],
     "Badge": ["intent"],
-    "Modal": ["isOpen", "onOpenChange", "title", "footer"]
+    "Modal": ["isOpen", "onOpenChange", "title", "footer"],
+    "DescriptionList": ["layout", "emptyText"]
   },
   "variantsUsed": {
-    "StepperStep": { "status": ["incomplete", "complete", "error"] },
-    "Button": { "variant": ["primary-brand", "secondary", "tertiary"] },
-    "Alert": { "intent": ["error", "information"] },
-    "Badge": { "intent": ["success", "neutral"] }
+    "StepperStep": {
+      "status": ["incomplete", "complete", "error"]
+    },
+    "Button": {
+      "variant": ["primary-brand", "secondary", "tertiary"]
+    },
+    "Alert": {
+      "intent": ["error", "information"]
+    },
+    "Badge": {
+      "intent": ["success", "neutral"]
+    }
   },
   "a11y": {
     "requires": [
@@ -86,6 +97,11 @@
     {
       "dont": "a progress bar with no step names",
       "why": "a percentage does not tell the user what is left or whether they can finish now"
+    },
+    {
+      "dont": "a review step built from paragraphs or a two-column table of labels and answers",
+      "do": "<DescriptionList><DescriptionListItem term=\"Owning team\">{team ?? null}</DescriptionListItem></DescriptionList>",
+      "why": "paragraphs lose which answer belongs to which question; a table announces rows and columns there is nothing to compare across"
     }
   ]
 }

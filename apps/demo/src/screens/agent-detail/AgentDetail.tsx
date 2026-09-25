@@ -7,6 +7,8 @@ import {
   BreadcrumbItem,
   Button,
   Card,
+  DescriptionList,
+  DescriptionListItem,
   EmptyState,
   FullCard,
   Icon,
@@ -307,23 +309,20 @@ function Overview({
           )
         }
       >
-        <dl className="demo-agent-facts">
-          <div>
-            <dt className="ion-text-caption demo-muted">Owner</dt>
-            <dd className="demo-agent-facts__owner">
+        <DescriptionList layout="row">
+          <DescriptionListItem term="Owner">
+            <span className="demo-agent-facts__owner">
               <Avatar size="mini" initials={agent.owner.initials} />
               {agent.owner.name}
-            </dd>
-          </div>
-          <div>
-            <dt className="ion-text-caption demo-muted">Team</dt>
-            <dd>{teamLabel(agent.team)}</dd>
-          </div>
-          <div>
-            <dt className="ion-text-caption demo-muted">Last run</dt>
-            <dd>{agent.lastRun ? formatDay(agent.lastRun) : '—'}</dd>
-          </div>
-        </dl>
+            </span>
+          </DescriptionListItem>
+          <DescriptionListItem term="Team">
+            {teamLabel(agent.team)}
+          </DescriptionListItem>
+          <DescriptionListItem term="Last run">
+            {agent.lastRun && formatDay(agent.lastRun)}
+          </DescriptionListItem>
+        </DescriptionList>
       </FullCard>
 
       <StatGroup aria-label={`${agent.name} in the last 7 days`}>

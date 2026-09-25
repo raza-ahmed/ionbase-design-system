@@ -1,0 +1,88 @@
+/*
+ * DescriptionList
+ *
+ *   term    body-sm, text/secondary — Field's label colour, one step quieter
+ *           than the value it names
+ *   value   body-sm, text/default, and it wraps: an ID or a URL breaks
+ *           anywhere rather than overflowing its column
+ *   empty   "—" in text/tertiary, with the list's `emptyText` for readers
+ *
+ * Three layouts, one markup: `<dl>` > `<div>` > `<dt>` + `<dd>`.
+ *
+ *   horizontal  a two-column grid, term column at least 8rem and at most a
+ *               third. The list is its own size container at its parent's
+ *               full width, so below 24rem it stacks — decided by the list's width, not the viewport's, so
+ *               the same list is right in a page and in a 22rem SidePanel
+ *   stacked     term above value, 8px between pairs
+ *   row         stacked pairs side by side at their natural width, 32px
+ *               apart, wrapping when out of room. Not a grid of equal
+ *               columns: a strip of short facts in a card's side column is
+ *               narrower than two fixed columns, and would stack
+ */
+.ion-description-list {
+  display: grid;
+  gap: var(--spacing-8);
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-family-sans);
+  font-size: var(--type-body-sm);
+  line-height: var(--type-body-sm-line-height);
+}
+
+.ion-description-list__item {
+  display: grid;
+  gap: var(--spacing-2);
+  min-width: 0;
+}
+
+.ion-description-list__term {
+  color: var(--text-secondary);
+}
+
+.ion-description-list__value {
+  margin: 0;
+  min-width: 0;
+  color: var(--text-default);
+  overflow-wrap: anywhere;
+}
+
+.ion-description-list__value--empty {
+  color: var(--text-tertiary);
+}
+
+/* ------------------------------------------------------------------ layouts */
+
+/*
+ * Only horizontal is a size container, and it takes its parent's full width.
+ * `container-type: inline-size` stops an element sizing to its content, so
+ * in a shrink-to-fit parent — a flex column that does not stretch, a card's
+ * side column — a list that was a container collapsed to 0px and every pair
+ * stacked into a sliver. Stacked and row have no query to answer, so they
+ * are not containers and size to their content as a <dl> should.
+ */
+.ion-description-list--horizontal {
+  container-type: inline-size;
+  width: 100%;
+}
+
+.ion-description-list--horizontal .ion-description-list__item {
+  grid-template-columns: minmax(8rem, 1fr) 2fr;
+  gap: var(--spacing-12);
+}
+
+@container (width < 24rem) {
+  .ion-description-list--horizontal .ion-description-list__item {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-2);
+  }
+}
+
+.ion-description-list--stacked {
+  gap: var(--spacing-12);
+}
+
+.ion-description-list--row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-12) var(--spacing-32);
+}

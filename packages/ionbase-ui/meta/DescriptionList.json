@@ -1,0 +1,74 @@
+{
+  "status": "stable",
+  "summary": "Label–value pairs as a real `<dl>` — a record's details, a settings summary, a wizard's review step. Three layouts; an empty value is shown as \"—\" and read as words.",
+  "useWhen": [
+    "showing a record's details as named values — Owner, Team, Last run",
+    "summarising what was entered before it is submitted — a wizard's review step",
+    "a strip of facts under a heading or on a card"
+  ],
+  "useInstead": [
+    {
+      "when": "several records share the same fields and are compared down a column",
+      "use": "Table",
+      "why": "a table is for comparing rows; a description list is one record's values"
+    },
+    {
+      "when": "the values are editable here",
+      "use": "SettingRow or a Form",
+      "why": "a description list is read-only; an editable value is a field with a label, not a term"
+    },
+    {
+      "when": "a handful of headline numbers",
+      "use": "StatTile",
+      "why": "a stat leads with the number at display size; a description list reads label first, at body size"
+    }
+  ],
+  "variants": {
+    "layout": {
+      "horizontal": {
+        "use": "the default — a record's details, the term beside its value. Stacks when the list itself is narrower than 24rem"
+      },
+      "stacked": {
+        "use": "a narrow column — a SidePanel, a card's side — term above value"
+      },
+      "row": {
+        "use": "a strip of short facts under a heading or in a card: pairs side by side at their own width, wrapping when out of room"
+      }
+    }
+  },
+  "a11y": {
+    "requires": [
+      "DescriptionListItem children only — each renders a `<div>` holding one `<dt>` and one `<dd>`",
+      "`emptyText` in the user's language when the page is not in English"
+    ],
+    "guarantees": [
+      "a `<dl>` of `<dt>` terms and `<dd>` definitions, so each value is read with its term and the list with its count",
+      "an empty value — null, undefined, false or '' — is drawn as \"—\" hidden from assistive technology and read as `emptyText` (\"Not set\")",
+      "0 is a value, not an empty one",
+      "`horizontal` stacks by the list's own width (a container query), so one list is right in a page and in a 22rem panel",
+      "long values — IDs, URLs — wrap inside their column rather than overflowing it",
+      "horizontal fills its parent's width; stacked and row size to their content, and none collapses in a shrink-to-fit parent such as a card's side column"
+    ],
+    "notes": [
+      "a value can be any content — a Badge, a Link, an Avatar with a name. Keep it to one value per term; several values are one `<dd>` holding a list",
+      "the term is text/secondary and the value text/default, so the eye lands on the value"
+    ]
+  },
+  "antiPatterns": [
+    {
+      "dont": "a grid of <div>s with a label and a value in each",
+      "do": "<DescriptionList><DescriptionListItem term=\"Owner\">Priya Shah</DescriptionListItem></DescriptionList>",
+      "why": "divs say nothing: \"Owner\" and \"Priya Shah\" are read as two unrelated lines"
+    },
+    {
+      "dont": "a two-column <table> of labels and values",
+      "do": "<DescriptionList>",
+      "why": "a table announces rows and columns and invites comparing down a column; there is nothing to compare"
+    },
+    {
+      "dont": "<DescriptionListItem term=\"Last run\">—</DescriptionListItem>",
+      "do": "<DescriptionListItem term=\"Last run\">{lastRun}</DescriptionListItem> — pass null when there is none",
+      "why": "a typed dash is read as \"dash\" or skipped; an empty value is read as \"Not set\""
+    }
+  ]
+}

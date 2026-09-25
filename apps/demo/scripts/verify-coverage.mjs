@@ -59,6 +59,8 @@ const REQUIRED = [
   'TreeView',
   'SidePanel',
   'SidePanelLayout',
+  'DescriptionList',
+  'DescriptionListItem',
   'MenuItem',
   'MenuSection',
   'MenuTrigger',

@@ -4,6 +4,8 @@ import {
   CheckboxGroup,
   Combobox,
   DatePicker,
+  DescriptionList,
+  DescriptionListItem,
   Divider,
   Fieldset,
   FileUpload,
@@ -314,7 +316,11 @@ export function ReviewStep({
   files: File[];
   onEdit: (step: number) => void;
 }) {
-  const groups: { step: number; title: string; rows: [string, string][] }[] = [
+  const groups: {
+    step: number;
+    title: string;
+    rows: [string, string | null][];
+  }[] = [
     {
       step: 0,
       title: 'Basics',
@@ -323,9 +329,9 @@ export function ReviewStep({
         ['What it does', values.purpose],
         [
           'Owning team',
-          TEAMS.find((t) => t.value === values.team)?.label ?? '—',
+          TEAMS.find((t) => t.value === values.team)?.label ?? null,
         ],
-        ['Model', MODELS.find((m) => m.value === model)?.label ?? '—'],
+        ['Model', MODELS.find((m) => m.value === model)?.label ?? null],
       ],
     },
     {
@@ -391,14 +397,13 @@ export function ReviewStep({
               Edit {g.title.toLowerCase()}
             </Button>
           </div>
-          <dl className="demo-review__list">
+          <DescriptionList>
             {g.rows.map(([k, v]) => (
-              <div key={k} className="demo-review__row">
-                <dt className="ion-text-body-sm demo-muted">{k}</dt>
-                <dd className="ion-text-body-sm">{v}</dd>
-              </div>
+              <DescriptionListItem key={k} term={k}>
+                {v}
+              </DescriptionListItem>
             ))}
-          </dl>
+          </DescriptionList>
         </section>
       ))}
     </div>

@@ -813,6 +813,41 @@
         }
       }
     },
+    "Description List": {
+      "page": "Description List",
+      "id": "1549:294",
+      "kind": "SET",
+      "props": {
+        "Layout": {
+          "type": "VARIANT",
+          "options": ["Horizontal", "Stacked", "Row"],
+          "default": "Horizontal"
+        }
+      }
+    },
+    "Description List Item": {
+      "page": "Description List",
+      "id": "1549:254",
+      "kind": "SET",
+      "props": {
+        "Empty": {
+          "type": "VARIANT",
+          "options": ["False", "True"],
+          "default": "False"
+        },
+        "Layout": {
+          "type": "VARIANT",
+          "options": ["Horizontal", "Stacked"],
+          "default": "Horizontal"
+        },
+        "Term#1549:0": {
+          "type": "TEXT"
+        },
+        "Value#1549:5": {
+          "type": "TEXT"
+        }
+      }
+    },
     "Drawer": {
       "page": "Drawer",
       "id": "1365:2404",

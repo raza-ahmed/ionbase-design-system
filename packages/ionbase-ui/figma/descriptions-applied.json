@@ -19,7 +19,7 @@
   ],
   "file": "gaLbGd0QNb1fUl6BjSpfBA",
   "appliedOn": "2026-09-25",
-  "verifiedInFigma": 85,
+  "verifiedInFigma": 87,
   "applied": {
     "1360:267": {
       "figmaComponent": "Accordion",
@@ -445,6 +445,16 @@
       "figmaComponent": "Side Panel",
       "component": "SidePanel",
       "hash": "29822533fdee1e8d"
+    },
+    "1549:294": {
+      "figmaComponent": "Description List",
+      "component": "DescriptionList",
+      "hash": "6a81009379f8fbb1"
+    },
+    "1549:254": {
+      "figmaComponent": "Description List Item",
+      "component": "DescriptionListItem",
+      "hash": "92e426c1504d4b15"
     }
   }
 }
