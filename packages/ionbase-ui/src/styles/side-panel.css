@@ -1,0 +1,152 @@
+/*
+ * SidePanel
+ *
+ * Drawer's panel, anatomy for anatomy — header with title, description and
+ * close; one scrolling body; a pinned footer — at Drawer's three widths
+ * (22 / 30 / 40rem). What differs is that it is part of the page: a card on
+ * `surface/default` with a `border/subtle` edge and `radius/lg`, no shadow and
+ * no scrim, because nothing is floating over anything.
+ *
+ * It sticks. `position: sticky` to `--ion-side-panel-top` (default 0; set it
+ * on any ancestor — the app shell — to a sticky header's height; it is read
+ * with a fallback, not declared here, so an ancestor's value reaches it), at
+ * most the viewport's height, so a long list
+ * scrolls past it while the detail stays in view — and its own body scrolls
+ * when the detail is longer than the screen.
+ *
+ * The panel IS the block, for the same contrast-gate reason drawer.css gives.
+ */
+.ion-side-panel-layout {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-24);
+}
+
+/* The content column. Without min-width: 0 a wide table pushes the panel off. */
+.ion-side-panel-layout > :first-child {
+  flex: 1;
+  min-width: 0;
+}
+
+.ion-side-panel {
+  --ion-side-panel-size: 30rem;
+
+  position: sticky;
+  top: var(--ion-side-panel-top, 0);
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  width: var(--ion-side-panel-size);
+  max-width: 100%;
+
+  /* 0px, not 0: a unitless fallback makes `100dvh - 0` invalid in calc(). */
+  /* stylelint-disable-next-line length-zero-no-unit */
+  max-height: calc(100dvh - var(--ion-side-panel-top, 0px));
+  background-color: var(--surface-default);
+  border: var(--border-width-default) solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  color: var(--text-default);
+  font-family: var(--font-family-sans);
+}
+
+.ion-side-panel--sm {
+  --ion-side-panel-size: 22rem;
+}
+
+.ion-side-panel--lg {
+  --ion-side-panel-size: 40rem;
+}
+
+.ion-side-panel__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--spacing-12);
+  flex: none;
+  padding: var(--spacing-24);
+  border-bottom: var(--border-width-default) solid var(--border-subtle);
+}
+
+.ion-side-panel__heading {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-4);
+  min-width: 0;
+}
+
+/*
+ * Focused on open so the panel is announced and reading starts at its top.
+ * A heading is not a control, so it shows no ring — the ring would read as
+ * "press this".
+ */
+.ion-side-panel__title {
+  margin: 0;
+  font-size: var(--type-h5);
+  line-height: var(--type-h5-line-height);
+  font-weight: var(--font-weight-semibold);
+  outline: none;
+}
+
+.ion-side-panel__description {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: var(--type-body-sm);
+  line-height: var(--type-body-sm-line-height);
+}
+
+.ion-side-panel__close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: var(--spacing-32);
+  height: var(--spacing-32);
+  padding: var(--spacing-4);
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: none;
+  color: var(--icon-secondary);
+  cursor: pointer;
+}
+
+/* Background only, no colour change — see drawer.css. */
+@media (hover: hover) {
+  .ion-side-panel__close:hover {
+    background-color: var(--surface-hover);
+  }
+}
+
+.ion-side-panel__close:focus-visible {
+  outline: var(--border-width-thick) solid var(--border-focus);
+  outline-offset: 2px;
+}
+
+.ion-side-panel__close svg {
+  width: var(--icon-size-md);
+  height: var(--icon-size-md);
+}
+
+.ion-side-panel__body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: var(--spacing-24);
+  font-size: var(--type-body);
+  line-height: var(--type-body-line-height);
+}
+
+.ion-side-panel__footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--spacing-8);
+  flex: none;
+  padding: var(--spacing-24);
+  border-top: var(--border-width-default) solid var(--border-subtle);
+}
+
+@media (forced-colors: active) {
+  .ion-side-panel {
+    border-color: CanvasText;
+  }
+}

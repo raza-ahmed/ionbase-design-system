@@ -112,6 +112,12 @@ export type {
   TreeViewItem,
   TreeViewSelectionMode,
 } from './TreeView.js';
+export { SidePanel, SidePanelLayout } from './SidePanel.js';
+export type {
+  SidePanelProps,
+  SidePanelSize,
+  SidePanelLayoutProps,
+} from './SidePanel.js';
 export { Popover } from './Popover.js';
 export type { PopoverProps, PopoverPlacement, PopoverSize } from './Popover.js';
 export { Modal } from './Modal.js';

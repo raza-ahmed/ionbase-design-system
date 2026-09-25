@@ -17,6 +17,9 @@ body {
 .demo-app {
   --demo-header-height: calc(var(--spacing-48) + var(--spacing-8));
 
+  /* A SidePanel sticks below the sticky header, not under it. */
+  --ion-side-panel-top: calc(var(--demo-header-height) + var(--spacing-16));
+
   display: grid;
   grid-template-columns: calc(var(--spacing-128) * 2) minmax(0, 1fr);
   grid-template-rows: auto 1fr;
@@ -551,4 +554,9 @@ body {
 
 .demo-knowledge-tree {
   max-width: 28rem;
+}
+
+/* The run's facts stack in the narrow panel rather than sitting in a row. */
+.demo-run-panel__facts {
+  flex-direction: column;
 }

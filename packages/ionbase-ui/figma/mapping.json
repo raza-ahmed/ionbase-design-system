@@ -2165,6 +2165,36 @@
           "note": "Multiple is where rows draw their check; the Figma rows show it with Show Check on. The rows themselves are `items` — see Tree View Item."
         }
       }
+    },
+    "Side Panel": {
+      "code": "SidePanel",
+      "props": {
+        "Size": {
+          "prop": "size",
+          "values": {
+            "Small": "sm",
+            "Medium": "md",
+            "Large": "lg"
+          }
+        },
+        "Title#1547:0": {
+          "prop": "title"
+        },
+        "Description#1547:4": {
+          "prop": "description"
+        },
+        "Show Description#1547:8": {
+          "prop": "description",
+          "note": "false means description is omitted"
+        },
+        "Show Close#1547:12": {
+          "prop": "showClose"
+        },
+        "Show Footer#1547:16": {
+          "prop": "footer",
+          "note": "false means footer is omitted. The footer holds Buttons; Figma's single action is one of them"
+        }
+      }
     }
   },
   "unmapped": {
@@ -2198,6 +2228,7 @@
     "TableHead": "As Table — a code-side grouping element. Figma expresses a header row as a Table Row variant, not a separate component.",
     "ToastProvider": "Figma draws Toast, which is mapped. The provider is placement, queueing and the live region — runtime behaviour with nothing to draw.",
     "MenuTrigger": "Composition, not a drawing: a Button followed by a Menu, both already drawn and mapped. What MenuTrigger adds — open state, positioning, aria-haspopup and aria-expanded, focus on open and return on close — is runtime behaviour a static frame cannot hold, the same reason RadioGroup is here.",
-    "Fieldset": "Drawn as the shell of Checkbox Group: the legend, the helper and the Error recolour are Form Field's type, laid around a set of options. A Fieldset of Inputs is the caller composing Form Fields under that legend, so there is no separate frame to point at."
+    "Fieldset": "Drawn as the shell of Checkbox Group: the legend, the helper and the Error recolour are Form Field's type, laid around a set of options. A Fieldset of Inputs is the caller composing Form Fields under that legend, so there is no separate frame to point at.",
+    "SidePanelLayout": "Layout, not a drawn component: the flex row a SidePanel sits in, content first. In Figma the Side Panel is placed beside the content on the frame; there is no row to draw."
   }
 }

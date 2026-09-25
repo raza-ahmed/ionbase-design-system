@@ -79,6 +79,7 @@
 @import url('./breadcrumb.css');
 @import url('./accordion.css');
 @import url('./drawer.css');
+@import url('./side-panel.css');
 @import url('./stepper.css');
 @import url('./prompt-input.css');
 @import url('./tool-call.css');

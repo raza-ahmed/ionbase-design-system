@@ -51,7 +51,7 @@ applies.
 | **New agent** (from Agents) | `Wizard`, `Form`                  | Input, Textarea, PhoneInput, Radio, Checkbox, CheckboxGroup, Fieldset, DatePicker, TimeField, FileUpload, Button, ProgressBar                                                                                 |
 | **Settings**                | `SettingsPanel`                   | Toggle, Select, RadioGroup, CheckboxGroup, Toggletip, Accordion, Divider, Link, Popover                                                                                                                       |
 | **Agent detail**            | `PageShell`                       | NavItem (`isCurrent` section switcher), FullCard, Card, Badge, Button, StatGroup/StatTile, Table, EmptyState, TreeView (knowledge sources), plus a visx stacked bar chart with ChartLegend and ChartTooltip   |
-| **Agent runs**              | `AgentRun`, `HumanApproval`       | AgentActivity, AgentStop, ApprovalGate, ConfidenceIndicator, Spinner, StreamingText, Slider (history's duration range)                                                                                        |
+| **Agent runs**              | `AgentRun`, `HumanApproval`       | AgentActivity, AgentStop, ApprovalGate, ConfidenceIndicator, Spinner, StreamingText, Slider (history's duration range), SidePanel + SidePanelLayout (a run's details beside the history)                      |
 | **Assistant**               | `AssistantAnswer`                 | StreamingText, Citation, ConfidenceIndicator, Textarea, ScrollProgress                                                                                                                                        |
 
 The last two screens make the pitch. Most design systems can draw a table. Few

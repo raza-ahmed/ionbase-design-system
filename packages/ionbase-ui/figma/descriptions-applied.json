@@ -19,7 +19,7 @@
   ],
   "file": "gaLbGd0QNb1fUl6BjSpfBA",
   "appliedOn": "2026-09-25",
-  "verifiedInFigma": 84,
+  "verifiedInFigma": 85,
   "applied": {
     "1360:267": {
       "figmaComponent": "Accordion",
@@ -440,6 +440,11 @@
       "figmaComponent": "Tree View",
       "component": "TreeView",
       "hash": "e2bc1e603a3f5c64"
+    },
+    "1547:441": {
+      "figmaComponent": "Side Panel",
+      "component": "SidePanel",
+      "hash": "29822533fdee1e8d"
     }
   }
 }

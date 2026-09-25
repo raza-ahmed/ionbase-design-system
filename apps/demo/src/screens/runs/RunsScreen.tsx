@@ -11,6 +11,8 @@ import {
   PageHeader,
   SegmentedControl,
   SegmentedControlItem,
+  SidePanel,
+  SidePanelLayout,
   Skeleton,
   Slider,
   Table,
@@ -179,6 +181,9 @@ function History({ runs: all }: { runs: RunSummary[] }) {
   // drag — the DataTable pattern's rule, so a drag is not dozens of refilters.
   const [duration, setDuration] = useState<Range>(DURATION);
   const [applied, setApplied] = useState<Range>(DURATION);
+  // The run shown beside the table. A run filtered out of the table closes
+  // the panel with it: detail of a row you can no longer see is a lie.
+  const [openId, setOpenId] = useState<string | null>(null);
   const narrowed = applied[0] > DURATION[0] || applied[1] < DURATION[1];
   const runs = all
     .filter(FILTERS[filter].matches)
@@ -189,6 +194,7 @@ function History({ runs: all }: { runs: RunSummary[] }) {
           r.durationSec >= applied[0] &&
           r.durationSec <= applied[1]),
     );
+  const open = runs.find((r) => r.id === openId);
 
   return (
     <section aria-labelledby="history-title" className="demo-page">
@@ -235,59 +241,118 @@ function History({ runs: all }: { runs: RunSummary[] }) {
           {narrowed ? ' of that duration' : ''} in the history.
         </p>
       ) : (
-        <Table aria-label="Run history">
-          <TableHead>
-            <TableRow>
-              <TableCell header>Run</TableCell>
-              <TableCell header>Outcome</TableCell>
-              <TableCell header>Started</TableCell>
-              <TableCell header align="trailing">
-                Duration
-              </TableCell>
-              <TableCell header>Decided by</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {runs.map((r) => (
-              <TableRow key={r.id}>
-                <TableCell>
-                  <span className="demo-cell-stack">
-                    <Link href={href(`runs/${r.id}`)}>{r.task}</Link>
-                    <span className="ion-text-caption demo-muted">
-                      {r.agent}
-                    </span>
-                  </span>
+        <SidePanelLayout>
+          <Table aria-label="Run history">
+            <TableHead>
+              <TableRow>
+                <TableCell header>Run</TableCell>
+                <TableCell header>Outcome</TableCell>
+                <TableCell header>Started</TableCell>
+                <TableCell header align="trailing">
+                  Duration
                 </TableCell>
-                <TableCell>
-                  <Badge size="sm" dot intent={OUTCOME[r.outcome].intent}>
-                    {OUTCOME[r.outcome].text}
-                  </Badge>
-                </TableCell>
-                <TableCell>{ago(r.startedMinutesAgo)}</TableCell>
-                <TableCell align="trailing">
-                  {r.durationSec ? `${r.durationSec}s` : '—'}
-                </TableCell>
-                <TableCell>
-                  {r.reviewers.length === 0 ? (
-                    <span className="demo-muted">
-                      Stopped before a decision
-                    </span>
-                  ) : (
-                    <AvatarGroup size="sm" max={3}>
-                      {r.reviewers.map((p) => (
-                        <Avatar
-                          key={p.initials}
-                          initials={p.initials}
-                          alt={p.name}
-                        />
-                      ))}
-                    </AvatarGroup>
-                  )}
-                </TableCell>
+                <TableCell header>Decided by</TableCell>
+                <TableCell header>Details</TableCell>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+            </TableHead>
+            <TableBody>
+              {runs.map((r) => (
+                <TableRow key={r.id}>
+                  <TableCell>
+                    <span className="demo-cell-stack">
+                      <Link href={href(`runs/${r.id}`)}>{r.task}</Link>
+                      <span className="ion-text-caption demo-muted">
+                        {r.agent}
+                      </span>
+                    </span>
+                  </TableCell>
+                  <TableCell>
+                    <Badge size="sm" dot intent={OUTCOME[r.outcome].intent}>
+                      {OUTCOME[r.outcome].text}
+                    </Badge>
+                  </TableCell>
+                  <TableCell>{ago(r.startedMinutesAgo)}</TableCell>
+                  <TableCell align="trailing">
+                    {r.durationSec ? `${r.durationSec}s` : '—'}
+                  </TableCell>
+                  <TableCell>
+                    {r.reviewers.length === 0 ? (
+                      <span className="demo-muted">
+                        Stopped before a decision
+                      </span>
+                    ) : (
+                      <AvatarGroup size="sm" max={3}>
+                        {r.reviewers.map((p) => (
+                          <Avatar
+                            key={p.initials}
+                            initials={p.initials}
+                            alt={p.name}
+                          />
+                        ))}
+                      </AvatarGroup>
+                    )}
+                  </TableCell>
+                  <TableCell>
+                    <Button
+                      size="sm"
+                      variant="tertiary"
+                      aria-label={`Details: ${r.task}`}
+                      aria-expanded={r.id === openId}
+                      onPress={() => setOpenId(r.id)}
+                    >
+                      Details
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+          <SidePanel
+            className="demo-run-panel"
+            size="sm"
+            headingLevel={3}
+            isOpen={!!open}
+            onOpenChange={(isOpen) => !isOpen && setOpenId(null)}
+            title={open?.task}
+            description={open && `${open.agent} · ${open.id}`}
+            footer={
+              open && (
+                <Link variant="standalone" href={href(`runs/${open.id}`)}>
+                  Open run
+                </Link>
+              )
+            }
+          >
+            {open && (
+              <dl className="demo-agent-facts demo-run-panel__facts">
+                <div>
+                  <dt className="ion-text-caption demo-muted">Outcome</dt>
+                  <dd>
+                    <Badge size="sm" dot intent={OUTCOME[open.outcome].intent}>
+                      {OUTCOME[open.outcome].text}
+                    </Badge>
+                  </dd>
+                </div>
+                <div>
+                  <dt className="ion-text-caption demo-muted">Started</dt>
+                  <dd>{ago(open.startedMinutesAgo)}</dd>
+                </div>
+                <div>
+                  <dt className="ion-text-caption demo-muted">Duration</dt>
+                  <dd>{open.durationSec ? `${open.durationSec}s` : '—'}</dd>
+                </div>
+                <div>
+                  <dt className="ion-text-caption demo-muted">Decided by</dt>
+                  <dd>
+                    {open.reviewers.length
+                      ? open.reviewers.map((p) => p.name).join(', ')
+                      : 'Stopped before a decision'}
+                  </dd>
+                </div>
+              </dl>
+            )}
+          </SidePanel>
+        </SidePanelLayout>
       )}
     </section>
   );

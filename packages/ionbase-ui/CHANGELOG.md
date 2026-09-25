@@ -1,5 +1,58 @@
 # Changelog
 
+## 0.93.0 — 2026-09-25
+
+### Added — `SidePanel` and `SidePanelLayout`
+
+Detail that opens beside the content and leaves it usable: pick a row, read
+it in the panel, pick the next. It is the twelfth item on the enterprise
+checklist. It is not a Drawer. A Drawer is a modal dialog: it traps focus,
+hides the page and tells a screen reader the page behind is gone. Making it
+non-modal would keep saying that while the page stayed live. Drawer's
+contract, which used to say "use page layout" for this, now points here.
+
+- **A labelled region, in place.** A `<section>` named by its `title`,
+  rendered inline, not portalled. No scrim, no focus trap, and nothing on the
+  page is hidden or made inert. It renders nothing when closed.
+- **Focus.** Opening focuses the title, so the panel is announced. Changing
+  what an open panel shows does not move focus, so the list can be worked
+  through with the panel open. Closing with focus inside returns it to the
+  last thing focused outside: the row picked most recently.
+- **Escape** closes it from inside only. A Toggletip, Menu or Select in the
+  panel closes first.
+- **Below 768px it opens as a Drawer** (`overlayBelow`). There is no room
+  beside the content on a phone, and a panel covering the list has to be
+  modal to be honest about it.
+- **Drawer's anatomy and widths** (22, 30 and 40rem), as a bordered card that
+  sticks to `--ion-side-panel-top` while the page scrolls. Its body scrolls
+  when the detail is taller than the screen. An app sets the offset once, on
+  its shell, to clear a sticky header.
+- **`SidePanelLayout`** is the row it sits in: content first, panel second.
+  It gives the content column `min-width: 0`, so a wide Table scrolls in its
+  own container instead of pushing the panel off screen.
+- **The DataTable pattern** now puts a row's detail in a SidePanel, opened
+  from a per-row button with `aria-expanded`.
+- **Figma:** a Side Panel page, with Size Small/Medium/Large and Title,
+  Description, Show Description, Show Close and Show Footer. It is mapped;
+  SidePanelLayout is recorded as layout. 85 blocks verified.
+- **Demo:** Runs › History has a Details button per run, opening its outcome,
+  timing and reviewers beside the table. The smoke check covers focus, the
+  content swap, the sticky offset, Escape and axe at 1280px, and the Drawer
+  at 390px. It fails when the offset or the phone switch is removed.
+
+### Found along the way
+
+- **An offset declared on the panel could only be overridden on the panel.**
+  `--ion-side-panel-top` is now read with a fallback rather than declared on
+  the component, so the app shell can set it once for every panel.
+- **A scroll test could not catch a missing offset.** The history table is
+  barely taller than the panel, so the panel runs out of sticky range before
+  the offset matters, and that check passed with the offset deleted. The
+  smoke check now reads the resolved `top` instead, and fails without it.
+- **One Escape guard was dead code.** A `defaultPrevented` check never fired,
+  because React Aria's overlays already stop their own Escape from
+  propagating. It is gone, and the nested-Toggletip test covers the case.
+
 ## 0.92.0 — 2026-09-25
 
 ### Added — `TreeView`

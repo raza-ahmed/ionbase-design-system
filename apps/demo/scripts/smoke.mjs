@@ -810,6 +810,106 @@ try {
   }
 
   /*
+   * The Runs history's SidePanel. At 1280px it opens beside the table: a
+   * region, not a dialog, its title focused; picking the next run swaps it
+   * without moving focus; it sticks below the sticky header; Escape inside
+   * closes it and returns focus to the run last picked. At 390px there is no
+   * room beside the table, so the same press opens a Drawer — a dialog.
+   */
+  for (const [viewport, width, height] of [
+    ['desktop', 1280, 900],
+    ['mobile', 390, 844],
+  ]) {
+    const where = `side panel (light, ${viewport})`;
+    const context = await browser.newContext({ viewport: { width, height } });
+    await context.addInitScript(() =>
+      localStorage.setItem(
+        'ionbase-ops:demo-settings',
+        JSON.stringify({ theme: 'light', latency: 0 }),
+      ),
+    );
+    const page = await context.newPage();
+    page.on('pageerror', (e) => fail(where, `exception: ${e.message}`));
+    await page.goto(`${BASE}/#/runs`);
+    try {
+      const details = page.getByRole('button', { name: /^Details: / });
+      await details.first().waitFor({ timeout: 10_000 });
+      const [first, second] = [details.nth(0), details.nth(1)];
+      const firstTask = (await first.getAttribute('aria-label')).slice(9);
+      const secondTask = (await second.getAttribute('aria-label')).slice(9);
+      await first.scrollIntoViewIfNeeded();
+      await first.click();
+
+      if (viewport === 'mobile') {
+        const dialog = page.getByRole('dialog', { name: firstTask });
+        await dialog.waitFor({ timeout: 5_000 });
+        await page.keyboard.press('Escape');
+        await dialog.waitFor({ state: 'detached', timeout: 5_000 });
+        if (!(await first.evaluate((el) => el === document.activeElement)))
+          fail(where, 'closing the drawer did not return focus to the row');
+      } else {
+        const region = page.getByRole('region', { name: firstTask });
+        await region.waitFor({ timeout: 5_000 });
+        if ((await page.getByRole('dialog').count()) > 0)
+          fail(where, 'the panel opened as a dialog beside the table');
+        const titleFocused = await page.evaluate(() =>
+          document.activeElement?.classList.contains('ion-side-panel__title'),
+        );
+        if (!titleFocused) fail(where, 'opening did not focus the title');
+
+        await second.click();
+        await page.getByRole('region', { name: secondTask }).waitFor();
+        if (!(await second.evaluate((el) => el === document.activeElement)))
+          fail(where, 'picking the next run pulled focus into the panel');
+        if ((await second.getAttribute('aria-expanded')) !== 'true')
+          fail(where, 'the picked run is not marked expanded');
+
+        // It sticks below the sticky header: its `top` is the header's height
+        // plus a gap. Checked as the resolved style, not by scrolling — the
+        // table is barely taller than the panel, so a scroll test could not
+        // tell a missing offset from the end of the sticky range.
+        const [top, headerHeight] = await page.evaluate(() => [
+          parseFloat(
+            window.getComputedStyle(document.querySelector('.ion-side-panel'))
+              .top,
+          ),
+          document.querySelector('.demo-header').getBoundingClientRect().height,
+        ]);
+        if (Math.abs(top - (headerHeight + 16)) > 0.5)
+          fail(
+            where,
+            `the panel sticks at ${top}px, not below the ${headerHeight}px header`,
+          );
+
+        const overflow = await page.evaluate(
+          () => document.documentElement.scrollWidth > window.innerWidth,
+        );
+        if (overflow) fail(where, 'the page scrolls sideways');
+
+        await page.addScriptTag({ content: axeSource });
+        const violations = await page.evaluate(async () => {
+          const result = await window.axe.run(
+            document.querySelector('.ion-side-panel'),
+            { resultTypes: ['violations'] },
+          );
+          return result.violations.map((v) => `${v.impact} ${v.id}`);
+        });
+        for (const v of violations) fail(where, `axe ${v}`);
+
+        await page.getByRole('button', { name: 'Close panel' }).focus();
+        await page.keyboard.press('Escape');
+        await page.locator('.ion-side-panel').waitFor({ state: 'detached' });
+        if (!(await second.evaluate((el) => el === document.activeElement)))
+          fail(where, 'Escape did not return focus to the run last picked');
+      }
+    } catch (e) {
+      fail(where, `did not run: ${e.message.split('\n')[0]}`);
+    }
+    groupsChecked++;
+    await context.close();
+  }
+
+  /*
    * The wizard's CheckboxGroup, which no page load above reaches: it is on
    * Guardrails, the third step. A saved draft with the first two steps done
    * opens there. "At least one" has to hold three ways — natively (every box
