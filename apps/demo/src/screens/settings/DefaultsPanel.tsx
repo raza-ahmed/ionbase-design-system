@@ -5,14 +5,17 @@ import {
   Card,
   Checkbox,
   CheckboxGroup,
+  Link,
   Radio,
   RadioGroup,
   Select,
   SettingRow,
+  Toggletip,
 } from 'ionbase-ui';
 
 import { saveDefaults, type WorkspaceDefaults } from '../../data/settings';
 import { useDemoSettings } from '../../lib/demo-settings';
+import { href } from '../../lib/router';
 
 const MODEL_OPTIONS = [
   { value: 'swift-m', label: 'Swift M' },
@@ -109,7 +112,18 @@ export function DefaultsPanel({
       </SettingRow>
 
       <RadioGroup
-        label="Keep run logs for"
+        label={
+          <>
+            Keep run logs for{' '}
+            {/* Why the limit exists, and where to read more: optional, and it
+                holds a link — so a Toggletip, not a Tooltip. */}
+            <Toggletip aria-label="About log retention" size="sm">
+              Logs past the period are deleted every night, including the
+              redacted copies.{' '}
+              <Link href={href('assistant')}>Ask how retention works</Link>
+            </Toggletip>
+          </>
+        }
         description="Longer than a year needs the Enterprise plan."
         value={draft?.retentionDays ?? ''}
         isDisabled={disabled}

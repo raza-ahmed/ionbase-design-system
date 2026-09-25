@@ -19,7 +19,7 @@
   ],
   "file": "gaLbGd0QNb1fUl6BjSpfBA",
   "appliedOn": "2026-09-25",
-  "verifiedInFigma": 81,
+  "verifiedInFigma": 82,
   "applied": {
     "1360:267": {
       "figmaComponent": "Accordion",
@@ -390,6 +390,11 @@
       "figmaComponent": "Toggle",
       "component": "Toggle",
       "hash": "a59081fe0eb3dc62"
+    },
+    "1528:263": {
+      "figmaComponent": "Toggletip",
+      "component": "Toggletip",
+      "hash": "e35bcf33ff5b20a5"
     },
     "1392:391": {
       "figmaComponent": "Tool Call",

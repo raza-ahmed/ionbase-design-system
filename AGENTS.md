@@ -121,6 +121,14 @@ and `await userEvent.keyboard('{Tab}')`, which Playwright sends as a trusted
 event the browser acts on. Keep `storybook/test` for everything else; it is
 what the interactions panel records.
 
+## Interaction tests — a controlled overlay needs a real `onOpenChange`
+
+A test that renders `<Modal isOpen onOpenChange={() => {}}>` can never see the
+modal close, so any assertion that it _stayed_ open passes whatever the code
+does. Toggletip's "Escape inside a Modal closes only the toggletip" passed with
+the `stopPropagation` it tests deleted. Give the overlay real state
+(`useState`), and check the other half too: that it does close when it should.
+
 ## Interaction tests — hover is a pulse, not a level
 
 Read this before asserting on `data-hovered` anywhere.

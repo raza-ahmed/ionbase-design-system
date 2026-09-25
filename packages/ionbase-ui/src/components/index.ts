@@ -98,6 +98,12 @@ export type {
 } from './Toast.js';
 export { Tooltip } from './Tooltip.js';
 export type { TooltipProps, TooltipPlacement } from './Tooltip.js';
+export { Toggletip } from './Toggletip.js';
+export type {
+  ToggletipProps,
+  ToggletipPlacement,
+  ToggletipSize,
+} from './Toggletip.js';
 export { Popover } from './Popover.js';
 export type { PopoverProps, PopoverPlacement, PopoverSize } from './Popover.js';
 export { Modal } from './Modal.js';

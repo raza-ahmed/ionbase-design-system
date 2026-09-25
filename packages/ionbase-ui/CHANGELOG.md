@@ -1,5 +1,84 @@
 # Changelog
 
+## 0.90.0 — 2026-09-25
+
+### Added — `Toggletip`
+
+An "ⓘ" button that opens a short explanation when pressed and keeps it open,
+so it can hold a link. It is the ninth item on the enterprise checklist. It
+fills the gap between the two existing overlays:
+
+- **Tooltip** opens on hover, closes when the pointer leaves and can't be
+  focused. A link inside one can't be reached, and it doesn't appear at all
+  on touch screens.
+- **Popover** is a dialog. It takes focus, traps it and hides the rest of the
+  page from assistive technology, which is too much for a sentence of help
+  beside a label.
+
+How Toggletip works:
+
+- **Opens on a click, Enter or Space**, never on hover. It has `aria-expanded`
+  and `aria-controls`, and a required `aria-label` naming its subject, such as
+  "About log retention".
+- **The bubble comes right after the button in the page**, rather than being
+  moved to the end of the page (portalled), so the next Tab reaches a link
+  inside it. It is positioned with `useOverlayPosition`, so it still flips
+  when there's no room.
+- **The text is read out while focus stays on the button.** The bubble is a
+  `role="status"` live region that is always in the page and empty while
+  closed. As with TableBatchBar, a live region added along with its message is
+  silent.
+- **It closes on Escape** (focus returns to the button), a press outside, or
+  focus leaving both the button and the bubble. Inside a Modal, the first
+  Escape closes only the toggletip.
+- **Not modal:** no focus trap, and nothing on the page is hidden from
+  assistive technology.
+- **A 24px target** at both sizes (16px or 20px glyph), pulled into the line
+  so a label is no taller for having one.
+- **Popover's surface, smaller:** `surface/raised`, a subtle border,
+  `shadow/lg`, body-sm text, at most 280px wide.
+- **Tooltip's contract** now points to Toggletip for hints that need a link or
+  have to work on touch. The **Form pattern** says when to use each:
+  guidance needed to fill a field in goes in `description`; an optional
+  explanation goes in a Toggletip.
+
+### Found along the way
+
+- **The contrast gate had a blind spot.** A translucent background on a
+  component with no background of its own was skipped as "backdrop unknown".
+  The Toggletip's hover wash was the first case, showing 4 skipped. It is now
+  checked against each of the three neutral surfaces it could sit on, the fix
+  the gate already made for text on 3 Sep. 0 skipped, 12 new checks, all
+  passing. I confirmed a low-contrast hover now fails.
+- **One test couldn't fail.** "Escape inside a Modal closes only the
+  toggletip" passed even with the code it tests removed: the test's Modal had
+  an `onOpenChange` that did nothing, so it could never close. It now has real
+  state and also checks that the Modal's own Escape still works. AGENTS.md
+  records the trap.
+- **When the bubble gets cut off.** Plain `overflow: hidden` on a container
+  doesn't clip the bubble. A container that is both positioned and clipping
+  does, and Table's scroll container is one. The contract now says exactly
+  that, and warns against using a Toggletip in a table header.
+
+### Figma
+
+- **New Toggletip set** (1528:263) on the Tooltip page, Size × State:
+  - Closed shows the ⓘ;
+  - Open shows the bubble with a link, and `surface/hover` under the button.
+- **Mapped, and all 82 Dev Mode blocks verified.**
+
+### Demo
+
+- **Settings** "Keep run logs for" has a Toggletip explaining nightly deletion,
+  with a link.
+- **The smoke test** opens it at desktop and phone widths and checks:
+  - the bubble isn't cut off, by testing a point near each corner;
+  - axe finds nothing while it's open;
+  - Tab reaches the link;
+  - Escape closes it and returns focus.
+
+  I confirmed it fails when an ancestor cuts the bubble off.
+
 ## 0.89.0 — 2026-09-25
 
 ### Added — `useTableSelection` and `TableBatchBar`
