@@ -10,7 +10,8 @@
     "AgentActivity",
     "AgentActivityStep",
     "AgentStop",
-    "Alert"
+    "Alert",
+    "List"
   ],
   "drivenBy": {
     "hook": "useAgentRun",
@@ -21,7 +22,8 @@
     "The AgentActivityStep that is waiting stays `active`; the ApprovalGate is its `detail`.",
     "An ApprovalGate whose `title` names the action and its object, with the specifics — amount, recipient, record count — as `children`.",
     "`risk` set from the consequence, not from the agent's confidence.",
-    "After the decision, `status` becomes `approved`, `rejected` or `expired` and `resolution` records who decided and when."
+    "After the decision, `status` becomes `approved`, `rejected` or `expired` and `resolution` records who decided and when.",
+    "Where several runs are waiting, the queue is a List named by its heading: a row per waiting run, labelled with the gate's `title` — the action and its object — with the agent, the task and how long it has waited as its `description`, the gate's `risk` as a Badge in `meta`, and an `href` to the run where the gate is. The decision is made on the run, beside its evidence — never from the queue row."
   ],
   "states": {
     "loading": {
@@ -29,7 +31,7 @@
       "why": "an optimistically-advanced run tells the user the action was approved before anything approved it, which is the one thing this pattern exists to prevent"
     },
     "empty": {
-      "must": "Render no ApprovalGate when nothing is waiting. A queue view with no pending items says so in words and does not render an empty gate shell.",
+      "must": "Render no ApprovalGate when nothing is waiting. A queue view with no pending items says so in words — the List's `renderEmptyState` — and does not render an empty gate shell.",
       "why": "a gate with no action in it still shows Approve and Reject buttons, and a user who presses one has approved nothing while believing they approved something"
     },
     "error": {
@@ -57,7 +59,8 @@
     "AgentActivity": ["announceActive"],
     "AgentActivityStep": ["status", "detail"],
     "AgentStop": ["onStop", "label", "size"],
-    "Alert": ["intent", "title"]
+    "Alert": ["intent", "title"],
+    "List": ["items", "aria-labelledby", "renderEmptyState"]
   },
   "variantsUsed": {
     "ApprovalGate": {
@@ -72,6 +75,9 @@
     },
     "AgentStop": {
       "size": ["sm"]
+    },
+    "List": {
+      "selectionMode": ["none"]
     }
   },
   "a11y": {
@@ -97,7 +103,8 @@
       "why": "conflating \"I am working\" with \"I need you\" teaches the user to dismiss both"
     },
     {
-      "dont": "approve-all across a queue of unrelated actions",
+      "dont": "approve-all across a queue of unrelated actions — a queue List with `selectionMode=\"multiple\"` and an Approve batch action",
+      "do": "a queue List whose rows open each run, where its gate is decided on its own evidence",
       "why": "one click covering many consequences is indistinguishable from no gate at all, and it is the failure regulators look for"
     },
     {

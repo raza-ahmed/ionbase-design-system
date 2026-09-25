@@ -1,0 +1,161 @@
+/*
+ * List
+ *
+ * Rows of one thing each, read across, divided by a hairline — Table's row
+ * rule, since a List is what a Table becomes when it loses its columns.
+ *
+ *   row          48px minimum, 12px block and 12px inline padding, a
+ *                border/subtle rule between rows (none above the first)
+ *   check        a Small Checkbox, only in `multiple`
+ *   leading      an Avatar or a 16px Icon, icon/secondary
+ *   label        body-sm, medium, text/default — it is what the row is
+ *   description  body-sm, text/secondary, under the label
+ *   meta         caption, text/tertiary, at the end: a Badge, a time
+ *   actions      the row's own buttons, after the meta
+ *
+ * The rows are square: a hover fill that ran to rounded corners would leave
+ * notches against the rules above and below it.
+ *
+ * The block carries `surface/default` so the translucent hover has a ground
+ * in this file — the contrast gate's rule, see sidebar.css.
+ */
+.ion-list {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  background-color: var(--surface-default);
+  color: var(--text-secondary);
+  font-family: var(--font-family-sans);
+  font-size: var(--type-body-sm);
+  line-height: var(--type-body-sm-line-height);
+  outline: none;
+}
+
+.ion-list__row {
+  display: flex;
+  align-items: center;
+  min-height: var(--spacing-48);
+  padding: var(--spacing-12);
+  cursor: default;
+  outline: none;
+  user-select: none;
+}
+
+.ion-list__row + .ion-list__row {
+  border-block-start: var(--border-width-default) solid var(--border-subtle);
+}
+
+.ion-list__row--actionable {
+  cursor: pointer;
+}
+
+.ion-list__cell {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: var(--spacing-12);
+  min-width: 0;
+}
+
+.ion-list__check {
+  display: inline-flex;
+  flex: none;
+}
+
+.ion-list__leading {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  color: var(--icon-secondary);
+}
+
+.ion-list__leading > svg {
+  width: var(--icon-size-sm);
+  height: var(--icon-size-sm);
+}
+
+.ion-list__text {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--spacing-2);
+  min-width: 0;
+}
+
+.ion-list__label {
+  color: var(--text-default);
+  font-weight: var(--font-weight-medium);
+  overflow-wrap: anywhere;
+}
+
+.ion-list__description {
+  overflow-wrap: anywhere;
+}
+
+.ion-list__meta {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: var(--spacing-8);
+  color: var(--text-tertiary);
+  font-size: var(--type-caption);
+  line-height: var(--type-caption-line-height);
+  white-space: nowrap;
+}
+
+.ion-list__actions {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: var(--spacing-4);
+}
+
+.ion-list__empty {
+  padding: var(--spacing-12);
+}
+
+/* ------------------------------------------------------------------ states */
+
+@media (hover: hover) {
+  .ion-list__row:hover {
+    background-color: var(--surface-hover);
+  }
+}
+
+.ion-list__row--selected {
+  background-color: var(--surface-selected);
+}
+
+@media (hover: hover) {
+  .ion-list__row--selected:hover {
+    background-color: var(--surface-selected-hover);
+  }
+}
+
+/* Two classes, so a disabled row does not react to hover — see sidebar.css. */
+.ion-list .ion-list__row--disabled {
+  background-color: var(--surface-default);
+  color: var(--text-disabled);
+  cursor: not-allowed;
+}
+
+.ion-list .ion-list__row--disabled .ion-list__label,
+.ion-list .ion-list__row--disabled .ion-list__meta {
+  color: var(--text-disabled);
+}
+
+.ion-list .ion-list__row--disabled .ion-list__leading {
+  color: var(--icon-disabled);
+}
+
+.ion-list__row[data-focus-visible='true'] {
+  outline: var(--border-width-thick) solid var(--border-focus);
+  outline-offset: calc(-1 * var(--border-width-thick));
+}
+
+@media (forced-colors: active) {
+  .ion-list__row--selected {
+    outline: var(--border-width-default) solid;
+    outline-offset: calc(-1 * var(--border-width-default));
+  }
+}

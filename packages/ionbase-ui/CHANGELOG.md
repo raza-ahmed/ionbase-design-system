@@ -1,5 +1,58 @@
 # Changelog
 
+## 0.95.0 — 2026-09-25
+
+### Added — `List`
+
+Rows of records to open, pick or act on: an approval inbox, a list of files,
+"choose one of these" that isn't a form field. It is the fourteenth and last
+P0 item on the enterprise checklist. Built on React Aria's `useGridList`.
+
+- **A grid of rows, one tab stop.** ↑ ↓ move between rows, Home and End go
+  to the ends, and typing jumps to a label. → moves into a row's own buttons
+  (`renderActions`) and ← back out, so row actions add no tab stops. A
+  button inside a row does its job only; it doesn't open the row.
+- **Three selection modes.**
+  - `none`, the default: a press opens the row, through its `href` or
+    `onAction`.
+  - `single`: a press selects; Enter or a double click opens.
+  - `multiple`: a real Checkbox per row, named "Select" plus the row's
+    label. A press opens the row while nothing is selected and toggles it
+    once something is. Space selects from the keyboard.
+- **`href` rows are links** through React Aria's router: an app's
+  `RouterProvider` if it has one, the browser otherwise. Hash routes need
+  nothing.
+- **The description is read with the row's label.** `leading` (an Avatar or
+  Icon) is decorative; `meta` (a Badge, a time) sits at the row's end. Long
+  labels wrap and the meta stays on the row.
+- **Empty says why.** With no items, `renderEmptyState` renders in a row of
+  its own, so the named grid isn't announced as "0 rows" and nothing else.
+- **The HumanApproval pattern's queue** is now a List: a row per waiting run,
+  named by the gate's title, with the risk as a Badge and an `href` to the
+  run. There is no multiple selection, because approve-all is already one of
+  the pattern's anti-patterns. `Table` and `TreeView` now point at List for
+  flat rows that have no columns.
+- **Figma:** a List page, with `List Item` (Selection None/Multiple × State,
+  plus Label, Description and toggles for leading, meta and actions) and
+  `List` (Selection None, Single, Multiple). The list is mapped; the item is
+  recorded as `items[n]`.
+- **Demo:** the Runs page's "Waiting for you" queue, which was a grid of
+  cards with a link in each, is a List. The smoke check walks it with ↓ and
+  Enter, clicks a row, and fails if a row isn't named by what its run asks
+  for.
+
+### Found along the way
+
+- **A click on the checkbox's square toggled twice.** The row ignores
+  presses on its focusable children, but the visible square is the
+  checkbox's `<label>`, which isn't focusable. So the row took the click as a
+  press and toggled, and then the label's click toggled back. The box's
+  wrapper now stops the press from reaching the row, and a test clicks the
+  square itself.
+- **Simulated clicks read as touch.** In `single`, Testing Library's click
+  reached React Aria as a virtual press, which opens a row rather than
+  selecting it. The selection tests use real mouse clicks.
+
 ## 0.94.0 — 2026-09-25
 
 ### Added — `DescriptionList` and `DescriptionListItem`

@@ -1,0 +1,113 @@
+{
+  "status": "stable",
+  "summary": "Rows of records to open, pick or act on — an approval inbox, a list of files, \"choose one of these\" that is not a form field. One tab stop, arrow keys inside, a row can hold buttons.",
+  "useWhen": [
+    "each row is one record read across — a label, a line under it, a badge — and the user opens one, or picks some",
+    "an inbox or a queue: rows that open a detail, with several selectable for one action on all of them",
+    "picking one item from many where the choice is not a form value — the file to preview, the run to show beside the list",
+    "rows carry their own small actions — dismiss, a Menu of more"
+  ],
+  "useInstead": [
+    {
+      "when": "the rows have columns that are compared down — duration, owner, status side by side",
+      "use": "Table",
+      "why": "a List has no header and no columns; values meant to be scanned down a column belong in one"
+    },
+    {
+      "when": "the choice is a value submitted with a form",
+      "use": "RadioGroup, Select or CheckboxGroup",
+      "why": "a List's selection is not a form field: it has no name, no validation and no label for the question"
+    },
+    {
+      "when": "the items are nested",
+      "use": "TreeView"
+    },
+    {
+      "when": "a short, static list of links with nothing to select — related pages, three recent items",
+      "use": "a <ul> of Link",
+      "why": "links in a list are one tab stop each, which is right for a handful and needs no grid"
+    },
+    {
+      "when": "the items are the app's own pages",
+      "use": "Sidebar"
+    }
+  ],
+  "variants": {
+    "selectionMode": {
+      "none": {
+        "use": "the default — a press opens the row: its `href`, or `onAction`"
+      },
+      "single": {
+        "use": "pick one, as in a file list: a press selects, Enter or a double click opens"
+      },
+      "multiple": {
+        "use": "an inbox: a checkbox per row. A press opens the row while nothing is selected and toggles it once something is; Space selects from the keyboard"
+      }
+    }
+  },
+  "slots": {
+    "items": {
+      "accepts": "ListItem[]",
+      "note": "each item: `label` (the row's name), `description` (a second line, read with the name), `leading` (Avatar or Icon — decorative, hidden from assistive technology, so it must not carry meaning the label does not), `meta` (Badge or text at the end, not interactive), `href`, `isDisabled`"
+    },
+    "renderActions": {
+      "accepts": "Button, Menu",
+      "note": "at the end of each row; each needs an `aria-label` that names its row — \"Dismiss Reconcile March invoices\", not \"Dismiss\""
+    },
+    "renderEmptyState": {
+      "accepts": "text",
+      "note": "shown in a row of its own when `items` is empty"
+    }
+  },
+  "a11y": {
+    "requires": [
+      "`aria-label` or `aria-labelledby` — the list's name, such as the heading above it",
+      "a unique `id` on every item — selection is held by id",
+      "a string `label`, or `textValue` when the label is not text — typeahead matches it and it is the row's name"
+    ],
+    "guarantees": [
+      "a `grid` of `row`s, one `gridcell` each; `aria-multiselectable` in `multiple`, `aria-selected` on each row only when rows can be selected",
+      "one tab stop: ↑ and ↓ move between rows, Home and End go to the ends, typing jumps to a matching label, and Tab leaves the list",
+      "→ moves into a row's own buttons and ← back out, so row actions add no tab stops; ↑ and ↓ from a button move to the next row",
+      "pressing a button inside a row does its job only — it does not open or select the row",
+      "`href` rows are links through React Aria's router: an app's `RouterProvider` if it has one, the browser otherwise, with modified clicks opening a new tab",
+      "`multiple` gives each row a real Checkbox named \"Select\" and the row's label; a click on its box toggles once",
+      "a disabled item is skipped by the arrow keys and cannot be opened or selected",
+      "the description is read with the row's label",
+      "an empty list stays a named grid, with `renderEmptyState` in a row of its own",
+      "rows are at least 48px tall; long labels wrap and the meta stays at the row's end; the keyboard focus ring is drawn on the row"
+    ],
+    "notes": [
+      "in `multiple` a press opens the row until something is selected — the inbox convention. Say what the checkboxes are for with the batch action they feed, such as a TableBatchBar above the list",
+      "in a single-page app with history routing, wrap the app in React Aria's `RouterProvider` so `href` rows navigate without a page load. Hash routes need nothing",
+      "`leading` is hidden from assistive technology: an avatar's initials or an icon's meaning must be in the label or description too"
+    ]
+  },
+  "antiPatterns": [
+    {
+      "dont": "<ul> of <li onClick> rows, or <div role=\"button\"> per row",
+      "do": "<List items={…} onAction={open} />",
+      "why": "clickable list items are not focusable or announced as actionable, and buttons per row are a tab stop each with no selection"
+    },
+    {
+      "dont": "a Table with one column and no header, to get selectable rows",
+      "do": "<List selectionMode=\"multiple\" … />",
+      "why": "a table claims columns and a header to compare; a screen reader announces \"1 column\" and reads a header that is not there"
+    },
+    {
+      "dont": "a checkbox drawn in each row's label to show selection",
+      "do": "`selectionMode=\"multiple\"`",
+      "why": "a drawn box is not a control: it cannot be clicked without opening the row and is not announced with the row"
+    },
+    {
+      "dont": "renderActions={() => <Button>Dismiss</Button>}",
+      "do": "renderActions={(item) => <Button aria-label={`Dismiss ${item.label}`}>Dismiss</Button>}",
+      "why": "arrowed into from outside its row, a button named only \"Dismiss\" does not say which one it dismisses"
+    },
+    {
+      "dont": "an empty List that renders nothing, or a grid with no rows",
+      "do": "`renderEmptyState={() => 'Nothing is waiting for approval.'}`",
+      "why": "an empty grid is announced as \"0 rows\" and nothing else; the user is not told whether it is loading, filtered or empty"
+    }
+  ]
+}

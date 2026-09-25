@@ -36,7 +36,7 @@
 - [x] **TreeView** — agent's knowledge sources — 0.92.0
 - [x] **SidePanel** — non-modal — Runs history's run details — 0.93.0
 - [x] **DescriptionList** — agent facts, wizard review, run details — 0.94.0
-- [ ] **List** — selectable and actionable
+- [x] **List** — selectable and actionable — Runs' approval queue — 0.95.0
 
 ## P1 — common, and where hand-rolled versions lose accessibility
 

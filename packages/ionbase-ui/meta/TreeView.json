@@ -23,6 +23,11 @@
       "why": "TreeView is a single-column treegrid; nested rows with columns are a table's job"
     },
     {
+      "when": "the items are flat — records to open or pick, with no nesting",
+      "use": "List",
+      "why": "a tree's levels and expand keys are overhead when there is nothing to open"
+    },
+    {
       "when": "picking several values from a flat list",
       "use": "MultiSelect"
     }

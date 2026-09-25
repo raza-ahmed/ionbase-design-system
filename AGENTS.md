@@ -160,6 +160,23 @@ hook decides for you:
   → moves into the row's cells; ↓ goes down. That is the WAI-ARIA treegrid
   pattern, not a bug, so test for it rather than working around it.
 
+## Grid-list rows take a press on anything that is not focusable
+
+`useGridListItem` (3.50) skips a pointer press only when it lands on a
+_focusable_ child of the row. Our Checkbox's visible square is its `<label>`,
+which is not focusable, so a click on it reached the row as a press and
+selected the row, and then the label's own click toggled it straight back. The
+net change was nothing. List wraps the box in a span that stops pointer, mouse
+and click events. Anything clickable in a row that is not itself focusable
+needs the same wrapper, and a test that clicks the drawn part rather than the
+hidden input.
+
+Testing Library's `userEvent.click` (Storybook's `userEvent`) reaches React
+Aria as a _virtual_ press, not a mouse press. A virtual press on a row that
+has an action performs the action instead of selecting it. So under
+`selectionBehavior: 'replace'` it opens a row that a mouse would select. Use
+`vitest/browser`'s real click for any test about what a press selects.
+
 ## Interaction tests — hover is a pulse, not a level
 
 Read this before asserting on `data-hovered` anywhere.

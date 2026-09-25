@@ -81,6 +81,7 @@
 @import url('./drawer.css');
 @import url('./side-panel.css');
 @import url('./description-list.css');
+@import url('./list.css');
 @import url('./stepper.css');
 @import url('./prompt-input.css');
 @import url('./tool-call.css');

@@ -5,11 +5,11 @@ import {
   AvatarGroup,
   Badge,
   Button,
-  Card,
   DescriptionList,
   DescriptionListItem,
   EmptyState,
   Link,
+  List,
   PageHeader,
   SegmentedControl,
   SegmentedControlItem,
@@ -22,6 +22,7 @@ import {
   TableCell,
   TableHead,
   TableRow,
+  type ListItem,
 } from 'ionbase-ui';
 
 import { listRuns, scriptFor, type RunSummary } from '../../data/runs';
@@ -56,11 +57,9 @@ export function RunsScreen() {
           <p className="ion-visually-hidden" role="status">
             Loading runs
           </p>
-          <div className="demo-queue">
+          <div className="demo-queue demo-queue--loading">
             {[0, 1, 2].map((i) => (
-              <Card key={i}>
-                <Skeleton variant="text" lines={3} />
-              </Card>
+              <Skeleton key={i} variant="text" lines={2} />
             ))}
           </div>
           <Skeleton variant="rect" height="var(--spacing-128)" />
@@ -105,52 +104,36 @@ export function RunsScreen() {
 }
 
 function WaitingQueue({ runs }: { runs: RunSummary[] }) {
+  // HumanApproval's queue: one row per waiting run, named by what it asks —
+  // the action and its object. The decision is made on the run, beside its
+  // evidence, so a row opens it and nothing here approves anything.
+  const items: ListItem[] = runs.map((r) => {
+    const gate = scriptFor(r.id)?.steps.find((s) => s.kind === 'approval');
+    const asks = gate?.kind === 'approval' ? gate.title() : r.task;
+    return {
+      id: r.id,
+      label: asks,
+      description: `${r.agent} · ${r.task} · started ${ago(r.startedMinutesAgo)}`,
+      href: href(`runs/${r.id}`),
+      meta: gate?.kind === 'approval' && (
+        <Badge size="sm" intent={RISK_INTENT[gate.risk]}>
+          {`${gate.risk[0].toUpperCase()}${gate.risk.slice(1)} risk`}
+        </Badge>
+      ),
+    };
+  });
   return (
     <section aria-labelledby="queue-title" className="demo-page">
       <h2 id="queue-title" className="ion-text-h6">
         Waiting for you
       </h2>
-      {runs.length === 0 ? (
+      <List
+        aria-labelledby="queue-title"
+        className="demo-queue"
+        items={items}
         // HumanApproval's empty rule: say so in words, never an empty gate shell.
-        <p className="ion-text-body demo-muted">
-          Nothing is waiting for approval.
-        </p>
-      ) : (
-        <ul className="demo-queue">
-          {runs.map((r) => {
-            const gate = scriptFor(r.id)?.steps.find(
-              (s) => s.kind === 'approval',
-            );
-            return (
-              <li key={r.id}>
-                {/* Not a region each: the list already groups them, and a
-                    landmark per queued run would bury the page's own. */}
-                <Card
-                  className="demo-queue__card"
-                  title={r.task}
-                  headingLevel={3}
-                  isRegion={false}
-                  description={`${r.agent} · started ${ago(r.startedMinutesAgo)}`}
-                  action={
-                    gate?.kind === 'approval' && (
-                      <Badge size="sm" intent={RISK_INTENT[gate.risk]}>
-                        {`${gate.risk[0].toUpperCase()}${gate.risk.slice(1)} risk`}
-                      </Badge>
-                    )
-                  }
-                >
-                  {gate?.kind === 'approval' && (
-                    <p className="ion-text-body-sm">{gate.title()}</p>
-                  )}
-                  <Link variant="standalone" href={href(`runs/${r.id}`)}>
-                    {`Review: ${r.task}`}
-                  </Link>
-                </Card>
-              </li>
-            );
-          })}
-        </ul>
-      )}
+        renderEmptyState={() => 'Nothing is waiting for approval.'}
+      />
     </section>
   );
 }

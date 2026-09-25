@@ -997,6 +997,95 @@ try {
   }
 
   /*
+   * The Runs queue, a List: one tab stop whose rows are named by what each
+   * run asks, with the risk at the row's end. ↓ moves between rows and Enter
+   * follows the row's link to the run; a click does too. On a phone the row
+   * wraps rather than pushing its badge off screen.
+   */
+  for (const [viewport, width, height] of [
+    ['desktop', 1280, 900],
+    ['mobile', 390, 844],
+  ]) {
+    const where = `list (light, ${viewport})`;
+    const context = await browser.newContext({ viewport: { width, height } });
+    await context.addInitScript(() =>
+      localStorage.setItem(
+        'ionbase-ops:demo-settings',
+        JSON.stringify({ theme: 'light', latency: 0 }),
+      ),
+    );
+    const page = await context.newPage();
+    page.on('pageerror', (e) => fail(where, `exception: ${e.message}`));
+    await page.goto(`${BASE}/#/runs`);
+    try {
+      const queue = page.getByRole('grid', { name: 'Waiting for you' });
+      await queue.waitFor({ timeout: 10_000 });
+      const rows = queue.getByRole('row');
+      if ((await rows.count()) !== 3)
+        fail(where, `the queue has ${await rows.count()} rows, not 3`);
+      const first = queue.getByRole('row', {
+        name: /^Refund \$249\.00 to Maya Chen/,
+      });
+      if ((await first.count()) !== 1)
+        fail(where, 'a row is not named by the action its run asks for');
+
+      const fits = await queue.evaluate((grid) =>
+        [...grid.querySelectorAll('.ion-list__row')].every((r) => {
+          const badge = r.querySelector('.ion-list__meta');
+          return (
+            !badge ||
+            badge.getBoundingClientRect().right <=
+              r.getBoundingClientRect().right + 0.5
+          );
+        }),
+      );
+      if (!fits) fail(where, "a risk badge runs past its row's end");
+      const overflow = await page.evaluate(
+        () => document.documentElement.scrollWidth > window.innerWidth,
+      );
+      if (overflow) fail(where, 'the page scrolls sideways');
+
+      await page.addScriptTag({ content: axeSource });
+      const violations = await page.evaluate(async () => {
+        const result = await window.axe.run(
+          document.querySelector('.ion-list'),
+          { resultTypes: ['violations'] },
+        );
+        return result.violations.map((v) => `${v.impact} ${v.id}`);
+      });
+      for (const v of violations) fail(where, `axe ${v}`);
+
+      await rows.nth(0).focus();
+      await page.keyboard.press('ArrowDown');
+      const second = rows.nth(1);
+      if (!(await second.evaluate((el) => el === document.activeElement)))
+        fail(where, '↓ did not move to the next row');
+      const secondId = await second.evaluate((el) => el.id.replace(/^.*-/, ''));
+      await page.keyboard.press('Enter');
+      await page.waitForFunction(
+        () => /^#\/runs\/run_\d+$/.test(document.location.hash),
+        undefined,
+        { timeout: 5_000 },
+      );
+      const opened = await page.evaluate(() => document.location.hash);
+      if (!/^run_\d+$/.test(secondId) || !opened.endsWith(secondId))
+        fail(where, `Enter opened ${opened}, not the focused row ${secondId}`);
+
+      await page.goto(`${BASE}/#/runs`);
+      await queue.getByRole('row').first().click();
+      await page.waitForFunction(
+        () => /^#\/runs\/run_\d+$/.test(document.location.hash),
+        undefined,
+        { timeout: 5_000 },
+      );
+    } catch (e) {
+      fail(where, `did not run: ${e.message.split('\n')[0]}`);
+    }
+    groupsChecked++;
+    await context.close();
+  }
+
+  /*
    * The wizard's CheckboxGroup, which no page load above reaches: it is on
    * Guardrails, the third step. A saved draft with the first two steps done
    * opens there. "At least one" has to hold three ways — natively (every box

@@ -10,6 +10,11 @@
       "use": "FullCard"
     },
     {
+      "when": "each row is one record read across — a label, a line under it, a badge — with nothing to compare down a column",
+      "use": "List",
+      "why": "a table claims columns and a header; a one-column table is announced as one and has no row actions a keyboard can reach"
+    },
+    {
       "when": "it is a layout grid rather than data",
       "use": "CSS grid",
       "why": "a <table> announces row and column semantics that a layout does not have"
