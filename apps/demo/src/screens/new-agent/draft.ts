@@ -9,6 +9,7 @@ export const EMPTY_DRAFT: AgentDraft = {
   trigger: 'schedule',
   startDate: null,
   frequency: 'daily',
+  runAt: '09:00',
   escalationPhone: '',
   knowledgeFiles: [],
   requireApproval: true,
@@ -28,7 +29,10 @@ const KEY = 'ionbase-ops:new-agent-draft';
 export function loadDraft(): SavedDraft | null {
   try {
     const raw = window.localStorage.getItem(KEY);
-    return raw ? (JSON.parse(raw) as SavedDraft) : null;
+    if (!raw) return null;
+    const saved = JSON.parse(raw) as SavedDraft;
+    // A draft saved before a field existed gets that field's default.
+    return { ...saved, values: { ...EMPTY_DRAFT, ...saved.values } };
   } catch {
     return null;
   }

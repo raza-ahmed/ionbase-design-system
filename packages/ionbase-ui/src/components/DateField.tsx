@@ -77,7 +77,7 @@ interface DateFieldProps extends AriaDatePickerProps<DateValue> {
  * re-deriving that here would mean re-deriving it wrongly the first time a
  * locale used a separator nobody tested.
  */
-function Segment({
+export function Segment({
   segment,
   state,
 }: {

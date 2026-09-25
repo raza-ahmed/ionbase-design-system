@@ -1,0 +1,31 @@
+/*
+ * TimeField
+ *
+ * Drawn in Figma as `Time Field` on the Date Picker page: the Input box with
+ * a leading clock icon and hour, minute and period segments.
+ *
+ * Everything but the box's cursor comes from elsewhere, on purpose:
+ *
+ *   the box        `.ion-input` and its size and state modifiers — the same
+ *                  box DatePicker and Combobox reuse
+ *   the segments   `.ion-date-field` in date-picker.css, which is imported
+ *                  before this file; a time segment is a date segment
+ *   the clock      `.ion-input__icon-start`, decorative, icon/tertiary
+ *
+ * A second copy of the segment rules would drift from DatePicker's the first
+ * time either changed, and the two fields sit side by side in every schedule
+ * form.
+ */
+.ion-time-field {
+  cursor: text;
+}
+
+/*
+ * Digits sit against the separator, not centred in their reserved width.
+ * A 12-hour clock shows "9", not "09", in a segment wide enough for "12", so
+ * centring read as "9 :00 AM". Right-aligned, the spare width falls beside
+ * the clock icon, where it looks like padding rather than a typo.
+ */
+.ion-time-field .ion-date-field__segment {
+  text-align: end;
+}

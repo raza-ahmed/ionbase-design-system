@@ -1959,6 +1959,31 @@
         }
       }
     },
+    "Time Field": {
+      "page": "Date Picker",
+      "id": "1453:805",
+      "kind": "SET",
+      "props": {
+        "Size": {
+          "type": "VARIANT",
+          "options": ["Small", "Medium", "Large"],
+          "default": "Small"
+        },
+        "State": {
+          "type": "VARIANT",
+          "options": [
+            "Default",
+            "Hover",
+            "Focus",
+            "Filled",
+            "Invalid",
+            "Disabled",
+            "Read-only"
+          ],
+          "default": "Default"
+        }
+      }
+    },
     "Toast": {
       "page": "Toast",
       "id": "820:1655",

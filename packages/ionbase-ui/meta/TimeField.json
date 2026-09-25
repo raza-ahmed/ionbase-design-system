@@ -1,0 +1,86 @@
+{
+  "status": "stable",
+  "since": "0.80.0",
+  "summary": "A time of day typed into hour, minute and AM/PM segments in the reader's own format, taking and returning a 24-hour HH:MM string.",
+  "useWhen": [
+    "the user sets a time of day — a schedule, a reminder, the start of a window",
+    "any minute is allowed, so a list of choices would be long or would leave times out",
+    "beside a DatePicker when the value is a date and a time; the two sit side by side and share one box"
+  ],
+  "useInstead": [
+    {
+      "when": "only a handful of times are allowed — delivery slots, office hours",
+      "use": "Select",
+      "why": "picking from four slots is a choice from a list, and a field that accepts any minute invites times the product will refuse"
+    },
+    {
+      "when": "the value is a duration — 30 minutes, 2 hours",
+      "use": "NumberInput",
+      "why": "a duration is an amount, not a time of day; 02:00 as a length reads as two in the morning"
+    },
+    {
+      "when": "the value is a calendar date",
+      "use": "DatePicker"
+    }
+  ],
+  "variants": {
+    "size": {
+      "sm": {
+        "use": "dense forms, table filters"
+      },
+      "md": {
+        "use": "the default"
+      },
+      "lg": {
+        "use": "prominent single-field forms"
+      }
+    },
+    "granularity": {
+      "hour": {
+        "use": "on-the-hour schedules — the minute segment is not shown"
+      },
+      "minute": {
+        "use": "the default — almost every time of day a person sets"
+      },
+      "second": {
+        "use": "logs and precise triggers; the value becomes HH:MM:SS"
+      }
+    }
+  },
+  "a11y": {
+    "guarantees": [
+      "each segment is a spinbutton that announces its own name, value and bounds — 'hour, 2, minimum 1, maximum 12' — and takes digits or arrow keys",
+      "each editable segment is its own tab stop, like DatePicker and the native time input; the separator is not",
+      "the 12 or 24-hour clock, the separator and the AM/PM wording come from the reader's locale, so '2:30 PM' and '14:30' are the same field and the same value",
+      "the segments sit in one labelled group, so the name is announced once on entry",
+      "a time that does not exist cannot be typed",
+      "a time outside `minValue`/`maxValue` turns the field invalid and names the bound in the reader's own format, without `isInvalid` — the value is kept, not silently clamped"
+    ],
+    "requires": [
+      "`label`, or `aria-label` when no visible label is rendered",
+      "a `description` saying which timezone the time is in, whenever the reader could be in a different one from the thing being scheduled"
+    ],
+    "notes": [
+      "`value` is a wall-clock time with no date and no zone. Keep the timezone as its own field or setting; a time pinned to a `Date` drifts an hour at every daylight-saving change.",
+      "The clock icon is decorative. There is no dropdown of times: two digits are faster to type than 96 quarter-hours are to scan, and a list makes 09:07 impossible."
+    ]
+  },
+  "antiPatterns": [
+    {
+      "dont": "passing a Date, a timestamp or a locale-formatted string such as \"2:30 PM\" as `value`",
+      "why": "the value is 24-hour HH:MM. A malformed value throws with the prop name rather than rendering an empty field"
+    },
+    {
+      "dont": "forcing `hourCycle={12}` for everyone",
+      "why": "a reader whose locale uses 24 hours has to translate every value, which is the misreading the segments exist to prevent. Leave it to the locale"
+    },
+    {
+      "dont": "a schedule time with no timezone anywhere on the form",
+      "why": "\"09:00\" is nine o'clock somewhere; if the reader and the workspace are in different zones, they will each assume their own"
+    },
+    {
+      "dont": "using `minValue` and `maxValue` for a window that crosses midnight",
+      "why": "22:00 to 02:00 has a minimum later than its maximum, so every time is refused; validate the window yourself and set `isInvalid`"
+    }
+  ]
+}

@@ -18,6 +18,23 @@ import { clearDraft, EMPTY_DRAFT, loadDraft, saveDraft, STEPS } from './draft';
 import { BasicsStep, GuardrailsStep, ReviewStep, TriggerStep } from './steps';
 import { FIELD_LABELS, validateStep, type FieldErrors } from './validate';
 
+/*
+ * Moves focus to a field from the error summary. The id is on the field's
+ * root, and for a segmented DatePicker or TimeField that root is a group
+ * `<div>` with nothing to focus, so `.focus()` on it did nothing — the Start
+ * date link had been silently dead since the wizard was built. Fall through to
+ * the first focusable thing inside: the first segment.
+ */
+function focusField(field: string) {
+  const el = document.getElementById(`field-${field}`);
+  const focusable =
+    'input:not([type=hidden]), select, textarea, button, [tabindex="0"]';
+  const target = el?.matches(focusable)
+    ? el
+    : el?.querySelector<HTMLElement>(focusable);
+  target?.focus();
+}
+
 /**
  * The Wizard pattern, each step a Form. Validation runs per step on Next and per
  * field on blur; a failed Next shows an error summary and moves focus to it;
@@ -227,11 +244,7 @@ export function NewAgentWizard() {
                 {errorEntries.map(([field, message]) => (
                   <li key={field}>
                     {/* In-page navigation to the field, so a Link, not a Button. */}
-                    <Link
-                      onPress={() =>
-                        document.getElementById(`field-${field}`)?.focus()
-                      }
-                    >
+                    <Link onPress={() => focusField(field)}>
                       {FIELD_LABELS[field]}
                     </Link>
                     {' — '}
