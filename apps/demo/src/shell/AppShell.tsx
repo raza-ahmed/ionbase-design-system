@@ -5,12 +5,15 @@ import {
   Drawer,
   Header,
   Icon,
+  Kbd,
   Logo,
   Tooltip,
 } from 'ionbase-ui';
 import { Bell } from 'ionbase-icons/icons/bell';
+import { Search } from 'ionbase-icons/icons/search';
 
 import { href, type Route } from '../lib/router';
+import { AppCommands } from './AppCommands';
 import { DemoControls } from './DemoControls';
 import { NavSidebar } from './NavSidebar';
 
@@ -29,6 +32,7 @@ export function AppShell({
   children: ReactNode;
 }) {
   const [navOpen, setNavOpen] = useState(false);
+  const [commandsOpen, setCommandsOpen] = useState(false);
 
   // Navigating from the mobile drawer should close it.
   useEffect(() => setNavOpen(false), [route]);
@@ -53,6 +57,23 @@ export function AppShell({
         }
         end={
           <>
+            {/*
+              The palette's visible door. ⌘K is invisible to anyone who has
+              not been told it exists, so the button says so — and on a
+              phone, which has no ⌘K, it is the only way in. Named "Search"
+              outright: on a phone the word is hidden and only the icon shows.
+            */}
+            <Button
+              aria-label="Search"
+              variant="secondary"
+              size="sm"
+              className="demo-search"
+              startIcon={<Icon as={Search} size="sm" />}
+              endIcon={<Kbd shortcut="mod+k" />}
+              onPress={() => setCommandsOpen(true)}
+            >
+              <span className="demo-search__label">Search</span>
+            </Button>
             <Tooltip label="Notifications">
               <Button
                 variant="tertiary"
@@ -85,6 +106,8 @@ export function AppShell({
       <main className="demo-main" aria-labelledby="page-title">
         {children}
       </main>
+
+      <AppCommands isOpen={commandsOpen} onOpenChange={setCommandsOpen} />
 
       <DemoControls />
     </div>

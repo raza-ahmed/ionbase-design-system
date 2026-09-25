@@ -69,6 +69,7 @@ const fail = (where, what) => failures.push(`${where}: ${what}`);
 
 let browser;
 let loadingChecked = 0;
+let paletteChecked = 0;
 try {
   await waitForServer();
   browser = await chromium.launch();
@@ -156,6 +157,92 @@ try {
   }
 
   /*
+   * The command palette, opened the two ways a person opens it: the shortcut
+   * on a desktop, the header button on a phone, which has no ⌘K. It lives in a
+   * portal that no page load above ever renders, so it is checked here — axe
+   * over the open dialog, no sideways scroll, and a command that really runs.
+   */
+  for (const theme of THEMES) {
+    for (const [viewport, width, height] of [
+      ['desktop', 1280, 900],
+      ['mobile', 390, 844],
+    ]) {
+      const where = `command palette (${theme}, ${viewport})`;
+      const context = await browser.newContext({ viewport: { width, height } });
+      await context.addInitScript(
+        (t) =>
+          localStorage.setItem(
+            'ionbase-ops:demo-settings',
+            JSON.stringify({ theme: t, latency: 0 }),
+          ),
+        theme,
+      );
+      const page = await context.newPage();
+      page.on(
+        'console',
+        (m) => m.type() === 'error' && fail(where, `console: ${m.text()}`),
+      );
+      page.on('pageerror', (e) => fail(where, `exception: ${e.message}`));
+      await page.goto(`${BASE}/#/overview`);
+      await page.locator('#page-title').waitFor({ timeout: 10_000 });
+
+      if (viewport === 'mobile') {
+        await page.getByRole('button', { name: /^Search/ }).click();
+      } else {
+        await page.keyboard.press('ControlOrMeta+k');
+      }
+      const dialog = page.getByRole('dialog', { name: 'Search and commands' });
+      try {
+        await dialog.waitFor({ timeout: 5_000 });
+      } catch {
+        fail(where, 'did not open');
+        await context.close();
+        continue;
+      }
+
+      if (viewport === 'mobile') {
+        const overflow = await page.evaluate(
+          () => document.documentElement.scrollWidth - window.innerWidth,
+        );
+        if (overflow > 0) fail(where, `scrolls sideways by ${overflow}px`);
+      } else {
+        await page.addScriptTag({ content: axeSource });
+        const violations = await page.evaluate(async () => {
+          const result = await window.axe.run(
+            document.querySelector('[role="dialog"]'),
+            { resultTypes: ['violations'] },
+          );
+          return result.violations.map((v) => ({
+            id: v.id,
+            impact: v.impact,
+            targets: v.nodes.slice(0, 3).map((n) => n.target.join(' ')),
+          }));
+        });
+        for (const v of violations) {
+          fail(where, `axe ${v.impact} ${v.id} — ${v.targets.join(', ')}`);
+        }
+      }
+
+      await page.keyboard.type('go to runs');
+      await page.keyboard.press('Enter');
+      try {
+        await page.waitForFunction(
+          () => document.location.hash === '#/runs',
+          null,
+          {
+            timeout: 5_000,
+          },
+        );
+        await dialog.waitFor({ state: 'detached', timeout: 5_000 });
+      } catch {
+        fail(where, '"Go to Runs" did not close the palette and navigate');
+      }
+      paletteChecked++;
+      await context.close();
+    }
+  }
+
+  /*
    * The loading states, at phone width. With no latency a skeleton is gone
    * before anything can measure it, and a skeleton is laid out differently
    * from the content it stands in for — the Agents skeleton once pushed the
@@ -190,7 +277,8 @@ try {
   server.kill();
 }
 
-const checked = ROUTES.length * THEMES.length * 2 + loadingChecked;
+const checked =
+  ROUTES.length * THEMES.length * 2 + loadingChecked + paletteChecked;
 if (failures.length) {
   console.error(
     `Demo smoke: ${failures.length} failures across ${checked} page loads\n`,

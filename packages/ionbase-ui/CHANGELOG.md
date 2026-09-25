@@ -1,5 +1,52 @@
 # Changelog
 
+## 0.81.0 — 2026-09-25
+
+### Added — `CommandPalette` and `Kbd`
+
+A SaaS product outgrows its sidebar: dozens of pages, records and actions,
+and people who use it every day want to reach any of them without the
+pointer. There was no way to do that here.
+
+- **`CommandPalette`**: ⌘K on a Mac, Ctrl+K elsewhere, opens it from anywhere
+  on the page, and the same keys close it (`openShortcut`, `null` to turn it
+  off). Mount it once with every command. Typing filters by label,
+  description, section and `keywords`, using the same locale-aware matching
+  as Combobox. Enter runs the highlighted row.
+- **The shape is a combobox driving an always-open listbox**, inside a modal
+  dialog. Focus stays in the search field, arrow keys move
+  `aria-activedescendant`, sections are named groups, and disabled commands
+  are listed but skipped. A polite live region announces how many commands
+  match, which nothing else would.
+- **`onAction` runs after the palette has closed.** While the dialog is
+  mounted its focus trap pulls focus back to its own search field, so an
+  action that focused a field from inside would lose it.
+  `AnActionThatMovesFocusKeepsIt` holds this.
+- Top-anchored, 96px down, not centred: the panel changes height as you type,
+  and a centred one would jump. The key hints hide below 40rem.
+- **`Kbd`**: one key, or a whole shortcut written once, such as
+  `shortcut="mod+k"`. `mod` draws ⌘ on Apple platforms and Ctrl elsewhere, in
+  each platform's own modifier order. A screen reader hears "Command K", not
+  the symbols. Server rendering shows Ctrl and corrects after hydration
+  without a mismatch.
+- A command's `shortcut` is shown, not bound. The contract says so: a hint
+  for a key that does nothing is worse than no hint.
+- The PageShell pattern now places the palette: mounted once in the shell,
+  with a visible Search button in Header's `end`.
+- Figma: a new Command Palette page with `Kbd`, `Command Palette Item`
+  (Default, Active, Disabled; unmapped, like Combobox Menu) and
+  `Command Palette` (Results, Empty). All 74 Dev Mode blocks verified.
+
+### Demo
+
+- ⌘K / Ctrl+K opens **Search and commands**: create an agent, review each
+  run waiting for approval, go to any page, open any agent. The header's
+  Search button shows the shortcut; on a phone it is icon-only and is the
+  only way in.
+- The smoke test now opens the palette both ways, runs axe over it, checks it
+  at phone width, and runs "Go to Runs" through to the route change.
+- The demo shows **81 of 81** components.
+
 ## 0.80.0 — 2026-09-25
 
 ### Added — `TimeField`

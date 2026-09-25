@@ -15,14 +15,17 @@
     "Avatar",
     "Button",
     "Divider",
-    "ToastProvider"
+    "ToastProvider",
+    "CommandPalette",
+    "Kbd"
   ],
   "structure": [
     "Header at the top with the brand in `brand`, primary navigation in `center` and account actions in `end`.",
     "One <main> content region, named, holding the page's own heading as its h1.",
     "ToastProvider mounted once around the whole shell, not per route.",
     "Breadcrumbs, when present, sit inside <main> above the h1 — they describe where the content is, not where the chrome is.",
-    "When navigation is hierarchical or longer than a header row holds, a Sidebar replaces the NavItems in Header's `center`: Header keeps the brand and account actions, and the Sidebar sits beside <main> as the primary navigation. Below the tablet breakpoint the same Sidebar moves into a Drawer opened by Header's own toggle with `menuType=\"dialog\"` — one copy, not two, and one menu button."
+    "When navigation is hierarchical or longer than a header row holds, a Sidebar replaces the NavItems in Header's `center`: Header keeps the brand and account actions, and the Sidebar sits beside <main> as the primary navigation. Below the tablet breakpoint the same Sidebar moves into a Drawer opened by Header's own toggle with `menuType=\"dialog\"` — one copy, not two, and one menu button.",
+    "A CommandPalette, when the product has one, is mounted once inside the shell beside ToastProvider, not per route. Header's `end` carries a Search button showing <Kbd shortcut=\"mod+k\" /> — the visible door for anyone who does not know the shortcut, and the only one on a phone. Everything in the palette is also reachable from the navigation."
   ],
   "states": {
     "loading": {
@@ -55,7 +58,15 @@
     "Drawer": ["isOpen", "onOpenChange", "title", "placement"],
     "ToastProvider": ["placement", "limit"],
     "Logo": ["size", "wordmark"],
-    "LogoMark": ["size", "label"]
+    "LogoMark": ["size", "label"],
+    "CommandPalette": [
+      "commands",
+      "onAction",
+      "isOpen",
+      "onOpenChange",
+      "label"
+    ],
+    "Kbd": ["shortcut"]
   },
   "variantsUsed": {
     "ToastProvider": {

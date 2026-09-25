@@ -314,3 +314,10 @@ export type {
 } from './agent-run.js';
 export { useAgentRun } from './use-agent-run.js';
 export type { UseAgentRunOptions, UseAgentRunResult } from './use-agent-run.js';
+export { Kbd } from './Kbd.js';
+export type { KbdProps, KbdPlatform } from './Kbd.js';
+export { CommandPalette } from './CommandPalette.js';
+export type {
+  CommandPaletteProps,
+  CommandPaletteItem,
+} from './CommandPalette.js';

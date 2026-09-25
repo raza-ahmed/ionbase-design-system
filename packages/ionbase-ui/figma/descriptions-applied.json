@@ -19,7 +19,7 @@
   ],
   "file": "gaLbGd0QNb1fUl6BjSpfBA",
   "appliedOn": "2026-09-25",
-  "verifiedInFigma": 72,
+  "verifiedInFigma": 74,
   "applied": {
     "1360:267": {
       "figmaComponent": "Accordion",
@@ -380,6 +380,16 @@
       "figmaComponent": "Chart Legend",
       "component": "ChartLegend",
       "hash": "64683cc4fc5d57df"
+    },
+    "1458:368": {
+      "figmaComponent": "Command Palette",
+      "component": "CommandPalette",
+      "hash": "73e18f172efba928"
+    },
+    "1457:242": {
+      "figmaComponent": "Kbd",
+      "component": "Kbd",
+      "hash": "f1dd95d9a6f3c311"
     }
   }
 }

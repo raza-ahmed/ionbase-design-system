@@ -33,6 +33,29 @@ body {
   grid-column: 1 / -1;
 }
 
+/*
+ * On a phone the Search button is its icon alone: the header has no room for
+ * the word, and a phone has no ⌘K, so the key hint would promise something it
+ * cannot do. The button's aria-label keeps its name.
+ */
+@media (width < 40rem) {
+  /* Square, like the Notifications button beside it. */
+  .demo-search {
+    --ion-button-gap: 0;
+
+    width: var(--ion-button-size);
+    padding-inline: 0;
+  }
+
+  .demo-search .ion-kbd-group {
+    display: none;
+  }
+
+  .demo-search__label {
+    display: none;
+  }
+}
+
 .demo-sidebar {
   position: sticky;
   top: var(--demo-header-height);

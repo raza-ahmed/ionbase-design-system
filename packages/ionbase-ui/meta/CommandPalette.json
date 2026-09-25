@@ -1,0 +1,72 @@
+{
+  "status": "stable",
+  "since": "0.81.0",
+  "summary": "A searchable list of every command in the product, opened with ⌘K / Ctrl+K from anywhere, that runs the chosen command and closes.",
+  "useWhen": [
+    "the product has more actions and destinations than its navigation shows at once",
+    "people who use it daily want to reach anything without the pointer",
+    "mounted once, near the root, with every command the product has"
+  ],
+  "useInstead": [
+    {
+      "when": "the user picks a value that stays chosen — an assignee, a country",
+      "use": "Combobox",
+      "why": "a combobox selects and keeps a value in a form; a palette runs a command once and goes away"
+    },
+    {
+      "when": "a few actions belong to one object — a row's Edit, Duplicate, Delete",
+      "use": "Menu",
+      "why": "those actions belong beside the thing they act on, where people look for them"
+    },
+    {
+      "when": "the search is over records — agents, runs — shown as a page of results",
+      "use": "Input",
+      "why": "a filtered table is a page with its own URL, and a palette is gone the moment it is used"
+    }
+  ],
+  "a11y": {
+    "role": "dialog",
+    "guarantees": [
+      "a modal dialog named by `label`: focus is trapped, the page behind is hidden from assistive tech, Escape and a scrim click close it, and focus returns to what had it",
+      "focus stays in the search field, a combobox whose always-open listbox is driven by aria-activedescendant — typing and choosing never compete for focus",
+      "sections are role=group, named by their heading",
+      "disabled commands are listed with aria-disabled, skipped by the arrow keys, and do nothing on click",
+      "the number of matches is announced through a polite live region as the query changes",
+      "`onAction` runs after the palette has closed and handed focus back, so an action that moves focus keeps it",
+      "shortcut hints are read as key names — \"Command Shift N\" — not as symbols"
+    ],
+    "requires": [
+      "every command also reachable without the palette — it is a faster route, never the only one",
+      "a visible way to open it for people who do not know the shortcut, such as a header button showing the keys"
+    ]
+  },
+  "antiPatterns": [
+    {
+      "dont": "showing a `shortcut` on a command without binding that shortcut yourself",
+      "why": "the palette displays a command's shortcut and does not listen for it; a hint for a key that does nothing is worse than no hint"
+    },
+    {
+      "dont": "moving focus from inside a command's handler by running it before closing, or wrapping onAction to close the palette first",
+      "why": "onAction already runs after close. While the dialog is mounted its focus scope pulls focus back to the search field"
+    },
+    {
+      "dont": "rendering <CommandPalette> only when a state flag is true",
+      "do": "mount it always and drive `isOpen`, or let it open itself on the shortcut",
+      "why": "unmounted, it cannot listen for ⌘K"
+    },
+    {
+      "dont": "labels that are nouns — \"Agents\", \"Dark mode\"",
+      "do": "start with a verb — \"Go to Agents\", \"Switch to dark theme\"",
+      "why": "a row says what pressing Enter will do; a noun leaves the reader guessing whether it opens, toggles or deletes"
+    },
+    {
+      "dont": "two palettes on one page, or a second listener for ⌘K",
+      "why": "both toggle on the same key press and cancel each other out"
+    }
+  ],
+  "slots": {
+    "emptyLabel": {
+      "expects": "what to show when nothing matches"
+    }
+  }
+}
