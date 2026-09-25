@@ -91,7 +91,7 @@ IonBase column names the component that covers it.
 | Menu (ARIA `role="menu"`)    |   ●    |  ●  |  ●   | `Menu`               |
 | Context menu                 |   ●    |     |      | —                    |
 | Tree view                    |   ●    |     |  ●   | —                    |
-| Toolbar                      |   ◐    |  ●  |  ◐   | —                    |
+| Toolbar                      |   ◐    |  ●  |  ◐   | `Toolbar`            |
 | Command palette              |        |     |      | `CommandPalette`     |
 | Skip link                    |   ●    |     |      | —                    |
 | Navigation rail / bottom bar |        |  ●  |      | — _non-goal, §4_     |

@@ -1993,6 +1993,19 @@
         }
       }
     },
+    "Toolbar": {
+      "code": "Toolbar",
+      "props": {
+        "Orientation": {
+          "prop": "orientation",
+          "values": {
+            "Horizontal": "horizontal",
+            "Vertical": "vertical"
+          },
+          "note": "Horizontal moves with ← →, vertical with ↑ ↓. The children are the caller's: Buttons, a Divider between groups (vertical in a horizontal toolbar), and a MenuTrigger with an icon-only Button for the overflow. Name it with aria-label for what it acts on."
+        }
+      }
+    },
     "Tooltip": {
       "code": "Tooltip",
       "props": {

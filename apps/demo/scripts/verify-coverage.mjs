@@ -52,6 +52,7 @@ const REQUIRED = [
   'Fieldset',
   'Menu',
   'MultiSelect',
+  'Toolbar',
   'MenuItem',
   'MenuSection',
   'MenuTrigger',

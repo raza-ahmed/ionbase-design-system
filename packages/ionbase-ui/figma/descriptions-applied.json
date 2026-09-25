@@ -19,7 +19,7 @@
   ],
   "file": "gaLbGd0QNb1fUl6BjSpfBA",
   "appliedOn": "2026-09-25",
-  "verifiedInFigma": 79,
+  "verifiedInFigma": 80,
   "applied": {
     "1360:267": {
       "figmaComponent": "Accordion",
@@ -390,6 +390,11 @@
       "figmaComponent": "Tool Call",
       "component": "ToolCall",
       "hash": "bbe3a7a72e4a1e73"
+    },
+    "1517:583": {
+      "figmaComponent": "Toolbar",
+      "component": "Toolbar",
+      "hash": "aeafb83faa63711a"
     },
     "801:68": {
       "figmaComponent": "Tooltip",

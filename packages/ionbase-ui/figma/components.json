@@ -2297,6 +2297,18 @@
         }
       }
     },
+    "Toolbar": {
+      "page": "Toolbar",
+      "id": "1517:583",
+      "kind": "SET",
+      "props": {
+        "Orientation": {
+          "type": "VARIANT",
+          "options": ["Horizontal", "Vertical"],
+          "default": "Horizontal"
+        }
+      }
+    },
     "Tooltip": {
       "page": "Tooltip",
       "id": "801:68",
