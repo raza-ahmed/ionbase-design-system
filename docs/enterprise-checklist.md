@@ -40,7 +40,7 @@
 
 ## P1 — common, and where hand-rolled versions lose accessibility
 
-- [ ] **ButtonGroup**
+- [x] **ButtonGroup** — wizard, delete dialogs, save bar, run header — 0.96.0
 - [ ] **SplitButton** — _needs Menu_
 - [ ] **ContextMenu** — _needs Menu_
 - [ ] **CopyButton**

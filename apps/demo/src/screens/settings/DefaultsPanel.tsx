@@ -2,6 +2,7 @@ import { useState } from 'react';
 import {
   Alert,
   Button,
+  ButtonGroup,
   Card,
   Checkbox,
   CheckboxGroup,
@@ -158,26 +159,30 @@ export function DefaultsPanel({
           role="region"
           aria-label="Unsaved changes"
         >
-          <span className="ion-text-body-sm">
-            {dirtyKeys.length} unsaved{' '}
-            {dirtyKeys.length === 1 ? 'change' : 'changes'}
-          </span>
-          <span className="demo-form__spacer" />
-          <Button
-            size="sm"
-            variant="secondary"
-            isDisabled={saving}
-            onClick={() => {
-              setDraft(saved);
-              setRejected({});
-              setError(null);
-            }}
+          <ButtonGroup
+            start={
+              <span className="ion-text-body-sm">
+                {dirtyKeys.length} unsaved{' '}
+                {dirtyKeys.length === 1 ? 'change' : 'changes'}
+              </span>
+            }
           >
-            Discard
-          </Button>
-          <Button size="sm" isDisabled={saving} onClick={() => void save()}>
-            {saving ? 'Saving…' : 'Save changes'}
-          </Button>
+            <Button
+              size="sm"
+              variant="secondary"
+              isDisabled={saving}
+              onClick={() => {
+                setDraft(saved);
+                setRejected({});
+                setError(null);
+              }}
+            >
+              Discard
+            </Button>
+            <Button size="sm" isDisabled={saving} onClick={() => void save()}>
+              {saving ? 'Saving…' : 'Save changes'}
+            </Button>
+          </ButtonGroup>
         </div>
       )}
     </Card>

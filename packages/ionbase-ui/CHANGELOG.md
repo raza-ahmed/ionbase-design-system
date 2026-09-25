@@ -1,5 +1,64 @@
 # Changelog
 
+## 0.96.0 — 2026-09-26
+
+### Added — `ButtonGroup`
+
+A row of actions: a dialog's Cancel and Confirm, a form's Back, Save and
+Next, a record's header actions. It is the first P1 item on the enterprise
+checklist. Rows like these were hand-built all over, each with its own gap:
+12px in Modal's footer, 8px in Drawer's and PageHeader's, and a spacer
+`<span>` in the demo's wizard.
+
+- **Spacing:** 8px between actions, and between the `start` slot and the
+  rest.
+- **Order:** children are drawn in reading order, primary last. There is no
+  `row-reverse`, so the drawn order never contradicts the Tab order (WCAG
+  2.4.3). It mirrors in right-to-left languages.
+- **`start`:** actions pinned to the start edge, apart from the rest, such as
+  Back in a wizard or a count in a save bar.
+- **`align`:** `end` (the default), `start` or `center`.
+- **`stack`:** below 32rem of viewport, one action per line at full width,
+  still in reading order, so the primary is last and nearest the thumb.
+- **`overflow="menu"`:** the row stays on one line. The Buttons that don't
+  fit move into a "More actions" menu at the row's start, first Button
+  first. The last child (the primary) and anything that isn't a Button
+  never move. A menu item presses the real Button, which stays in the page
+  hidden, so its `onPress`, its `onClick` and `type="submit"` behave as if it
+  had been clicked. A disabled Button becomes a disabled menu item. With room
+  again, the actions come back, including in a parent that sizes to its
+  content, such as PageHeader's actions.
+- **Figma:** a Button Group page, with Align × Overflow for the inline row,
+  one stacked variant, and Show Start. It is mapped; 89 blocks verified.
+- **Demo:**
+  - The wizard's actions have Back in `start` and stack on a phone.
+  - Both delete dialogs stack their footer on a phone.
+  - The settings save bar uses `start` for its unsaved count, replacing a
+    spacer.
+  - The run page header uses `overflow="menu"` and gains a real "Copy run
+    ID" action. At 320px it moves into More actions, and the smoke check
+    copies through the menu and reads the clipboard.
+
+### Changed — the Form pattern's action order
+
+The Form pattern said "a submit Button and a cancel Link or Button, in that
+reading order", with the primary first. That contradicted DestructiveConfirm
+and the demo, both of which put it last. Every pattern now has one rule: a
+ButtonGroup with cancel first and the primary last. Forms built from the old
+text should move their submit Button after the cancel. The Wizard and
+DestructiveConfirm patterns name ButtonGroup too.
+
+### Found along the way
+
+- **The overflow row could shrink but never grow back.** In a parent that
+  sizes to its content, the row shrank as actions hid, and then had no room
+  to measure against. The row now asks for its full width and is allowed to
+  shrink below it. A test widens a shrink-to-fit parent and fails without
+  this.
+- **Collapsing only a leading run of Buttons meant nothing collapsed** on the
+  run page, whose first action is AgentStop. Buttons now collapse in order,
+  skipping what can't, and a test puts a Link first.
+
 ## 0.95.0 — 2026-09-25
 
 ### Added — `List`

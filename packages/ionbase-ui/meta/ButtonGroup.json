@@ -1,0 +1,97 @@
+{
+  "status": "stable",
+  "summary": "A row of actions — a dialog's Cancel and Confirm, a form's Back, Save and Next, a record's header actions. Owns the gap, the order and what happens when the row runs out of room.",
+  "useWhen": [
+    "two or more actions sit together: a dialog or drawer footer, the end of a form, a page or card header",
+    "one action is primary and the rest are alternatives to it",
+    "the row may be narrower than its actions — a phone, a side panel — and has to wrap, stack or overflow rather than spill"
+  ],
+  "useInstead": [
+    {
+      "when": "many controls act on one thing — a table's batch actions, an editor's formatting",
+      "use": "Toolbar",
+      "why": "a toolbar is one tab stop with arrow keys inside; a ButtonGroup is a tab stop per action, which is right for two or three and tiring for ten"
+    },
+    {
+      "when": "the buttons are one choice among options, one of them selected",
+      "use": "SegmentedControl",
+      "why": "that is a radio group with a value; a ButtonGroup holds independent actions"
+    },
+    {
+      "when": "a single action",
+      "use": "Button",
+      "why": "a group of one adds nothing"
+    }
+  ],
+  "composition": {
+    "order": ["ButtonGroup", "Button"],
+    "note": "Children in reading order, least important first, the primary last. It is drawn in that order: the primary lands at the end of the row in either direction, and last in the stack on a phone.",
+    "example": "<ButtonGroup stack start={<Button variant=\"tertiary\">Back</Button>}><Button variant=\"secondary\">Save and exit</Button><Button type=\"submit\">Next</Button></ButtonGroup>"
+  },
+  "variants": {
+    "align": {
+      "end": { "use": "the default — dialog, drawer and form footers" },
+      "start": { "use": "actions under a left-aligned block of text" },
+      "center": { "use": "a centred dialog or empty state" }
+    },
+    "overflow": {
+      "wrap": {
+        "use": "the default — actions that do not fit move to a second line, all still shown"
+      },
+      "menu": {
+        "use": "a header row that must stay one line: the Buttons that do not fit move into More actions, first Button first; the primary and anything that is not a Button stay"
+      }
+    }
+  },
+  "slots": {
+    "children": {
+      "accepts": "Button, Link, AgentStop, MenuTrigger",
+      "note": "the actions, primary last. With `overflow=\"menu\"` only Buttons move, and each needs a text label or `aria-label` — it is what the menu item says"
+    },
+    "start": {
+      "accepts": "Button, text",
+      "note": "pinned to the start edge, apart from the rest — Back in a wizard, a count in a save bar. It never collapses"
+    }
+  },
+  "a11y": {
+    "requires": [
+      "the primary last among the children — the order is the reading, Tab and drawn order, and nothing reorders it",
+      "with `overflow=\"menu\"`, a text label or `aria-label` on every Button that may move, and `moreLabel` translated"
+    ],
+    "guarantees": [
+      "every action is its own tab stop, in the order it is read; no `row-reverse`, so the drawn order never contradicts the Tab order (WCAG 2.4.3)",
+      "8px between actions, and between `start` and the rest",
+      "the order mirrors in a right-to-left locale: the primary is at the start of the line there",
+      "`stack` below 32rem of viewport: one action per line, full width, in reading order, the primary last and nearest the thumb",
+      "`overflow=\"menu\"` keeps the row on one line and inside its box. The Buttons that do not fit move into a MenuTrigger named \"More actions\" at the row's start; hidden ones are out of the Tab order and the accessibility tree",
+      "a menu item presses the real Button, so its `onPress`, its `onClick` and `type=\"submit\"` behave as if it were clicked; a disabled Button is a disabled menu item",
+      "with room again, every action comes back and More goes — also in a parent that sizes to its content, such as PageHeader's actions"
+    ],
+    "notes": [
+      "a menu item cannot show a Button's variant: a destructive action that must look destructive should not be allowed to overflow — make it the primary, or put it in `start`",
+      "Enter in a form submits the first submit button in the DOM order; with the primary last, give the others `type=\"button\"` (IonBase's Button is `type=\"button\"` unless told otherwise)"
+    ]
+  },
+  "antiPatterns": [
+    {
+      "dont": "<div style={{ display: 'flex', gap: 12, justifyContent: 'flex-end' }}>",
+      "do": "<ButtonGroup>",
+      "why": "hand-built rows each pick their own gap and none decides what happens on a phone — the demo had 8, 12 and a spacer span"
+    },
+    {
+      "dont": "flex-direction: row-reverse, to put the primary on the right while it comes first in the markup",
+      "do": "the primary last among the children",
+      "why": "Tab then walks the row backwards from how it is drawn, and a screen reader reads the primary before the options it is chosen over"
+    },
+    {
+      "dont": "<ButtonGroup overflow=\"menu\"> around icon-only Buttons with no `aria-label`",
+      "do": "an `aria-label` on each, which becomes its menu item's text",
+      "why": "a collapsed icon-only Button has nothing to be called in the menu"
+    },
+    {
+      "dont": "a ButtonGroup of ten actions on one record",
+      "do": "<Toolbar>, or a MenuTrigger for the rare ones",
+      "why": "ten tab stops in a row is ten presses to get past it"
+    }
+  ]
+}

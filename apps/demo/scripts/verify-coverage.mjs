@@ -62,6 +62,7 @@ const REQUIRED = [
   'DescriptionList',
   'DescriptionListItem',
   'List',
+  'ButtonGroup',
   'MenuItem',
   'MenuSection',
   'MenuTrigger',

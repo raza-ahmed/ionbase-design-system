@@ -4,6 +4,7 @@ import {
   Breadcrumb,
   BreadcrumbItem,
   Button,
+  ButtonGroup,
   Link,
   PageHeader,
   Stepper,
@@ -296,17 +297,22 @@ export function NewAgentWizard() {
           />
         )}
 
-        <div className="demo-form__actions">
-          {step > 0 && (
-            <Button
-              variant="tertiary"
-              isDisabled={pending}
-              onClick={() => goTo(step - 1)}
-            >
-              Back
-            </Button>
-          )}
-          <span className="demo-form__spacer" />
+        {/* Back is pinned apart from the forward actions; on a phone they
+            stack one per line, Next last, nearest the thumb. */}
+        <ButtonGroup
+          stack
+          start={
+            step > 0 && (
+              <Button
+                variant="tertiary"
+                isDisabled={pending}
+                onClick={() => goTo(step - 1)}
+              >
+                Back
+              </Button>
+            )
+          }
+        >
           {!isLast && (
             <Button
               variant="secondary"
@@ -325,7 +331,7 @@ export function NewAgentWizard() {
                 ? 'Create agent'
                 : `Next: ${STEPS[step + 1]}`}
           </Button>
-        </div>
+        </ButtonGroup>
       </form>
     </div>
   );

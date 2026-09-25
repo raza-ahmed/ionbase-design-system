@@ -19,7 +19,7 @@
   ],
   "file": "gaLbGd0QNb1fUl6BjSpfBA",
   "appliedOn": "2026-09-25",
-  "verifiedInFigma": 88,
+  "verifiedInFigma": 89,
   "applied": {
     "1360:267": {
       "figmaComponent": "Accordion",
@@ -460,6 +460,11 @@
       "figmaComponent": "List",
       "component": "List",
       "hash": "9cdd934b68ca30a5"
+    },
+    "1564:513": {
+      "figmaComponent": "Button Group",
+      "component": "ButtonGroup",
+      "hash": "60050d5625126f1c"
     }
   }
 }
