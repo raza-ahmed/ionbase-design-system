@@ -83,6 +83,7 @@
 @import url('./description-list.css');
 @import url('./list.css');
 @import url('./button-group.css');
+@import url('./split-button.css');
 @import url('./stepper.css');
 @import url('./prompt-input.css');
 @import url('./tool-call.css');

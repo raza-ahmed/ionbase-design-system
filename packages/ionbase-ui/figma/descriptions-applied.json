@@ -19,7 +19,7 @@
   ],
   "file": "gaLbGd0QNb1fUl6BjSpfBA",
   "appliedOn": "2026-09-25",
-  "verifiedInFigma": 89,
+  "verifiedInFigma": 90,
   "applied": {
     "1360:267": {
       "figmaComponent": "Accordion",
@@ -465,6 +465,11 @@
       "figmaComponent": "Button Group",
       "component": "ButtonGroup",
       "hash": "60050d5625126f1c"
+    },
+    "1569:410": {
+      "figmaComponent": "Split Button",
+      "component": "SplitButton",
+      "hash": "8a4e8110310de5f7"
     }
   }
 }

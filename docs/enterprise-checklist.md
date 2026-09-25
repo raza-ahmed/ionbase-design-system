@@ -41,7 +41,7 @@
 ## P1 — common, and where hand-rolled versions lose accessibility
 
 - [x] **ButtonGroup** — wizard, delete dialogs, save bar, run header — 0.96.0
-- [ ] **SplitButton** — _needs Menu_
+- [x] **SplitButton** — the wizard's Create agent / Create and start — 0.97.0
 - [ ] **ContextMenu** — _needs Menu_
 - [ ] **CopyButton**
 - [ ] **CodeSnippet** — _needs CopyButton_

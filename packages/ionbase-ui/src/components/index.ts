@@ -126,6 +126,8 @@ export type {
 } from './DescriptionList.js';
 export { List } from './List.js';
 export { ButtonGroup } from './ButtonGroup.js';
+export { SplitButton } from './SplitButton.js';
+export type { SplitButtonProps, SplitButtonVariant } from './SplitButton.js';
 export type {
   ButtonGroupProps,
   ButtonGroupAlign,

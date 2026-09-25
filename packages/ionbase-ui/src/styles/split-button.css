@@ -1,0 +1,41 @@
+/*
+ * SplitButton
+ *
+ * Two Buttons of one variant and size, joined: the main one keeps its start
+ * corners, the menu one its end corners, and they share the border between
+ * them — the menu one steps back by one border width, so the seam is one
+ * line, not two. The seam is each variant's own border colour, which is what
+ * separates the halves on a filled button.
+ *
+ *   menu   square: as wide as the button is tall, the chevron centred
+ *
+ * A focused half is lifted above the other, so its ring is not cut by its
+ * neighbour's surface.
+ */
+.ion-split-button {
+  display: inline-flex;
+  align-items: stretch;
+}
+
+/* Given more width — a stacked ButtonGroup on a phone — the main half takes it. */
+.ion-split-button .ion-split-button__main {
+  flex: 1 1 auto;
+  border-start-end-radius: 0;
+  border-end-end-radius: 0;
+}
+
+.ion-split-button .ion-split-button__menu {
+  --ion-button-gap: 0;
+
+  width: var(--ion-button-size);
+  margin-inline-start: calc(-1 * var(--border-width-default));
+  padding-inline: 0;
+  border-start-start-radius: 0;
+  border-end-start-radius: 0;
+}
+
+.ion-split-button .ion-button:focus-visible,
+.ion-split-button .ion-button[data-focused='true'] {
+  position: relative;
+  z-index: 1;
+}
