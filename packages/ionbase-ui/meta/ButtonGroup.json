@@ -45,7 +45,7 @@
   },
   "slots": {
     "children": {
-      "accepts": "Button, Link, AgentStop, MenuTrigger",
+      "accepts": "Button, SplitButton, Link, AgentStop, MenuTrigger",
       "note": "the actions, primary last. With `overflow=\"menu\"` only Buttons move, and each needs a text label or `aria-label` — it is what the menu item says"
     },
     "start": {

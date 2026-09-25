@@ -39,7 +39,7 @@ IonBase column names the component that covers it.
 | Icon button                     |   ●    |  ●  |  ●   | ◐ `Button`, icon-only |
 | Button group / set              |   ●    |  ●  |  ●   | `ButtonGroup`         |
 | Menu button / overflow menu     |   ●    |  ◐  |  ●   | `MenuTrigger`         |
-| Split button / combo button     |   ●    |  ●  |  ●   | —                     |
+| Split button / combo button     |   ●    |  ●  |  ●   | `SplitButton`         |
 | Copy button                     |   ●    |     |      | —                     |
 | Toggle button group             |   ●    |  ●  |  ●   | ◐ `SegmentedControl`  |
 | Link                            |   ●    |     |      | `Link`                |

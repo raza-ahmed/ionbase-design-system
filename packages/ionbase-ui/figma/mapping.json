@@ -2272,6 +2272,29 @@
           "note": "The `start` slot: Back in a wizard. False means `start` is omitted."
         }
       }
+    },
+    "Split Button": {
+      "code": "SplitButton",
+      "props": {
+        "Type": {
+          "prop": "variant",
+          "values": {
+            "Primary Brand": "primary-brand",
+            "Primary Neutral": "primary-neutral",
+            "Secondary": "secondary"
+          },
+          "note": "Both halves take the type. Tertiary and destructive are not offered: a quiet split button reads as two loose buttons, and a destructive one hides dangerous variations behind a menu."
+        },
+        "Size": {
+          "prop": "size",
+          "values": {
+            "Small": "sm",
+            "Medium": "md",
+            "Large": "lg",
+            "XLarge": "xl"
+          }
+        }
+      }
     }
   },
   "unmapped": {

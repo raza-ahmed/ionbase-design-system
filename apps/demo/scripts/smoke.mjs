@@ -1183,6 +1183,91 @@ try {
   }
 
   /*
+   * SplitButton, on the wizard's Review step: a saved draft with the first
+   * three steps done opens there. "Create agent" is the main half and makes
+   * the agent paused; the menu half, "More options, Create agent", offers
+   * "Create and start" — chosen, the new agent is running. On a phone the
+   * pair stacks with the rest of the actions, full width, main half growing.
+   */
+  for (const [viewport, width, height] of [
+    ['desktop', 1280, 900],
+    ['mobile', 390, 844],
+  ]) {
+    const where = `split button (light, ${viewport})`;
+    const context = await browser.newContext({ viewport: { width, height } });
+    const name = `Smoke split ${viewport}`;
+    await context.addInitScript((agentName) => {
+      localStorage.setItem(
+        'ionbase-ops:demo-settings',
+        JSON.stringify({ theme: 'light', latency: 0 }),
+      );
+      if (!window.sessionStorage.getItem('smoke-draft-set')) {
+        window.sessionStorage.setItem('smoke-draft-set', '1');
+        localStorage.setItem(
+          'ionbase-ops:new-agent-draft',
+          JSON.stringify({
+            values: {
+              name: agentName,
+              purpose: 'Checks that the split button creates a running agent.',
+              team: 'platform',
+            },
+            completed: 2,
+            model: 'atlas-m',
+          }),
+        );
+      }
+    }, name);
+    const page = await context.newPage();
+    page.on('pageerror', (e) => fail(where, `exception: ${e.message}`));
+    try {
+      await page.goto(`${BASE}/#/agents/new`);
+      const group = page.getByRole('group', { name: 'Create agent' });
+      await group.waitFor({ timeout: 10_000 });
+      const menu = group.getByRole('button', {
+        name: 'More options Create agent',
+      });
+      if ((await menu.getAttribute('aria-haspopup')) !== 'true')
+        fail(where, 'the menu half does not announce a menu');
+
+      if (viewport === 'mobile') {
+        const full = await group.evaluate((g) => {
+          const row = g.closest('.ion-button-group').getBoundingClientRect();
+          return Math.abs(g.getBoundingClientRect().width - row.width) < 1;
+        });
+        if (!full) fail(where, 'the split button does not take the full width');
+      }
+
+      await menu.click();
+      await page.getByRole('menuitem', { name: 'Create and start' }).click();
+      await page.waitForFunction(
+        () => document.location.hash === '#/agents',
+        undefined,
+        { timeout: 5_000 },
+      );
+      await page
+        .getByText('It is running and will take its first trigger.')
+        .waitFor({ timeout: 5_000 })
+        .catch(() =>
+          fail(where, 'the toast does not say the agent is running'),
+        );
+      // The table is sorted, so find the new agent by name.
+      await page.getByRole('searchbox', { name: 'Search agents' }).fill(name);
+      // The table re-queries as the search changes; wait for it to settle.
+      await page
+        .getByRole('row', { name: new RegExp(name) })
+        .filter({ hasText: 'Running' })
+        .waitFor({ timeout: 5_000 })
+        .catch(() =>
+          fail(where, '"Create and start" made an agent that is not running'),
+        );
+    } catch (e) {
+      fail(where, `did not run: ${e.message.split('\n')[0]}`);
+    }
+    groupsChecked++;
+    await context.close();
+  }
+
+  /*
    * The wizard's CheckboxGroup, which no page load above reaches: it is on
    * Guardrails, the third step. A saved draft with the first two steps done
    * opens there. "At least one" has to hold three ways — natively (every box

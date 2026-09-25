@@ -6,7 +6,9 @@ import {
   Button,
   ButtonGroup,
   Link,
+  MenuItem,
   PageHeader,
+  SplitButton,
   Stepper,
   StepperStep,
   useToast,
@@ -90,7 +92,7 @@ export function NewAgentWizard() {
     setServerError(null);
   };
 
-  async function next() {
+  async function next({ start = false }: { start?: boolean } = {}) {
     setServerError(null);
     if (Object.keys(allErrors).length > 0) {
       setAttempted(true);
@@ -101,12 +103,14 @@ export function NewAgentWizard() {
     setPending(true);
     try {
       if (step === STEPS.length - 1) {
-        const agent = await createAgent(values, settings);
+        const agent = await createAgent(values, settings, { start });
         clearDraft();
         toast({
           intent: 'success',
           title: `Created ${agent.name}`,
-          message: 'It is paused until you start it.',
+          message: start
+            ? 'It is running and will take its first trigger.'
+            : 'It is paused until you start it.',
         });
         navigate('agents');
         return;
@@ -322,15 +326,22 @@ export function NewAgentWizard() {
               Save and exit
             </Button>
           )}
-          <Button type="submit" isDisabled={pending}>
-            {pending
-              ? isLast
-                ? 'Creating…'
-                : 'Saving…'
-              : isLast
-                ? 'Create agent'
-                : `Next: ${STEPS[step + 1]}`}
-          </Button>
+          {isLast ? (
+            // Creating paused is the safe default and the main action; starting
+            // at once is the variation, so it is the menu's.
+            <SplitButton
+              type="submit"
+              label={pending ? 'Creating…' : 'Create agent'}
+              isDisabled={pending}
+              onAction={(key) => key === 'start' && void next({ start: true })}
+            >
+              <MenuItem key="start">Create and start</MenuItem>
+            </SplitButton>
+          ) : (
+            <Button type="submit" isDisabled={pending}>
+              {pending ? 'Saving…' : `Next: ${STEPS[step + 1]}`}
+            </Button>
+          )}
         </ButtonGroup>
       </form>
     </div>

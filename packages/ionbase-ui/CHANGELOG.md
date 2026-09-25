@@ -1,5 +1,41 @@
 # Changelog
 
+## 0.97.0 — 2026-09-26
+
+### Added — `SplitButton`
+
+One main action with a menu of variations on it beside: Save, and Save as
+draft; Create agent, and Create and start. It is the second P1 item on the
+enterprise checklist.
+
+- **Two buttons, two tab stops,** in a `group` named by `label`. The menu
+  half is a MenuTrigger named for itself and the action it belongs to, "More
+  options, Save". A page with three split buttons therefore has three
+  distinct menu buttons, not three called "More options". ↓ opens the menu on
+  its first item, and choosing one closes it and returns focus.
+- **The main half always does the same action.** It never becomes whichever
+  variation was chosen last.
+- **`label`, `onPress` and `type`** are the main action; `type="submit"`
+  submits its form, and the menu half never does. The children are MenuItems,
+  reported by `onAction(key)`.
+- **`variant`** is `primary-brand`, `primary-neutral` or `secondary`.
+  Tertiary and destructive aren't offered. **`size`** is `sm` to `xl`.
+- **Disabling:** `isDisabled` disables both halves; `isMenuDisabled` only the
+  menu; `disabledKeys` disables single variations.
+- **Drawn as one button.** The halves share one border at the seam, their
+  inner corners are square, and the menu half is square. The focused half is
+  lifted, so its ring isn't cut. In a stacked ButtonGroup the main half grows
+  to the full width.
+- **Figma:** a Split Button page, with Type × Size from the Button and Icon
+  Button sets. The main instance is exposed, so its Label can be edited. It is
+  mapped; 90 blocks verified.
+- **Demo:** the wizard's last step. "Create agent" creates the agent paused,
+  as before; its menu offers "Create and start". The smoke check creates
+  through the menu, on desktop and phone, and finds the agent Running.
+- **Patterns and meta:** the Wizard pattern names it for a finish with a
+  variation. MenuTrigger's meta points at it when the menu holds variations
+  of one action.
+
 ## 0.96.0 — 2026-09-26
 
 ### Added — `ButtonGroup`

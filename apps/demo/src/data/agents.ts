@@ -392,6 +392,7 @@ export function nameTaken(name: string): boolean {
 export async function createAgent(
   draft: AgentDraft,
   settings: CallSettings,
+  { start = false }: { start?: boolean } = {},
 ): Promise<Agent> {
   await write(
     settings,
@@ -401,7 +402,7 @@ export async function createAgent(
     id: `agt_${Date.now().toString(36)}`,
     name: draft.name.trim(),
     purpose: draft.purpose.trim(),
-    status: 'paused',
+    status: start ? 'running' : 'paused',
     team: draft.team ?? 'platform',
     owner: PEOPLE[0],
     runs7d: 0,

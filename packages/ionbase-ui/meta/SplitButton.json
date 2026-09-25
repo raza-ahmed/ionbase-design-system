@@ -1,0 +1,93 @@
+{
+  "status": "stable",
+  "summary": "One main action with a menu of variations on it beside — Save, and Save as draft; Create agent, and Create and start. Two buttons, two tab stops, one shape.",
+  "useWhen": [
+    "one action is the common case and a few variations of the same action are occasionally needed — save as draft, create and start, export as CSV",
+    "the variations would crowd the row as buttons of their own, and hiding the main action behind a menu would cost the common case a click"
+  ],
+  "useInstead": [
+    {
+      "when": "the choices are different actions, not variations of one",
+      "use": "MenuTrigger",
+      "why": "a split button promises its menu is \"this, but slightly otherwise\"; unrelated actions under it hide what they are behind the wrong label"
+    },
+    {
+      "when": "there are two actions of equal standing",
+      "use": "ButtonGroup",
+      "why": "two visible buttons are faster than one and a menu, and neither is hidden"
+    },
+    {
+      "when": "the choice is a setting that changes what the main action does — the export format for every export",
+      "use": "Select beside a Button",
+      "why": "a split button's main half always does the same thing; a remembered choice belongs in a control that shows it"
+    }
+  ],
+  "composition": {
+    "order": ["SplitButton", "MenuItem"],
+    "note": "`label` and `onPress` are the main action; the children are MenuItems for the variations, each with a `key` that `onAction` receives.",
+    "example": "<SplitButton label=\"Save\" onPress={save} onAction={(key) => key === 'draft' && saveDraft()}><MenuItem key=\"draft\">Save as draft</MenuItem></SplitButton>"
+  },
+  "variants": {
+    "variant": {
+      "primary-brand": {
+        "use": "the default — the single most important action in a view; one per view, as for Button"
+      },
+      "primary-neutral": {
+        "use": "a primary action that should not carry brand colour"
+      },
+      "secondary": {
+        "use": "an action beside the primary, such as Export among a table's actions"
+      }
+    },
+    "size": {
+      "sm": { "use": "toolbars and table headers" },
+      "md": { "use": "the default" },
+      "lg": { "use": "a page's single call to action" },
+      "xl": { "use": "rarely — hero actions" }
+    }
+  },
+  "slots": {
+    "children": {
+      "accepts": "MenuItem, MenuSection",
+      "note": "the variations; each names the whole action — \"Save as draft\", not \"As draft\""
+    },
+    "startIcon": { "accepts": "Icon", "note": "on the main half only" }
+  },
+  "a11y": {
+    "requires": [
+      "`label` — the main half's name and the group's name",
+      "`menuLabel` translated; the default is \"More options\""
+    ],
+    "guarantees": [
+      "a `group` named by `label`, holding two Buttons that are two tab stops, the main one first",
+      "the menu half is named for itself and the action — \"More options, Save\" — so several split buttons on a page have distinct menu buttons",
+      "the menu half is a MenuTrigger: `aria-haspopup`, `aria-expanded`, ↓ opens on the first item, choosing closes the menu and returns focus to it",
+      "the main half always does the same action; choosing a variation never changes it",
+      "`isDisabled` disables both halves; `isMenuDisabled` only the menu, leaving the action; `disabledKeys` disables single variations",
+      "`type=\"submit\"` makes the main half submit its form; the menu half never does",
+      "drawn as one button: one shared border at the seam, square inner corners, a square menu half; the focused half is lifted so its ring is not cut",
+      "in a stacked ButtonGroup it takes the full width, the main half growing"
+    ],
+    "notes": [
+      "a variation that is dangerous — \"Delete permanently\" beside \"Archive\" — should not share a button with a safe action; it needs its own confirmation",
+      "the menu's actions are reached through `onAction`, not through a submit: a variation that has to submit the form calls the same handler with its option, as the demo's wizard does"
+    ]
+  },
+  "antiPatterns": [
+    {
+      "dont": "a main half that becomes whichever variation was chosen last",
+      "do": "the same main action every time",
+      "why": "a button whose meaning changes with history cannot be pressed with confidence, and a screen reader is not told it changed"
+    },
+    {
+      "dont": "a Button and an icon-only MenuTrigger placed side by side by hand",
+      "do": "<SplitButton>",
+      "why": "the hand-built menu button is usually named only \"More\", has its own gap and radius, and is not grouped with the action it belongs to"
+    },
+    {
+      "dont": "<SplitButton label=\"Actions\">…edit, delete, share…</SplitButton>",
+      "do": "<MenuTrigger> with a Button named for what it opens",
+      "why": "\"Actions\" is not an action; pressing the main half has to do something"
+    }
+  ]
+}

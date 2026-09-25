@@ -8,6 +8,11 @@
   ],
   "useInstead": [
     {
+      "when": "one action is the common case and the menu holds variations of it — Save, and Save as draft",
+      "use": "SplitButton",
+      "why": "a menu hides the common action behind a click; a split button keeps it one press away and puts the variations beside it"
+    },
+    {
       "when": "the button opens a form, a filter panel or anything that is not a list of rows",
       "use": "Popover",
       "why": "a menu promises arrow keys between rows and nothing else; a field inside it cannot be reached"
