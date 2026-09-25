@@ -77,6 +77,7 @@
 @import url('./prompt-input.css');
 @import url('./tool-call.css');
 @import url('./number-input.css');
+@import url('./search-field.css');
 @import url('./segmented-control.css');
 @import url('./sidebar.css');
 @import url('./file-upload.css');

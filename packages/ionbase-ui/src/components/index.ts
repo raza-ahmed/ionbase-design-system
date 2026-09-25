@@ -194,6 +194,9 @@ export type {
 export { NumberInput } from './NumberInput.js';
 export type { NumberInputProps, NumberInputSize } from './NumberInput.js';
 
+export { SearchField } from './SearchField.js';
+export type { SearchFieldProps, SearchFieldSize } from './SearchField.js';
+
 export { ToolCall } from './ToolCall.js';
 export type { ToolCallProps } from './ToolCall.js';
 

@@ -2,7 +2,7 @@
 
 > IonBase is a React design system for enterprise SaaS, built to be consumed by an agent rather than read by a developer. Every component ships a machine-readable contract carrying the judgement a type signature cannot: when to use it, what to use instead, the anti-patterns, and what it guarantees for accessibility versus what it requires of you.
 
-Version 0.84.0. 84 components.
+Version 0.85.0. 85 components.
 
 ## Read these, in this order
 
@@ -13,7 +13,7 @@ Both are importable: `ionbase-ui/meta/index` and `ionbase-ui/meta/<Name>.json`. 
 
 ## Components
 
-`Accordion`, `AccordionItem`, `AgentActivity`, `AgentActivityStep`, `AgentStop`, `Alert`, `ApprovalGate`, `Avatar`, `AvatarGradient`, `AvatarGroup`, `Badge`, `Breadcrumb`, `BreadcrumbItem`, `Button`, `Card`, `ChartLegend`, `ChartTooltip`, `Checkbox`, `Citation`, `CitationList`, `CitationListItem`, `Combobox`, `CommandPalette`, `ConfidenceIndicator`, `DatePicker`, `DateRangePicker`, `Divider`, `Drawer`, `EmptyState`, `FileUpload`, `FullCard`, `Header`, `Icon`, `Input`, `Kbd`, `Link`, `Logo`, `LogoMark`, `Menu`, `MenuItem`, `MenuSection`, `MenuTrigger`, `Modal`, `NavItem`, `NumberInput`, `PageHeader`, `Pagination`, `PhoneInput`, `Popover`, `ProgressBar`, `PromptInput`, `Radio`, `RadioGroup`, `ScrollProgress`, `SegmentedControl`, `SegmentedControlItem`, `Select`, `SettingRow`, `Sidebar`, `SidebarItem`, `SidebarSection`, `Skeleton`, `Spinner`, `StatGroup`, `StatTile`, `Stepper`, `StepperStep`, `StreamingText`, `TabItem`, `Table`, `TableBody`, `TableCell`, `TableHead`, `TableRow`, `Tabs`, `Tag`, `TagGroup`, `Textarea`, `TimeField`, `Toast`, `ToastProvider`, `Toggle`, `ToolCall`, `Tooltip`
+`Accordion`, `AccordionItem`, `AgentActivity`, `AgentActivityStep`, `AgentStop`, `Alert`, `ApprovalGate`, `Avatar`, `AvatarGradient`, `AvatarGroup`, `Badge`, `Breadcrumb`, `BreadcrumbItem`, `Button`, `Card`, `ChartLegend`, `ChartTooltip`, `Checkbox`, `Citation`, `CitationList`, `CitationListItem`, `Combobox`, `CommandPalette`, `ConfidenceIndicator`, `DatePicker`, `DateRangePicker`, `Divider`, `Drawer`, `EmptyState`, `FileUpload`, `FullCard`, `Header`, `Icon`, `Input`, `Kbd`, `Link`, `Logo`, `LogoMark`, `Menu`, `MenuItem`, `MenuSection`, `MenuTrigger`, `Modal`, `NavItem`, `NumberInput`, `PageHeader`, `Pagination`, `PhoneInput`, `Popover`, `ProgressBar`, `PromptInput`, `Radio`, `RadioGroup`, `ScrollProgress`, `SearchField`, `SegmentedControl`, `SegmentedControlItem`, `Select`, `SettingRow`, `Sidebar`, `SidebarItem`, `SidebarSection`, `Skeleton`, `Spinner`, `StatGroup`, `StatTile`, `Stepper`, `StepperStep`, `StreamingText`, `TabItem`, `Table`, `TableBody`, `TableCell`, `TableHead`, `TableRow`, `Tabs`, `Tag`, `TagGroup`, `Textarea`, `TimeField`, `Toast`, `ToastProvider`, `Toggle`, `ToolCall`, `Tooltip`
 
 ## Patterns
 

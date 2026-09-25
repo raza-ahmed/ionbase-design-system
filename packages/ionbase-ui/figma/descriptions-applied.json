@@ -19,7 +19,7 @@
   ],
   "file": "gaLbGd0QNb1fUl6BjSpfBA",
   "appliedOn": "2026-09-25",
-  "verifiedInFigma": 76,
+  "verifiedInFigma": 77,
   "applied": {
     "1360:267": {
       "figmaComponent": "Accordion",
@@ -250,6 +250,11 @@
       "figmaComponent": "Radio",
       "component": "Radio",
       "hash": "3eef9529655a0368"
+    },
+    "1498:242": {
+      "figmaComponent": "Search Field",
+      "component": "SearchField",
+      "hash": "1a5ef4b0c36796c9"
     },
     "1390:435": {
       "figmaComponent": "Segmented Control",

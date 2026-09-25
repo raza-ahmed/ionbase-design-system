@@ -1507,6 +1507,34 @@
       "kind": "COMPONENT",
       "props": {}
     },
+    "Search Field": {
+      "page": "Search Field",
+      "id": "1498:242",
+      "kind": "SET",
+      "props": {
+        "Size": {
+          "type": "VARIANT",
+          "options": ["Large", "Medium", "Small"],
+          "default": "Large"
+        },
+        "State": {
+          "type": "VARIANT",
+          "options": [
+            "Default",
+            "Hover",
+            "Focus",
+            "Filled",
+            "Invalid",
+            "Disabled",
+            "Read-only"
+          ],
+          "default": "Default"
+        },
+        "Value#80:0": {
+          "type": "TEXT"
+        }
+      }
+    },
     "Segmented Control": {
       "page": "Segmented Control",
       "id": "1390:435",

@@ -1300,6 +1300,30 @@
         }
       }
     },
+    "Search Field": {
+      "code": "SearchField",
+      "props": {
+        "Size": {
+          "prop": "size",
+          "values": {
+            "Small": "sm",
+            "Medium": "md",
+            "Large": "lg"
+          }
+        },
+        "State": {
+          "prop": "isInvalid",
+          "when": {
+            "Invalid": true
+          },
+          "note": "Hover, Focus and Filled are CSS or content; Disabled is isDisabled and Read-only is isReadOnly — Input's split, because the box is Input's. The clear button Filled shows is not a prop: it appears whenever there is a query."
+        },
+        "Value#80:0": {
+          "prop": "value",
+          "note": "The query. Figma's text is also the placeholder until one is typed — pass that as placeholder, and name the field with aria-label, not the placeholder."
+        }
+      }
+    },
     "Segmented Control": {
       "code": "SegmentedControl",
       "props": {

@@ -53,6 +53,7 @@ const REQUIRED = [
   'MenuSection',
   'MenuTrigger',
   'PageHeader',
+  'SearchField',
   'Popover',
   'Modal',
   'Breadcrumb',

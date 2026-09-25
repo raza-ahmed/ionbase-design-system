@@ -1,5 +1,50 @@
 # Changelog
 
+## 0.85.0 — 2026-09-25
+
+### Added — `SearchField`
+
+The search above a table was an `Input` with `type="search"` and a
+magnifier. That looks like a search box and behaves like a text field. The
+DataTable pattern told agents to build exactly that. It is the fourth item on
+the enterprise checklist.
+
+- **`role="searchbox"`**, so a screen reader announces a search field, not a
+  text field.
+- **Enter** calls `onSubmit` with the query.
+- **Escape** clears it. A second Escape reaches whatever contains the field,
+  so a search in a dialog clears before the dialog closes.
+- **A clear button** appears once there is something to clear. React Aria
+  names it in the user's language, and pressing it returns focus to the
+  field.
+  - It is out of the tab order on purpose: Escape is the keyboard's way to
+    clear, and an extra tab stop in every search box costs every keyboard user
+    a keystroke.
+  - It is (field height − 8px) square, so the Small field's target is 24px,
+    which meets WCAG 2.5.8.
+- **The browser's own cancel button is hidden.** Chromium and Safari add an
+  unlabelled one to `type="search"`, which would have made two clear buttons.
+  The first version of that test passed on nothing: `getComputedStyle`
+  cannot read a vendor pseudo-element and returns the input's own style. The
+  test now checks the shipped rule, and says why.
+- **The box is Input's.** SearchField renders `.ion-input` and its size and
+  state classes, like NumberInput, so it lines up with an Input or Select in a
+  toolbar and cannot drift from them.
+- The **DataTable pattern** now names SearchField for the table's search,
+  with an anti-pattern entry for `<Input type="search">`.
+- Figma: a new Search Field page and set (1498:242), cloned from Input's 21
+  variants so it keeps Input's bindings. The search glyph is fixed, the clear
+  ✕ shows only on Filled, and the four icon properties are removed. It is
+  mapped, and all 77 Dev Mode blocks are verified.
+
+### Demo
+
+- The agents table's search is a SearchField. As an Input, its
+  `wrapperClassName="demo-toolbar__search"` never applied: Input drops the
+  wrapper when there is no visible label, so the class had nowhere to go and
+  the field never took its intended width. As a SearchField, the class goes on
+  the box itself.
+
 ## 0.84.0 — 2026-09-25
 
 ### Added — `PageHeader`

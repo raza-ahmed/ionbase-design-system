@@ -1,0 +1,70 @@
+{
+  "status": "stable",
+  "summary": "A text field for a search query: role=\"searchbox\", Enter submits, Escape clears, and a clear button once there is something to clear. Input's box and sizes.",
+  "useWhen": [
+    "the user types to search or filter a list, a table or a page — the search above a DataTable, the filter at the top of a Sidebar",
+    "the query is free text that narrows what is shown, not a value chosen from a list"
+  ],
+  "useInstead": [
+    {
+      "when": "the typed text picks one value from a known list — an assignee, a country",
+      "use": "Combobox",
+      "why": "a combobox commits a choice and offers the options; a search field commits a query and offers nothing"
+    },
+    {
+      "when": "the user is looking for a page or an action anywhere in the product",
+      "use": "CommandPalette",
+      "why": "that is global and keyboard-first; a SearchField searches the content in front of it"
+    },
+    {
+      "when": "it is ordinary text entry — a name, an email — that happens to be used for lookup later",
+      "use": "Input",
+      "why": "announcing a searchbox promises search behaviour: Escape clears, Enter searches"
+    }
+  ],
+  "composition": {
+    "order": ["SearchField"],
+    "note": "Filter as the user types with `onChange`, or search on Enter with `onSubmit` — pick one per field and say which in the placeholder or label. In a table toolbar, give it `aria-label` naming what it searches.",
+    "example": "<SearchField aria-label=\"Search agents\" placeholder=\"Search by name or purpose\" value={query} onChange={setQuery} />"
+  },
+  "variants": {
+    "size": {
+      "sm": {
+        "use": "toolbars, table headers and Sidebar filters, beside small Buttons"
+      },
+      "md": { "use": "the default" },
+      "lg": { "use": "a page whose main task is searching" }
+    }
+  },
+  "a11y": {
+    "role": "searchbox",
+    "guarantees": [
+      "the input is role=\"searchbox\" and type=\"search\", so it is announced as a search field",
+      "Escape clears the query; a second Escape is left for whatever contains the field, so a search in a dialog clears before it closes",
+      "Enter calls onSubmit with the query",
+      "the clear button is named by React Aria in the user's language, appears only when there is something to clear, and returns focus to the field",
+      "the clear button is out of the tab order on purpose: Escape is the keyboard's way to clear, and an extra tab stop in every search box costs every keyboard user a keystroke",
+      "the browser's own cancel button is hidden, so there are never two"
+    ],
+    "requires": [
+      "`label`, or an `aria-label` naming what is searched when no visible label is rendered — \"Search\" alone does not say what"
+    ],
+    "notes": [
+      "When filtering as the user types, announce the result count with a polite live region near the results. The field cannot know how many results its query produced; the list does."
+    ]
+  },
+  "antiPatterns": [
+    {
+      "dont": "<Input type=\"search\"> with a magnifier as leadingIcon",
+      "why": "it looks the same and has none of the behaviour: no searchbox role, no Escape to clear, no labelled clear button"
+    },
+    {
+      "dont": "placeholder as the only name",
+      "why": "a placeholder disappears once the user types, and is not a reliable accessible name. Pass `aria-label` or `label`"
+    },
+    {
+      "dont": "a separate Search button beside a field that already filters as you type",
+      "why": "it teaches the user that nothing happens until they press it, and it does nothing when they do"
+    }
+  ]
+}

@@ -4,10 +4,10 @@ import {
   Button,
   EmptyState,
   Icon,
-  Input,
   Link,
   PageHeader,
   Pagination,
+  SearchField,
   Select,
   Tag,
   TagGroup,
@@ -16,7 +16,6 @@ import {
 } from 'ionbase-ui';
 import { Pause } from 'ionbase-icons/icons/pause';
 import { Plus } from 'ionbase-icons/icons/plus';
-import { Search } from 'ionbase-icons/icons/search';
 import { Trash2 } from 'ionbase-icons/icons/trash-2';
 
 import {
@@ -193,16 +192,14 @@ export function AgentsScreen() {
       )}
 
       <div className="demo-toolbar">
-        <Input
+        <SearchField
           size="sm"
-          type="search"
           ref={searchRef}
           aria-label="Search agents"
           placeholder="Search agents"
-          leadingIcon={<Icon as={Search} size="sm" />}
           value={search}
           onChange={(v) => requery(() => setSearch(v))}
-          wrapperClassName="demo-toolbar__search"
+          className="demo-toolbar__search"
         />
         <Select
           size="sm"

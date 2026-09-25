@@ -14,12 +14,12 @@
     "Button",
     "Badge",
     "Alert",
-    "Input",
+    "SearchField",
     "TagGroup"
   ],
   "structure": [
-    "A toolbar above the table: a search Input, filter controls, and the bulk-action Buttons that appear once something is selected.",
-    "Under the toolbar, once any filter is applied: a TagGroup of the active filters, each removable on its own, beside a Clear all Button. When the last one goes the row goes with it, so move focus to the search Input.",
+    "A toolbar above the table: a SearchField (size sm, with an aria-label naming what it searches), filter controls, and the bulk-action Buttons that appear once something is selected.",
+    "Under the toolbar, once any filter is applied: a TagGroup of the active filters, each removable on its own, beside a Clear all Button. When the last one goes the row goes with it, so move focus to the SearchField.",
     "Table with a TableHead whose first cell carries the select-all Checkbox, and a TableBody whose rows each carry their own.",
     "Sortable columns: every header that sorts gets `sortDirection` — the current direction on the sorted column, `none` on the others — so each shows it can be sorted before anyone tries.",
     "One region below the table for pagination or a load-more Button.",
@@ -57,8 +57,8 @@
     "Checkbox": ["isIndeterminate", "isDisabled"],
     "Button": ["variant", "size"],
     "Alert": ["intent", "title", "actions"],
-    "Input": ["leadingIcon"],
-    "TagGroup": ["label", "items", "onRemove"]
+    "TagGroup": ["label", "items", "onRemove"],
+    "SearchField": ["size", "value", "onChange", "placeholder", "aria-label"]
   },
   "variantsUsed": {
     "Alert": {
@@ -115,6 +115,10 @@
     {
       "dont": "sorting only the current page of a paged table",
       "why": "the reader sees \"A–Z\" and takes it as the whole list; send the sort to the server, which knows every row"
+    },
+    {
+      "dont": "an Input with type=\"search\" and a magnifier icon as the table's search",
+      "why": "it has no searchbox role, no Escape to clear and no labelled clear button — SearchField is the same box with that behaviour"
     }
   ]
 }
