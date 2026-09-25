@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Alert, Button } from 'ionbase-ui';
+import { Alert, Button, PageHeader } from 'ionbase-ui';
 
 import { getSettings, type WorkspaceSettings } from '../../data/settings';
 import { useDemoSettings } from '../../lib/demo-settings';
@@ -30,15 +30,11 @@ export function SettingsScreen() {
 
   return (
     <div className="demo-page demo-page--narrow">
-      <div>
-        <h1 id="page-title" className="ion-text-h4">
-          Settings
-        </h1>
-        <p className="ion-text-body demo-muted">
-          {data ? data.workspaceName : 'Workspace'} · notifications, defaults
-          and access.
-        </p>
-      </div>
+      <PageHeader
+        titleId="page-title"
+        title="Settings"
+        description={`${data ? data.workspaceName : 'Workspace'} · notifications, defaults and access.`}
+      />
 
       {result.status === 'error' ? (
         <Alert

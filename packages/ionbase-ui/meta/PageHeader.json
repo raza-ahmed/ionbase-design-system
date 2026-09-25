@@ -1,0 +1,83 @@
+{
+  "status": "stable",
+  "summary": "The top of a page: breadcrumb, the page's h1, a description, the record's status, and the page's actions. Not a landmark — main is, named by this title.",
+  "useWhen": [
+    "the top of every page inside the app shell — list pages, record pages, settings, wizards",
+    "the page has a title and actions that act on the whole page, such as New agent or Pause"
+  ],
+  "useInstead": [
+    {
+      "when": "it is the bar across the top of the whole app, with the logo and the account menu",
+      "use": "Header",
+      "why": "Header is the banner landmark, rendered once by the shell. PageHeader is inside main and changes with each page"
+    },
+    {
+      "when": "it titles one section of a page rather than the page",
+      "use": "Card",
+      "why": "a Card's title is an h2 for a named region; a page has one PageHeader and one h1"
+    },
+    {
+      "when": "the page is empty or failed to load",
+      "use": "EmptyState",
+      "why": "keep the PageHeader so the user still knows where they are, and put the EmptyState beneath it with headingLevel 2"
+    }
+  ],
+  "composition": {
+    "order": [
+      "PageHeader",
+      "Breadcrumb",
+      "Badge",
+      "Button",
+      "MenuTrigger",
+      "Tabs"
+    ],
+    "note": "Slots, not children: `breadcrumb` above, `status` beside the title, `actions` at the end of the title row, and `children` as a row beneath for the page's Tabs or filters. Pass `titleId` and point `<main aria-labelledby>` at it.",
+    "example": "<main aria-labelledby=\"page-title\"><PageHeader titleId=\"page-title\" title=\"Payroll reconciler\" description=\"Matches payroll exports against the ledger every night.\" breadcrumb={<Breadcrumb><BreadcrumbItem href=\"/agents\">Agents</BreadcrumbItem><BreadcrumbItem isCurrent>Payroll reconciler</BreadcrumbItem></Breadcrumb>} status={<Badge intent=\"warning\">Paused</Badge>} actions={<><MenuTrigger><Button variant=\"tertiary\" aria-label=\"More actions\" startIcon={<Icon as={Ellipsis} />} /><Menu onAction={run}><MenuItem key=\"delete\">Delete…</MenuItem></Menu></MenuTrigger><Button variant=\"primary-brand\">Resume</Button></>} /></main>"
+  },
+  "slots": {
+    "breadcrumb": {
+      "accepts": "Breadcrumb"
+    },
+    "status": {
+      "accepts": ["Badge", "Tag"],
+      "note": "the record's state. Never an action, and never colour alone — a Badge carries its label"
+    },
+    "actions": {
+      "accepts": ["Button", "MenuTrigger", "Link"],
+      "note": "most important last, so the primary action sits at the end of the row. One primary Button at most; beyond two or three actions, put the rest in a MenuTrigger"
+    },
+    "children": {
+      "accepts": ["Tabs", "SegmentedControl"],
+      "note": "a row that belongs to the header: the page's own tabs, or the filters its table answers to"
+    }
+  },
+  "a11y": {
+    "role": "none — a <div>. The page's landmark is <main>, named by this title",
+    "guarantees": [
+      "the title is a real heading, h1 by default, with a stable id for aria-labelledby",
+      "actions keep their DOM order when they wrap beneath the title on a narrow screen, so reading order matches visual order"
+    ],
+    "notes": [
+      "`headingLevel` is 1 by default. Use 2 only for a header on a pane that is not the page — the detail half of a list-detail layout, under the list's h1.",
+      "It is deliberately not a <header>: a <header> directly inside <body> is the banner, and the app shell's Header already is that."
+    ]
+  },
+  "antiPatterns": [
+    {
+      "dont": "two PageHeaders on one page",
+      "why": "two h1s, and two answers to where am I. Sections below the header are Cards with h2 titles"
+    },
+    {
+      "dont": "dropping the PageHeader while the page loads or fails",
+      "why": "the user loses where they are exactly when something went wrong. Keep the title; put Skeleton or EmptyState beneath it"
+    },
+    {
+      "dont": "putting filters or a search field in `actions`",
+      "why": "actions act on the page; filters narrow what it shows. Filters go in `children`, the row beneath"
+    },
+    {
+      "dont": "several primary Buttons in `actions`",
+      "why": "a page has one next step. The one-primary-action lint rule counts them"
+    }
+  ]
+}

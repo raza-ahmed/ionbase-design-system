@@ -25,7 +25,7 @@
 
 - [x] **Menu** — upgrade to a real ARIA menu: roving focus, arrow keys, typeahead, checkable items, sections — 0.82.0. Submenus moved to MenuButton: a submenu needs a trigger to open from
 - [x] **MenuButton / OverflowMenu** — shipped as `MenuTrigger`, with submenus; the overflow menu is MenuTrigger with an icon-only Button — 0.83.0
-- [ ] **PageHeader** — and add it to the `PageShell` pattern
+- [x] **PageHeader** — and add it to the `PageShell` pattern — 0.84.0
 - [ ] **SearchField**
 - [ ] **Fieldset / CheckboxGroup**
 - [ ] **MultiSelect**

@@ -2,10 +2,11 @@ import {
   Avatar,
   Badge,
   Button,
-  Link,
   Icon,
+  Link,
   Menu,
   MenuItem,
+  MenuSection,
   MenuTrigger,
   Skeleton,
   Table,
@@ -217,19 +218,25 @@ export function AgentsTable({
                       else onDelete(a);
                     }}
                   >
-                    <MenuItem
-                      key="pause"
-                      icon={<Icon as={paused ? Play : Pause} size="sm" />}
-                      isDisabled={a.status === 'draft'}
-                    >
-                      {paused ? 'Resume' : 'Pause'}
-                    </MenuItem>
-                    <MenuItem
-                      key="delete"
-                      icon={<Icon as={Trash2} size="sm" />}
-                    >
-                      Delete…
-                    </MenuItem>
+                    {/* Delete sits apart from the everyday action, behind a rule,
+                        so it is never the row the pointer lands on by habit. */}
+                    <MenuSection aria-label="Run">
+                      <MenuItem
+                        key="pause"
+                        icon={<Icon as={paused ? Play : Pause} size="sm" />}
+                        isDisabled={a.status === 'draft'}
+                      >
+                        {paused ? 'Resume' : 'Pause'}
+                      </MenuItem>
+                    </MenuSection>
+                    <MenuSection aria-label="Danger">
+                      <MenuItem
+                        key="delete"
+                        icon={<Icon as={Trash2} size="sm" />}
+                      >
+                        Delete…
+                      </MenuItem>
+                    </MenuSection>
                   </Menu>
                 </MenuTrigger>
               </TableCell>

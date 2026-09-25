@@ -1101,6 +1101,37 @@
         }
       }
     },
+    "Page Header": {
+      "code": "PageHeader",
+      "props": {
+        "Title#1473:0": {
+          "prop": "title"
+        },
+        "Description#1473:1": {
+          "prop": "description"
+        },
+        "Show Description#1473:4": {
+          "prop": "description",
+          "note": "an absent prop is the switch, so false means omit description"
+        },
+        "Show Breadcrumb#1473:2": {
+          "prop": "breadcrumb",
+          "note": "pass a Breadcrumb; false means omit breadcrumb"
+        },
+        "Show Status#1473:3": {
+          "prop": "status",
+          "note": "a Badge for the record's state; false means omit status"
+        },
+        "Show Actions#1473:5": {
+          "prop": "actions",
+          "note": "Buttons, most important last, and a MenuTrigger with an icon-only Button for the rest; false means omit actions"
+        },
+        "Show Below#1473:6": {
+          "prop": "children",
+          "note": "the row beneath — the page's Tabs or its filters; false means no children"
+        }
+      }
+    },
     "Pagination": {
       "code": "Pagination",
       "props": {

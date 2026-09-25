@@ -127,6 +127,8 @@ export type {
 export type { IsoTime } from './iso-time.js';
 export { TagGroup, Tag } from './TagGroup.js';
 export type { TagGroupProps, TagGroupSize } from './TagGroup.js';
+export { PageHeader } from './PageHeader.js';
+export type { PageHeaderProps, PageHeaderHeadingLevel } from './PageHeader.js';
 export { Card } from './Card.js';
 export type { CardProps, CardHeadingLevel, CardIntent } from './Card.js';
 export { FullCard } from './FullCard.js';

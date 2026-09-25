@@ -12,6 +12,7 @@ import {
   Icon,
   Link,
   NavItem,
+  PageHeader,
   Skeleton,
   StatGroup,
   StatTile,
@@ -85,10 +86,11 @@ export function AgentDetail({ id, tab }: { id: string; tab: AgentTab }) {
   if (detail.status === 'error') {
     return (
       <div className="demo-page">
-        <AgentBreadcrumb name="Agent" />
-        <h1 id="page-title" className="ion-text-h4">
-          Agent
-        </h1>
+        <PageHeader
+          titleId="page-title"
+          title="Agent"
+          breadcrumb={<AgentBreadcrumb name="Agent" />}
+        />
         <EmptyState
           reason="error"
           size="page"
@@ -113,10 +115,11 @@ export function AgentDetail({ id, tab }: { id: string; tab: AgentTab }) {
   if (detail.data === null) {
     return (
       <div className="demo-page">
-        <AgentBreadcrumb name="Not found" />
-        <h1 id="page-title" className="ion-text-h4">
-          Agent not found
-        </h1>
+        <PageHeader
+          titleId="page-title"
+          title="Agent not found"
+          breadcrumb={<AgentBreadcrumb name="Not found" />}
+        />
         <EmptyState
           reason="no-results"
           size="page"
@@ -155,31 +158,30 @@ export function AgentDetail({ id, tab }: { id: string; tab: AgentTab }) {
 
   return (
     <div className="demo-page">
-      <AgentBreadcrumb name={agent.name} />
-      {/* The page's h1 is the agent's name; the card's headline is an h2 below it. */}
-      <div className="demo-page__header">
-        <div>
-          <h1 id="page-title" className="ion-text-h4">
-            {agent.name}
-          </h1>
-          <p className="ion-text-body demo-muted">{agent.purpose}</p>
-        </div>
-      </div>
-
-      <nav aria-label={`${agent.name} sections`} className="demo-subnav">
-        <NavItem
-          href={href(`agents/${agent.id}`)}
-          isCurrent={tab === 'overview'}
-        >
-          Overview
-        </NavItem>
-        <NavItem
-          href={href(`agents/${agent.id}/runs`)}
-          isCurrent={tab === 'runs'}
-        >
-          Runs
-        </NavItem>
-      </nav>
+      {/* The page's h1 is the agent's name; the card's headline is an h2
+          below it. The section nav is the header's row beneath: it switches
+          what this page shows, and belongs to the page's title. */}
+      <PageHeader
+        titleId="page-title"
+        title={agent.name}
+        description={agent.purpose}
+        breadcrumb={<AgentBreadcrumb name={agent.name} />}
+      >
+        <nav aria-label={`${agent.name} sections`} className="demo-subnav">
+          <NavItem
+            href={href(`agents/${agent.id}`)}
+            isCurrent={tab === 'overview'}
+          >
+            Overview
+          </NavItem>
+          <NavItem
+            href={href(`agents/${agent.id}/runs`)}
+            isCurrent={tab === 'runs'}
+          >
+            Runs
+          </NavItem>
+        </nav>
+      </PageHeader>
 
       {tab === 'overview' ? (
         <Overview

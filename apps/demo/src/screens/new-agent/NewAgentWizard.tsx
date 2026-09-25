@@ -5,6 +5,7 @@ import {
   BreadcrumbItem,
   Button,
   Link,
+  PageHeader,
   Stepper,
   StepperStep,
   useToast,
@@ -161,14 +162,16 @@ export function NewAgentWizard() {
 
   return (
     <div className="demo-page demo-page--narrow">
-      <Breadcrumb>
-        <BreadcrumbItem href={href('agents')}>Agents</BreadcrumbItem>
-        <BreadcrumbItem isCurrent>New agent</BreadcrumbItem>
-      </Breadcrumb>
-
-      <h1 id="page-title" className="ion-text-h4">
-        New agent
-      </h1>
+      <PageHeader
+        titleId="page-title"
+        title="New agent"
+        breadcrumb={
+          <Breadcrumb>
+            <BreadcrumbItem href={href('agents')}>Agents</BreadcrumbItem>
+            <BreadcrumbItem isCurrent>New agent</BreadcrumbItem>
+          </Breadcrumb>
+        }
+      />
 
       <Stepper label="New agent progress">
         {STEPS.map((name, i) => (

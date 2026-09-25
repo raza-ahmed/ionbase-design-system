@@ -1,5 +1,47 @@
 # Changelog
 
+## 0.84.0 — 2026-09-25
+
+### Added — `PageHeader`
+
+The top of a page: where you are, what the page is, and what you can do to
+it. The demo hand-wrote this five times in three shapes, each with its own
+gaps and its own idea of where the actions sit. PageHeader replaces all of
+them. It is the third item on the enterprise checklist.
+
+- **Slots:** `breadcrumb` above, `status` beside the title (a Badge for the
+  record's state), `actions` at the end of the title row, and `children` as a
+  row beneath for the page's Tabs or filters.
+- **The title is the page's `h1`.** Pass `titleId` and point
+  `<main aria-labelledby>` at it. `headingLevel={2}` is for a header on a pane
+  that is not the page, such as the detail half of a list-detail layout.
+- **It is a `<div>`, not a `<header>`.** A `<header>` directly inside `<body>`
+  is the banner, and the app shell's Header already is that.
+- **The title is h4-sized.** An app page sits under a Header and beside a
+  Sidebar, so an h1-sized title reads as a marketing page. The level is
+  semantic; the size is the product's.
+- **Actions align to the title's line**, however long the description runs,
+  and wrap beneath it only when the row is genuinely too narrow. The first
+  build let a long description push the actions onto their own line at 720px
+  with room to spare. `ActionsAlignToTheTitle` caught it before release.
+- The PageShell pattern now names PageHeader as the place for the page's h1
+  and breadcrumb, and says to keep it on screen while the page loads or fails.
+- Figma: a new Page Header page and component (1473:242), built from the real
+  Breadcrumb, Badge, Icon Button, Button and Tabs, bound to the type styles
+  and spacing variables, and mapped. All 76 Dev Mode blocks verified.
+
+### Demo
+
+- Every screen's title is a PageHeader: ten title sites across nine screens.
+  - RunDetail's phase badge moved to `status` and its buttons to `actions`.
+  - AgentDetail's section nav and Overview's date range moved to the row
+    beneath, because they narrow what the page shows.
+- `.demo-page__header` and `.demo-run-header` are deleted.
+- The row-actions menu puts Delete in its own section, behind a rule, so it
+  is never the row the pointer lands on by habit. The demo now shows
+  **84 of 84** components, and MenuSection, MenuTrigger and PageHeader are
+  required by the coverage gate.
+
 ## 0.83.0 — 2026-09-25
 
 ### Added — `MenuTrigger`, and submenus

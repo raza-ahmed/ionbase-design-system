@@ -19,7 +19,7 @@
   ],
   "file": "gaLbGd0QNb1fUl6BjSpfBA",
   "appliedOn": "2026-09-25",
-  "verifiedInFigma": 75,
+  "verifiedInFigma": 76,
   "applied": {
     "1360:267": {
       "figmaComponent": "Accordion",
@@ -220,6 +220,11 @@
       "figmaComponent": "Number Input",
       "component": "NumberInput",
       "hash": "6adc2d15e13d253c"
+    },
+    "1473:242": {
+      "figmaComponent": "Page Header",
+      "component": "PageHeader",
+      "hash": "d4660f961889a929"
     },
     "1291:503": {
       "figmaComponent": "Pagination",

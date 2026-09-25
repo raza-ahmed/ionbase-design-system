@@ -14,6 +14,7 @@ import {
   EmptyState,
   Link,
   NumberInput,
+  PageHeader,
   Select,
   StreamingText,
   ToolCall,
@@ -90,9 +91,7 @@ export function RunDetail({ runId }: { runId: string }) {
   if (!script || !summary || !run.state) {
     return (
       <div className="demo-page">
-        <h1 id="page-title" className="ion-text-h4">
-          Run not found
-        </h1>
+        <PageHeader titleId="page-title" title="Run not found" />
         <EmptyState
           reason="no-results"
           size="page"
@@ -129,49 +128,49 @@ export function RunDetail({ runId }: { runId: string }) {
 
   return (
     <div className="demo-page demo-page--narrow">
-      <Breadcrumb>
-        <BreadcrumbItem href={href('runs')}>Runs</BreadcrumbItem>
-        <BreadcrumbItem isCurrent>{script.task}</BreadcrumbItem>
-      </Breadcrumb>
-
-      <div className="demo-run-header">
-        <div className="demo-run-header__title">
-          <h1 id="page-title" className="ion-text-h4">
-            {script.task}
-          </h1>
-          <p className="ion-text-body-sm demo-muted">
-            {script.agent} · requested by {script.requestedBy}
-          </p>
-        </div>
-        <div className="demo-run-header__actions">
-          {live && !ended && (
-            <AgentStop
-              size="sm"
-              label="Stop run"
-              stoppingLabel="Stopping…"
-              isStopping={state.isStopping}
-              onStop={run.stop}
-            />
-          )}
-          {ended && (
+      <PageHeader
+        titleId="page-title"
+        title={script.task}
+        description={`${script.agent} · requested by ${script.requestedBy}`}
+        breadcrumb={
+          <Breadcrumb>
+            <BreadcrumbItem href={href('runs')}>Runs</BreadcrumbItem>
+            <BreadcrumbItem isCurrent>{script.task}</BreadcrumbItem>
+          </Breadcrumb>
+        }
+        status={
+          ended && (
             <Badge intent={PHASE_BADGE[state.phase].intent}>
               {PHASE_BADGE[state.phase].text}
             </Badge>
-          )}
-          {live && ended && (
-            <Button size="sm" variant="secondary" onClick={run.replay}>
-              Replay run
+          )
+        }
+        actions={
+          <>
+            {live && !ended && (
+              <AgentStop
+                size="sm"
+                label="Stop run"
+                stoppingLabel="Stopping…"
+                isStopping={state.isStopping}
+                onStop={run.stop}
+              />
+            )}
+            {live && ended && (
+              <Button size="sm" variant="secondary" onClick={run.replay}>
+                Replay run
+              </Button>
+            )}
+            <Button
+              size="sm"
+              variant="tertiary"
+              onClick={() => setDetailsOpen(true)}
+            >
+              Details
             </Button>
-          )}
-          <Button
-            size="sm"
-            variant="tertiary"
-            onClick={() => setDetailsOpen(true)}
-          >
-            Details
-          </Button>
-        </div>
-      </div>
+          </>
+        }
+      />
 
       {live && (
         <div className="demo-scenario">
