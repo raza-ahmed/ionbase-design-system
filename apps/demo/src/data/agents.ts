@@ -248,7 +248,8 @@ export type AgentSortColumn = 'name' | 'runs7d' | 'successRate' | 'lastRun';
 export interface AgentQuery {
   search: string;
   status: AgentStatus | 'all';
-  team: string | null;
+  /** Any of these teams; empty means every team. */
+  teams: readonly string[];
   /** Applied to every match before paging — sorting one page would lie. */
   sort: { column: AgentSortColumn; direction: 'ascending' | 'descending' };
   page: number;
@@ -281,7 +282,7 @@ export async function listAgents(
   const matching = source.filter(
     (a) =>
       (query.status === 'all' || a.status === query.status) &&
-      (query.team === null || a.team === query.team) &&
+      (query.teams.length === 0 || query.teams.includes(a.team)) &&
       (!needle ||
         a.name.toLowerCase().includes(needle) ||
         a.purpose.toLowerCase().includes(needle)),

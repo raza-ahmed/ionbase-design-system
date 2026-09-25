@@ -1,0 +1,96 @@
+{
+  "status": "stable",
+  "summary": "A text field that filters a list, with any number of values chosen. The choices show as removable tags beneath the field and are read with it.",
+  "useWhen": [
+    "the user picks several values from a list too long to show as checkboxes — teams, regions, labels, assignees",
+    "a table filter can match more than one value — \"Status is Failing or Paused\""
+  ],
+  "useInstead": [
+    {
+      "when": "exactly one value is picked",
+      "use": "Combobox",
+      "why": "Combobox's input shows the chosen label; here the input only ever holds the filter text, and the list stays open for the next pick"
+    },
+    {
+      "when": "there are about seven options or fewer",
+      "use": "CheckboxGroup",
+      "why": "every option visible at once beats typing to find one, and nothing is hidden behind a popover"
+    },
+    {
+      "when": "the values are free text the user invents, not options from a list",
+      "use": "TagGroup",
+      "why": "MultiSelect only chooses from `options`; a free-text tag input is a TagGroup beside an Input"
+    }
+  ],
+  "composition": {
+    "order": ["MultiSelect"],
+    "note": "Pass the full `options` list; filtering, the tags and the announcement are the component's. In a table's filter bar, give it `aria-label` and `hideTags`, and list its values in the table's active-filters TagGroup — one removable tag per value, not the same tags twice.",
+    "example": "<MultiSelect label=\"Notify teams\" options={teams} value={teamIds} onChange={setTeamIds} placeholder=\"Search teams\" />"
+  },
+  "variants": {
+    "size": {
+      "sm": {
+        "use": "dense forms, table filters"
+      },
+      "md": {
+        "use": "the default"
+      },
+      "lg": {
+        "use": "prominent single-field forms"
+      }
+    }
+  },
+  "slots": {
+    "label": {
+      "accepts": "text",
+      "note": "names the field and the tags beneath it"
+    },
+    "description": {
+      "accepts": "text",
+      "note": "replaced by `errorMessage` while `isInvalid` is set"
+    },
+    "errorMessage": {
+      "accepts": "text",
+      "note": "shown only while `isInvalid` is set"
+    },
+    "emptyLabel": {
+      "accepts": "text",
+      "note": "shown in the list when the filter matches nothing"
+    }
+  },
+  "a11y": {
+    "role": "combobox, controlling a listbox that is aria-multiselectable",
+    "guarantees": [
+      "React Aria's multi-select combobox: arrow keys move through the list while focus stays in the input, Enter or click toggles an option, and the list stays open for the next pick",
+      "the chosen labels are on the input's `aria-describedby`, joined by `Intl.ListFormat` — read with the field in the user's language, with no string shipped for it",
+      "the chosen values are a TagGroup named by the field's label: one tab stop, arrow keys between tags, Delete or the × to remove",
+      "Backspace in an empty field removes the last value; with text in the field it only edits the text",
+      "removing the last tag returns focus to the field instead of dropping it on <body>",
+      "`isRequired` marks the field required only while nothing is chosen — at least one"
+    ],
+    "requires": [
+      "`label`, or `aria-label` when there is no visible label — it names the tags as well as the field"
+    ],
+    "notes": [
+      "While the list is open, React Aria hides everything outside the field and the list from assistive technology, the tags included. That is the platform pattern for a combobox, not a defect: the chosen options are marked selected in the list itself."
+    ]
+  },
+  "antiPatterns": [
+    {
+      "dont": "a Combobox that appends each pick to a TagGroup by hand",
+      "why": "the list closes after every pick, the input shows the last label, and nothing announces what is chosen"
+    },
+    {
+      "dont": "a native <select multiple>",
+      "why": "it needs Ctrl or Cmd to pick a second option, which most people never discover, and it cannot filter"
+    },
+    {
+      "dont": "a count in place of the values — \"3 selected\"",
+      "why": "it hides which three; the tags show them and the field reads them"
+    },
+    {
+      "dont": "`hideTags` with nowhere else showing the values",
+      "why": "the field shows only the filter text, so the choice is invisible until the list is opened"
+    }
+  ]
+}

@@ -353,6 +353,99 @@ try {
   }
 
   /*
+   * The Agents table's Teams filter, a MultiSelect with its tags hidden: the
+   * active-filters row shows them instead. Picking two teams must leave the
+   * list open between picks, give each team its own removable filter tag, and
+   * keep the chosen teams read with the field. axe runs with the list open,
+   * which is where a multiselectable listbox would first go wrong.
+   */
+  {
+    const where = 'multi-select filter (light, desktop)';
+    const context = await browser.newContext({
+      viewport: { width: 1280, height: 900 },
+    });
+    await context.addInitScript(() =>
+      localStorage.setItem(
+        'ionbase-ops:demo-settings',
+        JSON.stringify({ theme: 'light', latency: 0 }),
+      ),
+    );
+    const page = await context.newPage();
+    page.on('pageerror', (e) => fail(where, `exception: ${e.message}`));
+    await page.goto(`${BASE}/#/agents`);
+    try {
+      await page.locator('#page-title').waitFor({ timeout: 10_000 });
+      const field = page.getByRole('combobox', { name: 'Teams' });
+      await field.click();
+      await page.keyboard.press('ArrowDown');
+      const list = page.getByRole('listbox');
+      await list.waitFor({ timeout: 5_000 });
+      if ((await list.getAttribute('aria-multiselectable')) !== 'true')
+        fail(where, 'the Teams list is not aria-multiselectable');
+
+      /*
+       * Scoped to the field and the list, as the menus check is. While a
+       * combobox is open React Aria sets `aria-hidden` on everything outside
+       * it — Combobox does the same — and a whole-page run then reports the
+       * page it hid: no h1, content outside landmarks, and focusable elements
+       * under aria-hidden (the header, sidebar, table). That is the
+       * platform's pattern, not this control's defect.
+       */
+      await page.addScriptTag({ content: axeSource });
+      const violations = await page.evaluate(async () => {
+        const result = await window.axe.run(
+          {
+            include: [['.demo-toolbar__teams'], ['.ion-combobox-menu']],
+          },
+          { resultTypes: ['violations'] },
+        );
+        return result.violations.map((v) => `${v.impact} ${v.id}`);
+      });
+      for (const v of violations) fail(where, `axe ${v} with the list open`);
+
+      const options = list.getByRole('option');
+      await options.nth(0).click();
+      await options.nth(1).click();
+      if (!(await list.isVisible()))
+        fail(where, 'the list closed after a pick');
+      await page.keyboard.press('Escape');
+
+      const filters = page.getByRole('grid', { name: 'Active filters' });
+      await filters.waitFor({ timeout: 5_000 });
+      const teamTags = filters.getByRole('row', { name: /^Team: / });
+      if ((await teamTags.count()) !== 2)
+        fail(
+          where,
+          `expected 2 team filter tags, got ${await teamTags.count()}`,
+        );
+      const described = await field.evaluate((el) =>
+        (el.getAttribute('aria-describedby') ?? '')
+          .split(' ')
+          .map((id) => document.getElementById(id)?.textContent ?? '')
+          .join(' '),
+      );
+      if (!/ and /.test(described))
+        fail(
+          where,
+          `the chosen teams are not read with the field: "${described}"`,
+        );
+
+      await teamTags.first().getByRole('button').click();
+      await page.waitForFunction(
+        () =>
+          document.querySelectorAll('[aria-label^="Team: "][role="row"]')
+            .length === 1,
+        null,
+        { timeout: 5_000 },
+      );
+    } catch (e) {
+      fail(where, `did not run: ${e.message.split('\n')[0]}`);
+    }
+    groupsChecked++;
+    await context.close();
+  }
+
+  /*
    * The wizard's CheckboxGroup, which no page load above reaches: it is on
    * Guardrails, the third step. A saved draft with the first two steps done
    * opens there. "At least one" has to hold three ways — natively (every box

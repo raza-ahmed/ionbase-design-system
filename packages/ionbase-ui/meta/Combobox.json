@@ -13,6 +13,11 @@
       "why": "the native control brings keyboard handling and the mobile platform picker for free; this rebuilds all of it"
     },
     {
+      "when": "more than one value may be picked",
+      "use": "MultiSelect",
+      "why": "its input holds only the filter text, the list stays open between picks, and the chosen values show as tags"
+    },
+    {
       "when": "there are two or three mutually exclusive choices worth showing at once",
       "use": "RadioGroup"
     },
@@ -53,6 +58,9 @@
     "requires": [
       "`label`, or an `aria-label` when no visible label is rendered",
       "`emptyLabel` wording that says why nothing is listed, if the default is too terse"
+    ],
+    "notes": [
+      "While the list is open, React Aria hides everything outside the field and the list from assistive technology. That is the platform pattern for a combobox; a whole-page accessibility scan taken with the list open reports the hidden page, not this control."
     ]
   },
   "antiPatterns": [

@@ -8,6 +8,7 @@ import {
   PageHeader,
   Pagination,
   SearchField,
+  MultiSelect,
   Select,
   Tag,
   TagGroup,
@@ -46,8 +47,6 @@ const STATUS_OPTIONS = [
   { value: 'failing', label: 'Failing' },
 ];
 
-const TEAM_OPTIONS = [{ value: '', label: 'All teams' }, ...TEAMS];
-
 /**
  * The DataTable pattern, with DestructiveConfirm for delete. The toolbar stays
  * usable in every state; only the table region is replaced.
@@ -58,7 +57,7 @@ export function AgentsScreen() {
 
   const [search, setSearch] = useState('');
   const [status, setStatus] = useState<AgentStatus | 'all'>('all');
-  const [team, setTeam] = useState('');
+  const [teams, setTeams] = useState<string[]>([]);
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [selected, setSelected] = useState<ReadonlySet<string>>(new Set());
@@ -74,7 +73,7 @@ export function AgentsScreen() {
   const query = {
     search: useDebounced(search),
     status,
-    team: team || null,
+    teams,
     sort: sort ?? { column: 'name' as const, direction: 'ascending' as const },
     page,
     pageSize,
@@ -97,7 +96,7 @@ export function AgentsScreen() {
     const props = sortProps(column, options);
     return { ...props, onSort: () => requery(props.onSort) };
   };
-  const filtered = search !== '' || status !== 'all' || team !== '';
+  const filtered = search !== '' || status !== 'all' || teams.length > 0;
   const searchRef = useRef<HTMLInputElement>(null);
   const focusSearchSoon = () =>
     requestAnimationFrame(() => searchRef.current?.focus());
@@ -106,20 +105,17 @@ export function AgentsScreen() {
     ...(status !== 'all'
       ? [{ id: 'status', label: `Status: ${STATUS_LABEL[status]}` }]
       : []),
-    ...(team
-      ? [
-          {
-            id: 'team',
-            label: `Team: ${TEAMS.find((t) => t.value === team)?.label ?? team}`,
-          },
-        ]
-      : []),
+    // One tag per team, so each can be removed on its own.
+    ...teams.map((t) => ({
+      id: `team:${t}`,
+      label: `Team: ${TEAMS.find((o) => o.value === t)?.label ?? t}`,
+    })),
   ];
   const clearFilters = () =>
     requery(() => {
       setSearch('');
       setStatus('all');
-      setTeam('');
+      setTeams([]);
     });
 
   const rows = result.status === 'ready' ? result.data.rows : [];
@@ -210,12 +206,17 @@ export function AgentsScreen() {
             requery(() => setStatus(e.target.value as AgentStatus | 'all'))
           }
         />
-        <Select
+        {/* Any number of teams. Its values are the active-filter tags below,
+            so it does not draw its own. */}
+        <MultiSelect
           size="sm"
-          aria-label="Team"
-          options={TEAM_OPTIONS}
-          value={team}
-          onChange={(e) => requery(() => setTeam(e.target.value))}
+          aria-label="Teams"
+          placeholder="All teams"
+          options={TEAMS}
+          value={teams}
+          onChange={(ts) => requery(() => setTeams(ts))}
+          hideTags
+          wrapperClassName="demo-toolbar__teams"
         />
 
         {selectedRows.length > 0 && (
@@ -259,7 +260,7 @@ export function AgentsScreen() {
               requery(() => {
                 if (keys.has('search')) setSearch('');
                 if (keys.has('status')) setStatus('all');
-                if (keys.has('team')) setTeam('');
+                setTeams((ts) => ts.filter((t) => !keys.has(`team:${t}`)));
               });
               // The last filter takes the whole row with it, so focus would
               // fall to the page. Search is the next filter control.
@@ -324,8 +325,8 @@ export function AgentsScreen() {
             title="No agents match these filters"
             description={
               search
-                ? `Nothing matches “${search}” with the current status and team.`
-                : 'Nothing matches the current status and team.'
+                ? `Nothing matches “${search}” with the current status and teams.`
+                : 'Nothing matches the current status and teams.'
             }
             action={
               filtered && (

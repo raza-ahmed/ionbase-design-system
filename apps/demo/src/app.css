@@ -211,6 +211,12 @@ body {
   flex: 1 1 16rem;
 }
 
+/* Wide enough to type a team into; Select's width was its longest option. */
+.demo-toolbar__teams {
+  flex: 0 1 14rem;
+  min-width: 10rem;
+}
+
 .demo-toolbar__bulk {
   display: flex;
   align-items: center;

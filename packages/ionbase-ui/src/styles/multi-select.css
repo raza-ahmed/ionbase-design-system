@@ -1,0 +1,104 @@
+/*
+ * MultiSelect
+ *
+ * The field is Combobox's, which is Input's box: `.ion-input .ion-combobox`
+ * with `.ion-multi-select` on top, so the three never drift apart. The menu is
+ * Combobox's menu, block and all, which is also what keeps the contrast gate
+ * measuring these rows against `surface/raised` — see combobox.css.
+ *
+ * What is new is the row's check box, and the tags row under the field.
+ *
+ * THE CHECK IS CHECKBOX'S BOX, DRAWN
+ *
+ * 16px at radius/xs; empty it is 2px `border/stronger`, filled it drops to
+ * 1px of `border/primary-strong` over `surface/primary` with the flush bevel —
+ * the Small checkbox exactly. A multi-select row reads as "tick as many as you
+ * like" only if its mark is recognisably a checkbox; Combobox's single-select
+ * tint says "the one", which is the opposite.
+ *
+ * NO SELECTED TINT
+ *
+ * Combobox tints its one selected row. Here any number can be selected, and a
+ * list of tinted rows loses the one thing the tint is for — so the check says
+ * selected, and the background is left to say focused.
+ */
+.ion-multi-select-menu__option {
+  flex-direction: row;
+  align-items: flex-start;
+  gap: var(--spacing-8);
+}
+
+.ion-multi-select-menu__text {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2);
+  min-width: 0;
+}
+
+.ion-multi-select-menu__check {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: var(--spacing-16);
+  height: var(--spacing-16);
+
+  /* Centred on the label's first line, as Checkbox centres its box. */
+  margin-top: calc((var(--type-body-line-height) - var(--spacing-16)) / 2);
+  background-color: var(--surface-default);
+  border: var(--border-width-thick) solid var(--border-stronger);
+  border-radius: var(--radius-xs);
+}
+
+.ion-multi-select-menu__check svg {
+  display: block;
+
+  /* Checkbox's derived mark at 16: box / 2 + 4. */
+  width: calc(var(--spacing-16) / 2 + var(--spacing-4));
+  height: calc(var(--spacing-16) / 2 + var(--spacing-4));
+  opacity: 0;
+}
+
+.ion-combobox-menu__option.ion-multi-select-menu__option[data-selected='true'] {
+  background-color: transparent;
+}
+
+.ion-combobox-menu__option.ion-multi-select-menu__option[data-focused='true'] {
+  background-color: var(--surface-hover);
+}
+
+.ion-multi-select-menu__option[data-selected='true'] .ion-combobox-menu__label {
+  font-weight: var(--font-weight-regular);
+}
+
+.ion-multi-select-menu__option[data-selected='true']
+  .ion-multi-select-menu__check {
+  /* Coloured only once filled: empty, the glyph is hidden and has no ground. */
+  color: var(--icon-on-color);
+  background-color: var(--surface-primary);
+  border-width: var(--border-width-default);
+  border-color: var(--border-primary-strong);
+  box-shadow: var(--ion-shadow-raised-flush-xs);
+}
+
+.ion-multi-select-menu__option[data-selected='true']
+  .ion-multi-select-menu__check
+  svg {
+  opacity: 1;
+}
+
+.ion-multi-select-menu__option[data-disabled='true']
+  .ion-multi-select-menu__check {
+  background-color: var(--surface-disabled);
+  border-color: var(--border-disabled);
+  box-shadow: none;
+}
+
+@media (forced-colors: active) {
+  .ion-multi-select-menu__option[data-selected='true']
+    .ion-multi-select-menu__check {
+    background-color: Highlight;
+    border-color: Highlight;
+    color: HighlightText;
+  }
+}

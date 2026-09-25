@@ -28,7 +28,7 @@
 - [x] **PageHeader** — and add it to the `PageShell` pattern — 0.84.0
 - [x] **SearchField** — 0.85.0
 - [x] **Fieldset / CheckboxGroup** — `RadioGroup` moved onto the same shell — 0.86.0
-- [ ] **MultiSelect**
+- [x] **MultiSelect** — the Agents table's Teams filter — 0.87.0
 - [ ] **Toolbar**
 - [ ] **Table: row selection and batch actions** — select-all, indeterminate, batch bar, count announced. _needs Toolbar_
 - [ ] **Toggletip**
