@@ -10,7 +10,8 @@ import {
   SearchField,
   MultiSelect,
   Select,
-  Toolbar,
+  TableBatchBar,
+  useTableSelection,
   Tag,
   TagGroup,
   useTableSort,
@@ -61,7 +62,6 @@ export function AgentsScreen() {
   const [teams, setTeams] = useState<string[]>([]);
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
-  const [selected, setSelected] = useState<ReadonlySet<string>>(new Set());
   const [version, setVersion] = useState(0);
   const [toDelete, setToDelete] = useState<Agent[] | null>(null);
   const [notice, setNotice] = useState<DeleteResult | null>(null);
@@ -84,13 +84,40 @@ export function AgentsScreen() {
     JSON.stringify([query, settings.state, settings.latency, version]),
   );
 
+  /*
+   * The selection outlives a page change — ticking rows on page 1 and page 2
+   * and acting on both is the point of it — and "Select all" reaches rows no
+   * page has shown yet. Anything that changes WHICH rows match still drops it.
+   */
+  const selection = useTableSelection<string>({
+    total: result.status === 'ready' ? result.data.total : undefined,
+  });
+  // Every agent a page has shown, so a selection spanning pages can be acted
+  // on without refetching the ones already seen.
+  const seen = useRef(new Map<string, Agent>());
+  if (result.status === 'ready')
+    for (const a of result.data.rows) seen.current.set(a.id, a);
+
+  /** The agents a bulk action reaches: the ticked ones, or every match minus the unticked. */
+  async function bulkTargets(): Promise<Agent[]> {
+    const sel = selection.selection;
+    if (sel.mode === 'keys')
+      return [...sel.keys].flatMap((id) => seen.current.get(id) ?? []);
+    const everything = await listAgents(
+      { ...query, page: 1, pageSize: Number.MAX_SAFE_INTEGER },
+      settings,
+      new AbortController().signal,
+    );
+    return everything.rows.filter((a) => !sel.except.has(a.id));
+  }
+
   const refresh = () => setVersion((v) => v + 1);
   // Any change to what is listed drops the selection: acting on rows the user
   // can no longer see is how a bulk action surprises someone.
   const requery = (apply: () => void) => {
     apply();
     setPage(1);
-    setSelected(new Set());
+    selection.clear();
   };
   // A new order is a new listing: back to page 1, selection dropped.
   const headerSort: HeaderSort = (column, options) => {
@@ -120,7 +147,6 @@ export function AgentsScreen() {
     });
 
   const rows = result.status === 'ready' ? result.data.rows : [];
-  const selectedRows = rows.filter((a) => selected.has(a.id));
 
   async function pause(targets: Agent[], paused: boolean) {
     const ids = targets.map((a) => a.id);
@@ -148,16 +174,15 @@ export function AgentsScreen() {
   }
 
   function onDeleted(outcome: DeleteResult) {
-    setSelected(new Set());
+    selection.clear();
     setNotice(outcome);
     refresh();
   }
 
   const announcement =
     result.status === 'ready'
-      ? `${result.data.total} ${result.data.total === 1 ? 'agent' : 'agents'}${
-          selected.size ? `, ${selected.size} selected` : ''
-        }`
+      ? // The selection count is TableBatchBar's own live region.
+        `${result.data.total} ${result.data.total === 1 ? 'agent' : 'agents'}`
       : '';
 
   return (
@@ -219,40 +244,42 @@ export function AgentsScreen() {
           hideTags
           wrapperClassName="demo-toolbar__teams"
         />
-
-        {selectedRows.length > 0 && (
-          <div className="demo-toolbar__bulk">
-            <span className="ion-text-body-sm demo-muted">
-              {selectedRows.length} selected
-            </span>
-            {/* One tab stop for the actions, ← → between them. The search and
-                filters to the left stay ordinary tab stops — a toolbar around
-                a text field strands whatever comes after it. */}
-            <Toolbar
-              aria-label={`Actions for ${selectedRows.length} selected ${selectedRows.length === 1 ? 'agent' : 'agents'}`}
-            >
-              <Button
-                size="sm"
-                variant="secondary"
-                startIcon={<Icon as={Pause} size="sm" />}
-                onClick={() => void pause(selectedRows, true)}
-              >
-                Pause
-              </Button>
-              <Button
-                size="sm"
-                variant="destructive"
-                startIcon={<Icon as={Trash2} size="sm" />}
-                onClick={() => setToDelete(selectedRows)}
-              >
-                Delete {selectedRows.length}
-              </Button>
-            </Toolbar>
-          </div>
-        )}
       </div>
 
-      {/* Row count and selection, announced — a filter change is otherwise silent. */}
+      {/* Always rendered: its count is a live region that must already be in
+          the page when the first row is ticked. Hidden while nothing is. */}
+      <TableBatchBar
+        count={selection.count}
+        total={result.status === 'ready' ? result.data.total : undefined}
+        isAllMatching={selection.isAllMatching}
+        onSelectAll={selection.selectAllMatching}
+        onClear={selection.clear}
+        tableId="agents-table"
+        labels={{
+          selectAll: (n) => `Select all ${n} agents`,
+          allSelected: (n) => `All ${n} agents selected`,
+          actions: (n) => `Actions for ${n} selected agents`,
+        }}
+      >
+        <Button
+          size="sm"
+          variant="secondary"
+          startIcon={<Icon as={Pause} size="sm" />}
+          onClick={() => void bulkTargets().then((t) => pause(t, true))}
+        >
+          Pause
+        </Button>
+        <Button
+          size="sm"
+          variant="destructive"
+          startIcon={<Icon as={Trash2} size="sm" />}
+          onClick={() => void bulkTargets().then(setToDelete)}
+        >
+          Delete {selection.count}
+        </Button>
+      </TableBatchBar>
+
+      {/* Row count, announced — a filter change is otherwise silent. */}
       <p className="ion-visually-hidden" role="status">
         {announcement}
       </p>
@@ -362,10 +389,10 @@ export function AgentsScreen() {
             </Alert>
           )}
           <AgentsTable
+            id="agents-table"
             rows={rows}
             sortProps={headerSort}
-            selected={selected}
-            onSelectedChange={setSelected}
+            selection={selection}
             onPause={(a, paused) => void pause([a], paused)}
             onDelete={(a) => setToDelete([a])}
           />
@@ -380,10 +407,7 @@ export function AgentsScreen() {
               size="sm"
               page={page}
               pageCount={Math.max(1, Math.ceil(result.data.total / pageSize))}
-              onPageChange={(p) => {
-                setPage(p);
-                setSelected(new Set());
-              }}
+              onPageChange={setPage}
               showPageSize
               pageSize={pageSize}
               pageSizeOptions={[10, 20, 50]}

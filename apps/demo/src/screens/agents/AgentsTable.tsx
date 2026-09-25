@@ -15,6 +15,7 @@ import {
   TableHead,
   TableRow,
   type TableSortProps,
+  type UseTableSelectionResult,
 } from 'ionbase-ui';
 import { Ellipsis } from 'ionbase-icons/icons/ellipsis';
 import { Pause } from 'ionbase-icons/icons/pause';
@@ -99,40 +100,28 @@ function Missing() {
 }
 
 export function AgentsTable({
+  id,
   rows,
   sortProps,
-  selected,
-  onSelectedChange,
+  selection,
   onPause,
   onDelete,
 }: {
+  id: string;
   rows: Agent[];
   sortProps: HeaderSort;
-  selected: ReadonlySet<string>;
-  onSelectedChange: (next: ReadonlySet<string>) => void;
+  selection: UseTableSelectionResult<string>;
   onPause: (agent: Agent, paused: boolean) => void;
   onDelete: (agent: Agent) => void;
 }) {
-  const selectedHere = rows.filter((a) => selected.has(a.id)).length;
-
-  const toggle = (id: string, on: boolean) => {
-    const next = new Set(selected);
-    if (on) next.add(id);
-    else next.delete(id);
-    onSelectedChange(next);
-  };
-
   return (
-    <Table aria-label="Agents">
+    <Table id={id} aria-label="Agents">
       <TableHead>
         <TableRow
-          selection={{
-            'aria-label': 'Select all agents on this page',
-            isSelected: selectedHere > 0 && selectedHere === rows.length,
-            isIndeterminate: selectedHere > 0 && selectedHere < rows.length,
-            onSelectionChange: (on) =>
-              onSelectedChange(new Set(on ? rows.map((a) => a.id) : [])),
-          }}
+          selection={selection.headSelection(
+            rows.map((a) => a.id),
+            'Select all agents on this page',
+          )}
         >
           <ColumnHeaders sortProps={sortProps} />
           <TableCell header>
@@ -142,17 +131,12 @@ export function AgentsTable({
       </TableHead>
       <TableBody>
         {rows.map((a) => {
-          const isSelected = selected.has(a.id);
           const paused = a.status === 'paused';
           return (
             <TableRow
               key={a.id}
-              isSelected={isSelected}
-              selection={{
-                'aria-label': `Select ${a.name}`,
-                isSelected,
-                onSelectionChange: (on) => toggle(a.id, on),
-              }}
+              isSelected={selection.isSelected(a.id)}
+              selection={selection.rowSelection(a.id, `Select ${a.name}`)}
             >
               <TableCell>
                 <span className="demo-cell-stack">

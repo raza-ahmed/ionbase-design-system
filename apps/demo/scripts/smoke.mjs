@@ -451,7 +451,7 @@ try {
    * toolbar rather than walking each button.
    */
   {
-    const where = 'bulk toolbar (light, desktop)';
+    const where = 'batch selection (light, desktop)';
     const context = await browser.newContext({
       viewport: { width: 1280, height: 900 },
     });
@@ -496,6 +496,56 @@ try {
         return result.violations.map((v) => `${v.impact} ${v.id}`);
       });
       for (const v of violations) fail(where, `axe ${v} in the toolbar`);
+
+      // The batch bar: the count is announced, the header takes the page, a
+      // separate press takes every match, and the next page is ticked too.
+      const status = page.locator('.ion-table-batch [role="status"]');
+      if ((await status.textContent())?.trim() !== '1 selected')
+        fail(
+          where,
+          `count reads "${await status.textContent()}", not "1 selected"`,
+        );
+      await page.locator('thead .ion-checkbox').click();
+      const selectAll = page.getByRole('button', {
+        name: /^Select all \d+ agents$/,
+      });
+      await selectAll.waitFor({ timeout: 5_000 });
+      await selectAll.click();
+      await page.waitForFunction(
+        () =>
+          /^All \d+ agents selected$/.test(
+            document.querySelector('.ion-table-batch [role="status"]')
+              ?.textContent ?? '',
+          ),
+        null,
+        { timeout: 5_000 },
+      );
+      await page.getByRole('button', { name: /page 2/i }).click();
+      await page.waitForFunction(
+        () =>
+          [...document.querySelectorAll('tbody input[type="checkbox"]')].every(
+            (b) => b.checked,
+          ),
+        null,
+        { timeout: 5_000 },
+      );
+      await page.getByRole('button', { name: 'Clear selection' }).click();
+      try {
+        await page.waitForFunction(
+          () =>
+            document.activeElement ===
+            document.querySelector(
+              '#agents-table thead input[type="checkbox"]',
+            ),
+          null,
+          { timeout: 2_000 },
+        );
+      } catch {
+        fail(
+          where,
+          'Clear selection did not return focus to the header checkbox',
+        );
+      }
     } catch (e) {
       fail(where, `did not run: ${e.message.split('\n')[0]}`);
     }

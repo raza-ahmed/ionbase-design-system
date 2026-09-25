@@ -1,0 +1,71 @@
+{
+  "status": "stable",
+  "summary": "The count, \"Select all N\", the bulk actions and \"Clear selection\", shown above a table while any of its rows is selected. Pair it with useTableSelection.",
+  "useWhen": [
+    "a table's rows can be selected and acted on together — pause, export, delete",
+    "the rows are paged, and an action may need to reach every row that matches, not just the page on screen"
+  ],
+  "useInstead": [
+    {
+      "when": "there are actions but no row selection",
+      "use": "Toolbar",
+      "why": "the bar exists to say how many are selected and to act on them; without a selection it has nothing to count"
+    },
+    {
+      "when": "an action applies to one row",
+      "use": "MenuTrigger",
+      "why": "put it in that row's own actions menu; ticking a box to act on one row is two steps where one would do"
+    }
+  ],
+  "composition": {
+    "order": ["TableBatchBar", "Table"],
+    "note": "Hold the selection in `useTableSelection({ total })`: spread its `count`, `isAllMatching`, `selectAllMatching` and `clear` onto the bar, `headSelection(pageKeys)` onto the head TableRow's `selection`, and `rowSelection(key, label)` plus `isSelected(key)` onto each body row. Render the bar always — it hides itself at zero — and give the Table an `id` passed as `tableId`. Call `clear()` whenever the filters, the sort or the page size change. When `selection.mode` is `all`, send the server \"every row matching these filters, except `selection.except`\".",
+    "example": "<TableBatchBar count={sel.count} total={total} isAllMatching={sel.isAllMatching} onSelectAll={sel.selectAllMatching} onClear={sel.clear} tableId=\"agents\"><Button size=\"sm\" variant=\"secondary\">Pause</Button><Button size=\"sm\" variant=\"destructive\">Delete</Button></TableBatchBar>"
+  },
+  "slots": {
+    "children": {
+      "accepts": "Button, Divider, MenuTrigger",
+      "note": "the bulk actions; placed in a Toolbar named for the count"
+    },
+    "labels": {
+      "accepts": "text",
+      "note": "every string the bar renders — selected, allSelected, selectAll, clear, actions — for translation. Each receives its number already formatted for the locale"
+    }
+  },
+  "a11y": {
+    "role": "status for the count; toolbar for the actions",
+    "guarantees": [
+      "the count is a `role=\"status\"` live region that is in the page before the first selection, so \"1 selected\" is announced rather than inserted silently",
+      "the actions are a Toolbar: one tab stop, arrow keys between them, named \"Actions for N selected rows\"",
+      "\"Clear selection\" returns focus to the table's select-all checkbox (with `tableId`), since the bar and the button pressed go away with the selection",
+      "numbers are formatted with `Intl.NumberFormat` in the user's locale"
+    ],
+    "requires": [
+      "an `id` on the Table, passed as `tableId`, so focus has somewhere to go on clear",
+      "the selection checkboxes labelled — `headSelection` and `rowSelection` take the label"
+    ],
+    "notes": [
+      "The header checkbox selects the page you can see. Rows you cannot see are the bar's separate \"Select all N\" press, offered once fewer than all are selected — a bulk delete must never reach thousands of unseen rows from one tick."
+    ]
+  },
+  "antiPatterns": [
+    {
+      "dont": "mounting the bar only once something is selected",
+      "why": "a live region inserted with its first message is silent in most screen readers — the first tick goes unannounced"
+    },
+    {
+      "dont": "a header checkbox that selects every matching row",
+      "do": "`headSelection(pageKeys)`, and the bar's \"Select all N\"",
+      "why": "one tick reaching rows nobody has seen is how a bulk delete removes data by surprise"
+    },
+    {
+      "dont": "keeping the selection across a filter or sort change",
+      "why": "the ticked rows may no longer be on screen, and the bar would act on rows the user can no longer see"
+    },
+    {
+      "dont": "a destructive bulk action with no confirmation",
+      "do": "the DestructiveConfirm pattern, naming the count",
+      "why": "\"Delete 128\" after one press of Select all is one click from removing everything the filter matched"
+    }
+  ]
+}

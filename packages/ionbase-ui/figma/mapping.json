@@ -1694,6 +1694,19 @@
         }
       }
     },
+    "Table Batch Bar": {
+      "code": "TableBatchBar",
+      "props": {
+        "Count#1523:0": {
+          "prop": "count",
+          "note": "A number, not a string: the bar writes \"5 selected\" itself, formatted for the locale, and says \"All 128 selected\" once every matching row is. Change the words through `labels`."
+        },
+        "Show Select All#1523:1": {
+          "prop": "onSelectAll",
+          "note": "Not a switch in code: the offer appears on its own whenever fewer than `total` rows are selected and `onSelectAll` is passed. Leave `onSelectAll` out to keep selection page-by-page."
+        }
+      }
+    },
     "Table Cell": {
       "code": "TableCell",
       "props": {

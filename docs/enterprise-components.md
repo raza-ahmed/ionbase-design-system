@@ -98,26 +98,26 @@ IonBase column names the component that covers it.
 
 ### Data display
 
-| Component                        | Carbon | M3  | SLDS | IonBase                                       |
-| -------------------------------- | :----: | :-: | :--: | --------------------------------------------- |
-| Data table                       |   ●    |     |  ●   | ◐ `Table` — _missing enterprise features, §3_ |
-| Tree grid                        |        |     |  ●   | —                                             |
-| List (selectable / actionable)   |   ●    |  ●  |  ◐   | —                                             |
-| Description list / record detail |   ◐    |     |  ●   | —                                             |
-| Card / tile                      |   ●    |  ●  |  ●   | `Card`, `FullCard`                            |
-| Badge                            |   ●    |  ●  |  ●   | `Badge`                                       |
-| Tag                              |   ●    |  ●  |  ●   | `Tag`                                         |
-| Status indicator (shape + label) |   ●    |     |      | —                                             |
-| Avatar / avatar group            |   ●    |     |  ●   | `Avatar`, `AvatarGroup`                       |
-| Big number / stat                |   ●    |     |      | `StatTile`, `StatGroup`                       |
-| Code snippet                     |   ●    |     |      | —                                             |
-| Activity timeline / feed         |        |     |  ●   | ◐ `AgentActivity`, agent-only                 |
-| Truncated text                   |   ●    |     |      | —                                             |
-| Keyboard key                     |        |     |      | `Kbd`                                         |
-| Divider                          |        |  ●  |      | `Divider`                                     |
-| Charts                           |   ●    |     |      | ◐ helpers for visx — _by design_              |
-| Carousel                         |        |  ●  |  ●   | — _non-goal, §4_                              |
-| Map                              |        |     |  ●   | — _non-goal, §4_                              |
+| Component                        | Carbon | M3  | SLDS | IonBase                                                                   |
+| -------------------------------- | :----: | :-: | :--: | ------------------------------------------------------------------------- |
+| Data table                       |   ●    |     |  ●   | ◐ `Table`, `TableBatchBar` — _expandable rows, sticky header, resize: P1_ |
+| Tree grid                        |        |     |  ●   | —                                                                         |
+| List (selectable / actionable)   |   ●    |  ●  |  ◐   | —                                                                         |
+| Description list / record detail |   ◐    |     |  ●   | —                                                                         |
+| Card / tile                      |   ●    |  ●  |  ●   | `Card`, `FullCard`                                                        |
+| Badge                            |   ●    |  ●  |  ●   | `Badge`                                                                   |
+| Tag                              |   ●    |  ●  |  ●   | `Tag`                                                                     |
+| Status indicator (shape + label) |   ●    |     |      | —                                                                         |
+| Avatar / avatar group            |   ●    |     |  ●   | `Avatar`, `AvatarGroup`                                                   |
+| Big number / stat                |   ●    |     |      | `StatTile`, `StatGroup`                                                   |
+| Code snippet                     |   ●    |     |      | —                                                                         |
+| Activity timeline / feed         |        |     |  ●   | ◐ `AgentActivity`, agent-only                                             |
+| Truncated text                   |   ●    |     |      | —                                                                         |
+| Keyboard key                     |        |     |      | `Kbd`                                                                     |
+| Divider                          |        |  ●  |      | `Divider`                                                                 |
+| Charts                           |   ●    |     |      | ◐ helpers for visx — _by design_                                          |
+| Carousel                         |        |  ●  |  ●   | — _non-goal, §4_                                                          |
+| Map                              |        |     |  ●   | — _non-goal, §4_                                                          |
 
 ### Feedback and overlays
 

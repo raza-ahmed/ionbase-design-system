@@ -53,6 +53,7 @@ const REQUIRED = [
   'Menu',
   'MultiSelect',
   'Toolbar',
+  'TableBatchBar',
   'MenuItem',
   'MenuSection',
   'MenuTrigger',
@@ -106,6 +107,19 @@ const REQUIRED = [
  */
 const VIA_HOOK = { useToast: 'Toast' };
 
+/**
+ * Components a shown component renders as a documented part of itself, so
+ * they are on screen without being imported. TableBatchBar's actions ARE a
+ * Toolbar — named, one tab stop, arrows between them — and the demo's bulk
+ * bar is where Toolbar is used as its contract intends. Forcing a separate
+ * import elsewhere would mean a Toolbar around two or three page-header
+ * buttons, which Toolbar's own contract says not to do.
+ *
+ * Only a component whose contract names the part belongs here; "it happens to
+ * render one internally" is not enough.
+ */
+const RENDERS = { TableBatchBar: ['Toolbar'] };
+
 const require = createRequire(import.meta.url);
 const index = require('ionbase-ui/meta/index');
 const components = Object.keys(index.components).sort();
@@ -135,7 +149,9 @@ for (const file of files(
         .trim()
         .replace(/^type\s+/, '')
         .split(/\s+as\s+/)[0];
-      if (name) imported.add(VIA_HOOK[name] ?? name);
+      if (!name) continue;
+      imported.add(VIA_HOOK[name] ?? name);
+      for (const part of RENDERS[name] ?? []) imported.add(part);
     }
   }
 }

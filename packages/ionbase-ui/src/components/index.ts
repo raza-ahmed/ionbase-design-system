@@ -118,6 +118,17 @@ export type {
   TableSortDirection,
 } from './Table.js';
 export { useTableSort } from './use-table-sort.js';
+export { useTableSelection } from './use-table-selection.js';
+export type {
+  TableSelection,
+  UseTableSelectionOptions,
+  UseTableSelectionResult,
+} from './use-table-selection.js';
+export { TableBatchBar } from './TableBatchBar.js';
+export type {
+  TableBatchBarProps,
+  TableBatchBarLabels,
+} from './TableBatchBar.js';
 export type {
   TableSort,
   TableSortProps,

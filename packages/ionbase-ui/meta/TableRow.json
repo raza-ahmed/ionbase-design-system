@@ -12,7 +12,7 @@
   "slots": {
     "selection": {
       "accepts": "Checkbox props",
-      "note": "renders a leading Checkbox cell — a <th scope=\"col\"> select-all inside TableHead, a <td> inside TableBody. Takes the checkbox's own props rather than a boolean, since a selectable row needs `checked`/`onChange` wiring"
+      "note": "renders a leading Checkbox cell — a <th scope=\"col\"> select-all inside TableHead, a <td> inside TableBody. Takes the checkbox's own props rather than a boolean, since a selectable row needs `checked`/`onChange` wiring. `useTableSelection`'s `headSelection` and `rowSelection` return exactly these props, tri-state header included"
     }
   },
   "a11y": {
@@ -29,6 +29,11 @@
     ]
   },
   "antiPatterns": [
+    {
+      "dont": "hand-wiring the select-all's checked and indeterminate states",
+      "do": "`selection={sel.headSelection(pageKeys, label)}` from useTableSelection",
+      "why": "the three states and \"a partial header ticks to full\" are easy to get subtly wrong, and every table needs the same logic"
+    },
     {
       "dont": "`onClick` on TableRow",
       "why": "it takes no focus, so a keyboard user can never fire it"

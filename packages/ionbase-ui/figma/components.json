@@ -1941,6 +1941,19 @@
         }
       }
     },
+    "Table Batch Bar": {
+      "page": "Table",
+      "id": "1523:753",
+      "kind": "COMPONENT",
+      "props": {
+        "Count#1523:0": {
+          "type": "TEXT"
+        },
+        "Show Select All#1523:1": {
+          "type": "BOOLEAN"
+        }
+      }
+    },
     "Table Cell": {
       "page": "Table",
       "id": "174:103",
