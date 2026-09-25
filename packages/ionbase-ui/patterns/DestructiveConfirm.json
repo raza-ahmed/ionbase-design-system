@@ -4,12 +4,12 @@
     "the action deletes data, revokes access, cancels a subscription, or otherwise cannot be reversed by the user",
     "the action applies to more than one record at once — bulk destructive actions need this even when a single one would not"
   ],
-  "composes": ["Modal", "Button", "Input", "Alert", "Badge"],
+  "composes": ["Modal", "Button", "ButtonGroup", "Input", "Alert", "Badge"],
   "structure": [
     "A Modal whose title names the action and the object — \"Delete 14 projects\", not \"Are you sure?\".",
     "Body text stating what is lost and what is not, in that order.",
     "For high-consequence actions, an Input requiring the object's name to be typed exactly before the confirm Button enables.",
-    "Footer: cancel first in the DOM, destructive second — so the safe option is reached first by keyboard."
+    "Footer: a ButtonGroup with `stack`, cancel first and destructive second — so the safe option is reached first by keyboard, and on a phone the destructive one is not the first thing under the thumb."
   ],
   "states": {
     "loading": {
@@ -40,6 +40,7 @@
       "showClose"
     ],
     "Button": ["variant", "size", "isDisabled"],
+    "ButtonGroup": ["stack"],
     "Input": ["label", "isInvalid", "errorMessage"],
     "Alert": ["intent", "title"]
   },

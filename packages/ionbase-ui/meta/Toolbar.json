@@ -12,6 +12,11 @@
       "why": "Tab leaves a toolbar in one press and ← → belong to the caret, so a text field inside strands every filter after it — WAI-ARIA's own caution"
     },
     {
+      "when": "two or three actions in a dialog, drawer or form footer",
+      "use": "ButtonGroup",
+      "why": "a few actions are expected to be a tab stop each; ButtonGroup gives them the gap, the order and a narrow-screen behaviour without the arrow-key model"
+    },
+    {
       "when": "two or three actions at the top of a page",
       "use": "PageHeader",
       "why": "its `actions` slot is a row of ordinary tab stops, which for a few buttons is what a keyboard user expects"

@@ -420,6 +420,31 @@
         }
       }
     },
+    "Button Group": {
+      "page": "Button Group",
+      "id": "1564:513",
+      "kind": "SET",
+      "props": {
+        "Align": {
+          "type": "VARIANT",
+          "options": ["End", "Start", "Center"],
+          "default": "End"
+        },
+        "Overflow": {
+          "type": "VARIANT",
+          "options": ["Wrap", "Menu"],
+          "default": "Wrap"
+        },
+        "Show Start#1564:0": {
+          "type": "BOOLEAN"
+        },
+        "Stack": {
+          "type": "VARIANT",
+          "options": ["False", "True"],
+          "default": "False"
+        }
+      }
+    },
     "Calendar": {
       "page": "Date Picker",
       "id": "1395:1102",

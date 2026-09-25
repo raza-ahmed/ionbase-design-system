@@ -18,6 +18,7 @@
     "PhoneInput",
     "NumberInput",
     "Button",
+    "ButtonGroup",
     "Alert",
     "Divider"
   ],
@@ -28,7 +29,7 @@
     "Related fields that answer one question — an address, a pair of limits, a set of checkboxes — sit in a Fieldset, CheckboxGroup or RadioGroup, so the question is announced with each field and a group-level error has somewhere to live.",
     "Choices that form a hierarchy — folders, teams within departments — are one TreeView with `selectionMode=\"multiple\"` and an `aria-label` naming the question, not Checkboxes indented by hand. The tree announces each choice's level and place; indentation alone announces nothing.",
     "An error summary Alert above the form after a failed submit, listing each invalid field as a link to it.",
-    "A submit Button and a cancel Link or Button, in that reading order, at the end."
+    "The actions in a ButtonGroup at the end: cancel first, the submit Button last — the primary last, as every action row in the system has it, so it is reached after the options it is chosen over and sits at the end of the row. `stack` on a form a phone will fill."
   ],
   "states": {
     "loading": {
@@ -87,6 +88,7 @@
     "Fieldset": ["label", "isInvalid", "errorMessage"],
     "Checkbox": ["isDisabled"],
     "Button": ["variant", "size", "isDisabled"],
+    "ButtonGroup": ["stack"],
     "Alert": ["intent", "title", "actions"],
     "Toggletip": ["aria-label", "size"],
     "TreeView": [

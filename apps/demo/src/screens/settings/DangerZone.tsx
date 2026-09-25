@@ -2,6 +2,7 @@ import { useState } from 'react';
 import {
   Alert,
   Button,
+  ButtonGroup,
   Card,
   Divider,
   Input,
@@ -95,7 +96,7 @@ export function DangerZone({
           onOpenChange={(o) => !o && !pending && setOpen(false)}
           showClose={!pending}
           footer={
-            <>
+            <ButtonGroup stack>
               <Button
                 variant="secondary"
                 isDisabled={pending}
@@ -110,7 +111,7 @@ export function DangerZone({
               >
                 {pending ? 'Scheduling…' : 'Delete workspace'}
               </Button>
-            </>
+            </ButtonGroup>
           }
         >
           <div className="demo-modal-body">

@@ -2240,6 +2240,38 @@
           "note": "Multiple is where each row carries its Checkbox; the Figma rows show it with Selection=Multiple on List Item. The rows themselves are `items` — see List Item."
         }
       }
+    },
+    "Button Group": {
+      "code": "ButtonGroup",
+      "props": {
+        "Align": {
+          "prop": "align",
+          "values": {
+            "End": "end",
+            "Start": "start",
+            "Center": "center"
+          }
+        },
+        "Stack": {
+          "prop": "stack",
+          "when": {
+            "True": true
+          },
+          "note": "Stacked is what the group becomes below 32rem of viewport when `stack` is set; drawn at 343px. Align and Overflow do not apply to it, so it is drawn once."
+        },
+        "Overflow": {
+          "prop": "overflow",
+          "values": {
+            "Wrap": "wrap",
+            "Menu": "menu"
+          },
+          "note": "Menu shows the row once some Buttons have moved into More actions; in code the move is measured, not chosen — the design shows the result on a narrow row."
+        },
+        "Show Start#1564:0": {
+          "prop": "start",
+          "note": "The `start` slot: Back in a wizard. False means `start` is omitted."
+        }
+      }
     }
   },
   "unmapped": {

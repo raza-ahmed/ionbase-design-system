@@ -1,0 +1,104 @@
+/*
+ * ButtonGroup
+ *
+ *   gap      spacing/8 between actions, and between the start group and the
+ *            rest — the one gap every row of actions uses
+ *   align    start, center or end (the default) for the main actions; the
+ *            `start` slot always sits at the start edge, apart from them
+ *   wrap     the default: actions that do not fit move to a new line, still
+ *            aligned
+ *   menu     `overflow="menu"`: the actions stay on one line, and the ones
+ *            that do not fit are taken out of the flow and hidden, their
+ *            room given to a "More actions" button at the row's start
+ *   stack    below 32rem of viewport: one action per line, full width, in
+ *            reading order
+ */
+.ion-button-group {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--spacing-8);
+  min-width: 0;
+}
+
+.ion-button-group__start,
+.ion-button-group__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--spacing-8);
+  min-width: 0;
+}
+
+.ion-button-group__actions {
+  flex: 1 1 auto;
+}
+
+.ion-button-group--start .ion-button-group__actions {
+  justify-content: flex-start;
+}
+
+.ion-button-group--center .ion-button-group__actions {
+  justify-content: center;
+}
+
+.ion-button-group--end .ion-button-group__actions {
+  justify-content: flex-end;
+}
+
+.ion-button-group__item,
+.ion-button-group__more {
+  display: inline-flex;
+  flex: none;
+}
+
+/*
+ * Overflow: one line, and the hidden actions keep their width to be measured.
+ * Not `overflow: hidden` — that would clip the buttons' focus rings; the
+ * measurement is what keeps the row inside its box.
+ */
+.ion-button-group--menu {
+  flex-wrap: nowrap;
+}
+
+.ion-button-group--menu .ion-button-group__actions {
+  position: relative;
+  flex: 0 1 auto;
+  flex-wrap: nowrap;
+}
+
+/* Its width is set to what it asks for, so the row is placed by its margins. */
+.ion-button-group--menu.ion-button-group--end .ion-button-group__actions {
+  margin-inline-start: auto;
+}
+
+.ion-button-group--menu.ion-button-group--center .ion-button-group__actions {
+  margin-inline: auto;
+}
+
+.ion-button-group__item--hidden {
+  position: absolute;
+  inset-block-start: 0;
+  inset-inline-start: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+@media (width <= 32rem) {
+  .ion-button-group--stack,
+  .ion-button-group--stack .ion-button-group__start,
+  .ion-button-group--stack .ion-button-group__actions {
+    flex-direction: column;
+    align-items: stretch;
+    width: 100%;
+  }
+
+  .ion-button-group--stack .ion-button-group__item > *,
+  .ion-button-group--stack .ion-button-group__start > * {
+    width: 100%;
+  }
+
+  .ion-button-group--stack .ion-button-group__item {
+    display: flex;
+  }
+}

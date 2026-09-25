@@ -125,6 +125,12 @@ export type {
   DescriptionListLayout,
 } from './DescriptionList.js';
 export { List } from './List.js';
+export { ButtonGroup } from './ButtonGroup.js';
+export type {
+  ButtonGroupProps,
+  ButtonGroupAlign,
+  ButtonGroupOverflow,
+} from './ButtonGroup.js';
 export type { ListProps, ListItem, ListSelectionMode } from './List.js';
 export { Popover } from './Popover.js';
 export type { PopoverProps, PopoverPlacement, PopoverSize } from './Popover.js';

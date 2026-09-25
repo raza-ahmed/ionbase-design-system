@@ -9,6 +9,7 @@ import {
   Breadcrumb,
   BreadcrumbItem,
   Button,
+  ButtonGroup,
   Card,
   DescriptionList,
   DescriptionListItem,
@@ -20,6 +21,7 @@ import {
   Select,
   StreamingText,
   ToolCall,
+  useToast,
 } from 'ionbase-ui';
 
 import {
@@ -83,6 +85,7 @@ function stepText(
  */
 export function RunDetail({ runId }: { runId: string }) {
   const settings = useDemoSettings();
+  const toast = useToast();
   const script = scriptFor(runId);
   const summary = summaryFor(runId);
   const [scenario, setScenario] = useState<Scenario>('approve');
@@ -148,7 +151,10 @@ export function RunDetail({ runId }: { runId: string }) {
           )
         }
         actions={
-          <>
+          // On a narrow phone the header runs out of room: Copy run ID goes
+          // into More actions first. Stop is not a Button and Details is
+          // last, so both always stay.
+          <ButtonGroup overflow="menu">
             {live && !ended && (
               <AgentStop
                 size="sm"
@@ -166,11 +172,29 @@ export function RunDetail({ runId }: { runId: string }) {
             <Button
               size="sm"
               variant="tertiary"
+              onClick={() => {
+                navigator.clipboard.writeText(runId).then(
+                  () =>
+                    toast.toast({ intent: 'success', title: 'Run ID copied' }),
+                  () =>
+                    toast.toast({
+                      intent: 'error',
+                      title: "Couldn't copy the run ID",
+                      message: runId,
+                    }),
+                );
+              }}
+            >
+              Copy run ID
+            </Button>
+            <Button
+              size="sm"
+              variant="tertiary"
               onClick={() => setDetailsOpen(true)}
             >
               Details
             </Button>
-          </>
+          </ButtonGroup>
         }
       />
 

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Alert, Button, Input, Modal } from 'ionbase-ui';
+import { Alert, Button, ButtonGroup, Input, Modal } from 'ionbase-ui';
 
 import { deleteAgents, type Agent, type DeleteResult } from '../../data/agents';
 import { useDemoSettings } from '../../lib/demo-settings';
@@ -67,7 +67,7 @@ export function DeleteAgentsModal({
       onOpenChange={(open) => !open && !deleting && onClose()}
       showClose={!deleting}
       footer={
-        <>
+        <ButtonGroup stack>
           <Button variant="secondary" isDisabled={deleting} onClick={onClose}>
             {partial ? 'Close' : 'Cancel'}
           </Button>
@@ -78,7 +78,7 @@ export function DeleteAgentsModal({
           >
             {deleting ? 'Deleting…' : `Delete ${noun}`}
           </Button>
-        </>
+        </ButtonGroup>
       }
     >
       <div className="demo-modal-body">

@@ -1086,6 +1086,103 @@ try {
   }
 
   /*
+   * ButtonGroup, where each of its behaviours shows. On a 320px phone the run
+   * header has no room for Stop, Copy run ID and Details: Copy run ID moves
+   * into More actions (Stop is not a Button, Details is last), and choosing it
+   * there really copies. At desktop width nothing is hidden. The wizard's
+   * actions stack on a phone, one per line, full width, Next last.
+   */
+  {
+    const where = 'button group (light)';
+    const context = await browser.newContext({
+      viewport: { width: 320, height: 720 },
+      permissions: ['clipboard-read', 'clipboard-write'],
+    });
+    await context.addInitScript(() => {
+      localStorage.setItem(
+        'ionbase-ops:demo-settings',
+        JSON.stringify({ theme: 'light', latency: 0 }),
+      );
+      localStorage.setItem(
+        'ionbase-ops:new-agent-draft',
+        JSON.stringify({
+          values: { name: 'Smoke test agent', notifyOn: [] },
+          completed: 1,
+          model: 'atlas-m',
+        }),
+      );
+    });
+    const page = await context.newPage();
+    page.on('pageerror', (e) => fail(where, `exception: ${e.message}`));
+    try {
+      await page.goto(`${BASE}/#/runs/run_4821`);
+      const header = page.locator('.ion-page-header');
+      const more = header.getByRole('button', { name: 'More actions' });
+      await more.waitFor({ timeout: 10_000 });
+      if (await header.getByRole('button', { name: 'Copy run ID' }).count())
+        fail(where, 'Copy run ID is still in the row at 320px');
+      for (const name of ['Stop run', 'Details'])
+        if (!(await header.getByRole('button', { name }).isVisible()))
+          fail(where, `${name} left the row; it must never collapse`);
+      const inside = await header.evaluate((h) => {
+        const r = h.getBoundingClientRect();
+        return [...h.querySelectorAll('.ion-button-group button')]
+          .filter((b) => b.checkVisibility({ visibilityProperty: true }))
+          .every((b) => b.getBoundingClientRect().right <= r.right + 0.5);
+      });
+      if (!inside) fail(where, 'an action runs past the header on a phone');
+      await more.click();
+      await page.getByRole('menuitem', { name: 'Copy run ID' }).click();
+      await page
+        .getByText('Run ID copied')
+        .waitFor({ timeout: 5_000 })
+        .catch(() => fail(where, 'the menu item did not press Copy run ID'));
+      const copied = await page.evaluate(() =>
+        window.navigator.clipboard.readText(),
+      );
+      if (copied !== 'run_4821')
+        fail(where, `the clipboard holds "${copied}", not the run ID`);
+
+      await page.goto(`${BASE}/#/agents/new`);
+      const next = page.getByRole('button', { name: /^Next/ });
+      await next.waitFor({ timeout: 10_000 });
+      const stack = await page.evaluate(() => {
+        const g = document.querySelector('form .ion-button-group');
+        const bs = [...g.querySelectorAll('button')];
+        const w = g.getBoundingClientRect().width;
+        return {
+          full: bs.every(
+            (b) => Math.abs(b.getBoundingClientRect().width - w) < 1,
+          ),
+          last: bs.at(-1).textContent,
+          down: bs.every(
+            (b, i) =>
+              i === 0 ||
+              b.getBoundingClientRect().top >=
+                bs[i - 1].getBoundingClientRect().bottom - 0.5,
+          ),
+        };
+      });
+      if (!stack.full || !stack.down)
+        fail(where, "the wizard's actions do not stack full width on a phone");
+      if (!stack.last.startsWith('Next'))
+        fail(where, `the last stacked action is "${stack.last}", not Next`);
+
+      await page.setViewportSize({ width: 1280, height: 800 });
+      await page.goto(`${BASE}/#/runs/run_4821`);
+      await header
+        .getByRole('button', { name: 'Copy run ID' })
+        .waitFor({ timeout: 10_000 });
+      if (await more.isVisible())
+        fail(where, 'More actions shows at desktop width, with room to spare');
+    } catch (e) {
+      fail(where, `did not run: ${e.message.split('\n')[0]}`);
+    }
+    groupsChecked++;
+    await context.close();
+  }
+
+  /*
    * The wizard's CheckboxGroup, which no page load above reaches: it is on
    * Guardrails, the third step. A saved draft with the first two steps done
    * opens there. "At least one" has to hold three ways — natively (every box
