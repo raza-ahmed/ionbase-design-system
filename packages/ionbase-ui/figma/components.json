@@ -1274,6 +1274,34 @@
         }
       }
     },
+    "Page Header": {
+      "page": "Page Header",
+      "id": "1473:242",
+      "kind": "COMPONENT",
+      "props": {
+        "Description#1473:1": {
+          "type": "TEXT"
+        },
+        "Show Actions#1473:5": {
+          "type": "BOOLEAN"
+        },
+        "Show Below#1473:6": {
+          "type": "BOOLEAN"
+        },
+        "Show Breadcrumb#1473:2": {
+          "type": "BOOLEAN"
+        },
+        "Show Description#1473:4": {
+          "type": "BOOLEAN"
+        },
+        "Show Status#1473:3": {
+          "type": "BOOLEAN"
+        },
+        "Title#1473:0": {
+          "type": "TEXT"
+        }
+      }
+    },
     "Pagination": {
       "page": "Pagination",
       "id": "1291:503",

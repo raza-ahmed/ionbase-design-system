@@ -6,6 +6,7 @@ import {
   Icon,
   Input,
   Link,
+  PageHeader,
   Pagination,
   Select,
   Tag,
@@ -165,23 +166,20 @@ export function AgentsScreen() {
 
   return (
     <div className="demo-page">
-      <div className="demo-page__header">
-        <div>
-          <h1 id="page-title" className="ion-text-h4">
-            Agents
-          </h1>
-          <p className="ion-text-body demo-muted">
-            Every agent in the workspace, what it does, and how it is doing.
-          </p>
-        </div>
-        <Link
-          variant="standalone"
-          href={href('agents/new')}
-          startIcon={<Icon as={Plus} size="sm" />}
-        >
-          New agent
-        </Link>
-      </div>
+      <PageHeader
+        titleId="page-title"
+        title="Agents"
+        description="Every agent in the workspace, what it does, and how it is doing."
+        actions={
+          <Link
+            variant="standalone"
+            href={href('agents/new')}
+            startIcon={<Icon as={Plus} size="sm" />}
+          >
+            New agent
+          </Link>
+        }
+      />
 
       {notice && notice.deleted.length > 0 && (
         <Alert

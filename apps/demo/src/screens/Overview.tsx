@@ -8,6 +8,7 @@ import {
   EmptyState,
   Icon,
   Link,
+  PageHeader,
   ProgressBar,
   Skeleton,
   StatGroup,
@@ -61,15 +62,13 @@ export function Overview() {
 
   return (
     <div className="demo-page">
-      <div className="demo-page__header">
-        <div>
-          <h1 id="page-title" className="ion-text-h4">
-            Overview
-          </h1>
-          <p className="ion-text-body demo-muted">
-            How your agents performed, and what needs a human.
-          </p>
-        </div>
+      {/* The date range narrows what the page shows, so it is the row
+          beneath the header, not one of its actions. */}
+      <PageHeader
+        titleId="page-title"
+        title="Overview"
+        description="How your agents performed, and what needs a human."
+      >
         <DateRangePicker
           label="Date range"
           size="sm"
@@ -79,7 +78,7 @@ export function Overview() {
           presets={PRESETS}
           isClearable={false}
         />
-      </div>
+      </PageHeader>
 
       {overview.status === 'loading' && <OverviewLoading />}
 

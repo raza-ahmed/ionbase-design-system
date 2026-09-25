@@ -13,6 +13,7 @@
     "Logo",
     "LogoMark",
     "Avatar",
+    "PageHeader",
     "Button",
     "Divider",
     "ToastProvider",
@@ -21,15 +22,15 @@
   ],
   "structure": [
     "Header at the top with the brand in `brand`, primary navigation in `center` and account actions in `end`.",
-    "One <main> content region, named, holding the page's own heading as its h1.",
+    "One <main> content region, named by the page's PageHeader: pass PageHeader a `titleId` and point <main aria-labelledby> at it. The PageHeader's title is the page's h1.",
     "ToastProvider mounted once around the whole shell, not per route.",
-    "Breadcrumbs, when present, sit inside <main> above the h1 — they describe where the content is, not where the chrome is.",
+    "Breadcrumbs, when present, go in PageHeader's `breadcrumb` slot, inside <main> above the h1 — they describe where the content is, not where the chrome is.",
     "When navigation is hierarchical or longer than a header row holds, a Sidebar replaces the NavItems in Header's `center`: Header keeps the brand and account actions, and the Sidebar sits beside <main> as the primary navigation. Below the tablet breakpoint the same Sidebar moves into a Drawer opened by Header's own toggle with `menuType=\"dialog\"` — one copy, not two, and one menu button.",
     "A CommandPalette, when the product has one, is mounted once inside the shell beside ToastProvider, not per route. Header's `end` carries a Search button showing <Kbd shortcut=\"mod+k\" /> — the visible door for anyone who does not know the shortcut, and the only one on a phone. Everything in the palette is also reachable from the navigation."
   ],
   "states": {
     "loading": {
-      "must": "Render the shell immediately and load only the content region. Never block the header on the page's data.",
+      "must": "Render the shell and the PageHeader immediately and load only what is beneath it. Never block the header on the page's data; when the title itself is data (a record's name), show the route's generic name until it arrives.",
       "why": "the navigation is what a user reaches for when a page is slow; hiding it makes a slow page feel like a broken one"
     },
     "empty": {
@@ -37,7 +38,7 @@
       "why": "a blank content region with working chrome reads as a failed load"
     },
     "error": {
-      "must": "Keep the shell. Put the error inside <main> with a retry and a way back to somewhere that works.",
+      "must": "Keep the shell and the PageHeader. Put the error beneath the header inside <main>, with a retry and a way back to somewhere that works.",
       "why": "a full-page error strands the user with no navigation, so their only option is the browser's back button"
     }
   },
@@ -66,7 +67,15 @@
       "onOpenChange",
       "label"
     ],
-    "Kbd": ["shortcut"]
+    "Kbd": ["shortcut"],
+    "PageHeader": [
+      "title",
+      "titleId",
+      "description",
+      "breadcrumb",
+      "status",
+      "actions"
+    ]
   },
   "variantsUsed": {
     "ToastProvider": {
@@ -80,7 +89,7 @@
     "requires": [
       "`menuLabel` on Header — the mobile toggle is icon-only",
       "a <nav> with its own accessible name wrapping the NavItems; Header supplies the banner landmark, not the navigation one",
-      "exactly one <main>, and exactly one h1 inside it",
+      "exactly one <main>, and exactly one h1 inside it — the PageHeader's title",
       "`aria-current=\"page\"` on the NavItem for the current route — colour alone does not tell a screen-reader user where they are",
       "with a Sidebar, `isCurrent` on the SidebarItem for the current route, and a Sidebar `label` distinct from any other nav on the page"
     ],
@@ -104,6 +113,10 @@
     {
       "dont": "rendering a second nav for mobile",
       "why": "Header moves the one copy, and two copies duplicate every link in the accessibility tree"
+    },
+    {
+      "dont": "a hand-built title block instead of PageHeader",
+      "why": "the demo had five, in three shapes, with actions aligned three ways; PageHeader is the one shape, and the one place its gaps and alignment are decided"
     }
   ]
 }
