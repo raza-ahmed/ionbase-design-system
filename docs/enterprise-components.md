@@ -103,7 +103,7 @@ IonBase column names the component that covers it.
 | Data table                       |   ●    |     |  ●   | ◐ `Table`, `TableBatchBar` — _expandable rows, sticky header, resize: P1_ |
 | Tree grid                        |        |     |  ●   | —                                                                         |
 | List (selectable / actionable)   |   ●    |  ●  |  ◐   | —                                                                         |
-| Description list / record detail |   ◐    |     |  ●   | —                                                                         |
+| Description list / record detail |   ◐    |     |  ●   | `DescriptionList`                                                         |
 | Card / tile                      |   ●    |  ●  |  ●   | `Card`, `FullCard`                                                        |
 | Badge                            |   ●    |  ●  |  ●   | `Badge`                                                                   |
 | Tag                              |   ●    |  ●  |  ●   | `Tag`                                                                     |

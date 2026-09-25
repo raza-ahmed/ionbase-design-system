@@ -1,5 +1,60 @@
 # Changelog
 
+## 0.94.0 — 2026-09-25
+
+### Added — `DescriptionList` and `DescriptionListItem`
+
+Label–value pairs: a record's details, a settings summary, a wizard's review
+step. It is the thirteenth item on the enterprise checklist. The demo had
+four hand-built `<dl>`s in three shapes, and this replaces all of them.
+
+- **A real `<dl>`.** Each pair is a `<div>` holding a `<dt>` and a `<dd>`, so
+  a screen reader announces the list with its count and reads each value
+  with its term. A grid of `<div>`s reads "Owner" and "Ada Reyes" as two
+  unrelated lines.
+- **Three layouts.**
+  - `horizontal`, the default: the term beside its value. It stacks when the
+    list itself is narrower than 24rem, so one list is right in a page and in
+    a 22rem panel.
+  - `stacked`: the term above its value.
+  - `row`: stacked pairs side by side at their own width, wrapping when they
+    run out of room. For a strip of facts.
+- **Empty is said, not only drawn.** A null, undefined, false or empty-string
+  value is shown as "—", hidden from assistive technology, and read as
+  `emptyText` ("Not set", translatable). `0` is a value, not an empty one.
+  The demo's typed dashes are now `null`.
+- **Long values wrap** inside their column. **Server-renderable:** no
+  `'use client'`. `emptyText` reaches each item as a prop rather than through
+  context, which would have forced it to be a client component.
+- **The Wizard pattern's review step** is one DescriptionList per step, with
+  blank answers passed as `null`.
+- **Figma:** a Description List page, with `Description List Item` (Layout
+  Horizontal/Stacked × Empty, plus Term and Value) and `Description List`
+  (Horizontal, Stacked, Row). Both are mapped, and the item's two
+  drawing-only axes are recorded with reasons. 87 blocks verified.
+- **Demo:** the agent's facts (`row`), the new-agent review step and the run
+  details drawer (`horizontal`, which stacks in the 22rem drawer by itself),
+  and the run side panel (`stacked`). The smoke check drives the presenter's
+  Empty state to confirm "Not set" is read, and fails with a typed dash.
+
+### Found along the way
+
+- **A size container collapses in a shrink-to-fit parent.** Every layout was
+  first a `container-type: inline-size` element. The agent card's side column
+  doesn't stretch its children, so the list was 0px wide and its facts
+  stacked into a sliver. The stories passed because each wraps the list in a
+  fixed-width box, and the smoke check caught it. Now only `horizontal` is a
+  container, at its parent's full width. A new test renders all three
+  layouts in a flex column that doesn't stretch, and AGENTS.md records the
+  trap.
+- **"Grid" promised columns it couldn't keep.** Fixed 10rem columns were
+  wider than the card's fact column, so the pairs stacked. A strip of short
+  facts wants each pair at its own width, so the layout is a wrapping `row`,
+  and it's named for what it does.
+- **The long-value test passed without the wrap rule**, because the test ID
+  had hyphens where the browser breaks lines anyway. It now uses an
+  underscore-only ID, and fails without the rule.
+
 ## 0.93.0 — 2026-09-25
 
 ### Added — `SidePanel` and `SidePanelLayout`

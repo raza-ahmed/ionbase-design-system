@@ -1,0 +1,21 @@
+{
+  "status": "stable",
+  "summary": "One term and its value inside a DescriptionList: a `<div>` holding a `<dt>` and a `<dd>`.",
+  "useWhen": ["one label–value pair in a DescriptionList"],
+  "a11y": {
+    "requires": [
+      "a DescriptionList parent — a `<dt>` outside a `<dl>` is invalid, and is not read as a term"
+    ],
+    "guarantees": [
+      "`term` is the `<dt>`; the children are the `<dd>`",
+      "empty children are drawn as \"—\" and read as the list's `emptyText`"
+    ]
+  },
+  "antiPatterns": [
+    {
+      "dont": "a typed \"—\", \"N/A\" or \"None\" as the value",
+      "do": "null, and let the list say it",
+      "why": "the list draws the dash and reads its translated `emptyText`; a typed one is read as \"dash\" and is not translated"
+    }
+  ]
+}

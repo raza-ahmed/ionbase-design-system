@@ -129,6 +129,18 @@ does. Toggletip's "Escape inside a Modal closes only the toggletip" passed with
 the `stopPropagation` it tests deleted. Give the overlay real state
 (`useState`), and check the other half too: that it does close when it should.
 
+## `container-type: inline-size` collapses in a shrink-to-fit parent
+
+A size container does not size to its content: that is what lets its
+children query its width without a loop. So in a parent that does not
+stretch it — a flex column with `align-items: flex-start`, an inline-block,
+a card's side column — a container is 0px wide and everything in it wraps
+into a sliver. DescriptionList made every layout a container and the agent
+card's facts collapsed; its stories passed because each wraps the list in a
+fixed-width box. Make only the element that needs the query a container,
+give it `width: 100%`, and test it inside a flex column that does not
+stretch, not only inside a sized div.
+
 ## React Aria's tree hooks need `collection.getChildren`
 
 `useTree` and `useTreeItem` (3.50) were written for the react-aria-components

@@ -10,6 +10,8 @@ import {
   BreadcrumbItem,
   Button,
   Card,
+  DescriptionList,
+  DescriptionListItem,
   Drawer,
   EmptyState,
   Link,
@@ -272,7 +274,7 @@ export function RunDetail({ runId }: { runId: string }) {
           </Link>
         }
       >
-        <dl className="demo-review__list">
+        <DescriptionList>
           {[
             ['Run ID', runId],
             ['Agent', script.agent],
@@ -284,12 +286,11 @@ export function RunDetail({ runId }: { runId: string }) {
               summary.durationSec ? `${summary.durationSec}s` : 'In progress',
             ],
           ].map(([k, v]) => (
-            <div key={k} className="demo-review__row">
-              <dt className="ion-text-body-sm demo-muted">{k}</dt>
-              <dd className="ion-text-body-sm">{v}</dd>
-            </div>
+            <DescriptionListItem key={k} term={k}>
+              {v}
+            </DescriptionListItem>
           ))}
-        </dl>
+        </DescriptionList>
       </Drawer>
     </div>
   );

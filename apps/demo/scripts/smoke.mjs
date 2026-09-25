@@ -910,6 +910,93 @@ try {
   }
 
   /*
+   * DescriptionList, where its guarantees show. A brand-new agent (the
+   * presenter's Empty state — it is never restored from storage, so it is
+   * set through the Demo controls) has no last run: the dash is hidden and "Not set" is read. The
+   * facts grid sits side by side on desktop. And the run's Details drawer is
+   * 22rem, under the list's 24rem, so its horizontal list stacks by itself —
+   * its own width decides, not the viewport's.
+   */
+  for (const [viewport, width, height] of [
+    ['desktop', 1280, 900],
+    ['mobile', 390, 844],
+  ]) {
+    const where = `description list (light, ${viewport})`;
+    const context = await browser.newContext({ viewport: { width, height } });
+    await context.addInitScript(() =>
+      localStorage.setItem(
+        'ionbase-ops:demo-settings',
+        JSON.stringify({ theme: 'light', latency: 0 }),
+      ),
+    );
+    const page = await context.newPage();
+    page.on('pageerror', (e) => fail(where, `exception: ${e.message}`));
+    await page.goto(`${BASE}/#/agents/agt_wx`);
+    try {
+      await page.getByRole('button', { name: /^Demo/ }).click();
+      await page.getByLabel('Screen state').selectOption('empty');
+      await page.keyboard.press('Escape');
+      const lastRun = page.locator('dt', { hasText: 'Last run' });
+      await lastRun.waitFor({ timeout: 10_000 });
+      const value = await lastRun.evaluate((dt) => {
+        const dd = dt.nextElementSibling;
+        return {
+          tag: dd?.tagName,
+          read: dd?.querySelector('.ion-visually-hidden')?.textContent,
+          dashHidden:
+            dd?.querySelector('[aria-hidden="true"]')?.textContent === '—',
+        };
+      });
+      if (value.tag !== 'DD') fail(where, 'the value is not a <dd>');
+      if (value.read !== 'Not set' || !value.dashHidden)
+        fail(where, 'an empty last run is not read as "Not set"');
+
+      if (viewport === 'desktop') {
+        const [owner, team] = await page.evaluate(() =>
+          ['Owner', 'Team'].map(
+            (t) =>
+              [...document.querySelectorAll('dt')]
+                .find((d) => d.textContent === t)
+                .getBoundingClientRect().top,
+          ),
+        );
+        if (Math.round(owner) !== Math.round(team))
+          fail(where, 'the facts grid did not put Owner and Team side by side');
+      }
+
+      await page.addScriptTag({ content: axeSource });
+      const violations = await page.evaluate(async () => {
+        const result = await window.axe.run(
+          document.querySelector('.ion-description-list'),
+          { resultTypes: ['violations'] },
+        );
+        return result.violations.map((v) => `${v.impact} ${v.id}`);
+      });
+      for (const v of violations) fail(where, `axe ${v}`);
+
+      await page.goto(`${BASE}/#/runs/run_4821`);
+      await page.getByRole('button', { name: 'Details', exact: true }).click();
+      const drawer = page.getByRole('dialog', { name: 'Run details' });
+      await drawer.waitFor({ timeout: 5_000 });
+      const stacked = await drawer.evaluate((el) => {
+        const dt = [...el.querySelectorAll('dt')].find(
+          (d) => d.textContent === 'Agent',
+        );
+        return (
+          dt.nextElementSibling.getBoundingClientRect().top >=
+          dt.getBoundingClientRect().bottom - 0.5
+        );
+      });
+      if (!stacked)
+        fail(where, 'the 22rem drawer did not stack its horizontal list');
+    } catch (e) {
+      fail(where, `did not run: ${e.message.split('\n')[0]}`);
+    }
+    groupsChecked++;
+    await context.close();
+  }
+
+  /*
    * The wizard's CheckboxGroup, which no page load above reaches: it is on
    * Guardrails, the third step. A saved draft with the first two steps done
    * opens there. "At least one" has to hold three ways — natively (every box

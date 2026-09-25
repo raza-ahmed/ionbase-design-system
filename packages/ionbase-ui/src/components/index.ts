@@ -118,6 +118,12 @@ export type {
   SidePanelSize,
   SidePanelLayoutProps,
 } from './SidePanel.js';
+export { DescriptionList, DescriptionListItem } from './DescriptionList.js';
+export type {
+  DescriptionListProps,
+  DescriptionListItemProps,
+  DescriptionListLayout,
+} from './DescriptionList.js';
 export { Popover } from './Popover.js';
 export type { PopoverProps, PopoverPlacement, PopoverSize } from './Popover.js';
 export { Modal } from './Modal.js';

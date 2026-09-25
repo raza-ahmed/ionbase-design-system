@@ -35,7 +35,7 @@
 - [x] **Slider** — single and range — Runs history's duration filter — 0.91.0
 - [x] **TreeView** — agent's knowledge sources — 0.92.0
 - [x] **SidePanel** — non-modal — Runs history's run details — 0.93.0
-- [ ] **DescriptionList**
+- [x] **DescriptionList** — agent facts, wizard review, run details — 0.94.0
 - [ ] **List** — selectable and actionable
 
 ## P1 — common, and where hand-rolled versions lose accessibility

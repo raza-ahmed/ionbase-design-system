@@ -6,6 +6,8 @@ import {
   Badge,
   Button,
   Card,
+  DescriptionList,
+  DescriptionListItem,
   EmptyState,
   Link,
   PageHeader,
@@ -324,32 +326,24 @@ function History({ runs: all }: { runs: RunSummary[] }) {
             }
           >
             {open && (
-              <dl className="demo-agent-facts demo-run-panel__facts">
-                <div>
-                  <dt className="ion-text-caption demo-muted">Outcome</dt>
-                  <dd>
-                    <Badge size="sm" dot intent={OUTCOME[open.outcome].intent}>
-                      {OUTCOME[open.outcome].text}
-                    </Badge>
-                  </dd>
-                </div>
-                <div>
-                  <dt className="ion-text-caption demo-muted">Started</dt>
-                  <dd>{ago(open.startedMinutesAgo)}</dd>
-                </div>
-                <div>
-                  <dt className="ion-text-caption demo-muted">Duration</dt>
-                  <dd>{open.durationSec ? `${open.durationSec}s` : '—'}</dd>
-                </div>
-                <div>
-                  <dt className="ion-text-caption demo-muted">Decided by</dt>
-                  <dd>
-                    {open.reviewers.length
-                      ? open.reviewers.map((p) => p.name).join(', ')
-                      : 'Stopped before a decision'}
-                  </dd>
-                </div>
-              </dl>
+              <DescriptionList layout="stacked">
+                <DescriptionListItem term="Outcome">
+                  <Badge size="sm" dot intent={OUTCOME[open.outcome].intent}>
+                    {OUTCOME[open.outcome].text}
+                  </Badge>
+                </DescriptionListItem>
+                <DescriptionListItem term="Started">
+                  {ago(open.startedMinutesAgo)}
+                </DescriptionListItem>
+                <DescriptionListItem term="Duration">
+                  {open.durationSec && `${open.durationSec}s`}
+                </DescriptionListItem>
+                <DescriptionListItem term="Decided by">
+                  {open.reviewers.length
+                    ? open.reviewers.map((p) => p.name).join(', ')
+                    : 'Stopped before a decision'}
+                </DescriptionListItem>
+              </DescriptionList>
             )}
           </SidePanel>
         </SidePanelLayout>

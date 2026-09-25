@@ -2195,6 +2195,37 @@
           "note": "false means footer is omitted. The footer holds Buttons; Figma's single action is one of them"
         }
       }
+    },
+    "Description List": {
+      "code": "DescriptionList",
+      "props": {
+        "Layout": {
+          "prop": "layout",
+          "values": {
+            "Horizontal": "horizontal",
+            "Stacked": "stacked",
+            "Row": "row"
+          },
+          "note": "Horizontal stacks by itself when the list is narrower than 24rem — its own width, not the screen's — so a narrow frame needs no Stacked swap."
+        }
+      }
+    },
+    "Description List Item": {
+      "code": "DescriptionListItem",
+      "props": {
+        "Term#1549:0": {
+          "prop": "term"
+        },
+        "Value#1549:5": {
+          "prop": "children"
+        },
+        "Empty": {
+          "ignore": "the drawn form of an empty value. In code pass null (not a typed dash): the item draws the \"—\" and reads the list's emptyText, \"Not set\""
+        },
+        "Layout": {
+          "ignore": "follows the DescriptionList's layout, not the item's: Horizontal items belong in a Horizontal list, Stacked items in a Stacked or Row one"
+        }
+      }
     }
   },
   "unmapped": {

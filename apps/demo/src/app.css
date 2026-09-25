@@ -314,22 +314,6 @@ body {
   justify-content: space-between;
 }
 
-.demo-review__list {
-  display: grid;
-  gap: var(--spacing-8);
-  margin: 0;
-}
-
-.demo-review__row {
-  display: grid;
-  grid-template-columns: minmax(8rem, 1fr) 2fr;
-  gap: var(--spacing-12);
-}
-
-.demo-review__row dd {
-  margin: 0;
-}
-
 /* The demo's own reset: Card leaves its children's margins alone. */
 .ion-card p {
   margin: 0;
@@ -351,8 +335,7 @@ body {
     padding: var(--spacing-16);
   }
 
-  .demo-form__pair,
-  .demo-review__row {
+  .demo-form__pair {
     grid-template-columns: minmax(0, 1fr);
   }
 }
@@ -528,17 +511,6 @@ body {
   padding: var(--spacing-16);
 }
 
-.demo-agent-facts {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--spacing-12) var(--spacing-32);
-  margin: 0;
-}
-
-.demo-agent-facts dd {
-  margin: 0;
-}
-
 .demo-agent-facts__owner {
   display: inline-flex;
   align-items: center;
@@ -554,9 +526,4 @@ body {
 
 .demo-knowledge-tree {
   max-width: 28rem;
-}
-
-/* The run's facts stack in the narrow panel rather than sitting in a row. */
-.demo-run-panel__facts {
-  flex-direction: column;
 }
