@@ -1,5 +1,51 @@
 # Changelog
 
+## 0.98.0 — 2026-09-26
+
+### Added — `ContextMenu`
+
+The menu a right-click opens on a thing: a row's actions, a file's. It is the
+third P1 item on the enterprise checklist.
+
+- **Right-click** opens it at the pointer, including on a scrolled page. The
+  browser's own menu is prevented on the element and nowhere else.
+- **Shift+F10 or the Menu key**, with focus on the element or inside it,
+  opens it under the element at its start edge, never at 0,0. Focus moves to
+  the first item. Escape, an outside click or choosing an item closes it and
+  returns focus to where it was.
+- **A second right-click** on the element moves the open menu there, with the
+  browser's menu still prevented. One elsewhere closes ours and leaves the
+  browser's alone.
+- **It is a full Menu:** arrow keys across sections, and typeahead. `menu`
+  takes the same Menu element as the thing's ⋯ MenuTrigger, built once and
+  passed to both.
+- **`children` is not wrapped.** It gets `onContextMenu` and `onKeyDown`,
+  and keeps its own, so a `<tr>` stays a `<tr>`. `isDisabled` leaves the
+  browser's menu in place.
+- **A shortcut, never the only way.** The meta says so, and the DataTable
+  pattern now describes a row's ⋯ menu with a ContextMenu over the same
+  items.
+- **Figma:** nothing new is drawn, because what opens is Menu. It is recorded
+  as `codeUnmapped`, with that reason.
+- **Demo:** every Agents table row. A right-click or Shift+F10 opens the
+  row's own actions menu, named for the agent. The smoke check pauses an
+  agent from it, checks that focus returns and that the ⋯ menu has the same
+  items, runs axe on the open menu, and fails on three mutations.
+
+### Found along the way
+
+Both are recorded in AGENTS.md.
+
+- **The Menu key's `contextmenu` looks like a mouse click.** Chromium sends
+  it as a `PointerEvent` with `pointerType: "mouse"` and a position near the
+  element. Only `button: -1` gives it away. The first version trusted the
+  position. A test now presses the Menu key and checks the menu opens under
+  the element.
+- **While the menu is open, a second right-click lands on `<body>`.** React
+  Aria's modal popover makes the rest of the page ignore the pointer, so the
+  element never saw the click and the browser's menu opened over ours.
+  ContextMenu now listens on the document while open.
+
 ## 0.97.0 — 2026-09-26
 
 ### Added — `SplitButton`

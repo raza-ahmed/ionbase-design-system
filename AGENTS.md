@@ -177,6 +177,26 @@ has an action performs the action instead of selecting it. So under
 `selectionBehavior: 'replace'` it opens a row that a mouse would select. Use
 `vitest/browser`'s real click for any test about what a press selects.
 
+## A context menu's events are not what they look like
+
+Two things about `contextmenu` that ContextMenu had to learn by failing:
+
+- **The Menu key's event is shaped like a click.** Chromium sends it as a
+  `PointerEvent` with `pointerType: "mouse"` and a position it picks near the
+  focused element. Only `button` gives it away: -1, where a right-click is 2.
+  Other browsers send 0,0 and `button` 0. A Mac's Ctrl-click is also button 0,
+  but at a real position. Anchor to the element whenever the event is keyboard
+  shaped. Shift+F10 is different: Chromium on macOS never turns it into a
+  `contextmenu` event, so catch it as a keydown.
+- **While a modal menu is open, the page ignores the pointer.** React Aria's
+  modal popover makes everything outside it ignore pointer events, so a
+  second right-click lands on `<body>`. It reaches neither the element's
+  handler nor the popover's underlay, and the browser's own menu opens over
+  yours. Listen on `document` while open, and decide by the event's position.
+  A test has to force that click (`click({ button: 'right', force: true })`),
+  because Playwright otherwise waits for the element to be clickable, and
+  while a menu is open it never is.
+
 ## Interaction tests — hover is a pulse, not a level
 
 Read this before asserting on `data-hovered` anywhere.

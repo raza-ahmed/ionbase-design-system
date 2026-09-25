@@ -2,6 +2,7 @@ import {
   Avatar,
   Badge,
   Button,
+  ContextMenu,
   Icon,
   Link,
   Menu,
@@ -132,99 +133,107 @@ export function AgentsTable({
       <TableBody>
         {rows.map((a) => {
           const paused = a.status === 'paused';
-          return (
-            <TableRow
-              key={a.id}
-              isSelected={selection.isSelected(a.id)}
-              selection={selection.rowSelection(a.id, `Select ${a.name}`)}
+          // One menu, two ways in: the row's own ⋯ button, and a right-click
+          // or Shift+F10 on the row. The context menu is the shortcut; the
+          // button is what makes every action reachable without it.
+          const rowMenu = (
+            <Menu
+              onAction={(key) => {
+                if (key === 'pause') onPause(a, !paused);
+                else onDelete(a);
+              }}
             >
-              <TableCell>
-                <span className="demo-cell-stack">
-                  <Link
-                    href={href(`agents/${a.id}`)}
-                    className="ion-text--semibold"
-                  >
-                    {a.name}
-                  </Link>
-                  <span className="ion-text-caption demo-muted">
-                    {a.purpose}
+              {/* Delete sits apart from the everyday action, behind a rule,
+                  so it is never the row the pointer lands on by habit. */}
+              <MenuSection aria-label="Run">
+                <MenuItem
+                  key="pause"
+                  icon={<Icon as={paused ? Play : Pause} size="sm" />}
+                  isDisabled={a.status === 'draft'}
+                >
+                  {paused ? 'Resume' : 'Pause'}
+                </MenuItem>
+              </MenuSection>
+              <MenuSection aria-label="Danger">
+                <MenuItem key="delete" icon={<Icon as={Trash2} size="sm" />}>
+                  Delete…
+                </MenuItem>
+              </MenuSection>
+            </Menu>
+          );
+          return (
+            <ContextMenu
+              key={a.id}
+              aria-label={`Actions for ${a.name}`}
+              menu={rowMenu}
+            >
+              <TableRow
+                isSelected={selection.isSelected(a.id)}
+                selection={selection.rowSelection(a.id, `Select ${a.name}`)}
+              >
+                <TableCell>
+                  <span className="demo-cell-stack">
+                    <Link
+                      href={href(`agents/${a.id}`)}
+                      className="ion-text--semibold"
+                    >
+                      {a.name}
+                    </Link>
+                    <span className="ion-text-caption demo-muted">
+                      {a.purpose}
+                    </span>
                   </span>
-                </span>
-              </TableCell>
-              <TableCell>
-                <Badge size="sm" intent={STATUS_INTENT[a.status]} dot>
-                  {STATUS_LABEL[a.status]}
-                </Badge>
-              </TableCell>
-              <TableCell>{teamLabel(a.team)}</TableCell>
-              <TableCell>
-                <span className="demo-cell-inline">
-                  <span aria-hidden="true">
-                    <Avatar size="mini" initials={a.owner.initials} />
+                </TableCell>
+                <TableCell>
+                  <Badge size="sm" intent={STATUS_INTENT[a.status]} dot>
+                    {STATUS_LABEL[a.status]}
+                  </Badge>
+                </TableCell>
+                <TableCell>{teamLabel(a.team)}</TableCell>
+                <TableCell>
+                  <span className="demo-cell-inline">
+                    <span aria-hidden="true">
+                      <Avatar size="mini" initials={a.owner.initials} />
+                    </span>
+                    {a.owner.name}
                   </span>
-                  {a.owner.name}
-                </span>
-              </TableCell>
-              <TableCell align="trailing">
-                {a.runs7d === null ? (
-                  <Missing />
-                ) : (
-                  a.runs7d.toLocaleString('en')
-                )}
-              </TableCell>
-              <TableCell align="trailing">
-                {a.successRate === null ? (
-                  <Missing />
-                ) : (
-                  `${a.successRate.toFixed(1)}%`
-                )}
-              </TableCell>
-              <TableCell>
-                {a.lastRun === null && a.runs7d === null ? (
-                  <Missing />
-                ) : a.lastRun ? (
-                  formatDay(a.lastRun)
-                ) : (
-                  'Never'
-                )}
-              </TableCell>
-              <TableCell align="trailing">
-                <MenuTrigger placement="bottom end">
-                  <Button
-                    size="sm"
-                    variant="tertiary"
-                    aria-label={`Actions for ${a.name}`}
-                    startIcon={<Icon as={Ellipsis} size="sm" />}
-                  />
-                  <Menu
-                    onAction={(key) => {
-                      if (key === 'pause') onPause(a, !paused);
-                      else onDelete(a);
-                    }}
-                  >
-                    {/* Delete sits apart from the everyday action, behind a rule,
-                        so it is never the row the pointer lands on by habit. */}
-                    <MenuSection aria-label="Run">
-                      <MenuItem
-                        key="pause"
-                        icon={<Icon as={paused ? Play : Pause} size="sm" />}
-                        isDisabled={a.status === 'draft'}
-                      >
-                        {paused ? 'Resume' : 'Pause'}
-                      </MenuItem>
-                    </MenuSection>
-                    <MenuSection aria-label="Danger">
-                      <MenuItem
-                        key="delete"
-                        icon={<Icon as={Trash2} size="sm" />}
-                      >
-                        Delete…
-                      </MenuItem>
-                    </MenuSection>
-                  </Menu>
-                </MenuTrigger>
-              </TableCell>
-            </TableRow>
+                </TableCell>
+                <TableCell align="trailing">
+                  {a.runs7d === null ? (
+                    <Missing />
+                  ) : (
+                    a.runs7d.toLocaleString('en')
+                  )}
+                </TableCell>
+                <TableCell align="trailing">
+                  {a.successRate === null ? (
+                    <Missing />
+                  ) : (
+                    `${a.successRate.toFixed(1)}%`
+                  )}
+                </TableCell>
+                <TableCell>
+                  {a.lastRun === null && a.runs7d === null ? (
+                    <Missing />
+                  ) : a.lastRun ? (
+                    formatDay(a.lastRun)
+                  ) : (
+                    'Never'
+                  )}
+                </TableCell>
+                <TableCell align="trailing">
+                  <MenuTrigger placement="bottom end">
+                    <Button
+                      size="sm"
+                      variant="tertiary"
+                      aria-label={`Actions for ${a.name}`}
+                      startIcon={<Icon as={Ellipsis} size="sm" />}
+                    />
+                    {rowMenu}
+                  </MenuTrigger>
+                </TableCell>
+              </TableRow>
+            </ContextMenu>
           );
         })}
       </TableBody>

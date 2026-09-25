@@ -1,0 +1,68 @@
+{
+  "status": "stable",
+  "summary": "The menu a right-click opens on a thing — a row's actions, a file's. Shift+F10 and the Menu key open it from the keyboard, under the thing. A shortcut to actions that are also reachable some other way.",
+  "useWhen": [
+    "a thing already has an actions menu or buttons, and people who work in the list all day want them under the pointer — table rows, files, cards",
+    "the product feels like a desktop tool, where right-click is expected on the objects in it"
+  ],
+  "useInstead": [
+    {
+      "when": "the actions are reachable only through the context menu",
+      "use": "MenuTrigger",
+      "why": "nothing on the page says a right-click does anything, touch screens have none, and on iOS a long press opens the browser's callout. A context menu must never be the only way in — give the thing a visible ⋯ MenuTrigger with the same items"
+    },
+    {
+      "when": "a text field or a link whose own browser menu people use — copy, open in new tab, spelling",
+      "use": "nothing",
+      "why": "replacing the browser's menu there takes away actions people rely on"
+    }
+  ],
+  "composition": {
+    "order": ["ContextMenu", "Menu", "MenuItem"],
+    "note": "`children` is the one element the menu is for; `menu` is a Menu, usually the same one the element's ⋯ MenuTrigger opens, built once and used twice.",
+    "example": "<ContextMenu aria-label={`Actions for ${agent.name}`} menu={rowMenu}><TableRow>…<TableCell><MenuTrigger><Button aria-label={`Actions for ${agent.name}`} …/>{rowMenu}</MenuTrigger></TableCell></TableRow></ContextMenu>"
+  },
+  "slots": {
+    "children": {
+      "accepts": "TableRow, or any single element",
+      "note": "it receives `onContextMenu` and `onKeyDown`, and keeps its own; it is not wrapped, so a `<tr>` stays a `<tr>`"
+    },
+    "menu": { "accepts": "Menu" }
+  },
+  "a11y": {
+    "requires": [
+      "`aria-label` naming the menu for its thing — \"Actions for Invoice reconciler\" — since no button names it",
+      "every action also reachable without the context menu — a ⋯ MenuTrigger on the thing, or buttons"
+    ],
+    "guarantees": [
+      "a right-click opens the menu at the pointer, and prevents the browser's menu on the element only",
+      "Shift+F10 or the Menu key, with focus on the element or anything in it, opens it under the element at its start edge — never at a pointer that is not there",
+      "focus moves to the first item; Escape, an outside click or choosing an item closes it and returns focus to where it was",
+      "a second right-click on the element moves the open menu there, with the browser's menu still prevented; one elsewhere closes ours and leaves the browser's",
+      "the menu is a full Menu: ↓ ↑ move between items across sections, and typing jumps to one",
+      "on a scrolled page the menu opens at the pointer",
+      "`isDisabled` leaves the browser's own menu in place"
+    ],
+    "notes": [
+      "Shift+F10 is caught as a key because not every browser turns it into a contextmenu event; the Menu key arrives as a keyboard contextmenu and is anchored to the element",
+      "the element needs something focusable inside it — a link, a checkbox — for Shift+F10 to reach it from the keyboard"
+    ]
+  },
+  "antiPatterns": [
+    {
+      "dont": "actions that exist only in the context menu",
+      "do": "the same Menu behind a visible ⋯ MenuTrigger, and ContextMenu as the shortcut",
+      "why": "a right-click is invisible and unavailable on touch; an action there alone is an action most people never find"
+    },
+    {
+      "dont": "a ContextMenu around the whole page or a large region",
+      "do": "one around each thing — each row, each file",
+      "why": "a menu for \"the page\" has no object; each item has to guess what it acts on, and the browser's useful menu is gone everywhere"
+    },
+    {
+      "dont": "a context menu with different items from the thing's ⋯ menu",
+      "do": "one Menu element passed to both",
+      "why": "two menus that disagree teach people that neither is complete"
+    }
+  ]
+}

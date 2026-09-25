@@ -56,8 +56,15 @@ export type {
   MultiSelectOption,
   MultiSelectSize,
 } from './MultiSelect.js';
-export { Menu, MenuItem, MenuSection, MenuTrigger } from './Menu.js';
+export {
+  ContextMenu,
+  Menu,
+  MenuItem,
+  MenuSection,
+  MenuTrigger,
+} from './Menu.js';
 export type {
+  ContextMenuProps,
   MenuProps,
   MenuItemProps,
   MenuTriggerProps,
