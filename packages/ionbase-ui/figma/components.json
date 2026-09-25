@@ -694,6 +694,54 @@
       "kind": "COMPONENT",
       "props": {}
     },
+    "Command Palette": {
+      "page": "Command Palette",
+      "id": "1458:368",
+      "kind": "SET",
+      "props": {
+        "Placeholder#1458:0": {
+          "type": "TEXT"
+        },
+        "Show Footer#1458:3": {
+          "type": "BOOLEAN"
+        },
+        "State": {
+          "type": "VARIANT",
+          "options": ["Results", "Empty"],
+          "default": "Results"
+        }
+      }
+    },
+    "Command Palette Item": {
+      "page": "Command Palette",
+      "id": "1457:283",
+      "kind": "SET",
+      "props": {
+        "Description#1457:17": {
+          "type": "TEXT"
+        },
+        "Icon#1457:21": {
+          "type": "INSTANCE_SWAP"
+        },
+        "Label#1457:13": {
+          "type": "TEXT"
+        },
+        "Show Description#1457:5": {
+          "type": "BOOLEAN"
+        },
+        "Show Icon#1457:1": {
+          "type": "BOOLEAN"
+        },
+        "Show Shortcut#1457:9": {
+          "type": "BOOLEAN"
+        },
+        "State": {
+          "type": "VARIANT",
+          "options": ["Default", "Active", "Disabled"],
+          "default": "Default"
+        }
+      }
+    },
     "Confidence Indicator": {
       "page": "Confidence Indicator",
       "id": "1166:262",
@@ -1009,6 +1057,16 @@
           "type": "VARIANT",
           "options": ["Large", "Medium", "Small"],
           "default": "Large"
+        }
+      }
+    },
+    "Kbd": {
+      "page": "Command Palette",
+      "id": "1457:242",
+      "kind": "COMPONENT",
+      "props": {
+        "Key#1457:0": {
+          "type": "TEXT"
         }
       }
     },

@@ -227,6 +227,15 @@ let agents: Agent[] = SEED.map(([name, purpose, status, team], i) => {
   };
 });
 
+/**
+ * Every agent's id, name and team, synchronously, for the command palette.
+ * Chrome never waits on data, the same rule as `listWaitingRuns`; the list is
+ * read each time the palette opens, so a deleted agent is gone from it.
+ */
+export function listAgentLinks(): Pick<Agent, 'id' | 'name' | 'team'>[] {
+  return agents.map(({ id, name, team }) => ({ id, name, team }));
+}
+
 export const STATUS_LABEL: Record<AgentStatus, string> = {
   running: 'Running',
   paused: 'Paused',

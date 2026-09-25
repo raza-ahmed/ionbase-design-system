@@ -164,6 +164,15 @@
       "ratio": 3.12,
       "reason": "Same exemption as --text-disabled on --surface-disabled, reached by a different route: a disabled option sits on the MENU's raised surface rather than on a disabled control's own fill, because the row is not itself a control with a background. WCAG 2.2 SC 1.4.3 exempts text that is part of an inactive user interface component, and the row is exactly that. Raising it would make an unavailable option look available, which is the failure that actually costs a user something. Light passes at 4.54:1 — only Dark needs the exemption, which is itself the tell that the pair is borderline rather than arbitrary.",
       "affects": ["Combobox"]
+    },
+    {
+      "fg": "--text-disabled",
+      "bg": "--surface-overlay",
+      "mode": "Dark",
+      "kind": "wcag-exempt",
+      "ratio": 4.34,
+      "reason": "SC 1.4.3 incidental text, inactive component — the --surface-raised entry above, on the palette's overlay surface. A disabled command is listed so the reader knows it exists, cannot be run, and is skipped by the arrow keys; it is never the active row, so it never sits on --surface-hover.",
+      "affects": ["CommandPalette"]
     }
   ],
   "deferred": []

@@ -1,0 +1,250 @@
+/*
+ * CommandPalette
+ *
+ * Drawn in Figma as `Command Palette` on its own page, with `Kbd`.
+ *
+ *   panel     640 wide, radius/xl, surface/overlay, 1px border/subtle,
+ *             shadow-xl — Modal's panel, without Modal's padding
+ *   search    52 tall, 16 across, icon/secondary search glyph, a
+ *             border/subtle rule below
+ *   list      8 around, capped at 22rem, then it scrolls
+ *   row       40 tall, 8 / 12, gap 12, radius/sm; the active row is
+ *             surface/hover — the same highlight Combobox uses
+ *   heading   caption, text/tertiary, 8 / 12
+ *   footer    caption, text/tertiary, a border/subtle rule above
+ *
+ * TOP-ANCHORED, NOT CENTRED
+ *
+ * Modal centres its panel. A palette's panel changes height with every
+ * keystroke, and a centred one would jump up and down under the reader's eyes
+ * while they type. Pinned 96 from the top, only its bottom edge moves.
+ */
+.ion-command-palette__scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: var(--spacing-96) var(--spacing-16) var(--spacing-16);
+  background-color: var(--surface-scrim);
+}
+
+.ion-command-palette {
+  display: flex;
+  flex-direction: column;
+  width: 640px;
+  max-width: 100%;
+  max-height: 100%;
+  overflow: hidden;
+  background-color: var(--surface-overlay);
+  border: var(--border-width-default) solid var(--border-subtle);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--ion-shadow-shadow-xl);
+  font-family: var(--font-family-sans);
+}
+
+.ion-command-palette:focus {
+  outline: none;
+}
+
+.ion-command-palette__search {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: var(--spacing-12);
+  height: calc(var(--spacing-48) + var(--spacing-4));
+  padding-inline: var(--spacing-16);
+  border-bottom: var(--border-width-default) solid var(--border-subtle);
+}
+
+.ion-command-palette__search-icon {
+  display: inline-flex;
+  flex-shrink: 0;
+  color: var(--icon-secondary);
+}
+
+.ion-command-palette__search-icon svg {
+  width: var(--icon-size-md);
+  height: var(--icon-size-md);
+}
+
+/*
+ * No outline on the field: it is the only thing in the panel that ever has
+ * focus, focus lands there on open, and the caret already says so. A ring
+ * would sit inside a panel that is itself the focus context.
+ */
+.ion-command-palette__input {
+  flex: 1 1 auto;
+  min-width: 0;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--text-default);
+  font-family: inherit;
+  font-size: var(--type-body-lg);
+  line-height: var(--type-body-lg-line-height);
+  outline: none;
+}
+
+.ion-command-palette__input::placeholder {
+  color: var(--text-tertiary);
+}
+
+.ion-command-palette__list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2);
+  max-height: 22rem;
+  padding: var(--spacing-8);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+/* An empty listbox still pads; collapse it so the empty message sits alone. */
+.ion-command-palette__list:empty {
+  display: none;
+}
+
+.ion-command-palette__section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2);
+}
+
+.ion-command-palette__section + .ion-command-palette__section,
+.ion-command-palette__option + .ion-command-palette__section {
+  margin-top: var(--spacing-8);
+}
+
+.ion-command-palette__heading {
+  padding: var(--spacing-8) var(--spacing-12) var(--spacing-4);
+  color: var(--text-tertiary);
+  font-size: var(--type-caption);
+  line-height: var(--type-caption-line-height);
+  font-weight: var(--font-weight-medium);
+}
+
+/*
+ * The highlight is `data-focused` — Combobox's name for the same virtual
+ * focus — never :hover or :focus — focus stays in the
+ * field and the row is only ever the active descendant. Pointer movement sets
+ * the same attribute, so the mouse and the keyboard cannot highlight two rows.
+ */
+.ion-command-palette__option {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-12);
+  min-height: var(--spacing-40);
+  padding: var(--spacing-8) var(--spacing-12);
+  border-radius: var(--radius-sm);
+  background-color: var(--surface-overlay);
+  color: var(--text-default);
+  font-size: var(--type-body);
+  line-height: var(--type-body-line-height);
+  cursor: pointer;
+  user-select: none;
+}
+
+.ion-command-palette__option[data-focused='true'] {
+  background-color: var(--surface-hover);
+}
+
+.ion-command-palette__option[data-disabled='true'] {
+  color: var(--text-disabled);
+  cursor: default;
+}
+
+.ion-command-palette__icon {
+  display: inline-flex;
+  flex-shrink: 0;
+  color: var(--icon-secondary);
+}
+
+.ion-command-palette__icon svg {
+  width: var(--icon-size-sm);
+  height: var(--icon-size-sm);
+}
+
+.ion-command-palette__option[data-disabled='true'] .ion-command-palette__icon {
+  color: var(--icon-disabled);
+}
+
+.ion-command-palette__text {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.ion-command-palette__label,
+.ion-command-palette__description {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ion-command-palette__description {
+  color: var(--text-tertiary);
+  font-size: var(--type-body-sm);
+  line-height: var(--type-body-sm-line-height);
+}
+
+.ion-command-palette__option[data-disabled='true']
+  .ion-command-palette__description {
+  color: var(--text-disabled);
+}
+
+.ion-command-palette__shortcut {
+  flex-shrink: 0;
+}
+
+.ion-command-palette__empty {
+  padding: var(--spacing-32) var(--spacing-16);
+  color: var(--text-tertiary);
+  font-size: var(--type-body);
+  line-height: var(--type-body-line-height);
+  text-align: center;
+}
+
+.ion-command-palette__footer {
+  display: flex;
+  flex-shrink: 0;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--spacing-16);
+  padding: var(--spacing-8) var(--spacing-16);
+  border-top: var(--border-width-default) solid var(--border-subtle);
+  color: var(--text-tertiary);
+  font-size: var(--type-caption);
+  line-height: var(--type-caption-line-height);
+}
+
+.ion-command-palette__hint {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-4);
+}
+
+/*
+ * A phone has no ⌘K and usually no arrow keys, so the hints are for nobody;
+ * the list gets the room instead.
+ */
+@media (width <= 40rem) {
+  .ion-command-palette__scrim {
+    padding-top: var(--spacing-16);
+  }
+
+  .ion-command-palette__footer {
+    display: none;
+  }
+}
+
+@media (forced-colors: active) {
+  .ion-command-palette__option[data-focused='true'] {
+    outline: var(--border-width-thick) solid Highlight;
+    outline-offset: calc(-1 * var(--border-width-thick));
+  }
+}

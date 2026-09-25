@@ -96,6 +96,8 @@
 @import url('./chart.css');
 @import url('./card.css');
 @import url('./tag-group.css');
+@import url('./kbd.css');
+@import url('./command-palette.css');
 
 /*
  * Visually hidden, but not hidden from assistive tech.

@@ -1,0 +1,42 @@
+{
+  "status": "stable",
+  "since": "0.81.0",
+  "summary": "A key, or a keyboard shortcut, drawn as keycaps in the reader's platform's own symbols and read aloud by name.",
+  "useWhen": [
+    "telling people a shortcut exists — beside a button, in a tooltip, in a command palette row",
+    "instructions that name a key: \"press Esc to cancel\""
+  ],
+  "useInstead": [
+    {
+      "when": "the text is code, a file name or a value",
+      "use": "render it directly",
+      "why": "Kbd means keys to press; `<code>` is the element for code"
+    }
+  ],
+  "a11y": {
+    "guarantees": [
+      "a combination is a <kbd> of <kbd>s, the HTML spec's shape for keys pressed together",
+      "the drawn symbols are hidden and a visually hidden copy spells the keys out — \"Command K\", \"Control Shift P\" — because ⌘ and ⇧ are read as symbol names or not at all",
+      "`mod` resolves to ⌘ on Apple platforms and Ctrl elsewhere; server rendering shows Ctrl and corrects after hydration without a mismatch"
+    ],
+    "requires": [
+      "the shortcut to be bound somewhere — Kbd shows a key, it does not listen for one"
+    ]
+  },
+  "antiPatterns": [
+    {
+      "dont": "writing `ctrl+k` or `cmd+k` for the platform's command key",
+      "do": "write `mod+k`",
+      "why": "`ctrl` shows a Mac user a key they do not press for it; `cmd` shows everyone else a key they do not have"
+    },
+    {
+      "dont": "children like \"⌘K\" or \"Ctrl+K\"",
+      "do": "`shortcut=\"mod+k\"`",
+      "why": "hand-typed symbols are wrong on the other platform and are read aloud as symbol names"
+    },
+    {
+      "dont": "setting `platform`",
+      "why": "it overrides detection, so half the readers see the other platform's keys; it exists for docs that compare the two"
+    }
+  ]
+}

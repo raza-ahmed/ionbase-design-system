@@ -1928,6 +1928,31 @@
           "note": "true draws a third entry in items; the entry count is the length of the array"
         }
       }
+    },
+    "Command Palette": {
+      "code": "CommandPalette",
+      "props": {
+        "Placeholder#1458:0": {
+          "prop": "placeholder"
+        },
+        "Show Footer#1458:3": {
+          "ignore": "the key hints are always rendered and hidden by CSS below 40rem, where there are no arrow keys to hint at — a viewport's answer, not a prop"
+        },
+        "State": {
+          "ignore": "Results and Empty are what the query produces against `commands`; the empty text is `emptyLabel`"
+        }
+      },
+      "example": "<CommandPalette\n  commands={[\n    { id: 'new-agent', label: 'Create agent', section: 'Actions' },\n    { id: 'go-runs', label: 'Go to Runs', section: 'Navigation' },\n  ]}\n  onAction={(id) => run(id)}\n/>"
+    },
+    "Kbd": {
+      "code": "Kbd",
+      "props": {
+        "Key#1457:0": {
+          "prop": "children",
+          "note": "one Figma Kbd is one key. For a shortcut, use `shortcut=\"mod+k\"` on a single Kbd rather than several: it draws each platform's own keys and names them for a screen reader"
+        }
+      },
+      "example": "<Kbd shortcut=\"mod+k\" />"
     }
   },
   "unmapped": {
@@ -1944,7 +1969,8 @@
     "Progress": "As Line — internal to ScrollProgress.",
     "Progress Heading": "As Line — internal to ScrollProgress.",
     "Screen Frame": "The frame FullCard draws around its media slot. The component owns it, so there is nothing for a caller to place.",
-    "Table/Cell Text": "TableCell covers Figma's Table Cell and Cell Text together; the two are never used apart in the design. Recorded in TableCell's contract."
+    "Table/Cell Text": "TableCell covers Figma's Table Cell and Cell Text together; the two are never used apart in the design. Recorded in TableCell's contract.",
+    "Command Palette Item": "One row of the palette, drawn so Active and Disabled can be seen. There is no code export behind it and there should not be: rows are built from the palette's `commands` array, where the Label, Description, Icon and shortcut are fields of one command — `label`, `description`, `icon`, `shortcut` — and Active is the keyboard's position, not a prop. The same call Combobox Menu gets."
   },
   "codeUnmapped": {
     "DateRangePicker": "Drawn, but not as a set of its own: its field is Date Picker Type=Range and its calendar is Calendar Mode=Range. A Figma set maps to exactly one code component, and splitting one field into two sets to satisfy that would draw the same box twice. Read Date Picker’s Type note for the handoff.",
