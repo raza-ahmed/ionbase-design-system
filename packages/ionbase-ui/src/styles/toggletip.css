@@ -1,0 +1,133 @@
+/*
+ * Toggletip
+ *
+ * Drawn in Figma as `Toggletip` on the Tooltip page, beside the thing it is
+ * not. The bubble is Popover's surface at a smaller scale — `surface/raised`,
+ * a `border/subtle` rule, `shadow/lg`, `radius/md` — not Tooltip's inverse
+ * fill. It holds links, and the system's link colour is defined against the
+ * page's surfaces, not against `surface/inverse`.
+ *
+ *   button   a 24px target at both sizes (WCAG 2.5.8), the glyph 16 or 20
+ *            inside it, pulled into the line with a negative margin so a label
+ *            with an ⓘ is no taller than one without
+ *   bubble   12 padding, 280 wide at most, body-sm
+ *   arrow    Popover's rotated square, 10 off the button
+ *
+ * CLOSED IS CLIPPED, NOT REMOVED
+ *
+ * The bubble is the live region that reads the explanation out on open, so it
+ * stays in the page while closed — empty, and clipped to nothing the way
+ * `.ion-visually-hidden` clips. `display: none` would drop it from the
+ * accessibility tree and the first open would be silent.
+ */
+.ion-toggletip {
+  --ion-toggletip-glyph: var(--icon-size-md);
+
+  display: inline-flex;
+  vertical-align: middle;
+}
+
+.ion-toggletip--sm {
+  --ion-toggletip-glyph: var(--icon-size-sm);
+}
+
+.ion-toggletip__button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--spacing-24);
+  height: var(--spacing-24);
+  margin-block: calc(var(--spacing-4) * -1);
+  padding: 0;
+  color: var(--icon-secondary);
+  background: none;
+  border: none;
+  border-radius: var(--radius-full);
+  cursor: pointer;
+}
+
+.ion-toggletip__button svg {
+  width: var(--ion-toggletip-glyph);
+  height: var(--ion-toggletip-glyph);
+}
+
+.ion-toggletip__button:hover,
+.ion-toggletip__button[data-open] {
+  color: var(--icon-default);
+  background-color: var(--surface-hover);
+}
+
+.ion-toggletip__button[data-focus-visible] {
+  outline: var(--border-width-thick) solid var(--border-focus);
+  outline-offset: 0;
+}
+
+.ion-toggletip__bubble {
+  z-index: 1150;
+  display: block;
+  width: max-content;
+  max-width: min(280px, calc(100vw - var(--spacing-16) * 2));
+  padding: var(--spacing-12);
+  color: var(--text-default);
+  background-color: var(--surface-raised);
+  border: var(--border-width-default) solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  box-shadow: var(--ion-shadow-shadow-lg);
+  font-family: var(--font-family-sans);
+  font-size: var(--type-body-sm);
+  line-height: var(--type-body-sm-line-height);
+  font-weight: var(--font-weight-regular);
+  text-align: start;
+  white-space: normal;
+}
+
+.ion-toggletip__bubble--closed {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+  box-shadow: none;
+}
+
+.ion-toggletip__arrow {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  background-color: var(--surface-raised);
+  border: var(--border-width-default) solid var(--border-subtle);
+  transform: rotate(45deg);
+}
+
+.ion-toggletip__bubble--top .ion-toggletip__arrow {
+  bottom: -7px;
+  border-top: none;
+  border-left: none;
+}
+
+.ion-toggletip__bubble--bottom .ion-toggletip__arrow {
+  top: -7px;
+  border-bottom: none;
+  border-right: none;
+}
+
+.ion-toggletip__bubble--left .ion-toggletip__arrow {
+  right: -7px;
+  border-bottom: none;
+  border-left: none;
+}
+
+.ion-toggletip__bubble--right .ion-toggletip__arrow {
+  left: -7px;
+  border-top: none;
+  border-right: none;
+}
+
+@media (forced-colors: active) {
+  .ion-toggletip__bubble {
+    border-color: CanvasText;
+  }
+}

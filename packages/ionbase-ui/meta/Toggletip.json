@@ -1,0 +1,99 @@
+{
+  "status": "stable",
+  "summary": "An \"ⓘ\" button that opens a short explanation on click and keeps it open, so it can hold a link. Not modal, not hover.",
+  "useWhen": [
+    "a field label or a setting needs a sentence of explanation that most people will not need",
+    "the explanation links onward — \"How retention works\" — which a Tooltip cannot hold"
+  ],
+  "useInstead": [
+    {
+      "when": "naming an icon-only control, or a hint with nothing to click in it",
+      "use": "Tooltip",
+      "why": "a tooltip needs no press to read; a toggletip for a one-word hint makes people click to learn what hovering would have told them"
+    },
+    {
+      "when": "the content is a task — a form, a choice, anything more than a sentence and a link",
+      "use": "Popover",
+      "why": "that is a dialog: it takes focus, traps it and has a title; a toggletip is part of the page"
+    },
+    {
+      "when": "the information is needed to fill the field in",
+      "use": "Input",
+      "why": "`description` is always visible; hiding required guidance behind an ⓘ makes people find it by failing first"
+    }
+  ],
+  "composition": {
+    "order": ["Toggletip", "Link"],
+    "note": "Place it right after the label text it explains. The children are a sentence or two and at most one Link or Button. Name it for its subject — `aria-label=\"About log retention\"`.",
+    "example": "<>Keep run logs for <Toggletip aria-label=\"About log retention\">Logs past the period are deleted every night. <Link href=\"/docs/retention\">How retention works</Link></Toggletip></>"
+  },
+  "variants": {
+    "placement": {
+      "top": {
+        "use": "the default — above the label, clear of the field below"
+      },
+      "bottom": {
+        "use": "near the top of the viewport; it also flips here on its own"
+      },
+      "left": {
+        "use": "beside a label at the end of a row"
+      },
+      "right": {
+        "use": "beside a label at the start of a row"
+      }
+    },
+    "size": {
+      "sm": {
+        "use": "beside body-sm text — field labels, table headers"
+      },
+      "md": {
+        "use": "beside body text — headings of settings rows"
+      }
+    }
+  },
+  "slots": {
+    "children": {
+      "accepts": "text, Link, Button",
+      "note": "the explanation; read out on open"
+    }
+  },
+  "a11y": {
+    "role": "button with aria-expanded and aria-controls, controlling a status region",
+    "guarantees": [
+      "opens on click, Enter or Space — never on hover, so it works the same on touch",
+      "the bubble follows the button in the DOM, so the next Tab reaches a link inside it",
+      "the bubble is a `role=\"status\"` live region that is in the page before it opens, so its text is read out on open while focus stays on the button",
+      "Escape closes it and returns focus to the button; inside a Modal, the first Escape closes only the toggletip",
+      "a press outside, or focus leaving the button and bubble together, closes it",
+      "not modal: no focus trap, nothing on the page hidden from assistive technology",
+      "a 24px target at both sizes, pulled into the line so the label is no taller for having one"
+    ],
+    "requires": [
+      "`aria-label` naming what it explains — \"About log retention\", not \"Info\" or \"More information\""
+    ],
+    "notes": [
+      "The bubble is rendered inline, not portalled — that is what keeps it in the Tab order. It is clipped only by an ancestor that is BOTH positioned and clipping (`position` other than static, with `overflow` hidden, auto or scroll): plain `overflow: hidden` does not clip an absolutely positioned descendant whose containing block is higher up. Table's scroll container is exactly that pair, so keep toggletips out of table headers; the demo's smoke test hit-tests the bubble's corners to catch the case.",
+      "Inside a <label> or <legend> the button's name becomes part of that label: a RadioGroup reads \"Keep run logs for, About log retention\". Keep `aria-label` short and led by the subject so the addition informs rather than repeats."
+    ]
+  },
+  "antiPatterns": [
+    {
+      "dont": "a Tooltip with a link in it",
+      "do": "<Toggletip aria-label=\"About …\">…<Link>…</Link></Toggletip>",
+      "why": "the tooltip closes as the pointer moves toward the link, and a keyboard user can never reach it"
+    },
+    {
+      "dont": "`aria-label=\"Info\"` on every toggletip on the page",
+      "why": "a list of buttons all called \"Info\" tells a screen reader user nothing about which is which"
+    },
+    {
+      "dont": "a Toggletip holding a form or several actions",
+      "do": "Popover",
+      "why": "focus is not managed into the bubble, so a task inside it is easy to lose"
+    },
+    {
+      "dont": "a Toggletip in a Table header",
+      "why": "Table's scroll container is positioned and clips, so the bubble is cut off at the table's edge; explain the column above the table instead"
+    }
+  ]
+}

@@ -1959,6 +1959,29 @@
         }
       }
     },
+    "Toggletip": {
+      "code": "Toggletip",
+      "props": {
+        "Size": {
+          "prop": "size",
+          "values": {
+            "Medium": "md",
+            "Small": "sm"
+          }
+        },
+        "State": {
+          "prop": "isOpen",
+          "when": {
+            "Open": true
+          },
+          "note": "Open is runtime, not a prop to set: a press opens it and Escape, a press outside or focus leaving closes it. Pass isOpen only to control it from outside."
+        },
+        "Text#1528:0": {
+          "prop": "children",
+          "note": "The explanation, plus at most one Link or Button after it — Figma's link line is a Link child in code. Name the button with aria-label for the subject: \"About log retention\"."
+        }
+      }
+    },
     "Tool Call": {
       "code": "ToolCall",
       "props": {

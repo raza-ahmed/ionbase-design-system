@@ -31,7 +31,7 @@
 - [x] **MultiSelect** — the Agents table's Teams filter — 0.87.0
 - [x] **Toolbar** — the Agents table's bulk actions — 0.88.0
 - [x] **Table: row selection and batch actions** — `useTableSelection` and `TableBatchBar`; select-all across pages as "all except" — 0.89.0
-- [ ] **Toggletip**
+- [x] **Toggletip** — Settings' log retention — 0.90.0
 - [ ] **Slider** — single and range
 - [ ] **TreeView**
 - [ ] **SidePanel** — non-modal

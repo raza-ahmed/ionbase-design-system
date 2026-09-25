@@ -2272,6 +2272,26 @@
         }
       }
     },
+    "Toggletip": {
+      "page": "Tooltip",
+      "id": "1528:263",
+      "kind": "SET",
+      "props": {
+        "Size": {
+          "type": "VARIANT",
+          "options": ["Medium", "Small"],
+          "default": "Medium"
+        },
+        "State": {
+          "type": "VARIANT",
+          "options": ["Closed", "Open"],
+          "default": "Closed"
+        },
+        "Text#1528:0": {
+          "type": "TEXT"
+        }
+      }
+    },
     "Tool Call": {
       "page": "Tool Call",
       "id": "1392:391",

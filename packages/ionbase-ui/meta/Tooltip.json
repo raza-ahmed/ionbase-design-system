@@ -7,7 +7,12 @@
   ],
   "useInstead": [
     {
-      "when": "the content has anything focusable in it — a link, a button, a field",
+      "when": "the hint needs a link, or has to work on touch",
+      "use": "Toggletip",
+      "why": "it opens on a press and stays open, and its link is the next Tab stop"
+    },
+    {
+      "when": "the content is a task — a field, a choice, several actions",
       "use": "Popover",
       "why": "a tooltip cannot be focused, cannot be scrolled, and closes the moment the pointer leaves"
     },

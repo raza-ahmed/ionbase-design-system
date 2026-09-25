@@ -900,6 +900,33 @@ for (const p of pairings) {
     }
 
     let composited = false;
+    /*
+     * A translucent background on a component with no background of its own —
+     * a hover wash on a bare icon button. Until 25 Sep 2026 this was skipped
+     * ("its backdrop is unknown"), the same blind spot the assumed grounds
+     * closed for text on 3 Sep: Toggletip's hover passed by never being asked.
+     * There is no one backdrop, so it is composited over each ground a caller
+     * can place it on, and must hold on all of them.
+     */
+    if (b.a < 1 && !p.backdrop) {
+      for (const ground of ASSUMED_GROUNDS) {
+        const back = parseColor(map[ground]);
+        if (!back || back.a < 1) continue;
+        const under = composite(b, back);
+        const fg = f.a < 1 ? composite(f, under) : f;
+        results.push({
+          ...p,
+          mode,
+          backdrop: ground,
+          fgHex: toHex(fg),
+          bgHex: toHex(under),
+          compositedOver: ground,
+          ratio: Number(ratio(fg, under).toFixed(2)),
+          min: p.kind === 'text' ? TEXT_MIN : NONTEXT_MIN,
+        });
+      }
+      continue;
+    }
     if (b.a < 1) {
       const back = p.backdrop ? parseColor(map[p.backdrop]) : null;
       if (!back || back.a < 1) {

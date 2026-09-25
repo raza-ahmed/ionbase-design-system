@@ -554,6 +554,81 @@ try {
   }
 
   /*
+   * The Settings Toggletip, at both widths. Its bubble is rendered inline, not
+   * portalled, so an ancestor with overflow: hidden would clip it — checked
+   * by hit-testing the bubble's centre, not by its box. Then the keyboard:
+   * the next Tab is its link, and Escape returns focus to the ⓘ.
+   */
+  for (const [viewport, width, height] of [
+    ['desktop', 1280, 900],
+    ['mobile', 390, 844],
+  ]) {
+    const where = `toggletip (light, ${viewport})`;
+    const context = await browser.newContext({ viewport: { width, height } });
+    await context.addInitScript(() =>
+      localStorage.setItem(
+        'ionbase-ops:demo-settings',
+        JSON.stringify({ theme: 'light', latency: 0 }),
+      ),
+    );
+    const page = await context.newPage();
+    page.on('pageerror', (e) => fail(where, `exception: ${e.message}`));
+    await page.goto(`${BASE}/#/settings`);
+    try {
+      const tip = page.getByRole('button', { name: 'About log retention' });
+      await tip.waitFor({ timeout: 10_000 });
+      await tip.scrollIntoViewIfNeeded();
+      await tip.focus();
+      await page.keyboard.press('Enter');
+      const bubble = page.locator(
+        '.ion-toggletip__bubble:not(.ion-toggletip__bubble--closed)',
+      );
+      await bubble.waitFor({ timeout: 5_000 });
+      const visible = await bubble.evaluate((el) => {
+        // Near every corner — 10px in, past the 8px radius — so a clip down
+        // one side shows up, where the centre alone survived one.
+        const r = el.getBoundingClientRect();
+        const points = [
+          [r.left + 10, r.top + 10],
+          [r.right - 10, r.top + 10],
+          [r.left + 10, r.bottom - 10],
+          [r.right - 10, r.bottom - 10],
+        ];
+        return points.every(([x, y]) =>
+          el.contains(document.elementFromPoint(x, y)),
+        );
+      });
+      if (!visible) fail(where, 'the bubble is clipped, covered or off screen');
+
+      await page.addScriptTag({ content: axeSource });
+      const violations = await page.evaluate(async () => {
+        const result = await window.axe.run(
+          document.querySelector('.ion-toggletip'),
+          { resultTypes: ['violations'] },
+        );
+        return result.violations.map((v) => `${v.impact} ${v.id}`);
+      });
+      for (const v of violations) fail(where, `axe ${v} with it open`);
+
+      await page.keyboard.press('Tab');
+      const onLink = await page.evaluate(
+        () =>
+          document.activeElement?.closest('.ion-toggletip__bubble') !== null,
+      );
+      if (!onLink) fail(where, 'Tab did not reach the link inside the bubble');
+      await page.keyboard.press('Escape');
+      const back = await tip.evaluate((el) => el === document.activeElement);
+      if (!back) fail(where, 'Escape did not return focus to the ⓘ');
+      if ((await tip.getAttribute('aria-expanded')) !== 'false')
+        fail(where, 'Escape did not close it');
+    } catch (e) {
+      fail(where, `did not run: ${e.message.split('\n')[0]}`);
+    }
+    groupsChecked++;
+    await context.close();
+  }
+
+  /*
    * The wizard's CheckboxGroup, which no page load above reaches: it is on
    * Guardrails, the third step. A saved draft with the first two steps done
    * opens there. "At least one" has to hold three ways — natively (every box

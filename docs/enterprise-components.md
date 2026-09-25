@@ -134,7 +134,7 @@ IonBase column names the component that covers it.
 | Skeleton                        |   ●    |     |      | `Skeleton`    |
 | Empty state / illustration      |   ◐    |     |  ●   | `EmptyState`  |
 | Tooltip                         |   ●    |  ●  |  ●   | `Tooltip`     |
-| Toggletip (click-open info)     |   ●    |  ◐  |  ◐   | —             |
+| Toggletip (click-open info)     |   ●    |  ◐  |  ◐   | `Toggletip`   |
 | Popover                         |   ●    |     |  ●   | `Popover`     |
 | Modal / dialog                  |   ●    |  ●  |  ●   | `Modal`       |
 | Drawer (modal side sheet)       |   ●    |  ●  |      | `Drawer`      |
