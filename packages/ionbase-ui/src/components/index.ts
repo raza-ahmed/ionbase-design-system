@@ -30,12 +30,15 @@ export { PhoneInput } from './PhoneInput.js';
 export type { PhoneInputProps } from './PhoneInput.js';
 export { Select } from './Select.js';
 export type { SelectProps, SelectSize, SelectOption } from './Select.js';
-export { Checkbox } from './Checkbox.js';
+export { Checkbox, CheckboxGroup } from './Checkbox.js';
 export type {
   CheckboxProps,
+  CheckboxGroupProps,
   CheckboxSize,
   CheckboxIntent,
 } from './Checkbox.js';
+export { Fieldset } from './Fieldset.js';
+export type { FieldsetProps, FieldsetOrientation } from './Fieldset.js';
 export { Radio, RadioGroup } from './Radio.js';
 export type {
   RadioProps,

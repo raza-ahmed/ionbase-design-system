@@ -477,6 +477,36 @@
         }
       }
     },
+    "Checkbox Group": {
+      "code": "CheckboxGroup",
+      "props": {
+        "Orientation": {
+          "prop": "orientation",
+          "values": {
+            "Vertical": "vertical",
+            "Horizontal": "horizontal"
+          }
+        },
+        "State": {
+          "prop": "isInvalid",
+          "when": {
+            "Error": true
+          },
+          "note": "Error recolours the helper and shows errorMessage in its place; pass the error copy as errorMessage, not description. Disabled is isDisabled on the group, which cascades to every Checkbox."
+        },
+        "Label#1501:0": {
+          "prop": "label"
+        },
+        "Helper Text#1501:7": {
+          "prop": "description",
+          "note": "the help text; while State=Error the same slot holds errorMessage"
+        },
+        "Show Helper#1501:14": {
+          "prop": "description",
+          "note": "an absent prop is the switch, so false means omit description"
+        }
+      }
+    },
     "Citation": {
       "code": "Citation",
       "props": {
@@ -2042,12 +2072,13 @@
     "DateRangePicker": "Drawn, but not as a set of its own: its field is Date Picker Type=Range and its calendar is Calendar Mode=Range. A Figma set maps to exactly one code component, and splitting one field into two sets to satisfy that would draw the same box twice. Read Date Picker’s Type note for the handoff.",
     "Icon": "Figma has no Icon component; icons are vector assets dropped into slots. Icon is the React wrapper that gives any of them a size rung and an accessible label, so there is nothing on the Figma side to point at.",
     "LogoMark": "Logo-Ionbase maps to Logo. Figma spells the no-wordmark case as that component's Type axis rather than a separate component; LogoMark is how code spells the same thing.",
-    "RadioGroup": "Figma draws Radio only. The group is the thing that owns the selected value, which a static frame cannot express — Figma's Radio State axis is ignored for exactly this reason.",
+    "RadioGroup": "Figma draws Radio only. The group is the thing that owns the selected value, which a static frame cannot express — Figma's Radio State axis is ignored for exactly this reason. Its label, help, error and orientation are the shell drawn as Checkbox Group; the two groups share it in code as well.",
     "ScrollProgress": "Drawn in Figma as its three parts — Line, Progress, Progress Heading — all of which the component owns internally. There is no whole-component frame to map.",
     "Table": "Figma draws Table Row and Table Cell; the table itself is the caller assembling them. Density, the one property Table owns, is mapped on Table Cell.",
     "TableBody": "As TableHead.",
     "TableHead": "As Table — a code-side grouping element. Figma expresses a header row as a Table Row variant, not a separate component.",
     "ToastProvider": "Figma draws Toast, which is mapped. The provider is placement, queueing and the live region — runtime behaviour with nothing to draw.",
-    "MenuTrigger": "Composition, not a drawing: a Button followed by a Menu, both already drawn and mapped. What MenuTrigger adds — open state, positioning, aria-haspopup and aria-expanded, focus on open and return on close — is runtime behaviour a static frame cannot hold, the same reason RadioGroup is here."
+    "MenuTrigger": "Composition, not a drawing: a Button followed by a Menu, both already drawn and mapped. What MenuTrigger adds — open state, positioning, aria-haspopup and aria-expanded, focus on open and return on close — is runtime behaviour a static frame cannot hold, the same reason RadioGroup is here.",
+    "Fieldset": "Drawn as the shell of Checkbox Group: the legend, the helper and the Error recolour are Form Field's type, laid around a set of options. A Fieldset of Inputs is the caller composing Form Fields under that legend, so there is no separate frame to point at."
   }
 }

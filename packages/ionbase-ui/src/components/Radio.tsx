@@ -8,6 +8,11 @@ import React, {
   createContext,
   useId,
 } from 'react';
+import {
+  FieldsetShell,
+  useFieldsetHelper,
+  type FieldsetOrientation,
+} from './Fieldset.js';
 import { resolveDisabled } from './resolve-disabled.js';
 
 export type RadioSize = 'sm' | 'md' | 'lg';
@@ -21,6 +26,8 @@ interface RadioGroupContextValue {
   size?: RadioSize;
   intent?: RadioIntent;
   isDisabled?: boolean;
+  isRequired?: boolean;
+  helperId?: string;
 }
 
 /**
@@ -59,6 +66,7 @@ export const Radio = forwardRef<HTMLInputElement, RadioProps>(
       isDisabled,
       disabled,
       name = group?.name,
+      'aria-describedby': describedBy,
       ...rest
     } = props;
 
@@ -105,6 +113,15 @@ export const Radio = forwardRef<HTMLInputElement, RadioProps>(
           name={name}
           value={value}
           disabled={resolvedDisabled}
+          // Native `required` on a radio already means "one of this name" —
+          // unlike a checkbox, it needs no toggling to say "at least one".
+          required={group?.isRequired || rest.required}
+          // The group's help or error, read on the radio that takes focus —
+          // see the same note in Checkbox.
+          aria-describedby={
+            [describedBy, group?.helperId].filter(Boolean).join(' ') ||
+            undefined
+          }
           className="ion-radio__input"
           onChange={handleChange}
           {...(controlled
@@ -131,7 +148,17 @@ export interface RadioGroupProps extends Omit<
   value?: string;
   defaultValue?: string;
   onChange?: (value: string) => void;
+  /** The question the options answer. Renders as the `<legend>`. */
   label?: React.ReactNode;
+  /** Help text beneath the options. Replaced by `errorMessage` while invalid. */
+  description?: React.ReactNode;
+  /** Shown in the description's place while `isInvalid` is set. */
+  errorMessage?: React.ReactNode;
+  /** Shows `errorMessage` in the description's place. */
+  isInvalid?: boolean;
+  /** One option must be chosen before the form submits. */
+  isRequired?: boolean;
+  orientation?: FieldsetOrientation;
   size?: RadioSize;
   intent?: RadioIntent;
   /** Whether every radio in the group is disabled. */
@@ -148,6 +175,9 @@ export interface RadioGroupProps extends Omit<
  * `role="radiogroup"`. Both are announced correctly, but a fieldset also groups
  * the inputs for form submission and native validation, which the ARIA version
  * does not.
+ *
+ * The fieldset itself is Fieldset's shell, shared with CheckboxGroup, so the
+ * two choice groups take the same label, help, error and orientation props.
  */
 export const RadioGroup = forwardRef<HTMLFieldSetElement, RadioGroupProps>(
   (props, ref) => {
@@ -156,18 +186,24 @@ export const RadioGroup = forwardRef<HTMLFieldSetElement, RadioGroupProps>(
       value,
       defaultValue,
       onChange,
-      label,
       size,
       intent,
       isDisabled,
       disabled,
+      isRequired,
+      description,
+      errorMessage,
       className,
-      children,
       ...rest
     } = props;
 
     const resolvedDisabled = resolveDisabled(isDisabled, disabled);
     const generated = useId();
+    const { helper, helperId } = useFieldsetHelper(
+      description,
+      errorMessage,
+      rest.isInvalid,
+    );
 
     return (
       <RadioGroupContext.Provider
@@ -179,17 +215,19 @@ export const RadioGroup = forwardRef<HTMLFieldSetElement, RadioGroupProps>(
           size,
           intent,
           isDisabled: resolvedDisabled,
+          isRequired,
+          helperId,
         }}
       >
-        <fieldset
+        <FieldsetShell
           {...rest}
           ref={ref}
           disabled={resolvedDisabled}
+          isChoiceGroup
+          helper={helper}
+          helperId={helperId}
           className={['ion-radio-group', className].filter(Boolean).join(' ')}
-        >
-          {label && <legend className="ion-radio-group__label">{label}</legend>}
-          {children}
-        </fieldset>
+        />
       </RadioGroupContext.Provider>
     );
   },

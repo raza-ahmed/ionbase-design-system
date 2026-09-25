@@ -13,6 +13,7 @@ export const EMPTY_DRAFT: AgentDraft = {
   escalationPhone: '',
   knowledgeFiles: [],
   requireApproval: true,
+  notifyOn: ['failed', 'approval'],
   monthlyTokenBudget: '250000',
 };
 

@@ -48,6 +48,8 @@ const REQUIRED = [
   'Pagination',
   'Input',
   'Checkbox',
+  'CheckboxGroup',
+  'Fieldset',
   'Menu',
   'MenuItem',
   'MenuSection',

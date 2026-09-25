@@ -1,5 +1,99 @@
 # Changelog
 
+## 0.86.0 — 2026-09-25
+
+### Added — `CheckboxGroup` and `Fieldset`
+
+A set of checkboxes answering one question had no component. Loose
+Checkboxes under a text label can't do it accessibly: the question isn't
+announced with the options, an error has nothing to attach to, and "select at
+least one" has no way to be expressed. `RadioGroup` already handled this for
+radios. This is the fifth item on the enterprise checklist.
+
+- **`CheckboxGroup`** owns the selected values. Each `Checkbox` inside gives a
+  `value`, and `onChange` receives the array of ticked values, in the order
+  they were ticked. Controlled and uncontrolled both work. A box's own
+  `onChange` and `onSelectionChange` still fire inside a group, which is the
+  contract RadioGroup settled on.
+- **`isRequired` means at least one, enforced by the browser.** A checkbox's
+  `required` means "this box must be ticked", so it is set on every box while
+  none is ticked and removed from all of them once one is.
+  - The browser blocks an empty submit and explains why in the user's own
+    language, so the package ships no strings for it.
+  - Each box announces "required" only while the rule is unmet.
+- **Help and error text are read on every box**, as well as on the fieldset.
+  Someone tabbing back into the group lands on a box and never hears the
+  legend again, so the message has to be on the box.
+  - `isInvalid` also sets `aria-invalid` on every box.
+  - The error takes the help text's place instead of stacking beneath it,
+    the same as Input.
+- **`size`, `intent` and `isDisabled` pass down** to every Checkbox in the
+  group.
+- **`orientation="horizontal"`** lays the options in a row that wraps rather
+  than overflowing.
+- **`Fieldset`** is the shared shell: a `<fieldset>` and `<legend>` with a
+  description and an error. It groups any fields that answer one question,
+  such as an address or a pair of limits.
+  - It has **no `isDisabled`**. A natively disabled fieldset disables every
+    control inside it, but Input, Select and the other fields take their
+    disabled look from their own prop. They would stop working while still
+    looking enabled. Disable the fields themselves instead.
+- The legend and help text use Form Field's type, so a group reads as one
+  field with several controls rather than introducing a second label style.
+  - The fieldset is `display: block`, because a rendered `<legend>` is not a
+    flex item: a flex column would have put a gap everywhere except under the
+    legend.
+  - Options are spaced 8px apart; fields in a Fieldset are 16px apart.
+
+### Changed — `RadioGroup`
+
+- **Uses the same shell as CheckboxGroup.** It gains `description`,
+  `errorMessage`, `isInvalid`, `isRequired` and `orientation`.
+- **`isRequired` is native `required` on the radios**, which the browser
+  already reads as "one of this name".
+- **Help and error text are read on every radio**, the same as CheckboxGroup.
+- `.ion-radio-group__label` is gone; the legend is `.ion-fieldset__legend`.
+  It looks the same, and a test pins that.
+
+### Figma
+
+- **New Checkbox Group set** (1501:475) on the Checkbox page:
+  - Orientation: Vertical or Horizontal.
+  - State: Default, Error or Disabled.
+  - Label and Helper Text properties, and a Show Helper switch.
+  - Built from Checkbox instances and Form Field's text styles and variables.
+- **Mapped to `CheckboxGroup`.** Fieldset and RadioGroup are listed as having
+  no Figma component of their own, with the reasons.
+- **All 78 Dev Mode blocks verified.** The one hash mismatch was File
+  Upload's `INSTANCE_SWAP`, which Figma's markdown stores as `INSTANCE\_SWAP`.
+  That is harmless; `apply-descriptions.js` now documents `_` alongside `*`,
+  so the next audit doesn't mistake it for drift.
+
+### Patterns
+
+- **Form** composes CheckboxGroup and Fieldset:
+  - a new structure rule for fields that answer one question;
+  - a requirement that group-level errors sit on the group;
+  - an anti-pattern entry for loose Checkboxes under a heading.
+
+### Demo
+
+- **The new-agent wizard** asks "Notify the team when", and at least one
+  option is required. Its error appears in the step's error summary, and the
+  summary entry focuses the first box.
+- **The wizard's schedule fields** (start date, repeats, runs at) are a
+  horizontal Fieldset named "Schedule".
+- **Settings** has one CheckboxGroup named "Safeguards" in place of two
+  unlabelled Checkboxes, and its RadioGroup gains help text.
+- **The smoke test** opens the wizard on its third step and checks four
+  things:
+  - every box is required while none is ticked;
+  - the error is on the box, not only on the group;
+  - the summary entry focuses a checkbox;
+  - axe finds nothing while the group is invalid.
+
+  I confirmed it fails when the box loses the error.
+
 ## 0.85.0 — 2026-09-25
 
 ### Added — `SearchField`

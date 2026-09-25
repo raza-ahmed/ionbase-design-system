@@ -300,3 +300,67 @@ export const UncontrolledGroupStillCallsRadioOnChange: Story = {
     await expect(handlers.uncontrolledOnChange).toHaveBeenCalledTimes(1);
   },
 };
+
+/** RadioGroup now takes Fieldset's help and error; both reach every radio. */
+export const GroupErrorIsReadOnEveryRadio: Story = {
+  render: () => (
+    <RadioGroup
+      label="Plan"
+      description="Billed monthly."
+      isInvalid
+      errorMessage="Choose a plan to continue."
+    >
+      <Radio value="a">A</Radio>
+      <Radio value="b">B</Radio>
+    </RadioGroup>
+  ),
+  play: async ({ canvas }) => {
+    await expect(
+      canvas.getByRole('group', { name: 'Plan' }),
+    ).toHaveAccessibleDescription('Choose a plan to continue.');
+    for (const radio of canvas.getAllByRole('radio')) {
+      await expect(radio).toHaveAccessibleDescription(
+        'Choose a plan to continue.',
+      );
+    }
+    await expect(canvas.queryByText('Billed monthly.')).toBeNull();
+  },
+};
+
+/** Native `required` on radios already means "one of this name". */
+export const RequiredBlocksAnEmptySubmit: Story = {
+  render: () => (
+    <form data-testid="form">
+      <RadioGroup label="Plan" isRequired>
+        <Radio value="a">A</Radio>
+        <Radio value="b">B</Radio>
+      </RadioGroup>
+    </form>
+  ),
+  play: async ({ canvas, userEvent }) => {
+    const form = canvas.getByTestId('form') as HTMLFormElement;
+    await expect(form.checkValidity()).toBe(false);
+    await userEvent.click(canvas.getByText('B'));
+    await expect(form.checkValidity()).toBe(true);
+  },
+};
+
+/** The legend keeps the look RadioGroup had before it moved onto the shell. */
+export const LegendKeepsFormFieldType: Story = {
+  render: () => (
+    <RadioGroup label="Plan" defaultValue="a">
+      <Radio value="a">A</Radio>
+      <Radio value="b">B</Radio>
+    </RadioGroup>
+  ),
+  play: async ({ canvasElement }) => {
+    const legend = canvasElement.querySelector('legend')!;
+    const s = getComputedStyle(legend);
+    await expect(s.fontWeight).toBe('500');
+    await expect(s.paddingLeft).toBe('0px');
+    const [a, b] = [...canvasElement.querySelectorAll('.ion-radio')].map((el) =>
+      el.getBoundingClientRect(),
+    );
+    await expect(Math.round(b.top - a.bottom)).toBe(8);
+  },
+};

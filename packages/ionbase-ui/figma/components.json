@@ -613,6 +613,32 @@
         }
       }
     },
+    "Checkbox Group": {
+      "page": "Checkbox",
+      "id": "1501:475",
+      "kind": "SET",
+      "props": {
+        "Helper Text#1501:7": {
+          "type": "TEXT"
+        },
+        "Label#1501:0": {
+          "type": "TEXT"
+        },
+        "Orientation": {
+          "type": "VARIANT",
+          "options": ["Vertical", "Horizontal"],
+          "default": "Vertical"
+        },
+        "Show Helper#1501:14": {
+          "type": "BOOLEAN"
+        },
+        "State": {
+          "type": "VARIANT",
+          "options": ["Default", "Error", "Disabled"],
+          "default": "Default"
+        }
+      }
+    },
     "Citation": {
       "page": "Citation",
       "id": "1167:247",

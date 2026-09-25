@@ -27,9 +27,11 @@
  * `descriptionMarkdown`. That decode loop is kept below, because anyone who
  * reaches for `description` again will need it.
  *
- * Markdown normalises two harmless things: runs of blank lines collapse, and
- * a literal `*` is stored as `\*` so it renders as an asterisk rather than
- * emphasis. Neither loses content.
+ * Markdown normalises three harmless things: runs of blank lines collapse,
+ * and a literal `*` or `_` is stored as `\*` or `\_` so it renders as itself
+ * rather than emphasis — File Upload's `INSTANCE_SWAP` reads back as
+ * `INSTANCE\_SWAP`. None loses content, but an audit that hashes the block
+ * must unescape them first or it reports a false mismatch.
  *
  * APPEND, NEVER REPLACE. Most of these carry long hand-written descriptions —
  * Link's is nearly 3,000 characters of real design reasoning. The block is

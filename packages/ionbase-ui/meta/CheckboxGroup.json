@@ -1,0 +1,98 @@
+{
+  "status": "stable",
+  "summary": "A set of checkboxes answering one question. Owns the selected values, the group's label, help and error, and \"select at least one\".",
+  "useWhen": [
+    "several options may be picked and they answer one question — \"notify me when\", \"regions\", \"columns to show\"",
+    "the group needs a rule of its own — at least one, or an error that belongs to the set rather than to an option"
+  ],
+  "useInstead": [
+    {
+      "when": "only one option may be picked",
+      "use": "RadioGroup"
+    },
+    {
+      "when": "the options are many, or space is tight",
+      "use": "Select",
+      "why": "past about seven options a list of boxes is longer than the form around it"
+    },
+    {
+      "when": "there is one on/off choice",
+      "use": "Checkbox",
+      "why": "a group of one announces a question and then its only answer"
+    },
+    {
+      "when": "each option takes effect immediately",
+      "use": "Toggle"
+    }
+  ],
+  "composition": {
+    "order": ["CheckboxGroup", "Checkbox"],
+    "note": "Give every Checkbox a `value`; the group's `onChange` receives the array of ticked values. Selection lives on the group — do not also set `isSelected` on the boxes.",
+    "example": "<CheckboxGroup label=\"Notify the team when\" isRequired value={notifyOn} onChange={setNotifyOn} isInvalid={!!error} errorMessage={error}><Checkbox value=\"failed\">A run fails</Checkbox><Checkbox value=\"approval\">A run needs approval</Checkbox></CheckboxGroup>"
+  },
+  "variants": {
+    "size": {
+      "sm": { "use": "dense forms and filter panels" },
+      "md": { "use": "the default" },
+      "lg": { "use": "touch targets and prominent choices" }
+    },
+    "intent": {
+      "brand": { "use": "the default" },
+      "neutral": {
+        "use": "facts rather than approvals — the columns shown, the filters applied"
+      },
+      "danger": { "use": "a set of destructive consents" }
+    },
+    "orientation": {
+      "vertical": {
+        "use": "the default, and always when a label runs past a few words"
+      },
+      "horizontal": {
+        "use": "two to four one-word options — weekdays, regions. Wraps rather than overflows"
+      }
+    }
+  },
+  "slots": {
+    "label": {
+      "accepts": "text",
+      "note": "renders as the <legend> — the question the options answer"
+    },
+    "description": {
+      "accepts": "text",
+      "note": "help beneath the options; replaced by `errorMessage` while `isInvalid` is set"
+    },
+    "errorMessage": {
+      "accepts": "text",
+      "note": "shown only while `isInvalid` is set"
+    },
+    "children": { "accepts": "Checkbox" }
+  },
+  "a11y": {
+    "role": "group, from <fieldset> and <legend>",
+    "guarantees": [
+      "the legend is announced as the group's name when focus enters any box",
+      "the description or error is on every box's `aria-describedby` as well as the fieldset's, so it is read on the box that takes focus",
+      "`isInvalid` sets `aria-invalid` on every box",
+      "`isRequired` sets native `required` on every box while none is ticked and on none once one is: the browser blocks the submit in its own language, and each box announces \"required\" exactly while the rule is unmet",
+      "`isDisabled` cascades to every Checkbox that has not set its own"
+    ],
+    "requires": [
+      "`label`, or `aria-label` when the question is already visible elsewhere",
+      "a `value` on every Checkbox — the group tracks the selection by it"
+    ]
+  },
+  "antiPatterns": [
+    {
+      "dont": "loose Checkboxes under a text label",
+      "why": "the question is not announced with the options, an error has nothing to attach to, and \"at least one\" cannot be expressed"
+    },
+    {
+      "dont": "`isSelected` or `checked` on a Checkbox inside a group",
+      "why": "the group owns the selection; the box's own value is ignored"
+    },
+    {
+      "dont": "`isRequired` on every Checkbox in the group",
+      "why": "that means every box must be ticked; `isRequired` on the group means at least one"
+    }
+  ]
+}

@@ -1,16 +1,46 @@
 'use client';
 
 import React, {
+  createContext,
   forwardRef,
-  useRef,
-  useImperativeHandle,
+  useContext,
   useEffect,
+  useImperativeHandle,
+  useRef,
+  useState,
 } from 'react';
+import {
+  FieldsetShell,
+  useFieldsetHelper,
+  type FieldsetOrientation,
+} from './Fieldset.js';
 import { resolveDisabled } from './resolve-disabled.js';
 import { resolveSelection, type SelectionProps } from './resolve-selection.js';
 
 export type CheckboxSize = 'sm' | 'md' | 'lg';
 export type CheckboxIntent = 'brand' | 'neutral' | 'danger';
+
+interface CheckboxGroupContextValue {
+  name?: string;
+  selected: readonly string[];
+  toggle: (value: string, isSelected: boolean) => void;
+  size?: CheckboxSize;
+  intent?: CheckboxIntent;
+  isDisabled?: boolean;
+  isInvalid?: boolean;
+  isRequired?: boolean;
+  helperId?: string;
+}
+
+/**
+ * Lets CheckboxGroup own the selected values the way RadioGroup owns the
+ * selected value: each Checkbox reads whether its `value` is in the set and
+ * reports its toggles, and the caller wires one `onChange` instead of one per
+ * option.
+ */
+const CheckboxGroupContext = createContext<CheckboxGroupContextValue | null>(
+  null,
+);
 
 export interface CheckboxProps
   extends
@@ -74,9 +104,10 @@ const DashMark = () => (
  */
 export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
   (props, forwardedRef) => {
+    const group = useContext(CheckboxGroupContext);
     const {
-      size = 'md',
-      intent = 'brand',
+      size = group?.size ?? 'md',
+      intent = group?.intent ?? 'brand',
       isIndeterminate = false,
       className,
       children,
@@ -86,16 +117,46 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
       checked,
       onChange,
       onSelectionChange,
+      name = group?.name,
+      'aria-describedby': describedBy,
       ...rest
     } = props;
 
-    const resolvedDisabled = resolveDisabled(isDisabled, disabled);
+    const resolvedDisabled =
+      resolveDisabled(isDisabled, disabled) ?? group?.isDisabled;
     const selection = resolveSelection(
       isSelected,
       checked,
       onChange,
       onSelectionChange,
     );
+
+    /*
+     * Inside a group the group owns `checked`, and the box's own handlers still
+     * fire after it — the contract RadioGroup settled on, so neither control
+     * honours a handler in one mode and drops it in the other.
+     */
+    const value = rest.value === undefined ? '' : String(rest.value);
+    const groupSelection = group
+      ? {
+          checked: group.selected.includes(value),
+          onChange: (event: React.ChangeEvent<HTMLInputElement>) => {
+            group.toggle(value, event.target.checked);
+            selection.onChange?.(event);
+          },
+        }
+      : selection;
+
+    /*
+     * "Select at least one", in the platform's own words. `required` on a
+     * checkbox means "this one must be ticked", so it is set on every box while
+     * none is and dropped from all of them the moment one is: native
+     * validation then blocks the submit with the browser's localised message,
+     * and each box announces "required" exactly while the rule is unmet.
+     */
+    const required = group?.isRequired
+      ? group.selected.length === 0
+      : rest.required;
 
     const domRef = useRef<HTMLInputElement>(null);
     useImperativeHandle(forwardedRef, () => domRef.current!);
@@ -120,9 +181,18 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
           {...rest}
           ref={domRef}
           type="checkbox"
-          checked={selection.checked}
-          onChange={selection.onChange}
+          name={name}
+          required={required}
+          checked={groupSelection.checked}
+          onChange={groupSelection.onChange}
           disabled={resolvedDisabled}
+          aria-invalid={group?.isInvalid || rest['aria-invalid']}
+          // The group's help or error is read on every box, not only on entry
+          // to the fieldset — a screen reader tabbing back in skips the legend.
+          aria-describedby={
+            [describedBy, group?.helperId].filter(Boolean).join(' ') ||
+            undefined
+          }
           className="ion-checkbox__input"
         />
         <span className="ion-checkbox__indicator" aria-hidden="true">
@@ -137,3 +207,111 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
 );
 
 Checkbox.displayName = 'Checkbox';
+
+export interface CheckboxGroupProps extends Omit<
+  React.FieldsetHTMLAttributes<HTMLFieldSetElement>,
+  'onChange' | 'defaultValue' | 'disabled'
+> {
+  /** The question the options answer. Renders as the `<legend>`. */
+  label?: React.ReactNode;
+  /** Help text beneath the options. Replaced by `errorMessage` while invalid. */
+  description?: React.ReactNode;
+  /** Shown in the description's place while `isInvalid` is set. */
+  errorMessage?: React.ReactNode;
+  /** Marks every box invalid and shows `errorMessage`. */
+  isInvalid?: boolean;
+  /** At least one option must be selected — enforced by native validation. */
+  isRequired?: boolean;
+  /** The selected values (controlled). */
+  value?: readonly string[];
+  /** The initially selected values (uncontrolled). */
+  defaultValue?: readonly string[];
+  /** Receives the whole new selection, in the order the options were ticked. */
+  onChange?: (value: string[]) => void;
+  /** Shared input name, so a form submits every ticked value under it. */
+  name?: string;
+  size?: CheckboxSize;
+  intent?: CheckboxIntent;
+  /** Whether every checkbox in the group is disabled. */
+  isDisabled?: boolean;
+  orientation?: FieldsetOrientation;
+  /** Checkboxes, each with a `value`. */
+  children?: React.ReactNode;
+}
+
+/**
+ * A set of checkboxes that answers one question — "notify me when…", "which
+ * regions". Owns the selected values, the group's label, help text and error,
+ * and "select at least one".
+ *
+ * A row of loose Checkboxes can do none of that accessibly: the question is
+ * not announced with the options, an error has nothing to attach to, and
+ * "at least one" has no native expression at all. See the `required` note in
+ * Checkbox for how that last one is done.
+ */
+export const CheckboxGroup = forwardRef<
+  HTMLFieldSetElement,
+  CheckboxGroupProps
+>((props, ref) => {
+  const {
+    value: controlledValue,
+    defaultValue,
+    onChange,
+    name,
+    size,
+    intent,
+    isDisabled,
+    isRequired,
+    description,
+    errorMessage,
+    ...rest
+  } = props;
+
+  const [uncontrolled, setUncontrolled] = useState<readonly string[]>(
+    defaultValue ?? [],
+  );
+  const selected = controlledValue ?? uncontrolled;
+
+  const toggle = (value: string, isSelected: boolean) => {
+    const next = isSelected
+      ? selected.includes(value)
+        ? [...selected]
+        : [...selected, value]
+      : selected.filter((v) => v !== value);
+    if (controlledValue === undefined) setUncontrolled(next);
+    onChange?.(next);
+  };
+
+  const { helper, helperId } = useFieldsetHelper(
+    description,
+    errorMessage,
+    rest.isInvalid,
+  );
+
+  return (
+    <CheckboxGroupContext.Provider
+      value={{
+        name,
+        selected,
+        toggle,
+        size,
+        intent,
+        isDisabled,
+        isInvalid: rest.isInvalid,
+        isRequired,
+        helperId,
+      }}
+    >
+      <FieldsetShell
+        {...rest}
+        ref={ref}
+        disabled={isDisabled}
+        isChoiceGroup
+        helper={helper}
+        helperId={helperId}
+      />
+    </CheckboxGroupContext.Provider>
+  );
+});
+
+CheckboxGroup.displayName = 'CheckboxGroup';

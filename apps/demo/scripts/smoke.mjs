@@ -71,6 +71,7 @@ let browser;
 let loadingChecked = 0;
 let paletteChecked = 0;
 let menusChecked = 0;
+let groupsChecked = 0;
 try {
   await waitForServer();
   browser = await chromium.launch();
@@ -352,6 +353,99 @@ try {
   }
 
   /*
+   * The wizard's CheckboxGroup, which no page load above reaches: it is on
+   * Guardrails, the third step. A saved draft with the first two steps done
+   * opens there. "At least one" has to hold three ways — natively (every box
+   * required while none is ticked), in the error the group shows on Next, and
+   * on the box a screen reader lands on, which is where the error must be read.
+   */
+  {
+    const where = 'checkbox group (light, desktop)';
+    const context = await browser.newContext({
+      viewport: { width: 1280, height: 900 },
+    });
+    await context.addInitScript(() => {
+      localStorage.setItem(
+        'ionbase-ops:demo-settings',
+        JSON.stringify({ theme: 'light', latency: 0 }),
+      );
+      localStorage.setItem(
+        'ionbase-ops:new-agent-draft',
+        JSON.stringify({
+          values: { name: 'Smoke test agent', notifyOn: [] },
+          completed: 1,
+          model: 'atlas-m',
+        }),
+      );
+    });
+    const page = await context.newPage();
+    page.on('pageerror', (e) => fail(where, `exception: ${e.message}`));
+    await page.goto(`${BASE}/#/agents/new`);
+    try {
+      const group = page.getByRole('group', { name: 'Notify the team when' });
+      await group.waitFor({ timeout: 10_000 });
+      const boxes = group.getByRole('checkbox');
+      const required = await boxes.evaluateAll((els) =>
+        els.map((el) => el.required),
+      );
+      if (required.length !== 3 || required.some((r) => !r))
+        fail(where, `boxes not all required while none is ticked: ${required}`);
+
+      await page.getByRole('button', { name: /^Next:/ }).click();
+      const first = boxes.first();
+      await page.waitForFunction(
+        () =>
+          document
+            .querySelector('#field-notifyOn input')
+            ?.getAttribute('aria-invalid') === 'true',
+        null,
+        { timeout: 5_000 },
+      );
+      const described = await first.evaluate((el) =>
+        (el.getAttribute('aria-describedby') ?? '')
+          .split(' ')
+          .map((id) => document.getElementById(id)?.textContent ?? '')
+          .join(' '),
+      );
+      if (!/at least one/.test(described))
+        fail(where, `the first box does not carry the error: "${described}"`);
+
+      // The summary's entry lands on the first box, not on the fieldset. It is
+      // a Link with no href, which Link renders as a <button> — in-page, not a
+      // navigation.
+      await page
+        .getByRole('button', { name: 'Notify the team when', exact: true })
+        .click();
+      const focused = await page.evaluate(
+        () => document.activeElement?.getAttribute('type') ?? null,
+      );
+      if (focused !== 'checkbox')
+        fail(where, `error summary link focused ${focused}, not a checkbox`);
+
+      await page.addScriptTag({ content: axeSource });
+      const violations = await page.evaluate(async () => {
+        const result = await window.axe.run(document, {
+          resultTypes: ['violations'],
+        });
+        return result.violations.map((v) => `${v.impact} ${v.id}`);
+      });
+      for (const v of violations)
+        fail(where, `axe ${v} with the group invalid`);
+
+      await page.getByText('A run fails', { exact: true }).click();
+      const after = await boxes.evaluateAll((els) =>
+        els.map((el) => el.required || el.getAttribute('aria-invalid')),
+      );
+      if (after.some(Boolean))
+        fail(where, `ticking one left the group required or invalid: ${after}`);
+    } catch (e) {
+      fail(where, `did not run: ${e.message.split('\n')[0]}`);
+    }
+    groupsChecked++;
+    await context.close();
+  }
+
+  /*
    * The loading states, at phone width. With no latency a skeleton is gone
    * before anything can measure it, and a skeleton is laid out differently
    * from the content it stands in for — the Agents skeleton once pushed the
@@ -390,7 +484,8 @@ const checked =
   ROUTES.length * THEMES.length * 2 +
   loadingChecked +
   paletteChecked +
-  menusChecked;
+  menusChecked +
+  groupsChecked;
 if (failures.length) {
   console.error(
     `Demo smoke: ${failures.length} failures across ${checked} page loads\n`,

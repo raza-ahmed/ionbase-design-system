@@ -8,6 +8,8 @@
     "Input",
     "Select",
     "Checkbox",
+    "CheckboxGroup",
+    "Fieldset",
     "Radio",
     "RadioGroup",
     "Toggle",
@@ -20,6 +22,7 @@
   "structure": [
     "Fields in a single column. Two columns only for genuinely paired values, and they stack below the mobile breakpoint.",
     "Each field carries its own label and, when invalid, its own errorMessage — the message sits with the control it is about.",
+    "Related fields that answer one question — an address, a pair of limits, a set of checkboxes — sit in a Fieldset, CheckboxGroup or RadioGroup, so the question is announced with each field and a group-level error has somewhere to live.",
     "An error summary Alert above the form after a failed submit, listing each invalid field as a link to it.",
     "A submit Button and a cancel Link or Button, in that reading order, at the end."
   ],
@@ -60,21 +63,43 @@
       "isRequired"
     ],
     "Select": ["label", "description", "errorMessage", "isInvalid"],
-    "RadioGroup": ["label", "name", "value", "onChange"],
+    "RadioGroup": [
+      "label",
+      "name",
+      "value",
+      "onChange",
+      "isInvalid",
+      "errorMessage",
+      "isRequired"
+    ],
+    "CheckboxGroup": [
+      "label",
+      "value",
+      "onChange",
+      "isInvalid",
+      "errorMessage",
+      "isRequired"
+    ],
+    "Fieldset": ["label", "isInvalid", "errorMessage"],
     "Checkbox": ["isDisabled"],
     "Button": ["variant", "size", "isDisabled"],
     "Alert": ["intent", "title", "actions"]
   },
   "variantsUsed": {
-    "Alert": { "intent": ["error"] },
-    "Button": { "variant": ["primary-brand", "tertiary"] }
+    "Alert": {
+      "intent": ["error"]
+    },
+    "Button": {
+      "variant": ["primary-brand", "tertiary"]
+    }
   },
   "a11y": {
     "requires": [
       "a visible `label` on every field, or `aria-label` where the label is genuinely elsewhere",
       "`isInvalid` alongside `errorMessage` — the message alone styles the field without announcing it as invalid",
       "focus moved to the error summary after a failed submit",
-      "`isRequired` on required fields rather than an asterisk in the label text"
+      "`isRequired` on required fields rather than an asterisk in the label text",
+      "a group-level error on the CheckboxGroup, RadioGroup or Fieldset it is about — \"choose at least one\" belongs to the set, not to its first box"
     ],
     "notes": [
       "Validate on blur and on submit, not on every keystroke: an error that appears while the user is still typing the value is wrong more often than right."
@@ -101,6 +126,11 @@
       "dont": "a Toggle inside a form that is submitted",
       "do": "Checkbox",
       "why": "a switch says the change already took effect"
+    },
+    {
+      "dont": "a row of Checkboxes under a heading, with the error in a paragraph beneath",
+      "do": "<CheckboxGroup label=\"…\" isRequired isInvalid errorMessage=\"…\">",
+      "why": "the heading is not announced with the boxes and the error is attached to none of them"
     }
   ]
 }

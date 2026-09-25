@@ -535,3 +535,10 @@ body {
   align-items: center;
   gap: var(--spacing-6);
 }
+
+/* A horizontal Fieldset wraps its fields at their natural width; the schedule
+   wants them to share the row evenly instead, as the old two-column pair did. */
+.demo-form__schedule > .ion-fieldset__content > * {
+  flex: 1 1 12rem;
+  min-width: 0;
+}

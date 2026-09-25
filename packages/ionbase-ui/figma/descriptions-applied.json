@@ -19,7 +19,7 @@
   ],
   "file": "gaLbGd0QNb1fUl6BjSpfBA",
   "appliedOn": "2026-09-25",
-  "verifiedInFigma": 77,
+  "verifiedInFigma": 78,
   "applied": {
     "1360:267": {
       "figmaComponent": "Accordion",
@@ -100,6 +100,11 @@
       "figmaComponent": "Checkbox",
       "component": "Checkbox",
       "hash": "04f1b81a01ae85e7"
+    },
+    "1501:475": {
+      "figmaComponent": "Checkbox Group",
+      "component": "CheckboxGroup",
+      "hash": "b8f283398f0c0584"
     },
     "1167:247": {
       "figmaComponent": "Citation",

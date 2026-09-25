@@ -1,0 +1,88 @@
+{
+  "status": "stable",
+  "summary": "A <fieldset>/<legend> that groups related fields under one label, one description and one error — an address, a pair of limits, a date typed as two fields.",
+  "useWhen": [
+    "several fields answer one question and a reader must hear the question with each of them — street, city and postcode under \"Billing address\"",
+    "one error belongs to the group rather than to a field — \"the minimum must be below the maximum\""
+  ],
+  "useInstead": [
+    {
+      "when": "the fields are checkboxes",
+      "use": "CheckboxGroup",
+      "why": "it renders this same shell and adds the selected values and \"select at least one\""
+    },
+    {
+      "when": "the fields are radios",
+      "use": "RadioGroup",
+      "why": "it renders this same shell and adds the shared name and the selected value"
+    },
+    {
+      "when": "a single field needs a label and help text",
+      "use": "Input",
+      "why": "every field already renders its own label, description and error; a fieldset around one field announces the label twice"
+    },
+    {
+      "when": "the grouping is visual — a titled section of a settings page",
+      "use": "Card",
+      "why": "a fieldset is a form grouping that assistive technology announces on entry; a section of unrelated settings is not one question"
+    }
+  ],
+  "composition": {
+    "order": ["Fieldset", "Input"],
+    "note": "Each field keeps its own label — the legend names the group, not the fields. Put a group-level error in `errorMessage` with `isInvalid`, and keep field-level errors on the fields.",
+    "example": "<Fieldset label=\"Run limits\" description=\"Runs stop at whichever comes first.\" orientation=\"horizontal\"><NumberInput label=\"Max steps\" /><NumberInput label=\"Max minutes\" /></Fieldset>"
+  },
+  "variants": {
+    "orientation": {
+      "vertical": { "use": "the default — fields stacked, as a form reads" },
+      "horizontal": {
+        "use": "two or three short fields that read as one value — a range, a size, a city and postcode. Wraps rather than overflows"
+      }
+    }
+  },
+  "slots": {
+    "label": {
+      "accepts": "text",
+      "note": "renders as the <legend> — the question the fields answer"
+    },
+    "description": {
+      "accepts": "text",
+      "note": "help beneath the fields; replaced by `errorMessage` while `isInvalid` is set, as Input's is"
+    },
+    "errorMessage": {
+      "accepts": "text",
+      "note": "the group's error, shown only while `isInvalid` is set"
+    },
+    "children": {
+      "accepts": "Input, Select, NumberInput, DatePicker and other fields"
+    }
+  },
+  "a11y": {
+    "role": "group, from <fieldset> and <legend>",
+    "guarantees": [
+      "the legend is announced as the group's name when focus enters any field inside",
+      "`aria-describedby` on the fieldset points at whichever of the description or the error is showing"
+    ],
+    "requires": [
+      "`label`, or `aria-label` when the question is already visible as a heading"
+    ],
+    "notes": [
+      "There is no `isDisabled`. A native disabled fieldset disables every control inside, but Input, Select and the rest draw their disabled look from their own prop — the fields would stop working while still looking live. Disable the fields themselves."
+    ]
+  },
+  "antiPatterns": [
+    {
+      "dont": "a Fieldset around one field",
+      "why": "the field's label and the legend both announce, saying the same thing twice"
+    },
+    {
+      "dont": "a Fieldset of Checkboxes",
+      "do": "<CheckboxGroup label=\"Notify me when\">…</CheckboxGroup>",
+      "why": "it looks the same, but nothing owns the selected values or \"select at least one\""
+    },
+    {
+      "dont": "<fieldset disabled> around Inputs",
+      "why": "the fields stop accepting input while still drawn as enabled"
+    }
+  ]
+}
