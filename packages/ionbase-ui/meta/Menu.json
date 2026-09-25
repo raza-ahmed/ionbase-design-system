@@ -1,51 +1,83 @@
 {
   "status": "stable",
-  "summary": "The list surface only — no trigger, no anchor, no open state. Positioning it is the caller's job.",
+  "summary": "An ARIA menu surface: one tab stop, arrow keys, typeahead, and optional single or multiple selection. Children are MenuItem and MenuSection. What opens it, and where it sits, is the caller's.",
   "useWhen": [
-    "rendering a list of actions or options as a surface you have already positioned",
-    "the rows need icons, a selected check, or two lines — more than a native <select> can hold"
+    "a list of actions or choices for the thing the user is on — row actions, a workspace switcher, a sort order",
+    "the rows need icons, a selected check, or grouping under headings — more than a native <select> can hold"
   ],
   "useInstead": [
     {
-      "when": "you want a self-contained dropdown with a trigger and open state",
-      "use": "Popover",
-      "why": "Menu is the surface alone; Popover owns the trigger, positioning, focus containment and Escape"
-    },
-    {
-      "when": "one value is picked from a modest list of plain text options",
+      "when": "one value is picked for a form field from a modest list of plain text options",
       "use": "Select",
-      "why": "the native picker brings keyboard handling, type-ahead and the mobile platform picker for free"
+      "why": "a form value is a listbox, not a menu; the native picker brings type-ahead and the mobile platform picker for free"
     },
     {
-      "when": "it is primary navigation rather than a dropdown",
-      "use": "NavItem"
+      "when": "the user types to narrow a long list down to one value",
+      "use": "Combobox"
+    },
+    {
+      "when": "it is primary navigation rather than a list of actions",
+      "use": "NavItem",
+      "why": "a menu's rows are actions; links to pages belong in the document's navigation, where a screen reader's landmarks find them"
+    },
+    {
+      "when": "any action or page should be reachable by searching",
+      "use": "CommandPalette"
     }
   ],
   "composition": {
-    "order": ["Menu", "MenuItem"],
-    "example": "<Menu><MenuItem icon={<Icon as={Copy} />}>Duplicate</MenuItem><MenuItem isSelected>Archive</MenuItem></Menu>"
+    "order": ["Menu", "MenuSection", "MenuItem"],
+    "note": "MenuItem and MenuSection are collection elements: Menu reads them from its DIRECT children to build the collection, and neither renders anything itself. Every MenuItem needs a `key`, and `onAction`, `selectedKeys` and `disabledKeys` all speak in those keys. Menu does not open, close or position itself — put it in a Popover until MenuTrigger exists.",
+    "example": "<Menu aria-label=\"Row actions\" onAction={(key) => run(key)}><MenuSection title=\"Edit\"><MenuItem key=\"rename\" icon={<Icon as={Pencil} />}>Rename</MenuItem><MenuItem key=\"duplicate\">Duplicate</MenuItem></MenuSection><MenuSection aria-label=\"Danger\"><MenuItem key=\"archive\" isDisabled>Archive</MenuItem></MenuSection></Menu>"
+  },
+  "variants": {
+    "selectionMode": {
+      "none": {
+        "use": "the default — a list of actions. Rows are `menuitem`, and there is no check slot"
+      },
+      "single": {
+        "use": "Figma's Type=Single — one current choice, such as a sort order or the active workspace. Rows are `menuitemradio`"
+      },
+      "multiple": {
+        "use": "Figma's Type=Multi — independent toggles, such as visible columns. Rows are `menuitemcheckbox`"
+      }
+    }
   },
   "slots": {
-    "children": { "accepts": "MenuItem" }
+    "children": { "accepts": ["MenuItem", "MenuSection"] }
   },
   "a11y": {
-    "role": "none — it is a plain <ul>",
+    "role": "menu",
     "guarantees": [
-      "no `role=\"menu\"`, deliberately: a real ARIA menu owes the user roving tabindex, arrow-key navigation and typeahead, and claiming the role without them promises interactions that are not there"
+      "one tab stop; arrow keys move between rows, Home and End jump, and typing a letter moves to the next row starting with it",
+      "disabled rows are listed and announced as unavailable, and the arrow keys skip them",
+      "with a selection mode, rows are `menuitemradio` or `menuitemcheckbox` and announce `aria-checked` — the check glyph is never the only signal",
+      "the pointer and the keyboard share one highlighted row: hovering a row focuses it"
+    ],
+    "requires": [
+      "an accessible name — `aria-label` or `aria-labelledby` naming what the actions are for"
     ],
     "notes": [
-      "Each MenuItem is a real <button>, so Tab reaches every row. That is honest, and it is not the same as arrow-key menu navigation.",
-      "The role arrives when the popover that owns it does."
+      "A menu is not a form control. It has no `name` and submits nothing; `selectedKeys` is state you hold.",
+      "Titled sections are named groups. An untitled section needs `aria-label`, and is set off by a rule."
     ]
   },
   "antiPatterns": [
     {
-      "dont": "adding `role=\"menu\"` yourself",
-      "why": "the keyboard behaviour that role promises is not implemented; an honest list is better for a screen-reader user than a lying menu"
+      "dont": "wrapping MenuItems in a <div>, a fragment or your own component inside Menu",
+      "why": "Menu reads its collection from its direct children; a wrapped row is invisible to it and renders nothing"
     },
     {
-      "dont": "using Menu as a dropdown without positioning it",
-      "why": "it renders in flow — it has no anchor logic of its own"
+      "dont": "an `onClick` on MenuItem",
+      "why": "MenuItem renders nothing, so there is no element to click. Pass `onAction` to Menu; it receives the item's key, from the pointer, Enter and Space alike"
+    },
+    {
+      "dont": "using Menu for a form field's value",
+      "why": "a screen reader announces a menu as actions, and a form cannot read it. Use Select or Combobox"
+    },
+    {
+      "dont": "putting links to other pages in a Menu",
+      "why": "they vanish from the page's link list and landmarks. Navigation belongs in NavItem or Sidebar"
     }
   ]
 }

@@ -8,8 +8,14 @@
  *
  * Figma models the list only — there is no trigger, popover or positioning in
  * the design, so there is none here. This is the surface a menu renders on;
- * anchoring it is the caller's job until Figma has a component that says
- * otherwise.
+ * anchoring it is the caller's job until MenuTrigger exists.
+ *
+ * HIGHLIGHT FOLLOWS FOCUS, NOT THE POINTER
+ *
+ * In an ARIA menu, hovering a row moves focus to it (useMenuItem does this), so
+ * the keyboard and the pointer share one highlighted row. Figma's `Hover`
+ * therefore reads `data-focused`, not `:hover`. Styling both would light two
+ * rows at once when the pointer rests on one and the arrow keys move to another.
  *
  * SELECTED-HOVER IS NOT SELECTED PLUS HOVER
  *
@@ -50,9 +56,9 @@
   font-size: var(--type-body);
   line-height: var(--type-body-line-height);
   font-weight: var(--font-weight-regular);
-  text-align: left;
-  width: 100%;
+  text-align: start;
   cursor: pointer;
+  outline: none;
   user-select: none;
   transition: background-color var(--ion-duration-base) var(--ion-ease-out);
 }
@@ -75,7 +81,7 @@
 /* The check keeps its slot whether or not it is showing, so rows do not
  * reflow as the selection moves down the list. */
 .ion-menu__check {
-  margin-left: auto;
+  margin-inline-start: auto;
   visibility: hidden;
 }
 
@@ -84,13 +90,7 @@
   min-width: 0;
 }
 
-@media (hover: hover) {
-  .ion-menu__item:hover {
-    background-color: var(--surface-hover);
-  }
-}
-
-.ion-menu__item[data-hovered='true'] {
+.ion-menu__item[data-focused='true'] {
   background-color: var(--surface-hover);
 }
 
@@ -108,43 +108,100 @@
   visibility: visible;
 }
 
-/* See the header — hovering a selected row drops the tint rather than deepening
- * it. The check stays primary; everything else returns to the resting palette. */
-@media (hover: hover) {
-  .ion-menu__item--selected:hover {
-    background-color: var(--surface-hover);
-    color: var(--text-secondary);
-  }
-
-  .ion-menu__item--selected:hover .ion-menu__icon {
-    color: var(--icon-default);
-  }
-}
-
-.ion-menu__item--selected[data-hovered='true'] {
+/* See the header — highlighting a selected row drops the tint rather than
+ * deepening it. The check stays primary; everything else returns to the resting
+ * palette. */
+.ion-menu__item--selected[data-focused='true'] {
   background-color: var(--surface-hover);
   color: var(--text-secondary);
 }
 
-.ion-menu__item--selected[data-hovered='true'] .ion-menu__icon {
+.ion-menu__item--selected[data-focused='true'] .ion-menu__icon {
   color: var(--icon-default);
 }
 
-.ion-menu__item:focus-visible {
+.ion-menu__item[data-focus-visible='true'] {
   outline: var(--border-width-thick) solid var(--border-focus);
   outline-offset: calc(-1 * var(--border-width-thick));
 }
 
-.ion-menu__item:disabled,
 .ion-menu__item[data-disabled='true'] {
   background-color: transparent;
   color: var(--text-disabled);
   cursor: not-allowed;
 }
 
-.ion-menu__item:disabled .ion-menu__icon,
-.ion-menu__item:disabled .ion-menu__check,
 .ion-menu__item[data-disabled='true'] .ion-menu__icon,
 .ion-menu__item[data-disabled='true'] .ion-menu__check {
   color: var(--icon-disabled);
+}
+
+/* ------------------------------------------------------------- sections
+ *
+ * A section is an <li role="presentation"> holding a heading and a nested
+ * <ul role="group">, so both carry the list's own flex column and gap —
+ * otherwise rows inside a section would sit 2px closer together than rows
+ * outside one.
+ */
+.ion-menu__section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2);
+}
+
+.ion-menu__group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+/*
+ * Figma `Menu Section Title` (639:2664): caption in text/tertiary, then a
+ * 1px border/strong rule filling the rest of the row. Figma's gap is 7px, which
+ * is off the spacing scale; 8 is the nearest step.
+ *
+ * Figma draws the title alone, not placed in a menu. The inline inset is the
+ * item's, so the caption lines up with the row labels beneath it.
+ */
+.ion-menu__section-title {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-8);
+  padding: var(--spacing-8) var(--spacing-12) var(--spacing-4);
+  color: var(--text-tertiary);
+  font-size: var(--type-caption);
+  line-height: var(--type-caption-line-height);
+  font-weight: var(--font-weight-regular);
+  white-space: nowrap;
+}
+
+.ion-menu__section-title::after {
+  content: '';
+  flex: 1 1 auto;
+  min-width: var(--spacing-8);
+  height: var(--border-width-default);
+  background-color: var(--border-strong);
+}
+
+/* An untitled section after the first is set off by a rule alone. Same line as
+ * the title's, so a menu mixing the two draws one kind of divider. */
+.ion-menu__separator {
+  height: var(--border-width-default);
+  margin: var(--spacing-4) var(--spacing-12);
+  background-color: var(--border-strong);
+}
+
+@media (forced-colors: active) {
+  .ion-menu__item[data-focused='true'] {
+    outline: var(--border-width-thick) solid Highlight;
+    outline-offset: calc(-1 * var(--border-width-thick));
+  }
+
+  .ion-menu__section-title::after,
+  .ion-menu__separator {
+    background-color: CanvasText;
+  }
 }

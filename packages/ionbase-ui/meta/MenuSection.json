@@ -1,0 +1,38 @@
+{
+  "status": "stable",
+  "summary": "A named group of MenuItems. Re-exported from react-stately's collection Section — `title` is Figma's Menu Section Title.",
+  "useWhen": [
+    "a Menu has more than one kind of action, such as editing actions and destructive ones",
+    "the rows fall into groups the user scans by name"
+  ],
+  "useInstead": [
+    {
+      "when": "the menu has one group",
+      "use": "MenuItem",
+      "why": "a single section adds a heading the user must hear before every menu, and says nothing the menu's own label does not"
+    }
+  ],
+  "composition": {
+    "order": ["Menu", "MenuSection", "MenuItem"],
+    "note": "A collection element: Menu reads it from its direct children. With `title`, the heading is drawn with a rule after it; without one, `aria-label` names the group and a rule is drawn above it instead.",
+    "example": "<MenuSection title=\"Sort by\"><MenuItem key=\"name\">Name</MenuItem><MenuItem key=\"updated\">Last updated</MenuItem></MenuSection>"
+  },
+  "a11y": {
+    "role": "group",
+    "guarantees": [
+      "the group is named by its title, so a screen reader announces it on entering the first row"
+    ],
+    "requires": [
+      "a `title`; an untitled section still needs a label for the group, or it is announced as an unnamed group"
+    ],
+    "notes": [
+      "The accessible-name lint rule is deliberately not driven from here: a titled section is named by its title and needs nothing more, so demanding a label on every MenuSection would be wrong for the common case."
+    ]
+  },
+  "antiPatterns": [
+    {
+      "dont": "nesting a MenuSection inside another",
+      "why": "a menu has one level of grouping; a section inside a section renders nothing"
+    }
+  ]
+}

@@ -45,7 +45,7 @@ export type {
 } from './Radio.js';
 export { Toggle } from './Toggle.js';
 export type { ToggleProps, ToggleSize, ToggleIntent } from './Toggle.js';
-export { Menu, MenuItem } from './Menu.js';
+export { Menu, MenuItem, MenuSection } from './Menu.js';
 export type { MenuProps, MenuItemProps } from './Menu.js';
 export { Avatar, AvatarGroup } from './Avatar.js';
 export type {

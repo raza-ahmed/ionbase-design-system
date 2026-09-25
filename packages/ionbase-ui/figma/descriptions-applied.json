@@ -19,7 +19,7 @@
   ],
   "file": "gaLbGd0QNb1fUl6BjSpfBA",
   "appliedOn": "2026-09-25",
-  "verifiedInFigma": 74,
+  "verifiedInFigma": 75,
   "applied": {
     "1360:267": {
       "figmaComponent": "Accordion",
@@ -194,12 +194,17 @@
     "82:306": {
       "figmaComponent": "Menu",
       "component": "Menu",
-      "hash": "3efe9cc224c0ecbf"
+      "hash": "ee5c0ad282b4e56e"
     },
     "639:2634": {
       "figmaComponent": "Menu Item",
       "component": "MenuItem",
-      "hash": "9a05657cf78004ef"
+      "hash": "782fc93c885fe2b4"
+    },
+    "639:2664": {
+      "figmaComponent": "Menu Section Title",
+      "component": "MenuSection",
+      "hash": "b987cc9bca2e26e9"
     },
     "792:1537": {
       "figmaComponent": "Modal",

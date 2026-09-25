@@ -214,23 +214,25 @@ export function AgentsTable({
                   isOpen={menuFor === a.id}
                   onOpenChange={(open) => setMenuFor(open ? a.id : null)}
                   content={
-                    <Menu>
+                    <Menu
+                      aria-label={`Actions for ${a.name}`}
+                      autoFocus="first"
+                      onAction={(key) => {
+                        setMenuFor(null);
+                        if (key === 'pause') onPause(a, !paused);
+                        else onDelete(a);
+                      }}
+                    >
                       <MenuItem
+                        key="pause"
                         icon={<Icon as={paused ? Play : Pause} size="sm" />}
                         isDisabled={a.status === 'draft'}
-                        onClick={() => {
-                          setMenuFor(null);
-                          onPause(a, !paused);
-                        }}
                       >
                         {paused ? 'Resume' : 'Pause'}
                       </MenuItem>
                       <MenuItem
+                        key="delete"
                         icon={<Icon as={Trash2} size="sm" />}
-                        onClick={() => {
-                          setMenuFor(null);
-                          onDelete(a);
-                        }}
                       >
                         Delete…
                       </MenuItem>

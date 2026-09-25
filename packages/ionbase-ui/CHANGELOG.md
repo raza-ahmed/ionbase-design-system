@@ -1,5 +1,96 @@
 # Changelog
 
+## 0.82.0 — 2026-09-25
+
+### Changed — `Menu` is a real ARIA menu
+
+Menu was an honest `<ul>` of buttons. It did not claim `role="menu"`, because
+it had none of the keyboard behaviour the role promises. Every "⋯" row-actions
+menu in an enterprise table needs that behaviour, and Carbon, Material 3 and
+Lightning all ship it. It is the first item on the enterprise checklist.
+
+- **One tab stop.** Arrow keys move between rows, Home and End jump, and
+  typing a letter moves to the next row that starts with it. Disabled rows
+  are listed and announced as unavailable, and the arrow keys skip them.
+- **Figma's `Type` is now `selectionMode`.** Single is `"single"`, and the
+  rows are `menuitemradio`. Multi is `"multiple"`, and the rows are
+  `menuitemcheckbox`. Both announce `aria-checked`, so the check is never the
+  only signal. With no selection mode, the rows are plain `menuitem` and no
+  check slot is drawn.
+- **`MenuSection` is new.** With `title`, it draws Figma's `Menu Section
+Title`: a caption followed by a rule. Without a title, pass `aria-label`,
+  and the section is set off by a rule above it. Both are named groups.
+- **The pointer and the keyboard share one highlighted row.** Hovering a row
+  focuses it, so the Hover styling reads `data-focused`, not `:hover`.
+- Menu is still the list surface only. Put it in a Popover until MenuTrigger,
+  the next checklist item, exists. Submenus move to that item, because a
+  submenu needs a trigger to open from.
+
+#### Breaking
+
+1. **`MenuItem` renders nothing itself**, like `TabItem`. Menu reads it from
+   its direct children, so wrapping rows in a `<div>` or your own component
+   hides them. Give every row a `key`.
+2. **`onClick` on `MenuItem` is gone.** Pass `onAction` to Menu instead. It
+   receives the row's key, and fires for the pointer, Enter and Space alike.
+3. **Menu needs an accessible name.** Pass `aria-label` or `aria-labelledby`.
+   The `needs-accessible-name` lint rule now covers Menu.
+4. **DOM:** the rows are `<li role="menuitem">`, not `<li><button>`. Rows with
+   no selection mode have no `.ion-menu__check`.
+
+```tsx
+// 0.81
+<Menu>
+  <MenuItem isSelected={id === 'a'} onClick={() => pick('a')}>A</MenuItem>
+</Menu>
+
+// 0.82
+<Menu
+  aria-label="Workspaces"
+  selectionMode="single"
+  selectedKeys={[id]}
+  onAction={(key) => pick(key)}
+>
+  <MenuItem key="a">A</MenuItem>
+</Menu>
+```
+
+#### Deprecated, accepted for one minor
+
+- `MenuItem isSelected`: when Menu gets neither `selectedKeys` nor
+  `defaultSelectedKeys`, the rows that pass `isSelected` become the
+  selection. They now announce as checked `menuitemradio` rows rather than
+  pressed buttons.
+- `MenuItem disabled`: already deprecated in favour of `isDisabled`, and still
+  skipped by the arrow keys.
+
+### Fixed — five Figma descriptions written through the escaping field
+
+Time Field, Card, Table Sort Indicator, Tag and Tag Group had their Dev Mode
+blocks in `description` rather than `descriptionMarkdown`. Their prose showed
+`&quot;` where a quote belonged. `descriptions-applied.json` recorded them as
+applied, and every gate passed. A full read-back of all 75 blocks found them,
+comparing hashes with the version line dropped. They were decoded, rewritten
+to `descriptionMarkdown` with their hand-written prose intact, and
+re-verified. All 75 blocks now match the build.
+
+### Figma
+
+- `Menu` Type maps to `selectionMode`. `Menu Item` Status is now ignored,
+  with a reason: selection lives in Menu's `selectedKeys`.
+- `Menu Section Title` (639:2664) moves from unmapped to `MenuSection`.
+- 75 mapped, all 75 Dev Mode blocks verified.
+
+### Demo
+
+- The workspace switcher is a single-selection menu. The current workspace
+  is announced as checked, and choosing another closes the menu.
+- Each agent row's actions menu opens on its first enabled row and is named
+  for its agent. It had no accessible name before.
+- The smoke test opens both menus in both themes, runs axe over the row
+  actions, checks that Escape returns focus to the "⋯" trigger, and switches
+  workspace. It was broken on purpose first: without `autoFocus`, it fails.
+
 ## 0.81.1 — 2026-09-25
 
 ### Fixed — DatePicker and DateRangePicker look invalid when a typed date is out of bounds
