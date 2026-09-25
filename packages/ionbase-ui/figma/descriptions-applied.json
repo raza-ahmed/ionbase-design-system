@@ -19,7 +19,7 @@
   ],
   "file": "gaLbGd0QNb1fUl6BjSpfBA",
   "appliedOn": "2026-09-25",
-  "verifiedInFigma": 83,
+  "verifiedInFigma": 84,
   "applied": {
     "1360:267": {
       "figmaComponent": "Accordion",
@@ -435,6 +435,11 @@
       "figmaComponent": "Slider",
       "component": "Slider",
       "hash": "0cd190e322e72e2e"
+    },
+    "1542:4542": {
+      "figmaComponent": "Tree View",
+      "component": "TreeView",
+      "hash": "e2bc1e603a3f5c64"
     }
   }
 }

@@ -1,5 +1,59 @@
 # Changelog
 
+## 0.92.0 — 2026-09-25
+
+### Added — `TreeView`
+
+A hierarchy opened level by level — folders of files, teams within
+departments. It is the eleventh item on the enterprise checklist. It is not
+for navigation: the app's own nested pages stay Sidebar sections, and
+Sidebar's contract now points here for hierarchical data.
+
+- **Data in, rows out.** `items` is a tree of `{ id, label, icon,
+description, children, isDisabled }`. Expansion and selection are held by
+  `id`, controlled or not, and reported as `Set<string>`.
+- **React Aria's `useTree` and `useTreeItem`:** a `treegrid` of flat rows,
+  each with `aria-level`, `aria-posinset`, `aria-setsize` among its siblings,
+  and `aria-expanded` only on rows that have children.
+- **One tab stop.** ↑ and ↓ move between visible rows, → opens, ← closes or
+  moves to the parent, Home and End go to the ends, and typing jumps to a
+  label. Only open rows are rendered.
+- **The chevron** is a 24px button named "Expand" or "Collapse" in the
+  user's locale, out of the tab order, and opens a row without selecting it.
+- **`selectionMode`** `none`, `single` or `multiple`. Multiple draws
+  MultiSelect's check in each row and sets `aria-multiselectable`. Selection
+  does not cascade: a selected folder is that folder only. `onAction` fires
+  on Enter, for "open this".
+- **Sidebar's rhythm:** 32px rows, `md` radius, `surface/hover` and
+  `surface/selected`, a spacing/20 indent per level, mirrored right to left.
+- **The Form pattern** now uses a multiple-select TreeView for choices that
+  form a hierarchy, not Checkboxes indented by hand.
+- **Figma:** a Tree View page — `Tree View Item` (Kind × State × Level, 45
+  variants, with Label, Icon, Description and Show Check) and `Tree View`
+  (Selection None/Single/Multiple) built from it. Tree View is mapped; Tree
+  View Item is recorded as rows built from `items`. 84 blocks verified.
+- **Demo:** Agent detail has a Knowledge sources card, a multiple-select tree
+  with a locked Finance folder and a save that appears once changed. The
+  smoke check drives it by keyboard only at 1280px and 390px, and fails when
+  selection is turned off.
+
+### Found along the way
+
+- **React Aria's tree hooks crash on the collection `useTreeState` builds.**
+  `useTreeItem` calls `collection.getChildren`, which only the
+  react-aria-components collection has, and the first nested row throws.
+  TreeView hands the hooks a view of the collection that adds it, and
+  computes each row's position among its siblings itself — the hook's
+  numbers are wrong even with the view. AGENTS.md records both.
+- **"Expandable" is inferred from more than one child.** A folder with a
+  single file would not have opened. `hasChildItems` is passed from the data,
+  and the test data keeps a one-child folder so the tests can tell.
+- **→ on an open row stays put.** In a treegrid → moves into the row's cells;
+  ↓ goes to the first child. The tests and contract follow the treegrid
+  pattern rather than working around it.
+- **Rows centre their content.** A one-line row sat 2px high in its 32px, in
+  the Figma render and in code; both now centre.
+
 ## 0.91.0 — 2026-09-25
 
 ### Added — `Slider`

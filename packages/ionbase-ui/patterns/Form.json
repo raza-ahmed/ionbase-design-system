@@ -9,6 +9,7 @@
     "Select",
     "Checkbox",
     "CheckboxGroup",
+    "TreeView",
     "Fieldset",
     "Radio",
     "RadioGroup",
@@ -25,6 +26,7 @@
     "Each field carries its own label and, when invalid, its own errorMessage — the message sits with the control it is about.",
     "Guidance needed to fill a field in goes in its `description`, always visible. An explanation most people will not need — why a limit exists, where to read more — goes in a Toggletip right after the label text, where it can hold a link.",
     "Related fields that answer one question — an address, a pair of limits, a set of checkboxes — sit in a Fieldset, CheckboxGroup or RadioGroup, so the question is announced with each field and a group-level error has somewhere to live.",
+    "Choices that form a hierarchy — folders, teams within departments — are one TreeView with `selectionMode=\"multiple\"` and an `aria-label` naming the question, not Checkboxes indented by hand. The tree announces each choice's level and place; indentation alone announces nothing.",
     "An error summary Alert above the form after a failed submit, listing each invalid field as a link to it.",
     "A submit Button and a cancel Link or Button, in that reading order, at the end."
   ],
@@ -86,7 +88,15 @@
     "Checkbox": ["isDisabled"],
     "Button": ["variant", "size", "isDisabled"],
     "Alert": ["intent", "title", "actions"],
-    "Toggletip": ["aria-label", "size"]
+    "Toggletip": ["aria-label", "size"],
+    "TreeView": [
+      "aria-label",
+      "items",
+      "selectionMode",
+      "selectedKeys",
+      "onSelectionChange",
+      "defaultExpandedKeys"
+    ]
   },
   "variantsUsed": {
     "Alert": {
@@ -139,6 +149,11 @@
       "dont": "a Tooltip beside a label holding a link or the rule the field is validated against",
       "do": "`description` for the rule; a Toggletip for the optional explanation and its link",
       "why": "a tooltip is unreachable by keyboard and invisible on touch, so required guidance in one is found by failing"
+    },
+    {
+      "dont": "a CheckboxGroup whose boxes are indented with margins to show which folder each file is in",
+      "do": "<TreeView aria-label=\"…\" selectionMode=\"multiple\" items={…} />",
+      "why": "the indentation is visual only: a screen reader hears one flat list, and there is no way to close a branch that is not wanted"
     }
   ]
 }

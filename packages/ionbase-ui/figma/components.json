@@ -2391,6 +2391,58 @@
           "type": "TEXT"
         }
       }
+    },
+    "Tree View": {
+      "page": "Tree View",
+      "id": "1542:4542",
+      "kind": "SET",
+      "props": {
+        "Selection": {
+          "type": "VARIANT",
+          "options": ["None", "Single", "Multiple"],
+          "default": "None"
+        }
+      }
+    },
+    "Tree View Item": {
+      "page": "Tree View",
+      "id": "1542:770",
+      "kind": "SET",
+      "props": {
+        "Description#1542:46": {
+          "type": "TEXT"
+        },
+        "Icon#1542:184": {
+          "type": "INSTANCE_SWAP"
+        },
+        "Kind": {
+          "type": "VARIANT",
+          "options": ["Closed", "Open", "Leaf"],
+          "default": "Closed"
+        },
+        "Label#1542:0": {
+          "type": "TEXT"
+        },
+        "Level": {
+          "type": "VARIANT",
+          "options": ["1", "2", "3"],
+          "default": "1"
+        },
+        "Show Check#1542:230": {
+          "type": "BOOLEAN"
+        },
+        "Show Description#1542:92": {
+          "type": "BOOLEAN"
+        },
+        "Show Icon#1542:138": {
+          "type": "BOOLEAN"
+        },
+        "State": {
+          "type": "VARIANT",
+          "options": ["Default", "Hover", "Selected", "Focus", "Disabled"],
+          "default": "Default"
+        }
+      }
     }
   }
 }
