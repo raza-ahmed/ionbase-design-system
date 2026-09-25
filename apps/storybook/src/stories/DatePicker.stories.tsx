@@ -306,3 +306,24 @@ export const BoundsDisableTheArrows: Story = {
     await expect(prev).toBeDisabled();
   },
 };
+
+/**
+ * A typed date past a bound is shown, not clamped: the box turns invalid and
+ * React Aria's localized message names the bound. Before 0.81.1 only the
+ * segments knew — aria-invalid, with a box that still looked valid.
+ */
+export const OutOfBoundsIsShownNotClamped: Story = {
+  args: Bounded.args,
+  play: async ({ canvas, canvasElement }) => {
+    const [month] = canvas.getAllByRole('spinbutton');
+    month.focus();
+    await userEvent.keyboard('{ArrowUp}');
+    await waitFor(() => expect(month).toHaveAttribute('aria-invalid', 'true'));
+    await expect(canvasElement.querySelector('.ion-input')).toHaveClass(
+      'ion-input--invalid',
+    );
+    await expect(
+      canvas.getByText(/5\/31\/2026 or earlier/),
+    ).toBeInTheDocument();
+  },
+};

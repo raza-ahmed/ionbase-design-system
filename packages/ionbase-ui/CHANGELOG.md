@@ -1,6 +1,26 @@
 # Changelog
 
-## 0.81.0 — 2026-09-25
+## 0.81.1 — 2026-09-25
+
+### Fixed — DatePicker and DateRangePicker look invalid when a typed date is out of bounds
+
+Typing a date past `minValue` or `maxValue` marked the segments
+`aria-invalid`, so a screen reader heard it, but the box kept its normal
+border and no message appeared. A sighted user saw nothing wrong until the
+form refused the value. TimeField had the same gap, and 0.80.0 fixed it there.
+
+- Both pickers now treat the field as invalid when `isInvalid` is set **or**
+  React Aria's own validation fails. That validation covers the bounds and, on
+  DateRangePicker, an end date before the start.
+- With no `errorMessage`, React Aria's localized message is shown, such as
+  "Value must be 5/31/2026 or earlier." Pass `errorMessage` to word it
+  yourself.
+- The value is kept, not clamped, so the user sees what they typed and why it
+  is refused.
+- `OutOfBoundsIsShownNotClamped` in both story files fails on 0.81.0 and
+  passes on this release.
+
+— 2026-09-25
 
 ### Added — `CommandPalette` and `Kbd`
 

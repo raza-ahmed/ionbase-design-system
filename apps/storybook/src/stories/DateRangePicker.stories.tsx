@@ -340,3 +340,26 @@ export const FormPostsBothEnds: Story = {
     });
   },
 };
+
+/**
+ * An end date typed past `maxValue` turns the whole box invalid and names the
+ * bound — the same rule as DatePicker and TimeField. Before 0.81.1 only the
+ * segments were marked.
+ */
+export const OutOfBoundsIsShownNotClamped: Story = {
+  args: Bounded.args,
+  play: async ({ canvas, canvasElement }) => {
+    // Start month, day, year, then the end's month.
+    const endMonth = canvas.getAllByRole('spinbutton')[3];
+    endMonth.focus();
+    await userEvent.keyboard('{ArrowUp}');
+    await waitFor(() =>
+      expect(canvasElement.querySelector('.ion-input')).toHaveClass(
+        'ion-input--invalid',
+      ),
+    );
+    await expect(
+      canvas.getByText(/5\/31\/2026 or earlier/),
+    ).toBeInTheDocument();
+  },
+};

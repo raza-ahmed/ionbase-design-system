@@ -44,7 +44,8 @@
       "preset rows are buttons in a labelled group carrying aria-pressed, so 'which shortcut is active' is answerable without seeing the tint",
       "the selected preset is marked by weight as well as by background, so it does not rely on colour alone",
       "range endpoints and the band between them keep their fill under forced-colors, where background-color is otherwise discarded",
-      "the rail stacks above the grids below 32rem rather than being hidden, because shortcuts matter most on the device where dragging across two months is worst"
+      "the rail stacks above the grids below 32rem rather than being hidden, because shortcuts matter most on the device where dragging across two months is worst",
+      "a typed date outside `minValue`/`maxValue`, or an end before the start, turns the field invalid with React Aria's localized message, without `isInvalid` — the value is kept, not silently clamped"
     ],
     "requires": [
       "`label`, or an `aria-label` when no visible label is rendered",
