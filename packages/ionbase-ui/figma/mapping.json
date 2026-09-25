@@ -2121,6 +2121,36 @@
         }
       },
       "example": "<Kbd shortcut=\"mod+k\" />"
+    },
+    "Slider": {
+      "code": "Slider",
+      "props": {
+        "Type": {
+          "prop": "value",
+          "note": "Not a prop of its own: the shape of value or defaultValue decides it. Single is a number, defaultValue={120}; Range is a pair, defaultValue={[30, 120]}, with thumbLabels naming the two thumbs."
+        },
+        "State": {
+          "prop": "isDisabled",
+          "when": {
+            "Disabled": true
+          },
+          "note": "Focus is runtime: the ring goes round the focused thumb's 24px target when it has keyboard focus."
+        },
+        "Label#1533:0": {
+          "prop": "label"
+        },
+        "Description#1533:14": {
+          "prop": "description"
+        },
+        "Show Description#1533:28": {
+          "prop": "description",
+          "note": "false means description is omitted"
+        },
+        "Show Value#1533:21": {
+          "prop": "showValue",
+          "note": "The value text is formatted in code from formatOptions — { style: 'unit', unit: 'second', unitDisplay: 'short' } gives \"120 sec\". Do not type it."
+        }
+      }
     }
   },
   "unmapped": {

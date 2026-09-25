@@ -12,6 +12,7 @@ import {
   SegmentedControl,
   SegmentedControlItem,
   Skeleton,
+  Slider,
   Table,
   TableBody,
   TableCell,
@@ -168,9 +169,26 @@ const FILTERS = {
 } as const;
 type Filter = keyof typeof FILTERS;
 
+/** Every run in the history fits: the longest is 301s. */
+const DURATION = [0, 360] as const;
+type Range = readonly [number, number];
+
 function History({ runs: all }: { runs: RunSummary[] }) {
   const [filter, setFilter] = useState<Filter>('all');
-  const runs = all.filter(FILTERS[filter].matches);
+  // The thumbs move on onChange; the table filters on onChangeEnd, once per
+  // drag — the DataTable pattern's rule, so a drag is not dozens of refilters.
+  const [duration, setDuration] = useState<Range>(DURATION);
+  const [applied, setApplied] = useState<Range>(DURATION);
+  const narrowed = applied[0] > DURATION[0] || applied[1] < DURATION[1];
+  const runs = all
+    .filter(FILTERS[filter].matches)
+    .filter(
+      (r) =>
+        !narrowed ||
+        (r.durationSec !== null &&
+          r.durationSec >= applied[0] &&
+          r.durationSec <= applied[1]),
+    );
 
   return (
     <section aria-labelledby="history-title" className="demo-page">
@@ -178,24 +196,43 @@ function History({ runs: all }: { runs: RunSummary[] }) {
         <h2 id="history-title" className="ion-text-h6">
           History
         </h2>
-        <SegmentedControl
-          label="Show runs"
-          size="sm"
-          value={filter}
-          onChange={(v) => setFilter(v as Filter)}
-        >
-          {Object.entries(FILTERS).map(([value, f]) => (
-            <SegmentedControlItem key={value} value={value}>
-              {f.label}
-            </SegmentedControlItem>
-          ))}
-        </SegmentedControl>
+        <div className="demo-history-filters">
+          <SegmentedControl
+            label="Show runs"
+            size="sm"
+            value={filter}
+            onChange={(v) => setFilter(v as Filter)}
+          >
+            {Object.entries(FILTERS).map(([value, f]) => (
+              <SegmentedControlItem key={value} value={value}>
+                {f.label}
+              </SegmentedControlItem>
+            ))}
+          </SegmentedControl>
+          <Slider<Range>
+            label="Duration"
+            className="demo-history-duration"
+            value={duration}
+            onChange={setDuration}
+            onChangeEnd={setApplied}
+            minValue={DURATION[0]}
+            maxValue={DURATION[1]}
+            step={10}
+            formatOptions={{
+              style: 'unit',
+              unit: 'second',
+              unitDisplay: 'short',
+            }}
+            thumbLabels={['Shortest', 'Longest']}
+          />
+        </div>
       </div>
       {/* Not labelled by the heading: the section already is, and two landmarks
           with one name are indistinguishable (axe landmark-unique). */}
       {runs.length === 0 ? (
         <p className="ion-text-body demo-muted">
-          No {FILTERS[filter].label.toLowerCase()} runs in the history.
+          No {FILTERS[filter].label.toLowerCase()} runs
+          {narrowed ? ' of that duration' : ''} in the history.
         </p>
       ) : (
         <Table aria-label="Run history">

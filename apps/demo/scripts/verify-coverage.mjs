@@ -55,6 +55,7 @@ const REQUIRED = [
   'Toolbar',
   'TableBatchBar',
   'Toggletip',
+  'Slider',
   'MenuItem',
   'MenuSection',
   'MenuTrigger',

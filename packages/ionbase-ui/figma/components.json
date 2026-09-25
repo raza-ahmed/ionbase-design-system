@@ -1818,6 +1818,35 @@
         }
       }
     },
+    "Slider": {
+      "page": "Slider",
+      "id": "1533:308",
+      "kind": "SET",
+      "props": {
+        "Description#1533:14": {
+          "type": "TEXT"
+        },
+        "Label#1533:0": {
+          "type": "TEXT"
+        },
+        "Show Description#1533:28": {
+          "type": "BOOLEAN"
+        },
+        "Show Value#1533:21": {
+          "type": "BOOLEAN"
+        },
+        "State": {
+          "type": "VARIANT",
+          "options": ["Default", "Focus", "Disabled"],
+          "default": "Default"
+        },
+        "Type": {
+          "type": "VARIANT",
+          "options": ["Single", "Range"],
+          "default": "Single"
+        }
+      }
+    },
     "Spinner": {
       "page": "Spinner",
       "id": "1341:258",

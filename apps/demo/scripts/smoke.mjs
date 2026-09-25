@@ -629,6 +629,101 @@ try {
   }
 
   /*
+   * The Runs history's Duration range Slider, at both widths — dragged with a
+   * real mouse, not dispatched events, because the drag is the thing a hand
+   * does and a synthetic event can pass where a pointer would not. The table
+   * must filter once the drag ends, the thumbs must stay on the page at
+   * 390px, and the keyboard must move a thumb and refilter too.
+   */
+  for (const [viewport, width, height] of [
+    ['desktop', 1280, 900],
+    ['mobile', 390, 844],
+  ]) {
+    const where = `slider (light, ${viewport})`;
+    const context = await browser.newContext({ viewport: { width, height } });
+    await context.addInitScript(() =>
+      localStorage.setItem(
+        'ionbase-ops:demo-settings',
+        JSON.stringify({ theme: 'light', latency: 0 }),
+      ),
+    );
+    const page = await context.newPage();
+    page.on('pageerror', (e) => fail(where, `exception: ${e.message}`));
+    await page.goto(`${BASE}/#/runs`);
+    try {
+      const longest = page.getByRole('slider', { name: 'Longest Duration' });
+      const shortest = page.getByRole('slider', { name: 'Shortest Duration' });
+      await longest.waitFor({ state: 'attached', timeout: 10_000 });
+      const history = page.locator('[aria-labelledby="history-title"] table');
+      const durations = () =>
+        history
+          .locator('tbody tr td:nth-child(4)')
+          .allTextContents()
+          .then((cells) => cells.map((c) => parseInt(c, 10)));
+      await history.locator('tbody tr').first().waitFor({ timeout: 10_000 });
+      const before = await durations();
+
+      const thumbs = page.locator('.demo-history-duration .ion-slider__thumb');
+      await thumbs.first().scrollIntoViewIfNeeded();
+      const boxes = await thumbs.evaluateAll((els) =>
+        els.map((el) => el.getBoundingClientRect().toJSON()),
+      );
+      for (const b of boxes) {
+        if (Math.round(b.width) < 24 || Math.round(b.height) < 24)
+          fail(where, `a thumb is ${b.width}x${b.height}, under 24px`);
+        if (b.left < 0 || b.right > width)
+          fail(where, 'a thumb is off the side of the page');
+      }
+      const overflow = await page.evaluate(
+        () => document.documentElement.scrollWidth > window.innerWidth,
+      );
+      if (overflow) fail(where, 'the page scrolls sideways');
+
+      // Drag the high thumb to about a third of the track: ~120s.
+      const track = await page
+        .locator('.demo-history-duration .ion-slider__track')
+        .boundingBox();
+      const hi = boxes[1];
+      await page.mouse.move(hi.x + hi.width / 2, hi.y + hi.height / 2);
+      await page.mouse.down();
+      for (const f of [0.8, 0.6, 0.45, 1 / 3]) {
+        await page.mouse.move(track.x + track.width * f, hi.y + hi.height / 2);
+      }
+      await page.mouse.up();
+      const max = Number(await longest.inputValue());
+      if (max >= 360 || max < 60)
+        fail(where, `the drag left the high thumb at ${max}s`);
+      const afterDrag = await durations();
+      if (afterDrag.length === before.length)
+        fail(where, 'the drag did not filter the table');
+      if (afterDrag.some((d) => d > max))
+        fail(where, `a run over ${max}s is still listed after the drag`);
+
+      // The keyboard, on the other thumb.
+      await shortest.focus();
+      await page.keyboard.press('PageUp');
+      const min = Number(await shortest.inputValue());
+      if (min <= 0) fail(where, 'Page Up did not move the low thumb');
+      if ((await durations()).some((d) => d < min))
+        fail(where, `a run under ${min}s is still listed after Page Up`);
+
+      await page.addScriptTag({ content: axeSource });
+      const violations = await page.evaluate(async () => {
+        const result = await window.axe.run(
+          document.querySelector('.demo-history-duration'),
+          { resultTypes: ['violations'] },
+        );
+        return result.violations.map((v) => `${v.impact} ${v.id}`);
+      });
+      for (const v of violations) fail(where, `axe ${v}`);
+    } catch (e) {
+      fail(where, `did not run: ${e.message.split('\n')[0]}`);
+    }
+    groupsChecked++;
+    await context.close();
+  }
+
+  /*
    * The wizard's CheckboxGroup, which no page load above reaches: it is on
    * Guardrails, the third step. A saved draft with the first two steps done
    * opens there. "At least one" has to hold three ways — natively (every box
