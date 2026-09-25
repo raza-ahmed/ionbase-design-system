@@ -51,7 +51,8 @@
       "every day cell carries the full date as its accessible name in the reader's own language, so the narrow weekday headers are never load-bearing",
       "unavailable and disabled days are distinguished visually and in the accessible name, not by colour alone",
       "today is marked with a dot rather than a ring, so it cannot be mistaken for a second selected day",
-      "the selected fill and the segment focus box are redeclared under forced-colors, where background-color is discarded"
+      "the selected fill and the segment focus box are redeclared under forced-colors, where background-color is discarded",
+      "a typed date outside `minValue`/`maxValue` turns the field invalid and names the bound in the reader's own format, without `isInvalid` — the value is kept, not silently clamped"
     ],
     "requires": [
       "`label`, or an `aria-label` when no visible label is rendered",

@@ -55,7 +55,7 @@ export interface DateRangePickerProps {
   label?: React.ReactNode;
   /** Helper text below the field. */
   description?: React.ReactNode;
-  /** Replaces the helper text when `isInvalid` is set. */
+  /** Replaces the helper text while the field is invalid — `isInvalid`, or its own bounds check. */
   errorMessage?: React.ReactNode;
   isInvalid?: boolean;
   isDisabled?: boolean;
@@ -245,7 +245,19 @@ export function DateRangePicker({
       end: toIso(state.value.end),
     };
 
-  const helper = isInvalid && errorMessage ? errorMessage : description;
+  /*
+   * Invalid is the prop OR the picker's own validation — TimeField's rule.
+   * Left to the prop alone, a date outside `minValue`/`maxValue`, or an end before the start, marked the segments
+   * aria-invalid and left the box looking valid. With no `errorMessage`,
+   * React Aria's own localized message says what is wrong.
+   */
+  const { isInvalid: failsValidation, validationErrors } =
+    state.displayValidation;
+  const invalid = !!isInvalid || failsValidation;
+  const error =
+    errorMessage ??
+    (validationErrors.length ? validationErrors.join(' ') : null);
+  const helper = invalid && error ? error : description;
 
   const rail = resolvedPresets.length ? (
     <div className="ion-range-presets" role="group" aria-label={presetsLabel}>
@@ -312,7 +324,7 @@ export function DateRangePicker({
     <div
       className={[
         'ion-field',
-        isInvalid ? 'ion-field--error' : '',
+        invalid ? 'ion-field--error' : '',
         wrapperClassName || '',
       ]
         .filter(Boolean)
@@ -333,7 +345,7 @@ export function DateRangePicker({
           'ion-input',
           'ion-date-range-picker',
           size !== 'md' ? `ion-input--${size}` : '',
-          isInvalid ? 'ion-input--invalid' : '',
+          invalid ? 'ion-input--invalid' : '',
           isDisabled ? 'ion-input--disabled' : '',
           isReadOnly ? 'ion-input--readonly' : '',
           className || '',
@@ -341,7 +353,7 @@ export function DateRangePicker({
           .filter(Boolean)
           .join(' ')}
         data-open={state.isOpen || undefined}
-        data-invalid={isInvalid || undefined}
+        data-invalid={invalid || undefined}
         data-disabled={isDisabled || undefined}
       >
         <DateField {...startFieldProps} />
@@ -402,9 +414,7 @@ export function DateRangePicker({
 
       {helper && (
         <span
-          {...(isInvalid && errorMessage
-            ? errorMessageProps
-            : descriptionProps)}
+          {...(invalid && error ? errorMessageProps : descriptionProps)}
           className="ion-field__helper"
         >
           {helper}

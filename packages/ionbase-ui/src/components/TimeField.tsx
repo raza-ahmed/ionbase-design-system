@@ -18,7 +18,7 @@ export interface TimeFieldProps {
   'aria-label'?: string;
   /** Helper text below the field — "In the workspace's timezone". */
   description?: React.ReactNode;
-  /** Replaces the helper text when `isInvalid` is set. */
+  /** Replaces the helper text while the field is invalid — `isInvalid`, or its own bounds check. */
   errorMessage?: React.ReactNode;
   isInvalid?: boolean;
   isDisabled?: boolean;
