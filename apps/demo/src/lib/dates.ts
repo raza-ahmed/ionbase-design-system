@@ -39,3 +39,16 @@ const short = new Intl.DateTimeFormat('en', {
 export function formatDay(day: IsoDay): string {
   return short.format(new Date(Date.parse(day)));
 }
+
+/**
+ * `HH:MM` as the reader writes times — "9:00 AM" or "09:00". Built on a UTC
+ * date and formatted in UTC, so no timezone offset can move the hour.
+ */
+export function formatTime(time: string): string {
+  const [h, m] = time.split(':').map(Number);
+  return new Intl.DateTimeFormat(undefined, {
+    hour: 'numeric',
+    minute: '2-digit',
+    timeZone: 'UTC',
+  }).format(new Date(Date.UTC(2000, 0, 1, h, m)));
+}

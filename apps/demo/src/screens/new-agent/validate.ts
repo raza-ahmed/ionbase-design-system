@@ -27,6 +27,8 @@ export function validateStep(
       if (!v.startDate) e.startDate = 'Choose when the schedule starts.';
       else if (v.startDate < today())
         e.startDate = 'The start date can’t be in the past.';
+      if (v.frequency !== 'hourly' && !v.runAt)
+        e.runAt = 'Choose the time it runs.';
     }
     const digits = v.escalationPhone.replace(/\D/g, '');
     if (digits && digits.length < 7)
@@ -48,6 +50,7 @@ export const FIELD_LABELS: Record<string, string> = {
   team: 'Owning team',
   model: 'Model',
   startDate: 'Start date',
+  runAt: 'Runs at',
   escalationPhone: 'Escalation phone',
   monthlyTokenBudget: 'Monthly token budget',
 };

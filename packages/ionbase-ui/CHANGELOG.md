@@ -1,5 +1,53 @@
 # Changelog
 
+## 0.80.0 — 2026-09-25
+
+### Added — `TimeField`
+
+A schedule could say which day it started, and how often it repeated, but
+not what time it ran: there were date pickers and no time field.
+
+- **Segments, in the reader's own format.** Hour, minute and, where the
+  locale uses one, AM/PM are each a spinbutton that takes digits or arrow
+  keys. "2:30 PM" and "14:30" are the same field and the same value.
+- **The value is `HH:MM`, 24-hour.** It is a wall-clock time with no date and
+  no timezone, following DatePicker's ISO-string convention (`IsoTime`), and
+  `HH:MM:SS` at `granularity="second"`. A malformed value such as "2:30 PM"
+  throws with the prop name.
+- **Out of bounds is shown, not clamped.** A time past `minValue` or
+  `maxValue` turns the field invalid and names the bound in the reader's own
+  format, even without `isInvalid`.
+- It uses the same box as DatePicker, with a decorative clock where the
+  calendar button would be, so the two sit side by side in a schedule form
+  with matching heights. It has no dropdown of times, and the meta file says
+  why: use a Select for a few allowed slots.
+- DatePicker's contract no longer says "a time picker is not yet in this
+  system". It points at TimeField.
+- Figma: `Time Field` (1453:805) on the Date Picker page, built from Date
+  Picker's single variants, Size by State, mapped. All 72 Dev Mode blocks
+  verified.
+
+### Fixed — a controlled TimeField rendered forever
+
+The first build turned the `HH:MM` string into a new `Time` object on every
+render. In a form that held the value in state, React Aria saw a new value
+each time and the page went blank (React error 301). The objects are now kept
+per string. Storybook's uncontrolled stories could not see this; the demo
+wizard found it. `ControlledDoesNotLoop` now fails on the old code and passes
+on the fix.
+
+### Demo
+
+- New agent's schedule step asks for **Runs at**, beside Repeats. It is
+  hidden for hourly schedules, required otherwise, and shown in the review as
+  "Every day at 9:00 AM UTC". Saved drafts from before the field existed get
+  its default.
+- **The error summary's Start date link had never worked.** It focused the
+  field's id, which on a segmented DatePicker is a group `<div>` with nothing
+  to focus. The summary now falls through to the first segment, which fixes
+  Start date and Runs at alike.
+- The demo shows **79 of 79** components.
+
 ## 0.79.0 — 2026-09-25
 
 ### Added — `TagGroup` and `Tag`

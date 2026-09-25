@@ -18,8 +18,8 @@
     "returns 0 missing, then run: pnpm --filter ionbase-ui figma:applied"
   ],
   "file": "gaLbGd0QNb1fUl6BjSpfBA",
-  "appliedOn": "2026-09-24",
-  "verifiedInFigma": 71,
+  "appliedOn": "2026-09-25",
+  "verifiedInFigma": 72,
   "applied": {
     "1360:267": {
       "figmaComponent": "Accordion",
@@ -130,6 +130,11 @@
       "figmaComponent": "Date Picker",
       "component": "DatePicker",
       "hash": "04d975589b87b9d3"
+    },
+    "1453:805": {
+      "figmaComponent": "Time Field",
+      "component": "TimeField",
+      "hash": "91ec73641678b019"
     },
     "1365:2404": {
       "figmaComponent": "Drawer",

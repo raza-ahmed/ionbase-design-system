@@ -24,8 +24,8 @@
     },
     {
       "when": "a time of day is part of the value",
-      "use": "Input",
-      "why": "this picker is fixed to day granularity; a time picker is not yet in this system"
+      "use": "TimeField",
+      "why": "this picker is fixed to day granularity; put a TimeField beside it — the two share one box and one set of states"
     }
   ],
   "variants": {

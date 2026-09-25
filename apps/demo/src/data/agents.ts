@@ -364,6 +364,8 @@ export interface AgentDraft {
   trigger: 'schedule' | 'webhook' | 'manual';
   startDate: IsoDay | null;
   frequency: string;
+  /** Time of day the schedule runs, `HH:MM` in workspace time. Unused hourly. */
+  runAt: string | null;
   escalationPhone: string;
   knowledgeFiles: string[];
   requireApproval: boolean;

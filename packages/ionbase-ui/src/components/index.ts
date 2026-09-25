@@ -113,6 +113,13 @@ export type {
   ScrollProgressSection,
   ScrollProgressPlacement,
 } from './ScrollProgress.js';
+export { TimeField } from './TimeField.js';
+export type {
+  TimeFieldProps,
+  TimeFieldSize,
+  TimeFieldGranularity,
+} from './TimeField.js';
+export type { IsoTime } from './iso-time.js';
 export { TagGroup, Tag } from './TagGroup.js';
 export type { TagGroupProps, TagGroupSize } from './TagGroup.js';
 export { Card } from './Card.js';

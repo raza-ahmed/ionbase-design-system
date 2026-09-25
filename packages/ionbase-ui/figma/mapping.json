@@ -580,6 +580,26 @@
         }
       }
     },
+    "Time Field": {
+      "code": "TimeField",
+      "props": {
+        "Size": {
+          "prop": "size",
+          "values": {
+            "Small": "sm",
+            "Medium": "md",
+            "Large": "lg"
+          }
+        },
+        "State": {
+          "prop": "isInvalid",
+          "when": {
+            "Invalid": true
+          },
+          "note": "Hover, Focus and Filled are CSS or content; Disabled is isDisabled and Read-only is isReadOnly — the same split as Date Picker, whose box this is. The value text shows the reader’s own format; the prop is 24-hour HH:MM"
+        }
+      }
+    },
     "Drawer": {
       "code": "Drawer",
       "props": {
