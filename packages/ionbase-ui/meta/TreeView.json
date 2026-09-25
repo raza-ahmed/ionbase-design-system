@@ -1,0 +1,75 @@
+{
+  "status": "stable",
+  "summary": "A hierarchy opened level by level — folders, an org chart, nested categories. One tab stop, arrow keys inside, only open rows rendered; selectable one or many.",
+  "useWhen": [
+    "the data is a hierarchy of unknown depth and the user needs to see where an item sits in it — a folder of knowledge files, teams within departments",
+    "people pick one node, or several, from that hierarchy — a destination folder, the sources an agent may read",
+    "the hierarchy is too large to show open, so levels open on demand"
+  ],
+  "useInstead": [
+    {
+      "when": "the hierarchy is the app's own pages — navigation",
+      "use": "Sidebar",
+      "why": "navigation is links reached by Tab, with `aria-current`. A tree is one tab stop with arrow keys inside, which hides every page from Tab and is announced as data, not as navigation"
+    },
+    {
+      "when": "there are two levels and the second is short — sections of settings, FAQ groups",
+      "use": "Accordion",
+      "why": "a tree's keyboard model is overhead for a list of headings with content under each"
+    },
+    {
+      "when": "the rows have columns — size, owner, modified",
+      "use": "Table",
+      "why": "TreeView is a single-column treegrid; nested rows with columns are a table's job"
+    },
+    {
+      "when": "picking several values from a flat list",
+      "use": "MultiSelect"
+    }
+  ],
+  "a11y": {
+    "requires": [
+      "`aria-label` or `aria-labelledby` — the tree's name, such as \"Knowledge files\"",
+      "a unique `id` on every item across the whole tree — keys are how selection and expansion are held",
+      "a string `label`, or `textValue` when the label is not text — typeahead matches it and it is the row's name"
+    ],
+    "guarantees": [
+      "a `treegrid` of flat rows, each with `aria-level`, `aria-posinset` and `aria-setsize` among its siblings, and `aria-expanded` only on rows that have children",
+      "one tab stop: ↑ and ↓ move between visible rows, → opens a row, ← closes it or moves to its parent, Home and End go to the ends, and typing jumps to a matching label",
+      "only open rows are rendered, so a closed branch cannot be landed on",
+      "each parent's chevron is a button named \"Expand\" or \"Collapse\" in the user's locale, out of the tab order, and opens the row without selecting it",
+      "`selectionMode=\"multiple\"` sets `aria-multiselectable` and draws a check in every row; the row's `aria-selected` is the announcement",
+      "a disabled item is skipped by the arrow keys and cannot be selected",
+      "`description` is read as the row's description",
+      "every level indents by spacing/20, from the right in a right-to-left locale, where ← opens",
+      "rows are at least 32px tall with a 24px chevron target; the keyboard focus ring is drawn on the row"
+    ],
+    "notes": [
+      "→ on a row that is already open stays on it: in a treegrid → moves into a row's own cells, not its children. ↓ goes on to the first child",
+      "selection does not cascade: selecting a parent selects that item only. A permissions tree where a parent means \"all of these\" needs the caller to expand the selection",
+      "`onAction` fires on Enter, and on a press when nothing is selectable — for \"open this\": show the file, go to the folder. With `selectionMode=\"none\"` and no `onAction`, a press on a parent opens or closes it"
+    ]
+  },
+  "antiPatterns": [
+    {
+      "dont": "<TreeView items={pages} onAction={navigate} /> for the app's own sections",
+      "do": "<Sidebar> with a SidebarSection per group",
+      "why": "pages in a tree are hidden from Tab and read as data; Sidebar's rows are links"
+    },
+    {
+      "dont": "a tree of nested Accordions or indented Checkboxes",
+      "do": "<TreeView selectionMode=\"multiple\" items={…} />",
+      "why": "nested accordions are a tab stop per heading, and indented checkboxes carry no level — a screen reader hears a flat list"
+    },
+    {
+      "dont": "ids that repeat under different parents — two \"docs\" folders with id \"docs\"",
+      "do": "ids from the path or the record — \"policies/docs\", \"fld_812\"",
+      "why": "expansion and selection are held by id, so two rows with one id open, close and select together"
+    },
+    {
+      "dont": "rendering every level open to show the whole hierarchy",
+      "do": "`defaultExpandedKeys` for the path to what matters, the rest closed",
+      "why": "a tree opened in full is a long flat list with indentation, and loses the one thing a tree gives: seeing the shape before the detail"
+    }
+  ]
+}

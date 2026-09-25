@@ -129,6 +129,25 @@ does. Toggletip's "Escape inside a Modal closes only the toggletip" passed with
 the `stopPropagation` it tests deleted. Give the overlay real state
 (`useState`), and check the other half too: that it does close when it should.
 
+## React Aria's tree hooks need `collection.getChildren`
+
+`useTree` and `useTreeItem` (3.50) were written for the react-aria-components
+collection. The one `useTreeState` builds — react-stately's `TreeCollection` —
+has no `getChildren`, and `useTreeItem` indexes into the empty sibling list it
+gets back: the first nested row throws `Cannot read properties of undefined
+(reading 'type')`. TreeView passes the hooks a view of the collection whose
+prototype is the original and which adds `getChildren` from each node's
+`childNodes`, and it computes `aria-posinset` and `aria-setsize` from its own
+data, because the hook's are wrong even with the shim. Two more things the
+hook decides for you:
+
+- It treats a row as expandable only when it has more than one child, unless
+  `hasChildItems` is passed. Keep a one-child folder in the test data, or
+  dropping `hasChildItems` passes every test.
+- → on an open row does not move to the first child. This is a treegrid, and
+  → moves into the row's cells; ↓ goes down. That is the WAI-ARIA treegrid
+  pattern, not a bug, so test for it rather than working around it.
+
 ## Interaction tests — hover is a pulse, not a level
 
 Read this before asserting on `data-hovered` anywhere.

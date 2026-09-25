@@ -90,7 +90,7 @@ IonBase column names the component that covers it.
 | Stepper / progress indicator |   ●    |     |  ●   | `Stepper`            |
 | Menu (ARIA `role="menu"`)    |   ●    |  ●  |  ●   | `Menu`               |
 | Context menu                 |   ●    |     |      | —                    |
-| Tree view                    |   ●    |     |  ●   | —                    |
+| Tree view                    |   ●    |     |  ●   | `TreeView`           |
 | Toolbar                      |   ◐    |  ●  |  ◐   | `Toolbar`            |
 | Command palette              |        |     |      | `CommandPalette`     |
 | Skip link                    |   ●    |     |      | —                    |

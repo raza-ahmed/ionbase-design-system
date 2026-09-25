@@ -106,6 +106,12 @@ export type {
 } from './Toggletip.js';
 export { Slider } from './Slider.js';
 export type { SliderProps, SliderValue } from './Slider.js';
+export { TreeView } from './TreeView.js';
+export type {
+  TreeViewProps,
+  TreeViewItem,
+  TreeViewSelectionMode,
+} from './TreeView.js';
 export { Popover } from './Popover.js';
 export type { PopoverProps, PopoverPlacement, PopoverSize } from './Popover.js';
 export { Modal } from './Modal.js';

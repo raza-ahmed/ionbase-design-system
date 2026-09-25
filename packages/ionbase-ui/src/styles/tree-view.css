@@ -1,0 +1,227 @@
+/*
+ * TreeView
+ *
+ * Rows take Sidebar's rhythm — 32px minimum, 8px inset, `md` radius,
+ * `surface/hover` and `surface/selected` fills — because a tree row and a
+ * sidebar row are the same density of choice, and a tree often sits in the
+ * same column a sidebar would.
+ *
+ *   indent    level x spacing/20, from `--ion-tree-view-level`, set per row
+ *   toggle    24px square chevron button, rotated 90deg when open
+ *   spacer    the same 24px on a leaf, so every label at a level lines up
+ *   check     MultiSelect's drawn Small Checkbox, only in `multiple`
+ *   icon      16px, icon/secondary; icon/primary on a selected row
+ *
+ * The block carries `surface/default` so the translucent hover has a ground
+ * in this file — the contrast gate's rule, see sidebar.css.
+ */
+.ion-tree-view {
+  --ion-tree-view-indent: var(--spacing-20);
+
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2);
+  background-color: var(--surface-default);
+  color: var(--text-secondary);
+  font-family: var(--font-family-sans);
+  font-size: var(--type-body-sm);
+  line-height: var(--type-body-sm-line-height);
+}
+
+.ion-tree-view__row {
+  --ion-tree-view-level: 0;
+
+  /* A one-line row centres in its 32px; a row with a description grows. */
+  display: flex;
+  align-items: center;
+  min-height: var(--spacing-32);
+  padding-block: var(--spacing-4);
+  padding-inline: calc(
+      var(--spacing-4) + var(--ion-tree-view-level) *
+        var(--ion-tree-view-indent)
+    )
+    var(--spacing-8);
+  border-radius: var(--radius-md);
+  cursor: default;
+  outline: none;
+  user-select: none;
+}
+
+.ion-tree-view__cell {
+  display: flex;
+  flex: 1;
+  align-items: flex-start;
+  gap: var(--spacing-4);
+  min-width: 0;
+}
+
+.ion-tree-view__toggle,
+.ion-tree-view__spacer {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: var(--spacing-24);
+  height: var(--spacing-24);
+
+  /* Centred on the label's first line. */
+  margin-block: calc((var(--type-body-sm-line-height) - var(--spacing-24)) / 2);
+}
+
+.ion-tree-view__toggle {
+  margin-inline: 0;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: none;
+  color: var(--icon-secondary);
+  cursor: pointer;
+}
+
+.ion-tree-view__toggle svg {
+  width: var(--icon-size-sm);
+  height: var(--icon-size-sm);
+  transition: transform var(--ion-duration-base) var(--ion-ease-out);
+}
+
+.ion-tree-view__toggle--expanded svg {
+  transform: rotate(90deg);
+}
+
+.ion-tree-view__check {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: var(--spacing-16);
+  height: var(--spacing-16);
+  margin-block-start: calc(
+    (var(--type-body-sm-line-height) - var(--spacing-16)) / 2
+  );
+  margin-inline-end: var(--spacing-4);
+  background-color: var(--surface-default);
+  border: var(--border-width-thick) solid var(--border-stronger);
+  border-radius: var(--radius-xs);
+}
+
+.ion-tree-view__check svg {
+  width: calc(var(--spacing-16) / 2 + var(--spacing-4));
+  height: calc(var(--spacing-16) / 2 + var(--spacing-4));
+  opacity: 0;
+}
+
+.ion-tree-view__icon {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  height: var(--type-body-sm-line-height);
+  margin-inline-end: var(--spacing-4);
+  color: var(--icon-secondary);
+}
+
+.ion-tree-view__icon svg {
+  width: var(--icon-size-sm);
+  height: var(--icon-size-sm);
+}
+
+.ion-tree-view__text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.ion-tree-view__label {
+  overflow-wrap: anywhere;
+}
+
+.ion-tree-view__description {
+  color: var(--text-tertiary);
+  font-size: var(--type-caption);
+  line-height: var(--type-caption-line-height);
+}
+
+/* ------------------------------------------------------------------ states */
+
+@media (hover: hover) {
+  .ion-tree-view__row:hover {
+    background-color: var(--surface-hover);
+    color: var(--text-default);
+  }
+
+  .ion-tree-view__toggle:hover {
+    color: var(--icon-default);
+  }
+}
+
+.ion-tree-view__row--selected {
+  background-color: var(--surface-selected);
+  color: var(--text-default);
+  font-weight: var(--font-weight-medium);
+}
+
+.ion-tree-view__row--selected .ion-tree-view__icon {
+  color: var(--icon-primary);
+}
+
+@media (hover: hover) {
+  .ion-tree-view__row--selected:hover {
+    background-color: var(--surface-selected-hover);
+  }
+}
+
+.ion-tree-view__row--selected .ion-tree-view__check {
+  color: var(--icon-on-color);
+  background-color: var(--surface-primary);
+  border-width: var(--border-width-default);
+  border-color: var(--border-primary-strong);
+  box-shadow: var(--ion-shadow-raised-flush-xs);
+}
+
+.ion-tree-view__row--selected .ion-tree-view__check svg {
+  opacity: 1;
+}
+
+/* Two classes, so a disabled row does not react to hover — see sidebar.css. */
+.ion-tree-view .ion-tree-view__row--disabled {
+  background-color: var(--surface-default);
+  color: var(--text-disabled);
+  cursor: not-allowed;
+}
+
+.ion-tree-view .ion-tree-view__row--disabled .ion-tree-view__icon,
+.ion-tree-view .ion-tree-view__row--disabled .ion-tree-view__toggle {
+  color: var(--icon-disabled);
+}
+
+.ion-tree-view .ion-tree-view__row--disabled .ion-tree-view__check {
+  background-color: var(--surface-disabled);
+  border-color: var(--border-disabled);
+  box-shadow: none;
+}
+
+.ion-tree-view__row[data-focus-visible='true'] {
+  outline: var(--border-width-thick) solid var(--border-focus);
+  outline-offset: calc(-1 * var(--border-width-thick));
+}
+
+/* The chevron points the reading direction when closed. */
+[dir='rtl'] .ion-tree-view__toggle:not(.ion-tree-view__toggle--expanded) svg {
+  transform: scaleX(-1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ion-tree-view__toggle svg {
+    transition-duration: 1ms;
+  }
+}
+
+@media (forced-colors: active) {
+  .ion-tree-view__row--selected {
+    outline: var(--border-width-default) solid;
+  }
+
+  .ion-tree-view__row--selected .ion-tree-view__check {
+    background-color: Highlight;
+    color: HighlightText;
+  }
+}

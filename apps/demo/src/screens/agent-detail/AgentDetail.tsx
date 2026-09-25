@@ -36,6 +36,7 @@ import {
   type AgentRunRow,
   type AgentStatus,
 } from '../../data/agents';
+import { KnowledgeSources } from './KnowledgeSources';
 import { formatDay } from '../../lib/dates';
 import { useDemoSettings } from '../../lib/demo-settings';
 import { href } from '../../lib/router';
@@ -343,6 +344,8 @@ function Overview({
           value={medianDurationSec === null ? '—' : `${medianDurationSec}s`}
         />
       </StatGroup>
+
+      <KnowledgeSources agentName={agent.name} />
     </>
   );
 }

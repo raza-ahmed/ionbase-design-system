@@ -20,6 +20,11 @@
       "when": "sections of content collapse, not destinations",
       "use": "Accordion",
       "why": "Accordion's headings belong to the document outline; a sidebar is a navigation landmark"
+    },
+    {
+      "when": "the hierarchy is data to browse or pick from — folders of files, teams in departments — not the app's pages",
+      "use": "TreeView",
+      "why": "a sidebar row is a link to a place; a tree row is an item, selected or opened in place, with a level and a position the tree announces"
     }
   ],
   "composition": {

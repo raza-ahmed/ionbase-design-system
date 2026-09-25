@@ -548,3 +548,7 @@ body {
   flex: 1 1 12rem;
   min-width: 0;
 }
+
+.demo-knowledge-tree {
+  max-width: 28rem;
+}

@@ -724,6 +724,92 @@ try {
   }
 
   /*
+   * The agent's Knowledge sources TreeView, at both widths, with the keyboard
+   * only: Tab lands on one row, ↓ moves, → opens a closed folder and its
+   * children appear, Space selects a file, and the save that appears works.
+   * A locked folder is announced as disabled, with its reason.
+   */
+  for (const [viewport, width, height] of [
+    ['desktop', 1280, 900],
+    ['mobile', 390, 844],
+  ]) {
+    const where = `tree view (light, ${viewport})`;
+    const context = await browser.newContext({ viewport: { width, height } });
+    await context.addInitScript(() =>
+      localStorage.setItem(
+        'ionbase-ops:demo-settings',
+        JSON.stringify({ theme: 'light', latency: 0 }),
+      ),
+    );
+    const page = await context.newPage();
+    page.on('pageerror', (e) => fail(where, `exception: ${e.message}`));
+    await page.goto(`${BASE}/#/agents/agt_wx`);
+    try {
+      const tree = page.getByRole('treegrid', { name: 'Knowledge sources' });
+      await tree.waitFor({ timeout: 10_000 });
+      await tree.scrollIntoViewIfNeeded();
+      const row = (name) => tree.getByRole('row', { name, exact: true });
+      const active = () =>
+        page.evaluate(() => document.activeElement?.textContent ?? '');
+
+      await row('Policies').focus();
+      const product = tree.getByRole('row', { name: /^Product docs/ });
+      await page.keyboard.press('End');
+      if (!(await active()).startsWith('FAQ.md'))
+        fail(where, 'End did not reach the last row');
+      await product.focus();
+      if ((await product.getAttribute('aria-expanded')) !== 'false')
+        fail(where, 'Product docs did not start closed');
+      await page.keyboard.press('ArrowRight');
+      await row('API reference.md').waitFor({ timeout: 2_000 });
+      await page.keyboard.press('ArrowDown');
+      if (!(await active()).startsWith('API reference.md'))
+        fail(where, '↓ from an opened folder did not reach its first child');
+      await page.keyboard.press('Space');
+      if (
+        (await row('API reference.md').getAttribute('aria-selected')) !== 'true'
+      )
+        fail(where, 'Space did not select the file');
+
+      const finance = tree.getByRole('row', { name: /^Finance/ });
+      if ((await finance.getAttribute('aria-disabled')) !== 'true')
+        fail(where, 'the locked folder is not disabled');
+      const reason = await finance.evaluate((el) =>
+        (el.getAttribute('aria-describedby') ?? '')
+          .split(' ')
+          .map((id) => document.getElementById(id)?.textContent ?? '')
+          .join(' '),
+      );
+      if (!reason.includes('Restricted'))
+        fail(where, 'the locked folder does not describe why');
+
+      const overflow = await page.evaluate(
+        () => document.documentElement.scrollWidth > window.innerWidth,
+      );
+      if (overflow) fail(where, 'the page scrolls sideways');
+
+      await page.addScriptTag({ content: axeSource });
+      const violations = await page.evaluate(async () => {
+        const result = await window.axe.run(
+          document.querySelector('.demo-knowledge-tree'),
+          { resultTypes: ['violations'] },
+        );
+        return result.violations.map((v) => `${v.impact} ${v.id}`);
+      });
+      for (const v of violations) fail(where, `axe ${v}`);
+
+      await page.getByRole('button', { name: 'Save sources' }).click();
+      await page
+        .getByText('4 knowledge sources saved')
+        .waitFor({ timeout: 5_000 });
+    } catch (e) {
+      fail(where, `did not run: ${e.message.split('\n')[0]}`);
+    }
+    groupsChecked++;
+    await context.close();
+  }
+
+  /*
    * The wizard's CheckboxGroup, which no page load above reaches: it is on
    * Guardrails, the third step. A saved draft with the first two steps done
    * opens there. "At least one" has to hold three ways — natively (every box
