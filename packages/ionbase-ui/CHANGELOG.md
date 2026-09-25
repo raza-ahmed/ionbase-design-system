@@ -1,5 +1,69 @@
 # Changelog
 
+## 0.88.0 — 2026-09-25
+
+### Added — `Toolbar`
+
+A row of controls that act on one thing, reached as one tab stop. It is the
+seventh item on the enterprise checklist, and the table's batch-action bar,
+next on the list, needs it.
+
+- **Built on React Aria's `useToolbar`.** As a result:
+  - it has `role="toolbar"` and `aria-orientation`;
+  - ← and → move between controls (↑ and ↓ when vertical), skipping
+    disabled buttons and separators, and are mirrored in right-to-left;
+  - Tab leaves the whole toolbar in one press, and coming back lands on the
+    control used last;
+  - a toolbar nested inside another becomes a named `group`.
+- **Fields keep their own arrow keys.** `useToolbar` catches arrow keys
+  before the focused control sees them. For a text field that would take the
+  caret away, and for a native select, combobox, slider or radio it would take
+  the value away. Toolbar lets those keys through to the control.
+- **↓ still opens a MenuTrigger** in a horizontal toolbar, so the overflow
+  menu works as it does anywhere else.
+- **The separator is `Divider` with `orientation="vertical"`**, an `<hr>`
+  that screen readers announce and focus skips. It is inset 4px so it reads
+  as a break between groups. There is no separator component to learn.
+- **Controls are 8px apart and wrap rather than overflow.** Arrow-key order
+  follows DOM order, so a wrapped toolbar still moves left to right, top to
+  bottom.
+- **Not for filter bars.** The contract says why: Tab leaves a toolbar in one
+  press, so a search field inside one strands the filters after it. This is
+  the same caution WAI-ARIA gives about text fields in toolbars.
+
+### Testing
+
+- **`storybook/test`'s `userEvent.tab()` doesn't press Tab.** It works out
+  the next element itself, so it can't see a component that moves focus
+  during the keydown. It failed on correct Toolbar code. The Tab tests now
+  send real key presses through `vitest/browser`, and AGENTS.md explains
+  when to use which.
+
+### Figma
+
+- **New Toolbar page and set** (1517:583) with Horizontal and Vertical
+  orientations. It is built from instances:
+  - Secondary and Destructive Buttons;
+  - an ellipsis Icon Button for the overflow;
+  - Border as the separator, 24px tall in a 32px row to match the 4px inset.
+- **Mapped, and all 80 Dev Mode blocks verified.**
+
+### Patterns
+
+- **DataTable** puts the bulk actions in a Toolbar named for what they act
+  on, and says why the search and filters stay outside it.
+
+### Demo
+
+- **The Agents table's bulk actions** (Pause, Delete) are a Toolbar named
+  "Actions for N selected agents".
+- **The smoke test** selects a row and checks, with real key presses:
+  - → moves to the next action;
+  - one Tab leaves the toolbar;
+  - axe finds no problems in it.
+
+  I confirmed it fails when the toolbar stops handling keys.
+
 ## 0.87.0 — 2026-09-25
 
 ### Added — `MultiSelect`

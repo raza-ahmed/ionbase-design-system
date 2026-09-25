@@ -41,6 +41,7 @@
     "@vitest/coverage-v8": "^4.1.10",
     "eslint-plugin-storybook": "^10.5.7",
     "playwright": "^1.62.0",
+    "react-aria": "^3.34.0",
     "storybook": "^10.5.7",
     "vitest": "^4.1.10"
   }

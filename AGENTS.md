@@ -107,6 +107,20 @@ explicit exception for the demo. A new package with a `src/lib/` needs one too
 
 ---
 
+## Interaction tests — `userEvent.tab()` is simulated
+
+`storybook/test`'s `userEvent.tab()` does not press Tab. It works out the next
+tabbable element itself and focuses it. A component that moves focus during the
+Tab keydown — Toolbar does, through React Aria's `useToolbar`, jumping to its
+last control so the browser's own Tab then leaves — is invisible to it: the
+simulated Tab lands on the control after the one that had focus, and the test
+fails on correct code.
+
+Use a real key press for those: `import { userEvent } from 'vitest/browser'`
+and `await userEvent.keyboard('{Tab}')`, which Playwright sends as a trusted
+event the browser acts on. Keep `storybook/test` for everything else; it is
+what the interactions panel records.
+
 ## Interaction tests — hover is a pulse, not a level
 
 Read this before asserting on `data-hovered` anywhere.

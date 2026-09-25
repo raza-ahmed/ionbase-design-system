@@ -1,0 +1,72 @@
+{
+  "status": "stable",
+  "summary": "A row of controls that act on one thing, reached as one tab stop: arrow keys between the controls, Tab out in one press, and back to the control used last.",
+  "useWhen": [
+    "a set of actions on one selection or one record — the batch bar over a table, a run's Resume/Pause/Stop, an editor's formatting",
+    "the row has enough controls that tabbing through each one costs a keyboard user more than it gives"
+  ],
+  "useInstead": [
+    {
+      "when": "the row holds a search field or filters",
+      "use": "a plain flex row",
+      "why": "Tab leaves a toolbar in one press and ← → belong to the caret, so a text field inside strands every filter after it — WAI-ARIA's own caution"
+    },
+    {
+      "when": "two or three actions at the top of a page",
+      "use": "PageHeader",
+      "why": "its `actions` slot is a row of ordinary tab stops, which for a few buttons is what a keyboard user expects"
+    },
+    {
+      "when": "the controls are one choice among options",
+      "use": "SegmentedControl",
+      "why": "that is a radio group with a selected value; a toolbar holds independent actions"
+    }
+  ],
+  "composition": {
+    "order": ["Toolbar", "Button", "Divider", "MenuTrigger"],
+    "note": "Buttons in the order they are read, a vertical Divider between groups, and a MenuTrigger with an icon-only Button last for the overflow. Name it with `aria-label` for what it acts on — \"Bulk actions\", not \"Toolbar\".",
+    "example": "<Toolbar aria-label=\"Bulk actions\"><Button size=\"sm\" variant=\"secondary\">Pause</Button><Divider orientation=\"vertical\" /><Button size=\"sm\" variant=\"destructive\">Delete 3</Button></Toolbar>"
+  },
+  "variants": {
+    "orientation": {
+      "horizontal": {
+        "use": "the default — ← → move between controls; wraps rather than overflowing"
+      },
+      "vertical": {
+        "use": "a side rail of tools — ↑ ↓ move between controls"
+      }
+    }
+  },
+  "slots": {
+    "children": {
+      "accepts": "Button, MenuTrigger, SegmentedControl, Divider, Toolbar",
+      "note": "a nested Toolbar becomes a named `group`, and the outer toolbar keeps the arrow keys"
+    }
+  },
+  "a11y": {
+    "role": "toolbar, with aria-orientation",
+    "guarantees": [
+      "React Aria's `useToolbar`: arrow keys move between controls, skipping disabled ones and separators, and are mirrored in right-to-left",
+      "Tab leaves the whole toolbar in one press, and Shift+Tab or Tab back in returns to the control used last",
+      "a text field, native select, combobox, slider or radio inside keeps its own arrow keys — the caret moves and the value changes instead of focus jumping",
+      "↓ still reaches a MenuTrigger in a horizontal toolbar, so an overflow menu opens as it does anywhere else"
+    ],
+    "requires": [
+      "`aria-label` or `aria-labelledby` naming what the toolbar acts on"
+    ]
+  },
+  "antiPatterns": [
+    {
+      "dont": "a table's search field and filters inside a Toolbar",
+      "why": "Tab from the search field leaves the toolbar, so the filters after it can only be reached by Shift+Tab and arrows"
+    },
+    {
+      "dont": "a Toolbar with one button",
+      "why": "a single stop gains nothing from arrow keys, and screen readers announce a toolbar the user has to learn"
+    },
+    {
+      "dont": "an unnamed Toolbar",
+      "why": "\"toolbar\" alone does not say what the buttons act on, and pages with two cannot be told apart"
+    }
+  ]
+}

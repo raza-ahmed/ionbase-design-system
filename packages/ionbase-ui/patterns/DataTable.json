@@ -11,6 +11,7 @@
     "TableRow",
     "TableCell",
     "Checkbox",
+    "Toolbar",
     "Button",
     "Badge",
     "Alert",
@@ -19,7 +20,7 @@
     "TagGroup"
   ],
   "structure": [
-    "A toolbar above the table: a SearchField (size sm, with an aria-label naming what it searches), filter controls — a MultiSelect with `hideTags` for any filter that can match more than one value — and the bulk-action Buttons that appear once something is selected.",
+    "A toolbar above the table: a SearchField (size sm, with an aria-label naming what it searches), filter controls — a MultiSelect with `hideTags` for any filter that can match more than one value — and, once something is selected, the bulk actions in a Toolbar named for what they act on. The search and filters stay ordinary tab stops outside it — see Toolbar's contract.",
     "Under the toolbar, once any filter is applied: a TagGroup of the active filters, each removable on its own — one tag per value of a multi-value filter — beside a Clear all Button. When the last one goes the row goes with it, so move focus to the SearchField.",
     "Table with a TableHead whose first cell carries the select-all Checkbox, and a TableBody whose rows each carry their own.",
     "Sortable columns: every header that sorts gets `sortDirection` — the current direction on the sorted column, `none` on the others — so each shows it can be sorted before anyone tries.",
@@ -56,6 +57,7 @@
     "TableRow": ["selection", "isSelected"],
     "TableCell": ["scope", "align", "variant", "sortDirection", "onSort"],
     "Checkbox": ["isIndeterminate", "isDisabled"],
+    "Toolbar": ["aria-label"],
     "Button": ["variant", "size"],
     "Alert": ["intent", "title", "actions"],
     "TagGroup": ["label", "items", "onRemove"],

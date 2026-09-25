@@ -1,0 +1,36 @@
+/*
+ * Toolbar
+ *
+ * Drawn in Figma as `Toolbar` on the Toolbar page. A row of controls 8 apart —
+ * the gap PageHeader's actions and the demo's bulk bar already used, so a
+ * toolbar dropped into either changes nothing — centred on one line, wrapping
+ * rather than overflowing on a narrow screen.
+ *
+ * Wrapping keeps DOM order, and DOM order is arrow-key order, so a wrapped
+ * toolbar still walks left to right, top to bottom.
+ *
+ * The separator is Divider, vertical: an <hr> with `aria-orientation`, which a
+ * screen reader announces between groups and focus skips. Inset 4 top and
+ * bottom so it reads as a break between groups rather than a border drawn
+ * around the row.
+ */
+.ion-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--spacing-8);
+  min-width: 0;
+}
+
+.ion-toolbar--vertical {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.ion-toolbar > .ion-divider--vertical {
+  margin-block: var(--spacing-4);
+}
+
+.ion-toolbar--vertical > .ion-divider--horizontal {
+  margin-inline: var(--spacing-4);
+}

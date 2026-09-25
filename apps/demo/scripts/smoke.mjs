@@ -446,6 +446,64 @@ try {
   }
 
   /*
+   * The bulk-action Toolbar, which appears only once a row is selected. With
+   * real key presses: → moves between its actions, and one Tab leaves the whole
+   * toolbar rather than walking each button.
+   */
+  {
+    const where = 'bulk toolbar (light, desktop)';
+    const context = await browser.newContext({
+      viewport: { width: 1280, height: 900 },
+    });
+    await context.addInitScript(() =>
+      localStorage.setItem(
+        'ionbase-ops:demo-settings',
+        JSON.stringify({ theme: 'light', latency: 0 }),
+      ),
+    );
+    const page = await context.newPage();
+    page.on('pageerror', (e) => fail(where, `exception: ${e.message}`));
+    await page.goto(`${BASE}/#/agents`);
+    try {
+      await page.locator('#page-title').waitFor({ timeout: 10_000 });
+      // The native box is hidden with pointer-events: none; click its label.
+      await page.locator('tbody .ion-checkbox').first().click();
+      const bar = page.getByRole('toolbar', {
+        name: /^Actions for 1 selected/,
+      });
+      await bar.waitFor({ timeout: 5_000 });
+      const buttons = bar.getByRole('button');
+      const count = await buttons.count();
+      await buttons.first().focus();
+      await page.keyboard.press('ArrowRight');
+      const second = await buttons
+        .nth(1)
+        .evaluate((el) => el === document.activeElement);
+      if (!second) fail(where, '→ did not move to the next action');
+      await page.keyboard.press('Tab');
+      const left = await bar.evaluate(
+        (el) => !el.contains(document.activeElement),
+      );
+      if (count > 1 && !left)
+        fail(where, `Tab stayed inside a toolbar of ${count} actions`);
+
+      await page.addScriptTag({ content: axeSource });
+      const violations = await page.evaluate(async () => {
+        const result = await window.axe.run(
+          document.querySelector('[role="toolbar"]'),
+          { resultTypes: ['violations'] },
+        );
+        return result.violations.map((v) => `${v.impact} ${v.id}`);
+      });
+      for (const v of violations) fail(where, `axe ${v} in the toolbar`);
+    } catch (e) {
+      fail(where, `did not run: ${e.message.split('\n')[0]}`);
+    }
+    groupsChecked++;
+    await context.close();
+  }
+
+  /*
    * The wizard's CheckboxGroup, which no page load above reaches: it is on
    * Guardrails, the third step. A saved draft with the first two steps done
    * opens there. "At least one" has to hold three ways — natively (every box

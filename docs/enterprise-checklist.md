@@ -29,7 +29,7 @@
 - [x] **SearchField** — 0.85.0
 - [x] **Fieldset / CheckboxGroup** — `RadioGroup` moved onto the same shell — 0.86.0
 - [x] **MultiSelect** — the Agents table's Teams filter — 0.87.0
-- [ ] **Toolbar**
+- [x] **Toolbar** — the Agents table's bulk actions — 0.88.0
 - [ ] **Table: row selection and batch actions** — select-all, indeterminate, batch bar, count announced. _needs Toolbar_
 - [ ] **Toggletip**
 - [ ] **Slider** — single and range

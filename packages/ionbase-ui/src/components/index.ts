@@ -48,6 +48,8 @@ export type {
 } from './Radio.js';
 export { Toggle } from './Toggle.js';
 export type { ToggleProps, ToggleSize, ToggleIntent } from './Toggle.js';
+export { Toolbar } from './Toolbar.js';
+export type { ToolbarProps, ToolbarOrientation } from './Toolbar.js';
 export { MultiSelect } from './MultiSelect.js';
 export type {
   MultiSelectProps,

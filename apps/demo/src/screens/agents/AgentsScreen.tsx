@@ -10,6 +10,7 @@ import {
   SearchField,
   MultiSelect,
   Select,
+  Toolbar,
   Tag,
   TagGroup,
   useTableSort,
@@ -224,22 +225,29 @@ export function AgentsScreen() {
             <span className="ion-text-body-sm demo-muted">
               {selectedRows.length} selected
             </span>
-            <Button
-              size="sm"
-              variant="secondary"
-              startIcon={<Icon as={Pause} size="sm" />}
-              onClick={() => void pause(selectedRows, true)}
+            {/* One tab stop for the actions, ← → between them. The search and
+                filters to the left stay ordinary tab stops — a toolbar around
+                a text field strands whatever comes after it. */}
+            <Toolbar
+              aria-label={`Actions for ${selectedRows.length} selected ${selectedRows.length === 1 ? 'agent' : 'agents'}`}
             >
-              Pause
-            </Button>
-            <Button
-              size="sm"
-              variant="destructive"
-              startIcon={<Icon as={Trash2} size="sm" />}
-              onClick={() => setToDelete(selectedRows)}
-            >
-              Delete {selectedRows.length}
-            </Button>
+              <Button
+                size="sm"
+                variant="secondary"
+                startIcon={<Icon as={Pause} size="sm" />}
+                onClick={() => void pause(selectedRows, true)}
+              >
+                Pause
+              </Button>
+              <Button
+                size="sm"
+                variant="destructive"
+                startIcon={<Icon as={Trash2} size="sm" />}
+                onClick={() => setToDelete(selectedRows)}
+              >
+                Delete {selectedRows.length}
+              </Button>
+            </Toolbar>
           </div>
         )}
       </div>
