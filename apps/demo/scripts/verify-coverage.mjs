@@ -57,6 +57,8 @@ const REQUIRED = [
   'Toggletip',
   'Slider',
   'TreeView',
+  'SidePanel',
+  'SidePanelLayout',
   'MenuItem',
   'MenuSection',
   'MenuTrigger',

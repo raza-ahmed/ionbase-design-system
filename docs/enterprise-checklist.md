@@ -34,7 +34,7 @@
 - [x] **Toggletip** — Settings' log retention — 0.90.0
 - [x] **Slider** — single and range — Runs history's duration filter — 0.91.0
 - [x] **TreeView** — agent's knowledge sources — 0.92.0
-- [ ] **SidePanel** — non-modal
+- [x] **SidePanel** — non-modal — Runs history's run details — 0.93.0
 - [ ] **DescriptionList**
 - [ ] **List** — selectable and actionable
 

@@ -138,7 +138,7 @@ IonBase column names the component that covers it.
 | Popover                         |   ●    |     |  ●   | `Popover`     |
 | Modal / dialog                  |   ●    |  ●  |  ●   | `Modal`       |
 | Drawer (modal side sheet)       |   ●    |  ●  |      | `Drawer`      |
-| Side panel (non-modal)          |   ●    |  ●  |  ●   | —             |
+| Side panel (non-modal)          |   ●    |  ●  |  ●   | `SidePanel`   |
 | Coachmark / guided tour         |   ●    |     |  ●   | —             |
 
 ### Layout and utilities

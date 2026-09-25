@@ -1,0 +1,28 @@
+{
+  "status": "stable",
+  "summary": "The row a SidePanel sits in: the content, then the panel. Gives the content column `min-width: 0` so wide content scrolls in place instead of pushing the panel off screen.",
+  "useWhen": ["a SidePanel opens beside a list, table or feed"],
+  "useInstead": [
+    {
+      "when": "the side content is the app's navigation",
+      "use": "Sidebar",
+      "why": "navigation belongs to the page shell, not to a content row"
+    }
+  ],
+  "a11y": {
+    "requires": [
+      "exactly two children, content first and the SidePanel second — DOM order is reading and Tab order"
+    ],
+    "guarantees": [
+      "the first child fills the row and may shrink below its content's width, so a wide Table scrolls in its own container",
+      "adds no role and no landmark: the content and the panel carry their own names"
+    ]
+  },
+  "antiPatterns": [
+    {
+      "dont": "<SidePanelLayout><SidePanel …/><Table …/></SidePanelLayout>",
+      "do": "<SidePanelLayout><Table …/><SidePanel …/></SidePanelLayout>",
+      "why": "with the panel first, the detail is read and tabbed to before the list it is the detail of"
+    }
+  ]
+}

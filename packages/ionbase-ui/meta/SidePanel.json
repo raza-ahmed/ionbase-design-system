@@ -1,0 +1,92 @@
+{
+  "status": "stable",
+  "summary": "Detail that opens beside the content and leaves it usable — pick a row, read it in the panel, pick the next. A labelled region in the page, not a dialog.",
+  "useWhen": [
+    "the detail of a list item should sit beside the list, and the next item should be pickable without closing anything — runs, tickets, records",
+    "the user compares or works down a list, reading each item's detail in turn",
+    "the detail is read or lightly acted on, not a task that must be finished or cancelled"
+  ],
+  "useInstead": [
+    {
+      "when": "the page behind must not be touched until the task is done — an edit form, a filter set that applies on confirm",
+      "use": "Drawer",
+      "why": "that is modal behaviour, and a Drawer says so: it traps focus and hides the page. A SidePanel leaves the page live"
+    },
+    {
+      "when": "the detail is the whole of what the user came for — a record they will spend minutes in",
+      "use": "a page of its own",
+      "why": "a panel is a side view; a record with sections, tabs and history needs a URL and the full width"
+    },
+    {
+      "when": "a sentence or two about one field",
+      "use": "Toggletip"
+    }
+  ],
+  "variants": {
+    "size": {
+      "sm": { "use": "a summary: a few facts and an action — 22rem" },
+      "md": { "use": "the default — 30rem" },
+      "lg": { "use": "detail with its own sections, on wide screens — 40rem" }
+    }
+  },
+  "slots": {
+    "title": {
+      "accepts": "text",
+      "note": "required — it names the region and is where focus lands on open"
+    },
+    "description": { "accepts": "text" },
+    "children": {
+      "accepts": "any content",
+      "note": "the only scrolling region"
+    },
+    "footer": {
+      "accepts": "Button",
+      "note": "pinned to the bottom edge"
+    }
+  },
+  "a11y": {
+    "requires": [
+      "`title` — the region's accessible name, through `aria-labelledby`",
+      "a `SidePanelLayout` with the content first and the panel second — DOM order is reading order, and the panel is the detail of what comes before it"
+    ],
+    "guarantees": [
+      "a `<section>` region named by its title, rendered in place — not portalled, not a dialog, and nothing on the page is hidden or made inert",
+      "opening focuses the title, so the panel is announced and reading starts at its top",
+      "changing what an open panel shows does not move focus — the list can be arrowed through with the panel open",
+      "Escape from inside closes it; Escape elsewhere on the page does not. A Toggletip, Menu or Select inside closes first",
+      "closing with focus inside returns focus to the last thing focused outside it — the row picked most recently",
+      "no focus trap: Tab walks out of the panel into the rest of the page",
+      "closed, it renders nothing, so it leaves no tab stops",
+      "below 768px (`overlayBelow`) it opens as a Drawer, because there is no room beside the content and a panel covering the list must be modal to say so",
+      "it sticks to `--ion-side-panel-top` while the page scrolls, and its body scrolls when the detail is taller than the screen",
+      "the content column has `min-width: 0`, so a wide Table beside the panel scrolls in its own container rather than pushing the panel off screen"
+    ],
+    "notes": [
+      "set `--ion-side-panel-top` on the app shell (any ancestor) to the height of a sticky app header, or the panel's top slides under it",
+      "the title's heading level is `headingLevel`, default 2 — set it to follow the page's own outline",
+      "`isOpen` and `onOpenChange` usually derive from the selected item: open while one is selected, and `onOpenChange(false)` clears the selection"
+    ]
+  },
+  "antiPatterns": [
+    {
+      "dont": "<Drawer> for a record's detail beside the list it came from",
+      "do": "<SidePanelLayout><Table …/><SidePanel …/></SidePanelLayout>",
+      "why": "a Drawer blocks the list: picking the next row means closing, clicking, reopening, and a screen reader is told the list is gone"
+    },
+    {
+      "dont": "a SidePanel holding a form that must be saved or cancelled before anything else",
+      "do": "<Drawer> or <Modal>",
+      "why": "a live page beside an unsaved form lets the user wander off and lose it; that task wants to be modal"
+    },
+    {
+      "dont": "the panel before the content in the DOM, moved to the right with CSS",
+      "do": "content first, SidePanel second, inside SidePanelLayout",
+      "why": "reading and Tab order would reach the detail before the list it is the detail of"
+    },
+    {
+      "dont": "moving focus into the panel every time the selected row changes",
+      "do": "let the panel follow the selection; it focuses its title only when it opens",
+      "why": "focus jumping to the panel on each pick makes the list impossible to walk with the keyboard"
+    }
+  ]
+}

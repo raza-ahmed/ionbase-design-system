@@ -1726,6 +1726,33 @@
       "kind": "COMPONENT",
       "props": {}
     },
+    "Side Panel": {
+      "page": "Side Panel",
+      "id": "1547:441",
+      "kind": "SET",
+      "props": {
+        "Description#1547:4": {
+          "type": "TEXT"
+        },
+        "Show Close#1547:12": {
+          "type": "BOOLEAN"
+        },
+        "Show Description#1547:8": {
+          "type": "BOOLEAN"
+        },
+        "Show Footer#1547:16": {
+          "type": "BOOLEAN"
+        },
+        "Size": {
+          "type": "VARIANT",
+          "options": ["Small", "Medium", "Large"],
+          "default": "Small"
+        },
+        "Title#1547:0": {
+          "type": "TEXT"
+        }
+      }
+    },
     "Sidebar": {
       "page": "Sidebar",
       "id": "1396:502",

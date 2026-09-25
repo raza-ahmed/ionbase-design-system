@@ -18,7 +18,9 @@
     "SearchField",
     "MultiSelect",
     "Slider",
-    "TagGroup"
+    "TagGroup",
+    "SidePanel",
+    "SidePanelLayout"
   ],
   "structure": [
     "A toolbar above the table: a SearchField (size sm, with an aria-label naming what it searches) and filter controls — a MultiSelect with `hideTags` for any filter that can match more than one value, and a range Slider (`defaultValue={[low, high]}`, with `formatOptions` for the unit) for a quantity bounded at both ends — duration, cost — which applies on `onChangeEnd`, not per step. They stay ordinary tab stops, not a Toolbar — see Toolbar's contract.",
@@ -26,6 +28,7 @@
     "Between the filters and the table, a TableBatchBar, always rendered: hidden while nothing is selected, and once anything is, the count, \"Select all N\" while fewer than all matching rows are selected, the bulk actions and \"Clear selection\". Hold the selection in `useTableSelection({ total })` and clear it whenever the filters, the sort or the page size change — but not on a page change, so rows ticked on two pages can be acted on together.",
     "Table, with an `id` passed to the bar as `tableId`, and a TableHead whose first cell carries the select-all Checkbox — `headSelection(pageKeys)`, which reaches the page on screen only — and a TableBody whose rows each carry `rowSelection(key, label)` and `isSelected(key)`.",
     "Sortable columns: every header that sorts gets `sortDirection` — the current direction on the sorted column, `none` on the others — so each shows it can be sorted before anyone tries.",
+    "A row's detail, when it is read beside the list rather than on its own page, goes in a SidePanel: Table and SidePanel inside a SidePanelLayout, opened from a per-row Button with `aria-expanded`, and closed when its row is filtered out. The table stays usable, so the next row can be opened without closing anything; below 768px it opens as a Drawer.",
     "One region below the table for pagination or a load-more Button.",
     "The table region is replaced — not overlaid — by the empty, loading and error states."
   ],
@@ -90,6 +93,15 @@
       "maxValue",
       "step",
       "formatOptions"
+    ],
+    "SidePanel": [
+      "isOpen",
+      "onOpenChange",
+      "title",
+      "description",
+      "footer",
+      "size",
+      "headingLevel"
     ]
   },
   "variantsUsed": {
@@ -171,6 +183,11 @@
       "dont": "refetching the table on a Slider's `onChange`",
       "do": "`onChange` to move the thumbs, `onChangeEnd` to apply the filter",
       "why": "`onChange` fires on every pixel of a drag: dozens of requests for one gesture, answered out of order, and a table that flickers through every one"
+    },
+    {
+      "dont": "a Drawer for a row's detail beside the table",
+      "do": "<SidePanelLayout><Table …/><SidePanel …/></SidePanelLayout>",
+      "why": "a Drawer is modal: comparing two rows means closing and reopening, and a screen reader is told the table is gone"
     }
   ]
 }

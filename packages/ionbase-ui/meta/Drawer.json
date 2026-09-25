@@ -14,8 +14,8 @@
     },
     {
       "when": "the panel should stay open while the user works elsewhere",
-      "use": "page layout",
-      "why": "a drawer traps focus and marks the rest of the page inert. A panel that does not do those things is layout, not an overlay"
+      "use": "SidePanel",
+      "why": "a drawer traps focus and marks the rest of the page inert. SidePanel opens beside the content and leaves it usable"
     },
     {
       "when": "the content is a short menu of actions",
@@ -30,15 +30,23 @@
       "end": {
         "use": "the default — detail and editing beside the record that opened it"
       },
-      "top": { "use": "rare: a global search or command surface" },
+      "top": {
+        "use": "rare: a global search or command surface"
+      },
       "bottom": {
         "use": "touch-first layouts, where the bottom edge is the reachable one"
       }
     },
     "size": {
-      "sm": { "use": "a short form or a filter list" },
-      "md": { "use": "the default" },
-      "lg": { "use": "a record detail with its own sections" }
+      "sm": {
+        "use": "a short form or a filter list"
+      },
+      "md": {
+        "use": "the default"
+      },
+      "lg": {
+        "use": "a record detail with its own sections"
+      }
     }
   },
   "slots": {
@@ -46,7 +54,9 @@
       "accepts": "text",
       "note": "required — it is the dialog's accessible name"
     },
-    "description": { "accepts": "text" },
+    "description": {
+      "accepts": "text"
+    },
     "children": {
       "accepts": "any content",
       "note": "the only scrolling region"
@@ -69,7 +79,7 @@
   "antiPatterns": [
     {
       "dont": "a Drawer that stays open while the user edits the page behind it",
-      "do": "a layout panel",
+      "do": "<SidePanel> inside a SidePanelLayout",
       "why": "it traps focus and marks the rest inert; a keyboard user cannot reach the page behind it"
     },
     {
