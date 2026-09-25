@@ -124,6 +124,8 @@ export type {
   DescriptionListItemProps,
   DescriptionListLayout,
 } from './DescriptionList.js';
+export { List } from './List.js';
+export type { ListProps, ListItem, ListSelectionMode } from './List.js';
 export { Popover } from './Popover.js';
 export type { PopoverProps, PopoverPlacement, PopoverSize } from './Popover.js';
 export { Modal } from './Modal.js';

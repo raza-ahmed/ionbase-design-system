@@ -61,6 +61,7 @@ const REQUIRED = [
   'SidePanelLayout',
   'DescriptionList',
   'DescriptionListItem',
+  'List',
   'MenuItem',
   'MenuSection',
   'MenuTrigger',

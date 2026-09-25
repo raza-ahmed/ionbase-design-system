@@ -1175,6 +1175,53 @@
         }
       }
     },
+    "List": {
+      "page": "List",
+      "id": "1557:794",
+      "kind": "SET",
+      "props": {
+        "Selection": {
+          "type": "VARIANT",
+          "options": ["None", "Single", "Multiple"],
+          "default": "None"
+        }
+      }
+    },
+    "List Item": {
+      "page": "List",
+      "id": "1556:534",
+      "kind": "SET",
+      "props": {
+        "Description#1556:11": {
+          "type": "TEXT"
+        },
+        "Label#1556:0": {
+          "type": "TEXT"
+        },
+        "Selection": {
+          "type": "VARIANT",
+          "options": ["None", "Multiple"],
+          "default": "None"
+        },
+        "Show Actions#1556:55": {
+          "type": "BOOLEAN"
+        },
+        "Show Description#1556:22": {
+          "type": "BOOLEAN"
+        },
+        "Show Leading#1556:33": {
+          "type": "BOOLEAN"
+        },
+        "Show Meta#1556:44": {
+          "type": "BOOLEAN"
+        },
+        "State": {
+          "type": "VARIANT",
+          "options": ["Default", "Hover", "Selected", "Focus", "Disabled"],
+          "default": "Default"
+        }
+      }
+    },
     "Logo-Ionbase": {
       "page": "Logo",
       "id": "52:21369",

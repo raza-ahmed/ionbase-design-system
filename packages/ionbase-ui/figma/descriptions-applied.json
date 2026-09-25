@@ -19,7 +19,7 @@
   ],
   "file": "gaLbGd0QNb1fUl6BjSpfBA",
   "appliedOn": "2026-09-25",
-  "verifiedInFigma": 87,
+  "verifiedInFigma": 88,
   "applied": {
     "1360:267": {
       "figmaComponent": "Accordion",
@@ -455,6 +455,11 @@
       "figmaComponent": "Description List Item",
       "component": "DescriptionListItem",
       "hash": "92e426c1504d4b15"
+    },
+    "1557:794": {
+      "figmaComponent": "List",
+      "component": "List",
+      "hash": "9cdd934b68ca30a5"
     }
   }
 }
