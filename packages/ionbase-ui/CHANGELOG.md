@@ -1,5 +1,55 @@
 # Changelog
 
+## 0.91.0 — 2026-09-25
+
+### Added — `Slider`
+
+A value, or a low–high range, picked along a track. It is the tenth item on
+the enterprise checklist. It is for a rough value in a known range — a
+threshold, a "between 30s and 2m" filter — where where-it-sits matters more
+than the exact number. When the number itself matters, NumberInput, whose
+contract used to say "there is no Slider yet" and now points here.
+
+- **One component, both shapes.** A number for `value`/`defaultValue` gives
+  one thumb; a `[low, high]` pair gives a range, typed as a pair all the way
+  to `onChange`.
+- **Every thumb is a visually hidden `<input type="range">`**, on React Aria's
+  `useSlider`: arrows step, Page Up and Down jump a tenth, Home and End go to
+  the bounds, and `aria-valuetext` carries the formatted value, so "70%" is
+  read rather than "0.7". `formatOptions` takes `Intl.NumberFormatOptions`.
+- **A range's thumbs cannot cross**, and are named with the label —
+  "Minimum Duration", "Maximum Duration". `thumbLabels` translates them.
+- **`onChange` per step, `onChangeEnd` once** when a drag or key press ends.
+  Anything that fetches or filters goes on `onChangeEnd`.
+- **24px targets:** a 24px thumb box around a 20px knob, on a 24px track
+  around a 4px rail, inset by half a thumb so a thumb at either end stays
+  inside the component. The focus ring goes round the 24px target.
+- **Right to left:** the track and the arrow keys follow the locale.
+- **Pressing the track** moves the nearest thumb there. `name` (a pair for a
+  range) submits form fields; `description` is linked to every thumb.
+- **Disabled** fills with `border/disabled`. `surface/disabled` was the first
+  choice and vanished into the rail in the Figma render, so a disabled slider
+  stopped showing its value; code and Figma both changed.
+- **The DataTable pattern** now uses a range Slider for a quantity bounded at
+  both ends, applied on `onChangeEnd`, with one removable tag per range.
+- **Figma:** a Slider set on its own page — Type Single/Range × State
+  Default/Focus/Disabled, with Label, Description, Show Value and Show
+  Description — mapped, and its Dev Mode block applied; 83 blocks verified.
+- **Demo:** Runs › History has a Duration range filter beside "Show runs".
+  The smoke check drags it with a real mouse at 1280px and 390px, checks the
+  table refilters on release and on Page Up, the thumbs stay on the page and
+  axe is clean — and it fails when `onChangeEnd` is unwired.
+
+### Found along the way
+
+- **The thumbs are named thumb-first.** React Aria composes a range thumb's
+  name as its own label, then the slider's — "Minimum Duration", not
+  "Duration, Minimum". It reads naturally, so the tests and contract say
+  what it does rather than fighting it.
+- **Passing `isDisabled` to each thumb was dead code.** Removing it broke no
+  test, because React Aria disables the thumbs from the slider's state. It is
+  gone; removing `isDisabled` from the slider's state does fail the test.
+
 ## 0.90.0 — 2026-09-25
 
 ### Added — `Toggletip`

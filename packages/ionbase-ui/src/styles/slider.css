@@ -1,0 +1,173 @@
+/*
+ * Slider
+ *
+ *   header  label (Field's label) and the value, on one line
+ *   track   24px tall — the hit area — around a 4px rail, radius/full
+ *   knob    20px, surface/default, a 2px surface/primary ring, shadow/xs,
+ *           centred in a 24px thumb box so the target clears WCAG 2.5.8
+ *   fill    surface/primary, from the start (or the low thumb) to the thumb
+ *
+ * The fill's ends arrive as custom properties, the same way ProgressBar's
+ * width does, so the only inline values are percentages on token-named
+ * properties. The thumbs' inline `left` and transform are React Aria's.
+ */
+.ion-slider {
+  --ion-slider-rail: var(--spacing-4);
+  --ion-slider-thumb: var(--spacing-24);
+  --ion-slider-knob: var(--spacing-20);
+  --ion-slider-fill: var(--surface-primary);
+  --ion-slider-from: 0%;
+  --ion-slider-to: 0%;
+
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-6);
+  min-width: calc(var(--ion-slider-thumb) * 4);
+  font-family: var(--font-family-sans);
+}
+
+.ion-slider__header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--spacing-8);
+  font-size: var(--type-body-sm);
+  line-height: var(--type-body-sm-line-height);
+}
+
+.ion-slider__label {
+  color: var(--text-secondary);
+  font-weight: var(--font-weight-medium);
+}
+
+.ion-slider__value {
+  color: var(--text-default);
+  font-variant-numeric: tabular-nums;
+}
+
+/*
+ * The track is inset by half a thumb on each side, so a thumb at 0% or 100%
+ * sits inside the component rather than hanging half over its edge — the
+ * thumb is positioned by its centre.
+ */
+.ion-slider__track {
+  position: relative;
+  height: var(--ion-slider-thumb);
+  margin-inline: calc(var(--ion-slider-thumb) / 2);
+  touch-action: none;
+  cursor: pointer;
+}
+
+.ion-slider__rail,
+.ion-slider__fill {
+  position: absolute;
+  top: 50%;
+  height: var(--ion-slider-rail);
+  border-radius: var(--radius-full);
+  transform: translateY(-50%);
+}
+
+.ion-slider__rail {
+  left: 0;
+  right: 0;
+  background-color: var(--surface-muted);
+}
+
+.ion-slider__fill {
+  left: var(--ion-slider-from);
+  width: calc(var(--ion-slider-to) - var(--ion-slider-from));
+  background-color: var(--ion-slider-fill);
+}
+
+/* React Aria sets `left` and `translate(-50%, -50%)`; `top` is ours. */
+.ion-slider__thumb {
+  top: 50%;
+  display: grid;
+  place-items: center;
+  width: var(--ion-slider-thumb);
+  height: var(--ion-slider-thumb);
+  border-radius: var(--radius-full);
+  cursor: grab;
+}
+
+.ion-slider__thumb::before {
+  content: '';
+  box-sizing: border-box;
+  width: var(--ion-slider-knob);
+  height: var(--ion-slider-knob);
+  background-color: var(--surface-default);
+  border: var(--border-width-thick) solid var(--ion-slider-fill);
+  border-radius: var(--radius-full);
+  box-shadow: var(--ion-shadow-shadow-xs);
+  transition: transform var(--ion-duration-fast) var(--ion-ease-out);
+}
+
+.ion-slider__thumb[data-dragging='true'] {
+  cursor: grabbing;
+}
+
+.ion-slider__thumb[data-dragging='true']::before {
+  transform: scale(1.1);
+}
+
+/* The ring goes round the whole 24px target, not the knob inside it. */
+.ion-slider__thumb[data-focus-visible='true'] {
+  outline: var(--border-width-thick) solid var(--border-focus);
+  outline-offset: 0;
+}
+
+.ion-slider__helper {
+  color: var(--text-tertiary);
+  font-size: var(--type-body-sm);
+  line-height: var(--type-body-sm-line-height);
+}
+
+/*
+ * The fill goes to border/disabled, not surface/disabled: surface/disabled is
+ * a shade off the rail's surface/muted, and a disabled slider whose fill
+ * vanished would stop showing its value. The knob's ring follows the fill.
+ */
+.ion-slider[data-disabled='true'] {
+  --ion-slider-fill: var(--border-disabled);
+}
+
+.ion-slider[data-disabled='true'] .ion-slider__track,
+.ion-slider[data-disabled='true'] .ion-slider__thumb {
+  cursor: not-allowed;
+}
+
+.ion-slider[data-disabled='true'] .ion-slider__label,
+.ion-slider[data-disabled='true'] .ion-slider__value {
+  color: var(--text-disabled);
+}
+
+.ion-slider[data-disabled='true'] .ion-slider__thumb::before {
+  box-shadow: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ion-slider__thumb::before {
+    transition-duration: 1ms;
+  }
+}
+
+@media (forced-colors: active) {
+  .ion-slider__rail {
+    background-color: CanvasText;
+  }
+
+  .ion-slider__fill {
+    background-color: Highlight;
+  }
+
+  .ion-slider__thumb::before {
+    background-color: Canvas;
+    border-color: Highlight;
+  }
+
+  .ion-slider[data-disabled='true'] .ion-slider__fill,
+  .ion-slider[data-disabled='true'] .ion-slider__thumb::before {
+    background-color: GrayText;
+    border-color: GrayText;
+  }
+}

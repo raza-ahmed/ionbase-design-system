@@ -1,0 +1,80 @@
+{
+  "status": "stable",
+  "summary": "A value, or a low–high range, picked along a track. For a rough value in a known range, where where-it-sits matters more than the exact number.",
+  "useWhen": [
+    "the value is a position in a known range and roughly right is right — a threshold, a zoom, a volume",
+    "a filter bounds a quantity from both ends — \"between 30s and 2m\", \"$20 to $80\" — pass `[low, high]`",
+    "seeing the value's place in the range helps the choice more than typing it would"
+  ],
+  "useInstead": [
+    {
+      "when": "the exact number matters — a price, a budget, a count someone will be held to",
+      "use": "NumberInput",
+      "why": "dragging to exactly 4,250 is a test of hand steadiness; a field takes the number as typed"
+    },
+    {
+      "when": "there are a few named choices, not a continuum — Low, Medium, High",
+      "use": "SegmentedControl",
+      "why": "a slider with three stops hides the names behind positions and reads out numbers nobody chose"
+    },
+    {
+      "when": "the value is on or off",
+      "use": "Toggle"
+    },
+    {
+      "when": "showing how far something has got, not asking for a value",
+      "use": "ProgressBar",
+      "why": "a track with a knob invites a drag; progress is not something the user sets"
+    }
+  ],
+  "a11y": {
+    "requires": [
+      "`label` or `aria-label` — the group's name, and every thumb's name through it",
+      "`formatOptions` whenever the number has a unit — the formatted value is what is read out, so a percentage without it is announced as \"0.7\""
+    ],
+    "guarantees": [
+      "every thumb is a visually hidden `<input type=\"range\">`: arrows step, Page Up and Down jump a tenth of the range, Home and End go to the bounds",
+      "`aria-valuetext` carries the formatted value — \"70%\", \"120 sec\" — in the user's locale",
+      "a range's thumbs are named with the label — \"Minimum Duration\" and \"Maximum Duration\" — and cannot cross; each stops at the other's value",
+      "pressing the track moves the nearest thumb there",
+      "every thumb's target is 24px square, around a 20px knob, and the track is 24px tall — WCAG 2.5.8",
+      "thumbs at the bounds stay inside the component; the track is inset by half a thumb",
+      "in a right-to-left locale the track runs right to left, and the arrow keys follow it",
+      "a disabled slider's thumbs are disabled inputs, out of the tab order",
+      "`description` is linked to every thumb with `aria-describedby`",
+      "a range with `name={[low, high]}` submits two form fields"
+    ],
+    "notes": [
+      "the value beside the label is an `<output>` with `aria-live=\"off\"`: the thumb already announces each change, and a second voice would read every step twice",
+      "`onChange` fires on every step of a drag; `onChangeEnd` fires once when it ends. Fetch, filter a server or save on `onChangeEnd`",
+      "`thumbLabels` names a range's two thumbs and defaults to English \"Minimum\" and \"Maximum\" — pass translations"
+    ]
+  },
+  "antiPatterns": [
+    {
+      "dont": "<Slider label=\"Monthly budget\" maxValue={5000000} />",
+      "do": "<NumberInput label=\"Monthly budget\" />",
+      "why": "an exact number across millions is out of reach by drag — each pixel is thousands"
+    },
+    {
+      "dont": "fetching on `onChange`",
+      "do": "`onChangeEnd={(v) => refetch(v)}`",
+      "why": "`onChange` fires on every pixel of a drag — dozens of requests for one gesture, answered out of order"
+    },
+    {
+      "dont": "<Slider label=\"Threshold\" minValue={0} maxValue={1} step={0.01} />",
+      "do": "<Slider label=\"Threshold\" minValue={0} maxValue={1} step={0.01} formatOptions={{ style: 'percent' }} />",
+      "why": "without a format the value is shown and read as \"0.7\"; with it, \"70%\""
+    },
+    {
+      "dont": "two Sliders for the low and high end of one filter",
+      "do": "<Slider label=\"Duration\" defaultValue={[30, 120]} />",
+      "why": "two separate sliders can cross — a minimum above the maximum — and read as two unrelated settings"
+    },
+    {
+      "dont": "a Slider with three steps standing in for Low, Medium, High",
+      "do": "<SegmentedControl label=\"Effort\">…</SegmentedControl>",
+      "why": "the choices have names; a slider reads them out as 1, 2 and 3"
+    }
+  ]
+}

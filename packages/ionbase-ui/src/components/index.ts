@@ -104,6 +104,8 @@ export type {
   ToggletipPlacement,
   ToggletipSize,
 } from './Toggletip.js';
+export { Slider } from './Slider.js';
+export type { SliderProps, SliderValue } from './Slider.js';
 export { Popover } from './Popover.js';
 export type { PopoverProps, PopoverPlacement, PopoverSize } from './Popover.js';
 export { Modal } from './Modal.js';

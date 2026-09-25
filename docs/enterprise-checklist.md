@@ -32,7 +32,7 @@
 - [x] **Toolbar** — the Agents table's bulk actions — 0.88.0
 - [x] **Table: row selection and batch actions** — `useTableSelection` and `TableBatchBar`; select-all across pages as "all except" — 0.89.0
 - [x] **Toggletip** — Settings' log retention — 0.90.0
-- [ ] **Slider** — single and range
+- [x] **Slider** — single and range — Runs history's duration filter — 0.91.0
 - [ ] **TreeView**
 - [ ] **SidePanel** — non-modal
 - [ ] **DescriptionList**

@@ -19,7 +19,7 @@
   ],
   "file": "gaLbGd0QNb1fUl6BjSpfBA",
   "appliedOn": "2026-09-25",
-  "verifiedInFigma": 82,
+  "verifiedInFigma": 83,
   "applied": {
     "1360:267": {
       "figmaComponent": "Accordion",
@@ -430,6 +430,11 @@
       "figmaComponent": "Kbd",
       "component": "Kbd",
       "hash": "f1dd95d9a6f3c311"
+    },
+    "1533:308": {
+      "figmaComponent": "Slider",
+      "component": "Slider",
+      "hash": "0cd190e322e72e2e"
     }
   }
 }

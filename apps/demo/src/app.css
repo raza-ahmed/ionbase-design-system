@@ -482,6 +482,17 @@ body {
   gap: var(--spacing-12);
 }
 
+.demo-history-filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--spacing-24);
+}
+
+.demo-history-duration {
+  width: 15rem;
+}
+
 /* --- Agent detail ------------------------------------------------------- */
 
 /* The section switcher: NavItems on a rule, the rule the current item's

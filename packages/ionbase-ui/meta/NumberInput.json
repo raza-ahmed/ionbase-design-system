@@ -18,8 +18,8 @@
     },
     {
       "when": "a rough value within a range matters more than an exact one — volume, a zoom level",
-      "use": "Input",
-      "why": "there is no Slider yet; do not stand one in with a stepper that takes forty presses"
+      "use": "Slider",
+      "why": "a stepper that takes forty presses to cross the range is the wrong control; a track shows where the value sits"
     }
   ],
   "variants": {
