@@ -172,7 +172,7 @@ export const WrapsByDefault: Story = {
  */
 export const MenuMovesTheFirstButtonsIntoMore: Story = {
   ...OverflowMenu,
-  play: async ({ canvas, canvasElement }) => {
+  play: async ({ canvas }) => {
     const more = btn(canvas, 'More actions');
     const save = btn(canvas, 'Save changes');
     await expect(
