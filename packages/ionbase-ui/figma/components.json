@@ -1149,29 +1149,35 @@
       }
     },
     "Menu Item": {
-      "page": "Side Menu",
-      "id": "639:2634",
+      "page": "Menu",
+      "id": "82:217",
       "kind": "SET",
       "props": {
-        "Select Icon#639:20": {
+        "Label#82:0": {
+          "type": "TEXT"
+        },
+        "Leading Icon#82:12": {
           "type": "INSTANCE_SWAP"
         },
-        "Show Icon#639:16": {
+        "Show Leading Icon#82:6": {
           "type": "BOOLEAN"
         },
-        "Status": {
+        "State": {
           "type": "VARIANT",
-          "options": ["Default", "Selected", "Hover", "Selected Primary"],
+          "options": [
+            "Default",
+            "Hover",
+            "Selected",
+            "Selected-hover",
+            "Disabled"
+          ],
           "default": "Default"
-        },
-        "Text#639:12": {
-          "type": "TEXT"
         }
       }
     },
     "Menu Section Title": {
-      "page": "Side Menu",
-      "id": "639:2664",
+      "page": "Menu",
+      "id": "1468:271",
       "kind": "COMPONENT",
       "props": {}
     },
@@ -1576,6 +1582,33 @@
           "type": "BOOLEAN"
         }
       }
+    },
+    "Side Menu Item": {
+      "page": "Side Menu",
+      "id": "639:2634",
+      "kind": "SET",
+      "props": {
+        "Select Icon#639:20": {
+          "type": "INSTANCE_SWAP"
+        },
+        "Show Icon#639:16": {
+          "type": "BOOLEAN"
+        },
+        "Status": {
+          "type": "VARIANT",
+          "options": ["Default", "Selected", "Hover", "Selected Primary"],
+          "default": "Default"
+        },
+        "Text#639:12": {
+          "type": "TEXT"
+        }
+      }
+    },
+    "Side Menu Section Title": {
+      "page": "Side Menu",
+      "id": "639:2664",
+      "kind": "COMPONENT",
+      "props": {}
     },
     "Sidebar": {
       "page": "Sidebar",

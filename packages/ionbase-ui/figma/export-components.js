@@ -61,6 +61,22 @@ for (const page of figma.root.children) {
             }
           : { type: d.type };
     }
+    /*
+     * Keyed by name, so a second component with the same name used to replace
+     * the first without a word. That hid the real `Menu Item` (82:217, the one
+     * Menu is built from) behind a side-nav row of the same name on a later
+     * page, and the mapping, the gates and the Dev Mode block all pointed at
+     * the wrong one until 25 Sep 2026. A name is the key everything downstream
+     * joins on; two components cannot share it.
+     */
+    const prior = components[n.name];
+    if (prior) {
+      throw new Error(
+        `Two components are named "${n.name}": ${prior.id} on "${prior.page}" ` +
+          `and ${n.id} on "${page.name}". Rename one in Figma — the mapping ` +
+          `joins on the name, so one of them would silently vanish.`,
+      );
+    }
     components[n.name] = { page: page.name, id: n.id, kind, props };
   };
 

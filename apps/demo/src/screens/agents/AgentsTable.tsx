@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import {
   Avatar,
   Badge,
@@ -7,7 +6,7 @@ import {
   Icon,
   Menu,
   MenuItem,
-  Popover,
+  MenuTrigger,
   Skeleton,
   Table,
   TableBody,
@@ -113,7 +112,6 @@ export function AgentsTable({
   onPause: (agent: Agent, paused: boolean) => void;
   onDelete: (agent: Agent) => void;
 }) {
-  const [menuFor, setMenuFor] = useState<string | null>(null);
   const selectedHere = rows.filter((a) => selected.has(a.id)).length;
 
   const toggle = (id: string, on: boolean) => {
@@ -206,46 +204,34 @@ export function AgentsTable({
                 )}
               </TableCell>
               <TableCell align="trailing">
-                <Popover
-                  aria-label={`Actions for ${a.name}`}
-                  size="sm"
-                  placement="bottom"
-                  hideArrow
-                  isOpen={menuFor === a.id}
-                  onOpenChange={(open) => setMenuFor(open ? a.id : null)}
-                  content={
-                    <Menu
-                      aria-label={`Actions for ${a.name}`}
-                      autoFocus="first"
-                      onAction={(key) => {
-                        setMenuFor(null);
-                        if (key === 'pause') onPause(a, !paused);
-                        else onDelete(a);
-                      }}
-                    >
-                      <MenuItem
-                        key="pause"
-                        icon={<Icon as={paused ? Play : Pause} size="sm" />}
-                        isDisabled={a.status === 'draft'}
-                      >
-                        {paused ? 'Resume' : 'Pause'}
-                      </MenuItem>
-                      <MenuItem
-                        key="delete"
-                        icon={<Icon as={Trash2} size="sm" />}
-                      >
-                        Delete…
-                      </MenuItem>
-                    </Menu>
-                  }
-                >
+                <MenuTrigger placement="bottom end">
                   <Button
                     size="sm"
                     variant="tertiary"
                     aria-label={`Actions for ${a.name}`}
                     startIcon={<Icon as={Ellipsis} size="sm" />}
                   />
-                </Popover>
+                  <Menu
+                    onAction={(key) => {
+                      if (key === 'pause') onPause(a, !paused);
+                      else onDelete(a);
+                    }}
+                  >
+                    <MenuItem
+                      key="pause"
+                      icon={<Icon as={paused ? Play : Pause} size="sm" />}
+                      isDisabled={a.status === 'draft'}
+                    >
+                      {paused ? 'Resume' : 'Pause'}
+                    </MenuItem>
+                    <MenuItem
+                      key="delete"
+                      icon={<Icon as={Trash2} size="sm" />}
+                    >
+                      Delete…
+                    </MenuItem>
+                  </Menu>
+                </MenuTrigger>
               </TableCell>
             </TableRow>
           );

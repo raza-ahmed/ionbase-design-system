@@ -352,6 +352,18 @@ is nothing to fix on the repo side, which is why this is written down here
 rather than guarded by a gate: the gate cannot run at all until the file is
 clean.
 
+### A duplicate component NAME is the opposite failure: silent
+
+The export keys on the component's name, so two sets called `Menu Item` used
+to produce one entry, the later page's, with no error. The real `Menu Item`
+(82:217, what `Menu` is built from) was hidden behind a pre-Sidebar side-nav row
+on the Side Menu page, and the mapping, every gate and the Dev Mode block all
+pointed at the side-nav row through 0.82.0. Found on 25 Sep 2026 only because
+Figma's own description of `Menu` named a node id the export had never listed.
+
+`export-components.js` now throws on a repeated name, naming both nodes. Fix it
+by renaming one in Figma, never by editing the export.
+
 **Adding a React component means answering the Figma question too.** Map it, or
 put it in `codeUnmapped` with a reason. Eight of the entries there are
 permanent: `Table`, `TableHead`, `TableBody`, `RadioGroup`, `ToastProvider`,

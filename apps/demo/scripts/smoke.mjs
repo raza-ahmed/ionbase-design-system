@@ -278,12 +278,14 @@ try {
     const menu = page.getByRole('menu', { name });
     try {
       await menu.waitFor({ timeout: 5_000 });
-      const focused = await page.evaluate(() =>
-        document.activeElement?.getAttribute('role'),
+      // A pointer open focuses the menu, not a row, so no ring flashes on a
+      // row the user never moved to. Either way focus has to be IN the menu —
+      // a menu left behind the popover's edge is unreachable by keyboard.
+      const inside = await page.evaluate(() =>
+        Boolean(document.activeElement?.closest('[role="menu"]')),
       );
-      if (focused !== 'menuitem') {
-        fail(where, `row actions opened with focus on ${focused}, not a row`);
-      }
+      if (!inside)
+        fail(where, 'row actions opened with focus outside the menu');
       await page.addScriptTag({ content: axeSource });
       const violations = await page.evaluate(async () => {
         const result = await window.axe.run(
@@ -311,6 +313,18 @@ try {
         );
         fail(where, `Escape left focus on "${back}"`);
       }
+
+      // From the keyboard, Enter on the "⋯" opens on the first enabled row.
+      await page.keyboard.press('Enter');
+      await menu.waitFor({ timeout: 5_000 });
+      const row = await page.evaluate(() =>
+        document.activeElement?.getAttribute('role'),
+      );
+      if (row !== 'menuitem') {
+        fail(where, `Enter opened row actions with focus on ${row}, not a row`);
+      }
+      await page.keyboard.press('Escape');
+      await menu.waitFor({ state: 'detached', timeout: 5_000 });
     } catch {
       fail(where, 'row actions menu did not open and close');
     }

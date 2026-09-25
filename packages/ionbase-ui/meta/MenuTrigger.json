@@ -1,0 +1,79 @@
+{
+  "status": "stable",
+  "summary": "A Button that opens a Menu. The \"⋯\" overflow menu is this with an icon-only Button. Owns open state, positioning, focus, and the ARIA link between the two.",
+  "useWhen": [
+    "a button opens a list of actions — row actions, an overflow \"⋯\", a \"New\" button with several kinds of new",
+    "a button opens a list of choices applied immediately, such as a sort order",
+    "the actions nest one level or more — submenus open only inside a MenuTrigger"
+  ],
+  "useInstead": [
+    {
+      "when": "the button opens a form, a filter panel or anything that is not a list of rows",
+      "use": "Popover",
+      "why": "a menu promises arrow keys between rows and nothing else; a field inside it cannot be reached"
+    },
+    {
+      "when": "the choice is a form field's value",
+      "use": "Select",
+      "why": "a form value is a listbox the form can read, not a menu of actions"
+    },
+    {
+      "when": "there are only two or three actions and room to show them",
+      "use": "Button",
+      "why": "hiding actions behind a menu costs a click and makes them undiscoverable; show them when they fit"
+    }
+  ],
+  "composition": {
+    "order": ["MenuTrigger", "Button", "Menu"],
+    "note": "Exactly two children, in this order: the Button, then the Menu. The Menu is named by the Button unless it has its own aria-label. A MenuItem with a `title` and MenuItem children opens a submenu; `onAction` on the root Menu receives actions from every level.",
+    "example": "<MenuTrigger><Button variant=\"tertiary\" aria-label=\"Actions for Payroll\" startIcon={<Icon as={Ellipsis} />} /><Menu onAction={(key) => run(key)}><MenuItem key=\"rename\">Rename</MenuItem><MenuItem key=\"move\" title=\"Move to\"><MenuItem key=\"archive\">Archive</MenuItem><MenuItem key=\"trash\">Trash</MenuItem></MenuItem></Menu></MenuTrigger>"
+  },
+  "variants": {
+    "placement": {
+      "bottom start": {
+        "use": "the default — below, aligned to the trigger's start edge"
+      },
+      "bottom end": {
+        "use": "a trigger at the end of a row or toolbar, so the menu does not run off the edge"
+      },
+      "top start": {
+        "use": "a trigger near the bottom of the viewport, such as a footer"
+      },
+      "top end": { "use": "as top start, for a trigger at the end of its row" }
+    }
+  },
+  "slots": {
+    "children": {
+      "accepts": ["Button", "Menu"],
+      "note": "the Button first, the Menu second"
+    }
+  },
+  "a11y": {
+    "role": "none — the Button gets aria-haspopup=\"menu\" and aria-expanded; the Menu is the menu",
+    "namesChild": true,
+    "guarantees": [
+      "Enter, Space and ArrowDown open the menu with focus on its first row; ArrowUp opens it on the last",
+      "choosing an action closes every open level and returns focus to the trigger; so do Escape and an outside click",
+      "the menu is named by the trigger unless it has its own aria-label",
+      "a submenu opens with the right arrow, Enter or Space and closes with the left arrow or Escape, which puts focus back on the row that opened it",
+      "submenus are non-modal: the parent menu stays on screen and hoverable, so the pointer can move between levels"
+    ],
+    "requires": [
+      "an icon-only trigger Button needs its own aria-label — it names the menu too"
+    ]
+  },
+  "antiPatterns": [
+    {
+      "dont": "wrapping a Menu in a Popover to make a dropdown",
+      "why": "the trigger then announces a dialog, not a menu, the arrow keys cannot open it, and choosing an action does not close it. That is exactly what MenuTrigger exists to replace"
+    },
+    {
+      "dont": "a plain <button> as the trigger",
+      "why": "the trigger must accept react-aria press props and a ref; IonBase's Button does, a DOM button silently never opens"
+    },
+    {
+      "dont": "more than two levels of submenu",
+      "why": "each level is a hover target narrower than the last; past two, the pointer falls off the path and the menu closes. Flatten with sections instead"
+    }
+  ]
+}

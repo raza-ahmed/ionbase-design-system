@@ -1,5 +1,66 @@
 # Changelog
 
+## 0.83.0 — 2026-09-25
+
+### Added — `MenuTrigger`, and submenus
+
+A Popover wrapped round a Menu made a dropdown that looked right and behaved
+wrongly. The trigger announced a dialog, the arrow keys could not open it,
+and choosing an action left it open. `MenuTrigger` is the second item on the
+enterprise checklist.
+
+- **`<MenuTrigger><Button/><Menu/></MenuTrigger>`.** The Button announces
+  `aria-haspopup` and `aria-expanded`, and the Menu is named by it unless it
+  has its own `aria-label`.
+- **Opening it.** Enter, Space and ArrowDown open it on the first row, and
+  ArrowUp opens it on the last. A click focuses the menu itself, so no focus
+  ring flashes on a row the user never moved to.
+- **Closing it.** Choosing an action closes every open level and returns focus
+  to the Button. So do Escape and an outside click.
+- **The "⋯" overflow menu** is MenuTrigger with an icon-only Button. There is
+  no separate component, because the only difference is the Button.
+- **`placement`**: `bottom start` (the default), `bottom end`, `top start`
+  and `top end`. It flips when there is no room.
+- **Submenus.** A MenuItem with a `title` and MenuItem children opens one: the
+  right arrow goes in, and the left arrow or Escape comes back out to the row
+  that opened it. Hovering opens it after a short delay. Submenus are
+  non-modal, so the pointer can move back up a level. An action chosen at any
+  depth reaches the root Menu's `onAction`. The row shows a chevron, mirrored
+  in right-to-left layouts, and stays highlighted while its submenu is open.
+- **Menu now has Figma's `Shadow/lg`.** Figma always drew Menu as a raised
+  dropdown surface, and code never shipped the shadow. It floats at least
+  240px wide, which is Figma's width.
+
+### Fixed — `Menu Item` was mapped to the wrong Figma component
+
+Figma had two component sets named `Menu Item`. One is the real menu row
+(82:217, on the Menu page, which `Menu` is built from). The other is a
+pre-Sidebar side-nav row (639:2634, on the Side Menu page). The export keyed
+components by name, so the second silently replaced the first. As a result,
+the mapping, every gate and 0.82.0's Dev Mode block described the side-nav
+row. `MenuSection` was mapped to that side menu's heading for the same reason.
+
+- The two Side Menu components are renamed `Side Menu Item` and `Side Menu
+Section Title`, and listed as unmapped with the reason. Their stale code
+  blocks are removed.
+- `Menu Item` now maps the real row. `Label` maps to `children`, the leading
+  icon to `icon`, and `State` Disabled to `isDisabled`. Selection stays in
+  Menu's `selectedKeys`.
+- `Menu Section Title` (1468:271) is drawn on the Menu page from the
+  stylesheet, bound to the spacing variables, and mapped to `MenuSection`.
+- **`export-components.js` now throws on a repeated component name**, naming
+  both nodes. A duplicate name was the silent version of the duplicate-variant
+  failure AGENTS.md already describes.
+- All 75 Dev Mode blocks were read back and hash-matched before
+  countersigning.
+
+### Demo
+
+- The row actions and the workspace switcher are MenuTriggers. No Popover
+  holds a Menu any more.
+- The smoke test checks both ways of opening. A click must leave focus inside
+  the menu. Enter on the "⋯" must land on the first enabled row.
+
 ## 0.82.0 — 2026-09-25
 
 ### Changed — `Menu` is a real ARIA menu

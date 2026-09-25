@@ -1,7 +1,8 @@
 /*
  * Menu
  *
- * Measured from Figma `Menu` (85:22440) and `Menu Item`.
+ * Measured from Figma `Menu` (82:306), `Menu Item` (82:217) and
+ * `Menu Section Title` (1468:271), all on the Menu page.
  *
  *   menu   padding 6, gap 2, radius/xl, surface/default, 1px border/subtle
  *   item   40 tall, padding 8/12, gap 8, radius/sm
@@ -35,6 +36,11 @@
   border-width: var(--border-width-default);
   border-color: var(--border-subtle);
   border-radius: var(--radius-xl);
+
+  /* Figma's Menu carries Shadow/lg (82:306) — it is drawn as a dropdown
+   * surface. Code shipped without it until 0.83.0, which only showed once the
+   * menu floated over a page. */
+  box-shadow: var(--ion-shadow-shadow-lg);
   font-family: var(--font-family-sans);
   list-style: none;
   margin: 0;
@@ -136,6 +142,63 @@
   color: var(--icon-disabled);
 }
 
+/* ------------------------------------------------------------- submenus
+ *
+ * Figma draws no submenu row. The chevron takes the check's place at the end
+ * of the row — a submenu parent is never itself checkable — and the row keeps
+ * its highlight while its submenu is open, so the eye can find its way back.
+ */
+.ion-menu__chevron {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  margin-inline-start: auto;
+  color: var(--icon-default);
+}
+
+.ion-menu__chevron svg {
+  width: var(--icon-size-sm);
+  height: var(--icon-size-sm);
+}
+
+.ion-menu__chevron:dir(rtl) svg {
+  transform: scaleX(-1);
+}
+
+.ion-menu__item--submenu[data-open='true'] {
+  background-color: var(--surface-hover);
+}
+
+/* ------------------------------------------------------------- floating
+ *
+ * The wrapper positions and paints nothing: Menu is already the surface. Its
+ * width is Figma's 240 as a floor, so a menu of short labels does not shrink
+ * to a sliver under a wide trigger, and a long one can still grow.
+ *
+ * z-index is Popover's, for Popover's reason: a menu opened from inside a
+ * dialog has to sit above it, and a toast confirming its action above both.
+ */
+.ion-menu-popover {
+  --ion-menu-min-width: 240px;
+
+  display: flex;
+  flex-direction: column;
+  z-index: 1150;
+  outline: none;
+}
+
+.ion-menu-popover > .ion-menu {
+  min-width: var(--ion-menu-min-width);
+  min-height: 0;
+  overflow-y: auto;
+}
+
+.ion-menu-popover__underlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1140;
+}
+
 /* ------------------------------------------------------------- sections
  *
  * A section is an <li role="presentation"> holding a heading and a nested
@@ -159,12 +222,13 @@
 }
 
 /*
- * Figma `Menu Section Title` (639:2664): caption in text/tertiary, then a
- * 1px border/strong rule filling the rest of the row. Figma's gap is 7px, which
- * is off the spacing scale; 8 is the nearest step.
+ * Figma `Menu Section Title` (1468:271): caption in text/tertiary, then a
+ * 1px border/strong rule filling the rest of the row, with 8/12/4 insets so
+ * the caption lines up with the row labels beneath it.
  *
- * Figma draws the title alone, not placed in a menu. The inline inset is the
- * item's, so the caption lines up with the row labels beneath it.
+ * It was drawn from this stylesheet on 25 Sep 2026. Before that, 0.82.0 had
+ * mapped MenuSection to a same-named heading on the Side Menu page — a
+ * pre-Sidebar side-nav drawing with a 7px gap and no insets, not a menu part.
  */
 .ion-menu__section-title {
   display: flex;

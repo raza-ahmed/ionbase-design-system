@@ -1,11 +1,16 @@
 {
   "status": "stable",
-  "summary": "An ARIA menu surface: one tab stop, arrow keys, typeahead, and optional single or multiple selection. Children are MenuItem and MenuSection. What opens it, and where it sits, is the caller's.",
+  "summary": "An ARIA menu: one tab stop, arrow keys, typeahead, and optional single or multiple selection. Children are MenuItem and MenuSection. Inside a MenuTrigger it floats, opens and closes, and can open submenus; on its own it renders in flow.",
   "useWhen": [
     "a list of actions or choices for the thing the user is on — row actions, a workspace switcher, a sort order",
     "the rows need icons, a selected check, or grouping under headings — more than a native <select> can hold"
   ],
   "useInstead": [
+    {
+      "when": "a button opens it",
+      "use": "MenuTrigger",
+      "why": "it gives the trigger aria-haspopup and aria-expanded, opens on ArrowDown, and closes on an action and returns focus — a Popover round a Menu does none of that"
+    },
     {
       "when": "one value is picked for a form field from a modest list of plain text options",
       "use": "Select",
@@ -27,7 +32,7 @@
   ],
   "composition": {
     "order": ["Menu", "MenuSection", "MenuItem"],
-    "note": "MenuItem and MenuSection are collection elements: Menu reads them from its DIRECT children to build the collection, and neither renders anything itself. Every MenuItem needs a `key`, and `onAction`, `selectedKeys` and `disabledKeys` all speak in those keys. Menu does not open, close or position itself — put it in a Popover until MenuTrigger exists.",
+    "note": "MenuItem and MenuSection are collection elements: Menu reads them from its DIRECT children to build the collection, and neither renders anything itself. Every MenuItem needs a `key`, and `onAction`, `selectedKeys` and `disabledKeys` all speak in those keys. To open it from a button, put the Button and the Menu inside a MenuTrigger.",
     "example": "<Menu aria-label=\"Row actions\" onAction={(key) => run(key)}><MenuSection title=\"Edit\"><MenuItem key=\"rename\" icon={<Icon as={Pencil} />}>Rename</MenuItem><MenuItem key=\"duplicate\">Duplicate</MenuItem></MenuSection><MenuSection aria-label=\"Danger\"><MenuItem key=\"archive\" isDisabled>Archive</MenuItem></MenuSection></Menu>"
   },
   "variants": {
@@ -44,7 +49,9 @@
     }
   },
   "slots": {
-    "children": { "accepts": ["MenuItem", "MenuSection"] }
+    "children": {
+      "accepts": ["MenuItem", "MenuSection"]
+    }
   },
   "a11y": {
     "role": "menu",
@@ -59,7 +66,8 @@
     ],
     "notes": [
       "A menu is not a form control. It has no `name` and submits nothing; `selectedKeys` is state you hold.",
-      "Titled sections are named groups. An untitled section needs `aria-label`, and is set off by a rule."
+      "Titled sections are named groups. An untitled section needs `aria-label`, and is set off by a rule.",
+      "Submenus need a MenuTrigger. In a standalone Menu a row with MenuItem children renders as a plain row: there is no root to open a submenu from."
     ]
   },
   "antiPatterns": [

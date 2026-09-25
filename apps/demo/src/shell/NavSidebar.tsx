@@ -5,7 +5,7 @@ import {
   Icon,
   Menu,
   MenuItem,
-  Popover,
+  MenuTrigger,
   ProgressBar,
   Sidebar,
   SidebarItem,
@@ -42,7 +42,6 @@ export function NavSidebar({ route }: { route: Route | null }) {
   const section = route && sectionOf(route);
   const waiting = listWaitingRuns();
   const [workspace, setWorkspace] = useState(WORKSPACES[0]);
-  const [switcherOpen, setSwitcherOpen] = useState(false);
 
   // A run that is not in the waiting list still belongs to Runs.
   const runIsListed = waiting.some((r) => route === `runs/${r.id}`);
@@ -51,40 +50,7 @@ export function NavSidebar({ route }: { route: Route | null }) {
     <Sidebar
       label="Workspace"
       header={
-        <Popover
-          placement="bottom"
-          size="sm"
-          hideArrow
-          showClose={false}
-          title="Switch workspace"
-          isOpen={switcherOpen}
-          onOpenChange={setSwitcherOpen}
-          content={
-            <Menu
-              aria-label="Workspaces"
-              autoFocus
-              selectionMode="single"
-              disallowEmptySelection
-              selectedKeys={[workspace.id]}
-              onSelectionChange={(keys) => {
-                const next = WORKSPACES.find(
-                  (w) => keys !== 'all' && keys.has(w.id),
-                );
-                if (next) setWorkspace(next);
-              }}
-              onClose={() => setSwitcherOpen(false)}
-            >
-              {WORKSPACES.map((w) => (
-                <MenuItem
-                  key={w.id}
-                  icon={<Avatar size="mini" initials={w.initials} alt="" />}
-                >
-                  {w.name}
-                </MenuItem>
-              ))}
-            </Menu>
-          }
-        >
+        <MenuTrigger>
           <Button
             variant="tertiary"
             size="md"
@@ -96,7 +62,28 @@ export function NavSidebar({ route }: { route: Route | null }) {
           >
             {workspace.name}
           </Button>
-        </Popover>
+          <Menu
+            aria-label="Workspaces"
+            selectionMode="single"
+            disallowEmptySelection
+            selectedKeys={[workspace.id]}
+            onSelectionChange={(keys) => {
+              const next = WORKSPACES.find(
+                (w) => keys !== 'all' && keys.has(w.id),
+              );
+              if (next) setWorkspace(next);
+            }}
+          >
+            {WORKSPACES.map((w) => (
+              <MenuItem
+                key={w.id}
+                icon={<Avatar size="mini" initials={w.initials} alt="" />}
+              >
+                {w.name}
+              </MenuItem>
+            ))}
+          </Menu>
+        </MenuTrigger>
       }
       footer={
         <ProgressBar
