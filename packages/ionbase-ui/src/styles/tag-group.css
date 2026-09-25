@@ -1,0 +1,172 @@
+/*
+ * TagGroup, Tag
+ *
+ * Drawn in Figma as `Tag` and `Tag Group` on the Tag page.
+ *
+ *   tag            surface/subtle fill, border/subtle rule, text/default label
+ *   label inset    8 (sm) / 12 (md) from the tag's edge, 4 / 6 to the button
+ *   height         pinned — spacing/24 (sm), spacing/32 (md) — the way Badge
+ *                  pins its ramp, so padding never nudges it off by a pixel
+ *   radius         radius/sm at sm, radius/md at md
+ *   remove button  16 / 20 square, icon/secondary, surface/hover under the
+ *                  pointer, its own focus ring
+ *
+ * NEUTRAL ON PURPOSE
+ *
+ * No intent colours. A tag is a choice someone made, not a state the system
+ * reports; a red "Status: Failing" filter would read as the agent failing.
+ * That is Badge's job, and Badge is not removable.
+ *
+ * The tag carries its own background, so the contrast gate measures the label
+ * against the tag rather than whatever the group sits on.
+ */
+.ion-tag-group {
+  display: grid;
+  gap: var(--spacing-6);
+  min-width: 0;
+  font-family: var(--font-family-sans);
+}
+
+.ion-tag-group__label {
+  color: var(--text-secondary);
+  font-size: var(--type-body-sm);
+  line-height: var(--type-body-sm-line-height);
+  font-weight: var(--font-weight-medium);
+}
+
+.ion-tag-group__list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-6);
+  min-width: 0;
+}
+
+.ion-tag-group__list:focus-visible {
+  outline: var(--border-width-thick) solid var(--ring-focus);
+  outline-offset: 2px;
+  border-radius: var(--radius-xs);
+}
+
+.ion-tag-group__empty,
+.ion-tag-group__description {
+  margin: 0;
+  color: var(--text-tertiary);
+  font-size: var(--type-body-sm);
+  line-height: var(--type-body-sm-line-height);
+}
+
+.ion-tag {
+  display: inline-flex;
+  align-items: center;
+  max-width: 100%;
+  height: var(--spacing-24);
+  padding-inline: calc(var(--spacing-8) - var(--border-width-default));
+  border: var(--border-width-default) solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  background-color: var(--surface-subtle);
+  color: var(--text-default);
+  font-size: var(--type-body-sm);
+  line-height: var(--type-body-sm-line-height);
+  outline: none;
+  cursor: default;
+}
+
+/* The remove button sits closer to the edge than the label does. */
+.ion-tag--removable {
+  padding-inline-end: calc(var(--spacing-4) - var(--border-width-default));
+}
+
+.ion-tag-group--md .ion-tag {
+  height: var(--spacing-32);
+  padding-inline: calc(var(--spacing-12) - var(--border-width-default));
+  border-radius: var(--radius-md);
+  font-size: var(--type-body);
+  line-height: var(--type-body-line-height);
+}
+
+.ion-tag-group--md .ion-tag--removable {
+  padding-inline-end: calc(var(--spacing-6) - var(--border-width-default));
+}
+
+.ion-tag[data-focus-visible='true'] {
+  outline: var(--border-width-thick) solid var(--ring-focus);
+  outline-offset: 2px;
+}
+
+.ion-tag--disabled {
+  border-color: var(--border-disabled);
+  background-color: var(--surface-disabled);
+  color: var(--text-disabled);
+}
+
+.ion-tag__cell {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-4);
+  min-width: 0;
+}
+
+/* A long label ends in an ellipsis rather than stretching the row. */
+.ion-tag__label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ion-tag__remove {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: var(--spacing-16);
+  height: var(--spacing-16);
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-xs);
+  background: none;
+  color: var(--icon-secondary);
+  cursor: pointer;
+  transition:
+    background-color var(--ion-duration-base) var(--ion-ease-out),
+    color var(--ion-duration-base) var(--ion-ease-out);
+}
+
+/* Figma's Label Slot pads 4 / 6 on each side, which is the gap to the button. */
+.ion-tag-group--md .ion-tag__cell {
+  gap: var(--spacing-6);
+}
+
+.ion-tag-group--md .ion-tag__remove {
+  width: var(--spacing-20);
+  height: var(--spacing-20);
+}
+
+.ion-tag__remove svg {
+  width: var(--icon-size-2xs);
+  height: var(--icon-size-2xs);
+}
+
+@media (hover: hover) {
+  .ion-tag__remove:hover {
+    background-color: var(--surface-hover);
+    color: var(--icon-default);
+  }
+}
+
+.ion-tag__remove[data-focus-visible='true'] {
+  outline: var(--border-width-thick) solid var(--ring-focus);
+  outline-offset: 1px;
+}
+
+.ion-tag--disabled .ion-tag__remove {
+  color: var(--icon-disabled);
+  cursor: default;
+}
+
+/* Forced colours drop the fill; the rule keeps each tag a separate shape. */
+@media (forced-colors: active) {
+  .ion-tag {
+    border-color: CanvasText;
+  }
+}

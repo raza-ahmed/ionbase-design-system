@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import {
   Alert,
   Button,
@@ -8,6 +8,8 @@ import {
   Link,
   Pagination,
   Select,
+  Tag,
+  TagGroup,
   useTableSort,
   useToast,
 } from 'ionbase-ui';
@@ -19,6 +21,7 @@ import { Trash2 } from 'ionbase-icons/icons/trash-2';
 import {
   listAgents,
   setPaused,
+  STATUS_LABEL,
   TEAMS,
   type Agent,
   type AgentSortColumn,
@@ -95,6 +98,23 @@ export function AgentsScreen() {
     return { ...props, onSort: () => requery(props.onSort) };
   };
   const filtered = search !== '' || status !== 'all' || team !== '';
+  const searchRef = useRef<HTMLInputElement>(null);
+  const focusSearchSoon = () =>
+    requestAnimationFrame(() => searchRef.current?.focus());
+  const activeFilters = [
+    ...(search ? [{ id: 'search', label: `Search: “${search}”` }] : []),
+    ...(status !== 'all'
+      ? [{ id: 'status', label: `Status: ${STATUS_LABEL[status]}` }]
+      : []),
+    ...(team
+      ? [
+          {
+            id: 'team',
+            label: `Team: ${TEAMS.find((t) => t.value === team)?.label ?? team}`,
+          },
+        ]
+      : []),
+  ];
   const clearFilters = () =>
     requery(() => {
       setSearch('');
@@ -178,6 +198,7 @@ export function AgentsScreen() {
         <Input
           size="sm"
           type="search"
+          ref={searchRef}
           aria-label="Search agents"
           placeholder="Search agents"
           leadingIcon={<Icon as={Search} size="sm" />}
@@ -231,6 +252,39 @@ export function AgentsScreen() {
       <p className="ion-visually-hidden" role="status">
         {announcement}
       </p>
+
+      {/* What is applied, each removable on its own — the selects only show
+          their own value, and the search box can be scrolled out of view. */}
+      {filtered && (
+        <div className="demo-active-filters">
+          <TagGroup
+            label="Active filters"
+            items={activeFilters}
+            onRemove={(keys) => {
+              requery(() => {
+                if (keys.has('search')) setSearch('');
+                if (keys.has('status')) setStatus('all');
+                if (keys.has('team')) setTeam('');
+              });
+              // The last filter takes the whole row with it, so focus would
+              // fall to the page. Search is the next filter control.
+              if (keys.size >= activeFilters.length) focusSearchSoon();
+            }}
+          >
+            {(f) => <Tag key={f.id}>{f.label}</Tag>}
+          </TagGroup>
+          <Button
+            size="sm"
+            variant="tertiary"
+            onClick={() => {
+              clearFilters();
+              focusSearchSoon();
+            }}
+          >
+            Clear all
+          </Button>
+        </div>
+      )}
 
       {result.status === 'loading' && (
         <AgentsTableSkeleton rows={pageSize} sortProps={headerSort} />

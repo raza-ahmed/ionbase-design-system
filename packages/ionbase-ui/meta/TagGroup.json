@@ -1,0 +1,69 @@
+{
+  "status": "stable",
+  "since": "0.79.0",
+  "summary": "Labels a person applied and can take away: active filters, the labels on a record, recipients. Neutral and removable, unlike Badge.",
+  "useWhen": [
+    "showing which filters are applied, each removable on its own",
+    "the labels or categories someone attached to a record",
+    "a set of chosen values — recipients, assignees — shown after they are picked"
+  ],
+  "useInstead": [
+    {
+      "when": "it is a status the system reports — Failing, Paid, Draft",
+      "use": "Badge"
+    },
+    {
+      "when": "the chips toggle on and off rather than being removed",
+      "use": "SegmentedControl"
+    },
+    {
+      "when": "several options can be switched on at once from a fixed list",
+      "use": "Checkbox"
+    }
+  ],
+  "composition": {
+    "order": ["TagGroup", "Tag"],
+    "note": "Tag is react-stately's collection Item: `key` identifies it and is what `onRemove` hands back, children are its label. Pass `items` and a render function for a list that changes.",
+    "example": "<TagGroup label=\"Active filters\" onRemove={(keys) => drop(keys)}><Tag key=\"status\">Status: Failing</Tag><Tag key=\"team\">Team: Finance</Tag></TagGroup>"
+  },
+  "variants": {
+    "size": {
+      "sm": {
+        "use": "the default — filter rows, table toolbars, dense record headers"
+      },
+      "md": {
+        "use": "a group that is the main content of its area, or sits beside md controls"
+      }
+    }
+  },
+  "a11y": {
+    "guarantees": [
+      "the group is one tab stop; arrow keys move between tags",
+      "each remove button is named \"Remove\" plus the tag's label, so a screen reader hears which one",
+      "Delete or Backspace on a focused tag removes it, and focus moves to its neighbour",
+      "removing the last tag moves focus to the group, which reads `emptyLabel`, instead of dropping it to the page"
+    ],
+    "requires": [
+      "a `label` or `aria-label` — it names the group, so \"Remove Finance\" is heard as a filter being removed",
+      "`textValue` on a Tag whose children are not plain text",
+      "`onRemove` to drop the keys from your own list; the group removes nothing itself"
+    ],
+    "notes": [
+      "No selection. A chip that toggles is a SegmentedControl or a Checkbox, which already announce \"selected\" the way screen readers expect."
+    ]
+  },
+  "antiPatterns": [
+    {
+      "dont": "using a TagGroup for statuses",
+      "why": "tags are neutral and removable; a status is neither — use Badge"
+    },
+    {
+      "dont": "`onRemove` that does not remove the tag",
+      "why": "the button says \"Remove\", focus moves on, and the tag is still there — the one thing the control promised did not happen"
+    },
+    {
+      "dont": "a filter row with no way to clear everything at once",
+      "why": "removing six filters one by one is six targets; pair the group with a \"Clear filters\" Button"
+    }
+  ]
+}

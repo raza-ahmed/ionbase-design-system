@@ -1890,6 +1890,47 @@
         }
       }
     },
+    "Tag": {
+      "page": "Tag",
+      "id": "1448:290",
+      "kind": "SET",
+      "props": {
+        "Label#1448:0": {
+          "type": "TEXT"
+        },
+        "Show Remove#1448:9": {
+          "type": "BOOLEAN"
+        },
+        "Size": {
+          "type": "VARIANT",
+          "options": ["Small", "Medium"],
+          "default": "Small"
+        },
+        "State": {
+          "type": "VARIANT",
+          "options": ["Default", "Hover", "Focus", "Disabled"],
+          "default": "Default"
+        }
+      }
+    },
+    "Tag Group": {
+      "page": "Tag",
+      "id": "1448:333",
+      "kind": "SET",
+      "props": {
+        "Label#1448:18": {
+          "type": "TEXT"
+        },
+        "Show Label#1448:21": {
+          "type": "BOOLEAN"
+        },
+        "Size": {
+          "type": "VARIANT",
+          "options": ["Small", "Medium"],
+          "default": "Small"
+        }
+      }
+    },
     "Textarea": {
       "page": "Textarea",
       "id": "1301:334",

@@ -1620,6 +1620,44 @@
         }
       }
     },
+    "Tag": {
+      "code": "Tag",
+      "note": "Tag is a collection item and takes no props of its own. Size and removability are set once on the parent TagGroup, so every tag in a group matches.",
+      "props": {
+        "Label#1448:0": {
+          "ignore": "Tag’s label is its children, a collection prop the TypeScript checker cannot see — see Tag’s contract."
+        },
+        "Show Remove#1448:9": {
+          "ignore": "removability is TagGroup’s onRemove: pass it and every tag in the group shows the button, leave it out and none do"
+        },
+        "Size": {
+          "ignore": "set once on the parent TagGroup, not per tag"
+        },
+        "State": {
+          "ignore": "Hover is CSS and Focus is :focus-visible; Disabled is disabledKeys on TagGroup"
+        }
+      },
+      "example": "<Tag key=\"team:finance\">Team: Finance</Tag>"
+    },
+    "Tag Group": {
+      "code": "TagGroup",
+      "props": {
+        "Size": {
+          "prop": "size",
+          "values": {
+            "Small": "sm",
+            "Medium": "md"
+          }
+        },
+        "Label#1448:18": {
+          "prop": "label"
+        },
+        "Show Label#1448:21": {
+          "prop": "label",
+          "note": "false means no visible label — pass aria-label instead, the group still needs a name"
+        }
+      }
+    },
     "Tabs": {
       "code": "Tabs",
       "props": {

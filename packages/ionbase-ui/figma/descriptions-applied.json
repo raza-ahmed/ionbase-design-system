@@ -19,7 +19,7 @@
   ],
   "file": "gaLbGd0QNb1fUl6BjSpfBA",
   "appliedOn": "2026-09-24",
-  "verifiedInFigma": 69,
+  "verifiedInFigma": 71,
   "applied": {
     "1360:267": {
       "figmaComponent": "Accordion",
@@ -320,6 +320,16 @@
       "figmaComponent": "Table Sort Indicator",
       "component": "TableCell",
       "hash": "9710e38ab7d4ec46"
+    },
+    "1448:290": {
+      "figmaComponent": "Tag",
+      "component": "Tag",
+      "hash": "f267ea340d3c175c"
+    },
+    "1448:333": {
+      "figmaComponent": "Tag Group",
+      "component": "TagGroup",
+      "hash": "d40a75b2908574c5"
     },
     "157:126": {
       "figmaComponent": "Tabs",
