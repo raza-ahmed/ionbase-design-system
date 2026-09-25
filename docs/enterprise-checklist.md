@@ -24,10 +24,10 @@
 ## P0 — every enterprise app hits these
 
 - [x] **Menu** — upgrade to a real ARIA menu: roving focus, arrow keys, typeahead, checkable items, sections — 0.82.0. Submenus moved to MenuButton: a submenu needs a trigger to open from
-- [ ] **MenuButton / OverflowMenu** — the trigger half of Menu, plus submenus. _needs Menu_
-- [ ] **PageHeader** — and add it to the `PageShell` pattern
-- [ ] **SearchField**
-- [ ] **Fieldset / CheckboxGroup**
+- [x] **MenuButton / OverflowMenu** — shipped as `MenuTrigger`, with submenus; the overflow menu is MenuTrigger with an icon-only Button — 0.83.0
+- [x] **PageHeader** — and add it to the `PageShell` pattern — 0.84.0
+- [x] **SearchField** — 0.85.0
+- [x] **Fieldset / CheckboxGroup** — `RadioGroup` moved onto the same shell — 0.86.0
 - [ ] **MultiSelect**
 - [ ] **Toolbar**
 - [ ] **Table: row selection and batch actions** — select-all, indeterminate, batch bar, count announced. _needs Toolbar_

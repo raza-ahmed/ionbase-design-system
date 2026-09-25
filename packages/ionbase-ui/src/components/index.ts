@@ -30,12 +30,15 @@ export { PhoneInput } from './PhoneInput.js';
 export type { PhoneInputProps } from './PhoneInput.js';
 export { Select } from './Select.js';
 export type { SelectProps, SelectSize, SelectOption } from './Select.js';
-export { Checkbox } from './Checkbox.js';
+export { Checkbox, CheckboxGroup } from './Checkbox.js';
 export type {
   CheckboxProps,
+  CheckboxGroupProps,
   CheckboxSize,
   CheckboxIntent,
 } from './Checkbox.js';
+export { Fieldset } from './Fieldset.js';
+export type { FieldsetProps, FieldsetOrientation } from './Fieldset.js';
 export { Radio, RadioGroup } from './Radio.js';
 export type {
   RadioProps,
@@ -45,8 +48,13 @@ export type {
 } from './Radio.js';
 export { Toggle } from './Toggle.js';
 export type { ToggleProps, ToggleSize, ToggleIntent } from './Toggle.js';
-export { Menu, MenuItem, MenuSection } from './Menu.js';
-export type { MenuProps, MenuItemProps } from './Menu.js';
+export { Menu, MenuItem, MenuSection, MenuTrigger } from './Menu.js';
+export type {
+  MenuProps,
+  MenuItemProps,
+  MenuTriggerProps,
+  MenuTriggerPlacement,
+} from './Menu.js';
 export { Avatar, AvatarGroup } from './Avatar.js';
 export type {
   AvatarProps,
@@ -122,6 +130,8 @@ export type {
 export type { IsoTime } from './iso-time.js';
 export { TagGroup, Tag } from './TagGroup.js';
 export type { TagGroupProps, TagGroupSize } from './TagGroup.js';
+export { PageHeader } from './PageHeader.js';
+export type { PageHeaderProps, PageHeaderHeadingLevel } from './PageHeader.js';
 export { Card } from './Card.js';
 export type { CardProps, CardHeadingLevel, CardIntent } from './Card.js';
 export { FullCard } from './FullCard.js';
@@ -186,6 +196,9 @@ export type {
 
 export { NumberInput } from './NumberInput.js';
 export type { NumberInputProps, NumberInputSize } from './NumberInput.js';
+
+export { SearchField } from './SearchField.js';
+export type { SearchFieldProps, SearchFieldSize } from './SearchField.js';
 
 export { ToolCall } from './ToolCall.js';
 export type { ToolCallProps } from './ToolCall.js';

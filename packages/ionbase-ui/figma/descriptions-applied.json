@@ -19,7 +19,7 @@
   ],
   "file": "gaLbGd0QNb1fUl6BjSpfBA",
   "appliedOn": "2026-09-25",
-  "verifiedInFigma": 75,
+  "verifiedInFigma": 78,
   "applied": {
     "1360:267": {
       "figmaComponent": "Accordion",
@@ -100,6 +100,11 @@
       "figmaComponent": "Checkbox",
       "component": "Checkbox",
       "hash": "04f1b81a01ae85e7"
+    },
+    "1501:475": {
+      "figmaComponent": "Checkbox Group",
+      "component": "CheckboxGroup",
+      "hash": "b8f283398f0c0584"
     },
     "1167:247": {
       "figmaComponent": "Citation",
@@ -196,12 +201,12 @@
       "component": "Menu",
       "hash": "ee5c0ad282b4e56e"
     },
-    "639:2634": {
+    "82:217": {
       "figmaComponent": "Menu Item",
       "component": "MenuItem",
-      "hash": "782fc93c885fe2b4"
+      "hash": "c381cad16dcc9d3e"
     },
-    "639:2664": {
+    "1468:271": {
       "figmaComponent": "Menu Section Title",
       "component": "MenuSection",
       "hash": "b987cc9bca2e26e9"
@@ -220,6 +225,11 @@
       "figmaComponent": "Number Input",
       "component": "NumberInput",
       "hash": "6adc2d15e13d253c"
+    },
+    "1473:242": {
+      "figmaComponent": "Page Header",
+      "component": "PageHeader",
+      "hash": "d4660f961889a929"
     },
     "1291:503": {
       "figmaComponent": "Pagination",
@@ -245,6 +255,11 @@
       "figmaComponent": "Radio",
       "component": "Radio",
       "hash": "3eef9529655a0368"
+    },
+    "1498:242": {
+      "figmaComponent": "Search Field",
+      "component": "SearchField",
+      "hash": "1a5ef4b0c36796c9"
     },
     "1390:435": {
       "figmaComponent": "Segmented Control",

@@ -1,13 +1,13 @@
-import { useState } from 'react';
 import {
   Avatar,
   Badge,
   Button,
-  Link,
   Icon,
+  Link,
   Menu,
   MenuItem,
-  Popover,
+  MenuSection,
+  MenuTrigger,
   Skeleton,
   Table,
   TableBody,
@@ -113,7 +113,6 @@ export function AgentsTable({
   onPause: (agent: Agent, paused: boolean) => void;
   onDelete: (agent: Agent) => void;
 }) {
-  const [menuFor, setMenuFor] = useState<string | null>(null);
   const selectedHere = rows.filter((a) => selected.has(a.id)).length;
 
   const toggle = (id: string, on: boolean) => {
@@ -206,23 +205,22 @@ export function AgentsTable({
                 )}
               </TableCell>
               <TableCell align="trailing">
-                <Popover
-                  aria-label={`Actions for ${a.name}`}
-                  size="sm"
-                  placement="bottom"
-                  hideArrow
-                  isOpen={menuFor === a.id}
-                  onOpenChange={(open) => setMenuFor(open ? a.id : null)}
-                  content={
-                    <Menu
-                      aria-label={`Actions for ${a.name}`}
-                      autoFocus="first"
-                      onAction={(key) => {
-                        setMenuFor(null);
-                        if (key === 'pause') onPause(a, !paused);
-                        else onDelete(a);
-                      }}
-                    >
+                <MenuTrigger placement="bottom end">
+                  <Button
+                    size="sm"
+                    variant="tertiary"
+                    aria-label={`Actions for ${a.name}`}
+                    startIcon={<Icon as={Ellipsis} size="sm" />}
+                  />
+                  <Menu
+                    onAction={(key) => {
+                      if (key === 'pause') onPause(a, !paused);
+                      else onDelete(a);
+                    }}
+                  >
+                    {/* Delete sits apart from the everyday action, behind a rule,
+                        so it is never the row the pointer lands on by habit. */}
+                    <MenuSection aria-label="Run">
                       <MenuItem
                         key="pause"
                         icon={<Icon as={paused ? Play : Pause} size="sm" />}
@@ -230,22 +228,17 @@ export function AgentsTable({
                       >
                         {paused ? 'Resume' : 'Pause'}
                       </MenuItem>
+                    </MenuSection>
+                    <MenuSection aria-label="Danger">
                       <MenuItem
                         key="delete"
                         icon={<Icon as={Trash2} size="sm" />}
                       >
                         Delete…
                       </MenuItem>
-                    </Menu>
-                  }
-                >
-                  <Button
-                    size="sm"
-                    variant="tertiary"
-                    aria-label={`Actions for ${a.name}`}
-                    startIcon={<Icon as={Ellipsis} size="sm" />}
-                  />
-                </Popover>
+                    </MenuSection>
+                  </Menu>
+                </MenuTrigger>
               </TableCell>
             </TableRow>
           );

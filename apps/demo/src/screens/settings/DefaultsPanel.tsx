@@ -4,6 +4,7 @@ import {
   Button,
   Card,
   Checkbox,
+  CheckboxGroup,
   Radio,
   RadioGroup,
   Select,
@@ -19,6 +20,8 @@ const MODEL_OPTIONS = [
   { value: 'atlas-l', label: 'Atlas L' },
   { value: 'sage-xl', label: 'Sage XL' },
 ];
+
+const SAFEGUARDS = ['redactPii', 'approvalForNewAgents'] as const;
 
 /**
  * Save-together half of the pattern: Checkboxes and Radios, never Toggles, and a
@@ -107,6 +110,7 @@ export function DefaultsPanel({
 
       <RadioGroup
         label="Keep run logs for"
+        description="Longer than a year needs the Enterprise plan."
         value={draft?.retentionDays ?? ''}
         isDisabled={disabled}
         onChange={(v) =>
@@ -118,22 +122,21 @@ export function DefaultsPanel({
         <Radio value="365">1 year</Radio>
       </RadioGroup>
 
-      <Checkbox
-        isSelected={draft?.redactPii ?? false}
+      {/* Two booleans on the server, one question on the page: the group is
+          what announces "Safeguards" with each box. */}
+      <CheckboxGroup
+        label="Safeguards"
+        value={SAFEGUARDS.filter((k) => draft?.[k])}
         isDisabled={disabled}
-        onSelectionChange={(redactPii) => set({ redactPii })}
-      >
-        Redact personal data in run logs
-      </Checkbox>
-      <Checkbox
-        isSelected={draft?.approvalForNewAgents ?? false}
-        isDisabled={disabled}
-        onSelectionChange={(approvalForNewAgents) =>
-          set({ approvalForNewAgents })
+        onChange={(on) =>
+          set(Object.fromEntries(SAFEGUARDS.map((k) => [k, on.includes(k)])))
         }
       >
-        New agents ask a human before anything irreversible
-      </Checkbox>
+        <Checkbox value="redactPii">Redact personal data in run logs</Checkbox>
+        <Checkbox value="approvalForNewAgents">
+          New agents ask a human before anything irreversible
+        </Checkbox>
+      </CheckboxGroup>
 
       {dirtyKeys.length > 0 && (
         <div

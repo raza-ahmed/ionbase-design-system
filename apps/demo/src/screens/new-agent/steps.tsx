@@ -1,9 +1,11 @@
 import {
   Button,
   Checkbox,
+  CheckboxGroup,
   Combobox,
   DatePicker,
   Divider,
+  Fieldset,
   FileUpload,
   Input,
   NumberInput,
@@ -68,6 +70,12 @@ const FREQUENCIES = [
   { value: 'weekdays', label: 'Every weekday' },
   { value: 'weekly', label: 'Every week' },
 ];
+
+const NOTIFY_LABELS = [
+  ['failed', 'A run fails'],
+  ['approval', 'A run needs approval'],
+  ['budget', '80% of the budget is spent'],
+] as const;
 
 interface StepProps {
   values: AgentDraft;
@@ -160,7 +168,11 @@ export function TriggerStep({ values, errors, onChange, onBlur }: StepProps) {
       </RadioGroup>
 
       {values.trigger === 'schedule' && (
-        <div className="demo-form__pair">
+        <Fieldset
+          label="Schedule"
+          orientation="horizontal"
+          className="demo-form__schedule"
+        >
           <DatePicker
             id="field-startDate"
             label="Start date"
@@ -194,7 +206,7 @@ export function TriggerStep({ values, errors, onChange, onBlur }: StepProps) {
               {...invalid(errors, 'runAt')}
             />
           )}
-        </div>
+        </Fieldset>
       )}
 
       <Divider />
@@ -250,6 +262,23 @@ export function GuardrailsStep({
       >
         Ask a human before anything irreversible — sending, paying, deleting
       </Checkbox>
+
+      <CheckboxGroup
+        id="field-notifyOn"
+        label="Notify the team when"
+        description="Sent to the owning team’s channel."
+        isRequired
+        value={values.notifyOn}
+        onChange={(notifyOn) => {
+          onChange({ notifyOn });
+          onBlur('notifyOn');
+        }}
+        {...invalid(errors, 'notifyOn')}
+      >
+        <Checkbox value="failed">A run fails</Checkbox>
+        <Checkbox value="approval">A run needs approval</Checkbox>
+        <Checkbox value="budget">80% of the budget is spent</Checkbox>
+      </CheckboxGroup>
 
       <NumberInput
         id="field-monthlyTokenBudget"
@@ -331,6 +360,12 @@ export function ReviewStep({
         [
           'Human approval',
           values.requireApproval ? 'Before anything irreversible' : 'Never',
+        ],
+        [
+          'Notify the team when',
+          NOTIFY_LABELS.filter(([v]) => values.notifyOn.includes(v))
+            .map(([, label]) => label)
+            .join(', ') || 'Never',
         ],
         [
           'Monthly token budget',

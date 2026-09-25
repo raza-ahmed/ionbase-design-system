@@ -38,7 +38,7 @@ IonBase column names the component that covers it.
 | Button                          |   ●    |  ●  |  ●   | `Button`              |
 | Icon button                     |   ●    |  ●  |  ●   | ◐ `Button`, icon-only |
 | Button group / set              |   ●    |  ●  |  ●   | —                     |
-| Menu button / overflow menu     |   ●    |  ◐  |  ●   | —                     |
+| Menu button / overflow menu     |   ●    |  ◐  |  ●   | `MenuTrigger`         |
 | Split button / combo button     |   ●    |  ●  |  ●   | —                     |
 | Copy button                     |   ●    |     |      | —                     |
 | Toggle button group             |   ●    |  ●  |  ●   | ◐ `SegmentedControl`  |
@@ -51,7 +51,7 @@ IonBase column names the component that covers it.
 | --------------------------------- | :----: | :-: | :--: | ------------------------------- |
 | Text input                        |   ●    |  ●  |  ●   | `Input`                         |
 | Password input (reveal)           |   ●    |     |      | —                               |
-| Search field                      |   ●    |  ●  |  ◐   | —                               |
+| Search field                      |   ●    |  ●  |  ◐   | `SearchField`                   |
 | Textarea                          |   ●    |  ●  |  ●   | `Textarea`                      |
 | Number input                      |   ●    |     |  ◐   | `NumberInput`                   |
 | Phone input                       |        |     |      | `PhoneInput`                    |
@@ -60,7 +60,7 @@ IonBase column names the component that covers it.
 | Multi-select                      |   ●    |  ◐  |  ●   | —                               |
 | Dual listbox / dueling picklist   |        |     |  ●   | —                               |
 | Checkbox                          |   ●    |  ●  |  ●   | `Checkbox`                      |
-| Checkbox group                    |   ●    |     |  ●   | —                               |
+| Checkbox group                    |   ●    |     |  ●   | `CheckboxGroup`                 |
 | Radio / radio group               |   ●    |  ●  |  ●   | `Radio`, `RadioGroup`           |
 | Switch                            |   ●    |  ●  |  ●   | `Toggle`                        |
 | Selectable tile / visual picker   |   ●    |     |  ●   | —                               |
@@ -70,7 +70,7 @@ IonBase column names the component that covers it.
 | Date-time picker                  |        |     |  ●   | —                               |
 | Color picker                      |        |     |  ●   | —                               |
 | File uploader                     |   ●    |     |  ●   | `FileUpload`                    |
-| Fieldset / form group             |   ●    |     |  ●   | ◐ `Form` pattern, no component  |
+| Fieldset / form group             |   ●    |     |  ●   | `Fieldset`                      |
 | Inline edit                       |   ●    |     |  ●   | —                               |
 | Tag / pill input                  |   ●    |  ●  |  ●   | `TagGroup`, `Tag`               |
 | Rich text editor                  |        |     |  ●   | — _deferred, §4_                |
@@ -78,23 +78,23 @@ IonBase column names the component that covers it.
 
 ### Navigation
 
-| Component                    | Carbon | M3  | SLDS | IonBase                           |
-| ---------------------------- | :----: | :-: | :--: | --------------------------------- |
-| App header / shell           |   ●    |  ●  |  ●   | `Header`                          |
-| Side navigation              |   ●    |  ●  |  ●   | `Sidebar`, `NavItem`              |
-| App switcher / launcher      |   ●    |     |  ●   | —                                 |
-| Page header                  |   ●    |  ◐  |  ●   | —                                 |
-| Breadcrumb                   |   ●    |     |  ●   | `Breadcrumb`                      |
-| Tabs (incl. vertical)        |   ●    |  ●  |  ●   | `Tabs`                            |
-| Pagination                   |   ●    |     |      | `Pagination`                      |
-| Stepper / progress indicator |   ●    |     |  ●   | `Stepper`                         |
-| Menu (ARIA `role="menu"`)    |   ●    |  ●  |  ●   | ◐ `Menu` — _not an ARIA menu, §3_ |
-| Context menu                 |   ●    |     |      | —                                 |
-| Tree view                    |   ●    |     |  ●   | —                                 |
-| Toolbar                      |   ◐    |  ●  |  ◐   | —                                 |
-| Command palette              |        |     |      | `CommandPalette`                  |
-| Skip link                    |   ●    |     |      | —                                 |
-| Navigation rail / bottom bar |        |  ●  |      | — _non-goal, §4_                  |
+| Component                    | Carbon | M3  | SLDS | IonBase              |
+| ---------------------------- | :----: | :-: | :--: | -------------------- |
+| App header / shell           |   ●    |  ●  |  ●   | `Header`             |
+| Side navigation              |   ●    |  ●  |  ●   | `Sidebar`, `NavItem` |
+| App switcher / launcher      |   ●    |     |  ●   | —                    |
+| Page header                  |   ●    |  ◐  |  ●   | `PageHeader`         |
+| Breadcrumb                   |   ●    |     |  ●   | `Breadcrumb`         |
+| Tabs (incl. vertical)        |   ●    |  ●  |  ●   | `Tabs`               |
+| Pagination                   |   ●    |     |      | `Pagination`         |
+| Stepper / progress indicator |   ●    |     |  ●   | `Stepper`            |
+| Menu (ARIA `role="menu"`)    |   ●    |  ●  |  ●   | `Menu`               |
+| Context menu                 |   ●    |     |      | —                    |
+| Tree view                    |   ●    |     |  ●   | —                    |
+| Toolbar                      |   ◐    |  ●  |  ◐   | —                    |
+| Command palette              |        |     |      | `CommandPalette`     |
+| Skip link                    |   ●    |     |      | —                    |
+| Navigation rail / bottom bar |        |  ●  |      | — _non-goal, §4_     |
 
 ### Data display
 

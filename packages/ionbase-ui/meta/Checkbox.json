@@ -3,14 +3,18 @@
   "summary": "A native checkbox with the system's styling, supporting an indeterminate state.",
   "useWhen": [
     "a single on/off choice inside a form that is submitted",
-    "selecting rows in a Table",
-    "several independent options where more than one may be picked"
+    "selecting rows in a Table"
   ],
   "useInstead": [
     {
       "when": "the change takes effect immediately rather than on submit",
       "use": "Toggle",
       "why": "a switch reads as a setting taking effect now; a checkbox reads as a value being collected"
+    },
+    {
+      "when": "several options answer one question",
+      "use": "CheckboxGroup",
+      "why": "it announces the question with each option, carries the group's error, and can require at least one"
     },
     {
       "when": "the options are mutually exclusive",

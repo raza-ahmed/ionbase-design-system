@@ -178,23 +178,3 @@
 .ion-radio[data-disabled='true'] .ion-radio__label {
   color: var(--text-disabled);
 }
-
-/* The group stacks its radios; Figma has no group component, so this is the
- * minimum a fieldset needs rather than an invented layout. */
-.ion-radio-group {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-8);
-  border: none;
-  margin: 0;
-  padding: 0;
-}
-
-.ion-radio-group__label {
-  color: var(--text-secondary);
-  font-family: var(--font-family-sans);
-  font-size: var(--type-body-sm);
-  line-height: var(--type-body-sm-line-height);
-  font-weight: var(--font-weight-medium);
-  padding: 0;
-}

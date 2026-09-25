@@ -1,5 +1,247 @@
 # Changelog
 
+## 0.86.0 — 2026-09-25
+
+### Added — `CheckboxGroup` and `Fieldset`
+
+A set of checkboxes answering one question had no component. Loose
+Checkboxes under a text label can't do it accessibly: the question isn't
+announced with the options, an error has nothing to attach to, and "select at
+least one" has no way to be expressed. `RadioGroup` already handled this for
+radios. This is the fifth item on the enterprise checklist.
+
+- **`CheckboxGroup`** owns the selected values. Each `Checkbox` inside gives a
+  `value`, and `onChange` receives the array of ticked values, in the order
+  they were ticked. Controlled and uncontrolled both work. A box's own
+  `onChange` and `onSelectionChange` still fire inside a group, which is the
+  contract RadioGroup settled on.
+- **`isRequired` means at least one, enforced by the browser.** A checkbox's
+  `required` means "this box must be ticked", so it is set on every box while
+  none is ticked and removed from all of them once one is.
+  - The browser blocks an empty submit and explains why in the user's own
+    language, so the package ships no strings for it.
+  - Each box announces "required" only while the rule is unmet.
+- **Help and error text are read on every box**, as well as on the fieldset.
+  Someone tabbing back into the group lands on a box and never hears the
+  legend again, so the message has to be on the box.
+  - `isInvalid` also sets `aria-invalid` on every box.
+  - The error takes the help text's place instead of stacking beneath it,
+    the same as Input.
+- **`size`, `intent` and `isDisabled` pass down** to every Checkbox in the
+  group.
+- **`orientation="horizontal"`** lays the options in a row that wraps rather
+  than overflowing.
+- **`Fieldset`** is the shared shell: a `<fieldset>` and `<legend>` with a
+  description and an error. It groups any fields that answer one question,
+  such as an address or a pair of limits.
+  - It has **no `isDisabled`**. A natively disabled fieldset disables every
+    control inside it, but Input, Select and the other fields take their
+    disabled look from their own prop. They would stop working while still
+    looking enabled. Disable the fields themselves instead.
+- The legend and help text use Form Field's type, so a group reads as one
+  field with several controls rather than introducing a second label style.
+  - The fieldset is `display: block`, because a rendered `<legend>` is not a
+    flex item: a flex column would have put a gap everywhere except under the
+    legend.
+  - Options are spaced 8px apart; fields in a Fieldset are 16px apart.
+
+### Changed — `RadioGroup`
+
+- **Uses the same shell as CheckboxGroup.** It gains `description`,
+  `errorMessage`, `isInvalid`, `isRequired` and `orientation`.
+- **`isRequired` is native `required` on the radios**, which the browser
+  already reads as "one of this name".
+- **Help and error text are read on every radio**, the same as CheckboxGroup.
+- `.ion-radio-group__label` is gone; the legend is `.ion-fieldset__legend`.
+  It looks the same, and a test pins that.
+
+### Figma
+
+- **New Checkbox Group set** (1501:475) on the Checkbox page:
+  - Orientation: Vertical or Horizontal.
+  - State: Default, Error or Disabled.
+  - Label and Helper Text properties, and a Show Helper switch.
+  - Built from Checkbox instances and Form Field's text styles and variables.
+- **Mapped to `CheckboxGroup`.** Fieldset and RadioGroup are listed as having
+  no Figma component of their own, with the reasons.
+- **All 78 Dev Mode blocks verified.** The one hash mismatch was File
+  Upload's `INSTANCE_SWAP`, which Figma's markdown stores as `INSTANCE\_SWAP`.
+  That is harmless; `apply-descriptions.js` now documents `_` alongside `*`,
+  so the next audit doesn't mistake it for drift.
+
+### Patterns
+
+- **Form** composes CheckboxGroup and Fieldset:
+  - a new structure rule for fields that answer one question;
+  - a requirement that group-level errors sit on the group;
+  - an anti-pattern entry for loose Checkboxes under a heading.
+
+### Demo
+
+- **The new-agent wizard** asks "Notify the team when", and at least one
+  option is required. Its error appears in the step's error summary, and the
+  summary entry focuses the first box.
+- **The wizard's schedule fields** (start date, repeats, runs at) are a
+  horizontal Fieldset named "Schedule".
+- **Settings** has one CheckboxGroup named "Safeguards" in place of two
+  unlabelled Checkboxes, and its RadioGroup gains help text.
+- **The smoke test** opens the wizard on its third step and checks four
+  things:
+  - every box is required while none is ticked;
+  - the error is on the box, not only on the group;
+  - the summary entry focuses a checkbox;
+  - axe finds nothing while the group is invalid.
+
+  I confirmed it fails when the box loses the error.
+
+## 0.85.0 — 2026-09-25
+
+### Added — `SearchField`
+
+The search above a table was an `Input` with `type="search"` and a
+magnifier. That looks like a search box and behaves like a text field. The
+DataTable pattern told agents to build exactly that. It is the fourth item on
+the enterprise checklist.
+
+- **`role="searchbox"`**, so a screen reader announces a search field, not a
+  text field.
+- **Enter** calls `onSubmit` with the query.
+- **Escape** clears it. A second Escape reaches whatever contains the field,
+  so a search in a dialog clears before the dialog closes.
+- **A clear button** appears once there is something to clear. React Aria
+  names it in the user's language, and pressing it returns focus to the
+  field.
+  - It is out of the tab order on purpose: Escape is the keyboard's way to
+    clear, and an extra tab stop in every search box costs every keyboard user
+    a keystroke.
+  - It is (field height − 8px) square, so the Small field's target is 24px,
+    which meets WCAG 2.5.8.
+- **The browser's own cancel button is hidden.** Chromium and Safari add an
+  unlabelled one to `type="search"`, which would have made two clear buttons.
+  The first version of that test passed on nothing: `getComputedStyle`
+  cannot read a vendor pseudo-element and returns the input's own style. The
+  test now checks the shipped rule, and says why.
+- **The box is Input's.** SearchField renders `.ion-input` and its size and
+  state classes, like NumberInput, so it lines up with an Input or Select in a
+  toolbar and cannot drift from them.
+- The **DataTable pattern** now names SearchField for the table's search,
+  with an anti-pattern entry for `<Input type="search">`.
+- Figma: a new Search Field page and set (1498:242), cloned from Input's 21
+  variants so it keeps Input's bindings. The search glyph is fixed, the clear
+  ✕ shows only on Filled, and the four icon properties are removed. It is
+  mapped, and all 77 Dev Mode blocks are verified.
+
+### Demo
+
+- The agents table's search is a SearchField. As an Input, its
+  `wrapperClassName="demo-toolbar__search"` never applied: Input drops the
+  wrapper when there is no visible label, so the class had nowhere to go and
+  the field never took its intended width. As a SearchField, the class goes on
+  the box itself.
+
+## 0.84.0 — 2026-09-25
+
+### Added — `PageHeader`
+
+The top of a page: where you are, what the page is, and what you can do to
+it. The demo hand-wrote this five times in three shapes, each with its own
+gaps and its own idea of where the actions sit. PageHeader replaces all of
+them. It is the third item on the enterprise checklist.
+
+- **Slots:** `breadcrumb` above, `status` beside the title (a Badge for the
+  record's state), `actions` at the end of the title row, and `children` as a
+  row beneath for the page's Tabs or filters.
+- **The title is the page's `h1`.** Pass `titleId` and point
+  `<main aria-labelledby>` at it. `headingLevel={2}` is for a header on a pane
+  that is not the page, such as the detail half of a list-detail layout.
+- **It is a `<div>`, not a `<header>`.** A `<header>` directly inside `<body>`
+  is the banner, and the app shell's Header already is that.
+- **The title is h4-sized.** An app page sits under a Header and beside a
+  Sidebar, so an h1-sized title reads as a marketing page. The level is
+  semantic; the size is the product's.
+- **Actions align to the title's line**, however long the description runs,
+  and wrap beneath it only when the row is genuinely too narrow. The first
+  build let a long description push the actions onto their own line at 720px
+  with room to spare. `ActionsAlignToTheTitle` caught it before release.
+- The PageShell pattern now names PageHeader as the place for the page's h1
+  and breadcrumb, and says to keep it on screen while the page loads or fails.
+- Figma: a new Page Header page and component (1473:242), built from the real
+  Breadcrumb, Badge, Icon Button, Button and Tabs, bound to the type styles
+  and spacing variables, and mapped. All 76 Dev Mode blocks verified.
+
+### Demo
+
+- Every screen's title is a PageHeader: ten title sites across nine screens.
+  - RunDetail's phase badge moved to `status` and its buttons to `actions`.
+  - AgentDetail's section nav and Overview's date range moved to the row
+    beneath, because they narrow what the page shows.
+- `.demo-page__header` and `.demo-run-header` are deleted.
+- The row-actions menu puts Delete in its own section, behind a rule, so it
+  is never the row the pointer lands on by habit. The demo now shows
+  **84 of 84** components, and MenuSection, MenuTrigger and PageHeader are
+  required by the coverage gate.
+
+## 0.83.0 — 2026-09-25
+
+### Added — `MenuTrigger`, and submenus
+
+A Popover wrapped round a Menu made a dropdown that looked right and behaved
+wrongly. The trigger announced a dialog, the arrow keys could not open it,
+and choosing an action left it open. `MenuTrigger` is the second item on the
+enterprise checklist.
+
+- **`<MenuTrigger><Button/><Menu/></MenuTrigger>`.** The Button announces
+  `aria-haspopup` and `aria-expanded`, and the Menu is named by it unless it
+  has its own `aria-label`.
+- **Opening it.** Enter, Space and ArrowDown open it on the first row, and
+  ArrowUp opens it on the last. A click focuses the menu itself, so no focus
+  ring flashes on a row the user never moved to.
+- **Closing it.** Choosing an action closes every open level and returns focus
+  to the Button. So do Escape and an outside click.
+- **The "⋯" overflow menu** is MenuTrigger with an icon-only Button. There is
+  no separate component, because the only difference is the Button.
+- **`placement`**: `bottom start` (the default), `bottom end`, `top start`
+  and `top end`. It flips when there is no room.
+- **Submenus.** A MenuItem with a `title` and MenuItem children opens one: the
+  right arrow goes in, and the left arrow or Escape comes back out to the row
+  that opened it. Hovering opens it after a short delay. Submenus are
+  non-modal, so the pointer can move back up a level. An action chosen at any
+  depth reaches the root Menu's `onAction`. The row shows a chevron, mirrored
+  in right-to-left layouts, and stays highlighted while its submenu is open.
+- **Menu now has Figma's `Shadow/lg`.** Figma always drew Menu as a raised
+  dropdown surface, and code never shipped the shadow. It floats at least
+  240px wide, which is Figma's width.
+
+### Fixed — `Menu Item` was mapped to the wrong Figma component
+
+Figma had two component sets named `Menu Item`. One is the real menu row
+(82:217, on the Menu page, which `Menu` is built from). The other is a
+pre-Sidebar side-nav row (639:2634, on the Side Menu page). The export keyed
+components by name, so the second silently replaced the first. As a result,
+the mapping, every gate and 0.82.0's Dev Mode block described the side-nav
+row. `MenuSection` was mapped to that side menu's heading for the same reason.
+
+- The two Side Menu components are renamed `Side Menu Item` and `Side Menu
+Section Title`, and listed as unmapped with the reason. Their stale code
+  blocks are removed.
+- `Menu Item` now maps the real row. `Label` maps to `children`, the leading
+  icon to `icon`, and `State` Disabled to `isDisabled`. Selection stays in
+  Menu's `selectedKeys`.
+- `Menu Section Title` (1468:271) is drawn on the Menu page from the
+  stylesheet, bound to the spacing variables, and mapped to `MenuSection`.
+- **`export-components.js` now throws on a repeated component name**, naming
+  both nodes. A duplicate name was the silent version of the duplicate-variant
+  failure AGENTS.md already describes.
+- All 75 Dev Mode blocks were read back and hash-matched before
+  countersigning.
+
+### Demo
+
+- The row actions and the workspace switcher are MenuTriggers. No Popover
+  holds a Menu any more.
+- The smoke test checks both ways of opening. A click must leave focus inside
+  the menu. Enter on the "⋯" must land on the first enabled row.
+
 ## 0.82.0 — 2026-09-25
 
 ### Changed — `Menu` is a real ARIA menu

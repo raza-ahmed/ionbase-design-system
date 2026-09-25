@@ -4,9 +4,10 @@ import {
   Button,
   EmptyState,
   Icon,
-  Input,
   Link,
+  PageHeader,
   Pagination,
+  SearchField,
   Select,
   Tag,
   TagGroup,
@@ -15,7 +16,6 @@ import {
 } from 'ionbase-ui';
 import { Pause } from 'ionbase-icons/icons/pause';
 import { Plus } from 'ionbase-icons/icons/plus';
-import { Search } from 'ionbase-icons/icons/search';
 import { Trash2 } from 'ionbase-icons/icons/trash-2';
 
 import {
@@ -165,23 +165,20 @@ export function AgentsScreen() {
 
   return (
     <div className="demo-page">
-      <div className="demo-page__header">
-        <div>
-          <h1 id="page-title" className="ion-text-h4">
-            Agents
-          </h1>
-          <p className="ion-text-body demo-muted">
-            Every agent in the workspace, what it does, and how it is doing.
-          </p>
-        </div>
-        <Link
-          variant="standalone"
-          href={href('agents/new')}
-          startIcon={<Icon as={Plus} size="sm" />}
-        >
-          New agent
-        </Link>
-      </div>
+      <PageHeader
+        titleId="page-title"
+        title="Agents"
+        description="Every agent in the workspace, what it does, and how it is doing."
+        actions={
+          <Link
+            variant="standalone"
+            href={href('agents/new')}
+            startIcon={<Icon as={Plus} size="sm" />}
+          >
+            New agent
+          </Link>
+        }
+      />
 
       {notice && notice.deleted.length > 0 && (
         <Alert
@@ -195,16 +192,14 @@ export function AgentsScreen() {
       )}
 
       <div className="demo-toolbar">
-        <Input
+        <SearchField
           size="sm"
-          type="search"
           ref={searchRef}
           aria-label="Search agents"
           placeholder="Search agents"
-          leadingIcon={<Icon as={Search} size="sm" />}
           value={search}
           onChange={(v) => requery(() => setSearch(v))}
-          wrapperClassName="demo-toolbar__search"
+          className="demo-toolbar__search"
         />
         <Select
           size="sm"

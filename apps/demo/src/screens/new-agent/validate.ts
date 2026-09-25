@@ -35,6 +35,9 @@ export function validateStep(
       e.escalationPhone = 'Enter a full phone number, or leave it empty.';
   }
   if (step === 2) {
+    if (v.notifyOn.length === 0)
+      e.notifyOn =
+        'Choose at least one — an agent nobody hears from fails silently.';
     const budget = Number(v.monthlyTokenBudget);
     if (!v.monthlyTokenBudget.trim() || Number.isNaN(budget))
       e.monthlyTokenBudget = 'Enter a monthly token budget as a number.';
@@ -52,5 +55,6 @@ export const FIELD_LABELS: Record<string, string> = {
   startDate: 'Start date',
   runAt: 'Runs at',
   escalationPhone: 'Escalation phone',
+  notifyOn: 'Notify the team when',
   monthlyTokenBudget: 'Monthly token budget',
 };

@@ -10,6 +10,7 @@ import {
   ConfidenceIndicator,
   EmptyState,
   LogoMark,
+  PageHeader,
   PromptInput,
   ScrollProgress,
   Spinner,
@@ -162,15 +163,11 @@ export function AssistantScreen() {
         </aside>
       )}
       <div className="demo-page demo-assistant__thread">
-        <div>
-          <h1 id="page-title" className="ion-text-h4">
-            Assistant
-          </h1>
-          <p className="ion-text-body demo-muted">
-            Answers from your runs, approvals and policies — with the sources to
-            check them.
-          </p>
-        </div>
+        <PageHeader
+          titleId="page-title"
+          title="Assistant"
+          description="Answers from your runs, approvals and policies — with the sources to check them."
+        />
 
         {turns.length === 0 && (
           <EmptyState

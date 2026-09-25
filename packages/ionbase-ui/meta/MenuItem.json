@@ -17,7 +17,7 @@
   "composition": {
     "order": ["Menu", "MenuItem"],
     "note": "A collection element, like TabItem: it renders nothing itself and never appears in the DOM. `key` identifies it to Menu's `onAction`, `selectedKeys` and `disabledKeys`.",
-    "example": "<MenuItem key=\"duplicate\" icon={<Icon as={Copy} />}>Duplicate</MenuItem>"
+    "example": "<MenuItem key=\"duplicate\" icon={<Icon as={Copy} />}>Duplicate</MenuItem>\n<MenuItem key=\"move\" title=\"Move to\"><MenuItem key=\"archive\">Archive</MenuItem></MenuItem>"
   },
   "slots": {
     "icon": {
@@ -27,6 +27,10 @@
     "children": {
       "accepts": "text",
       "note": "the row label"
+    },
+    "title": {
+      "accepts": "text",
+      "note": "only on a row that opens a submenu: the row's label, while its children are the submenu's MenuItems. Submenus open only inside a MenuTrigger"
     }
   },
   "a11y": {

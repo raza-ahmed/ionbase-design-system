@@ -8,6 +8,7 @@ import {
   Card,
   EmptyState,
   Link,
+  PageHeader,
   SegmentedControl,
   SegmentedControlItem,
   Skeleton,
@@ -39,14 +40,11 @@ export function RunsScreen() {
 
   return (
     <div className="demo-page">
-      <div>
-        <h1 id="page-title" className="ion-text-h4">
-          Runs
-        </h1>
-        <p className="ion-text-body demo-muted">
-          What agents are doing, and what is waiting on a person.
-        </p>
-      </div>
+      <PageHeader
+        titleId="page-title"
+        title="Runs"
+        description="What agents are doing, and what is waiting on a person."
+      />
 
       {runs.status === 'loading' && (
         <div className="demo-loading" aria-busy="true">

@@ -1,0 +1,65 @@
+/*
+ * Fieldset — and CheckboxGroup and RadioGroup, which render the same shell.
+ *
+ * The type is Form Field's (`.ion-field`, input.css): the legend is its label,
+ * the helper its helper, the error the same recolour. A group of fields reads
+ * as one field with several controls, so it must not introduce a second label
+ * style for agents and designers to choose between.
+ *
+ * The fieldset stays `display: block`. A rendered <legend> is laid out in the
+ * fieldset's border, not as a flex item, so a flex column here would space
+ * everything except the gap under the legend. Spacing is margins on the legend
+ * and helper, and a flex wrapper around the fields themselves.
+ *
+ * Two spacings. A Fieldset of Inputs spaces them as a form does, 16; the
+ * choice groups space their options at 8, which is what RadioGroup has always
+ * used — options in a list, not fields in a form.
+ */
+.ion-fieldset {
+  --ion-fieldset-gap: var(--spacing-16);
+  --ion-fieldset-inline-gap: var(--spacing-16);
+
+  min-width: 0; /* a fieldset's default min-content width would stop wrapping */
+  margin: 0;
+  padding: 0;
+  border: none;
+  font-family: var(--font-family-sans);
+}
+
+.ion-fieldset--choices {
+  --ion-fieldset-gap: var(--spacing-8);
+}
+
+.ion-fieldset__legend {
+  /* Legend has default inline padding; the label beside an Input has none. */
+  padding: 0;
+  margin-bottom: var(--spacing-6);
+  color: var(--text-secondary);
+  font-size: var(--type-body-sm);
+  line-height: var(--type-body-sm-line-height);
+  font-weight: var(--font-weight-medium);
+}
+
+.ion-fieldset__content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ion-fieldset-gap);
+}
+
+.ion-fieldset--horizontal .ion-fieldset__content {
+  flex-flow: row wrap;
+  column-gap: var(--ion-fieldset-inline-gap);
+}
+
+.ion-fieldset__helper {
+  display: block;
+  margin-top: var(--spacing-6);
+  color: var(--text-tertiary);
+  font-size: var(--type-body-sm);
+  line-height: var(--type-body-sm-line-height);
+  font-weight: var(--font-weight-regular);
+}
+
+.ion-fieldset--error .ion-fieldset__helper {
+  color: var(--text-error);
+}

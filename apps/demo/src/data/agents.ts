@@ -378,6 +378,8 @@ export interface AgentDraft {
   escalationPhone: string;
   knowledgeFiles: string[];
   requireApproval: boolean;
+  /** Who hears about what. At least one — an agent nobody hears from fails silently. */
+  notifyOn: string[];
   monthlyTokenBudget: string;
 }
 

@@ -1,0 +1,94 @@
+/*
+ * PageHeader
+ *
+ * Promoted from the demo, where `.demo-page__header` and `.demo-run-header`
+ * drew it twice with a 16 gap between title and actions, 4 between title and
+ * description. Kept.
+ *
+ * THE TITLE IS h4-SIZED, ON PURPOSE
+ *
+ * It is the page's h1 in the outline and an h4 on the type scale. An app page
+ * sits under a Header and beside a Sidebar; an h1-sized title there reads as a
+ * marketing page. Every demo screen made this call independently, and so do
+ * Carbon and Lightning. The level is semantic; the size is the product's.
+ *
+ * ACTIONS ALIGN TO THE TITLE, NOT THE DESCRIPTION
+ *
+ * `flex-start`, so the buttons sit on the title's line however long the
+ * description runs. The demo's overview used `flex-end`, and its buttons
+ * drifted down to the description's last line as the copy grew. When the
+ * row is too narrow for both, the actions wrap beneath and align to the start.
+ */
+.ion-page-header {
+  --ion-page-header-heading-basis: 280px;
+
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-16);
+  min-width: 0;
+  font-family: var(--font-family-sans);
+}
+
+.ion-page-header__main {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--spacing-16);
+}
+
+/*
+ * The heading grows from a fixed basis, not from its content. With `auto` a
+ * long description asks for the whole row, so the actions wrapped beneath at
+ * 720px with room to spare — the test `ActionsAlignToTheTitle` caught it. From
+ * a basis, the row only wraps when it is narrower than the basis plus the
+ * actions: a phone, not a long sentence. The basis is declared on the root.
+ */
+.ion-page-header__heading {
+  display: flex;
+  flex: 1 1 var(--ion-page-header-heading-basis);
+  flex-direction: column;
+  gap: var(--spacing-4);
+  min-width: 0;
+}
+
+.ion-page-header__title-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--spacing-8);
+}
+
+.ion-page-header__title {
+  margin: 0;
+  min-width: 0;
+  color: var(--text-default);
+  font-size: var(--type-h4);
+  line-height: var(--type-h4-line-height);
+  font-weight: var(--font-weight-semibold);
+  overflow-wrap: anywhere;
+}
+
+.ion-page-header__status {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--spacing-8);
+}
+
+.ion-page-header__description {
+  margin: 0;
+  max-width: 72ch;
+  color: var(--text-secondary);
+  font-size: var(--type-body);
+  line-height: var(--type-body-line-height);
+}
+
+.ion-page-header__actions {
+  display: flex;
+  flex: 0 1 auto;
+  min-width: 0;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--spacing-8);
+}

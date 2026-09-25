@@ -1,13 +1,11 @@
-import { EmptyState, Link } from 'ionbase-ui';
+import { EmptyState, Link, PageHeader } from 'ionbase-ui';
 
 import { href } from '../lib/router';
 
 export function NotFound() {
   return (
     <div className="demo-page">
-      <h1 id="page-title" className="ion-text-h4">
-        Page not found
-      </h1>
+      <PageHeader titleId="page-title" title="Page not found" />
       <EmptyState
         reason="no-results"
         size="page"

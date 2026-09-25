@@ -477,6 +477,36 @@
         }
       }
     },
+    "Checkbox Group": {
+      "code": "CheckboxGroup",
+      "props": {
+        "Orientation": {
+          "prop": "orientation",
+          "values": {
+            "Vertical": "vertical",
+            "Horizontal": "horizontal"
+          }
+        },
+        "State": {
+          "prop": "isInvalid",
+          "when": {
+            "Error": true
+          },
+          "note": "Error recolours the helper and shows errorMessage in its place; pass the error copy as errorMessage, not description. Disabled is isDisabled on the group, which cascades to every Checkbox."
+        },
+        "Label#1501:0": {
+          "prop": "label"
+        },
+        "Helper Text#1501:7": {
+          "prop": "description",
+          "note": "the help text; while State=Error the same slot holds errorMessage"
+        },
+        "Show Helper#1501:14": {
+          "prop": "description",
+          "note": "an absent prop is the switch, so false means omit description"
+        }
+      }
+    },
     "Citation": {
       "code": "Citation",
       "props": {
@@ -984,17 +1014,23 @@
     "Menu Item": {
       "code": "MenuItem",
       "props": {
-        "Status": {
-          "ignore": "Selected is the item's key in Menu's selectedKeys, and Hover is the row the keyboard and pointer share — neither is an item prop. Selected Primary is a second selected styling Figma draws and code does not ship."
-        },
-        "Text#639:12": {
+        "Label#82:0": {
           "prop": "children"
         },
-        "Show Icon#639:16": {
-          "prop": "icon"
+        "Leading Icon#82:12": {
+          "prop": "icon",
+          "note": "wrap in Icon; omit Icon's label, the row text names it"
         },
-        "Select Icon#639:20": {
-          "prop": "icon"
+        "Show Leading Icon#82:6": {
+          "prop": "icon",
+          "note": "an absent prop is the switch, so false means omit icon"
+        },
+        "State": {
+          "prop": "isDisabled",
+          "when": {
+            "Disabled": true
+          },
+          "note": "Hover is the highlighted row, which the keyboard and the pointer share. Selected and Selected-hover are the row's key in Menu's selectedKeys, not an item prop. A row that opens a submenu is not drawn: code puts a chevron where the check sits."
         }
       }
     },
@@ -1092,6 +1128,37 @@
         "Value#1389:22": {
           "prop": "value",
           "note": "A number in code; Figma’s text is its formatted display, and the placeholder until one is entered."
+        }
+      }
+    },
+    "Page Header": {
+      "code": "PageHeader",
+      "props": {
+        "Title#1473:0": {
+          "prop": "title"
+        },
+        "Description#1473:1": {
+          "prop": "description"
+        },
+        "Show Description#1473:4": {
+          "prop": "description",
+          "note": "an absent prop is the switch, so false means omit description"
+        },
+        "Show Breadcrumb#1473:2": {
+          "prop": "breadcrumb",
+          "note": "pass a Breadcrumb; false means omit breadcrumb"
+        },
+        "Show Status#1473:3": {
+          "prop": "status",
+          "note": "a Badge for the record's state; false means omit status"
+        },
+        "Show Actions#1473:5": {
+          "prop": "actions",
+          "note": "Buttons, most important last, and a MenuTrigger with an icon-only Button for the rest; false means omit actions"
+        },
+        "Show Below#1473:6": {
+          "prop": "children",
+          "note": "the row beneath — the page's Tabs or its filters; false means no children"
         }
       }
     },
@@ -1260,6 +1327,30 @@
         },
         "Focused#188:0": {
           "ignore": "drawn focus ring; :focus-visible in code"
+        }
+      }
+    },
+    "Search Field": {
+      "code": "SearchField",
+      "props": {
+        "Size": {
+          "prop": "size",
+          "values": {
+            "Small": "sm",
+            "Medium": "md",
+            "Large": "lg"
+          }
+        },
+        "State": {
+          "prop": "isInvalid",
+          "when": {
+            "Invalid": true
+          },
+          "note": "Hover, Focus and Filled are CSS or content; Disabled is isDisabled and Read-only is isReadOnly — Input's split, because the box is Input's. The clear button Filled shows is not a prop: it appears whenever there is a query."
+        },
+        "Value#80:0": {
+          "prop": "value",
+          "note": "The query. Figma's text is also the placeholder until one is typed — pass that as placeholder, and name the field with aria-label, not the placeholder."
         }
       }
     },
@@ -1966,24 +2057,28 @@
     "Chart Legend Item": "One entry of Chart Legend — `items[n]` in code, `{ label, series }`. Its Shape follows the legend’s `shape`; Series picks chart/1…8. Internal to the legend.",
     "Chart Tooltip Row": "One entry of Chart Tooltip — `rows[n]` in code, `{ label, value, series }`. Series picks the swatch from chart/1…8, exactly as `series` does. Internal to the tooltip the way Pagination Item is internal to Pagination.",
     "Combobox Menu": "The list Combobox opens. It is not a separate export: the React component renders its own menu, because the two are one control and splitting them would let a caller mount a listbox with no combobox to own it. Drawn separately in Figma because a frame cannot both hug a field and overlay a list on top of it.",
+    "Command Palette Item": "One row of the palette, drawn so Active and Disabled can be seen. There is no code export behind it and there should not be: rows are built from the palette's `commands` array, where the Label, Description, Icon and shortcut are fields of one command — `label`, `description`, `icon`, `shortcut` — and Active is the keyboard's position, not a prop. The same call Combobox Menu gets.",
     "Form Field": "Label, helper text and error wiring are built into Input and Select rather than a separate wrapper — the wrapper is how Figma composes them, not how React does.",
     "Line": "An internal part of the Scroll Progress rail, not a component a caller composes.",
     "Pagination Item": "The cell inside Pagination — a page number, an arrow or the truncation ellipsis. Figma needs it as its own set to hold the Size x State matrix; a caller never places one, so it is internal to Pagination the way Line and Progress are internal to Scroll Progress.",
     "Progress": "As Line — internal to ScrollProgress.",
     "Progress Heading": "As Line — internal to ScrollProgress.",
     "Screen Frame": "The frame FullCard draws around its media slot. The component owns it, so there is nothing for a caller to place.",
-    "Table/Cell Text": "TableCell covers Figma's Table Cell and Cell Text together; the two are never used apart in the design. Recorded in TableCell's contract.",
-    "Command Palette Item": "One row of the palette, drawn so Active and Disabled can be seen. There is no code export behind it and there should not be: rows are built from the palette's `commands` array, where the Label, Description, Icon and shortcut are fields of one command — `label`, `description`, `icon`, `shortcut` — and Active is the keyboard's position, not a prop. The same call Combobox Menu gets."
+    "Side Menu Item": "A 32-tall side-navigation row on the Side Menu page, which predates Sidebar. It shared the name Menu Item with the real one (82:217) until 25 Sep 2026, and because the export keyed on the name it silently replaced it — the mapping, the gates and the Dev Mode block all pointed here. Sidebar Item is the side-navigation row code ships.",
+    "Side Menu Section Title": "The section heading of the same pre-Sidebar side menu. Menu Section Title (1468:271) is the menu's own, drawn on the Menu page; Sidebar Section is the side navigation's.",
+    "Table/Cell Text": "TableCell covers Figma's Table Cell and Cell Text together; the two are never used apart in the design. Recorded in TableCell's contract."
   },
   "codeUnmapped": {
     "DateRangePicker": "Drawn, but not as a set of its own: its field is Date Picker Type=Range and its calendar is Calendar Mode=Range. A Figma set maps to exactly one code component, and splitting one field into two sets to satisfy that would draw the same box twice. Read Date Picker’s Type note for the handoff.",
     "Icon": "Figma has no Icon component; icons are vector assets dropped into slots. Icon is the React wrapper that gives any of them a size rung and an accessible label, so there is nothing on the Figma side to point at.",
     "LogoMark": "Logo-Ionbase maps to Logo. Figma spells the no-wordmark case as that component's Type axis rather than a separate component; LogoMark is how code spells the same thing.",
-    "RadioGroup": "Figma draws Radio only. The group is the thing that owns the selected value, which a static frame cannot express — Figma's Radio State axis is ignored for exactly this reason.",
+    "RadioGroup": "Figma draws Radio only. The group is the thing that owns the selected value, which a static frame cannot express — Figma's Radio State axis is ignored for exactly this reason. Its label, help, error and orientation are the shell drawn as Checkbox Group; the two groups share it in code as well.",
     "ScrollProgress": "Drawn in Figma as its three parts — Line, Progress, Progress Heading — all of which the component owns internally. There is no whole-component frame to map.",
     "Table": "Figma draws Table Row and Table Cell; the table itself is the caller assembling them. Density, the one property Table owns, is mapped on Table Cell.",
     "TableBody": "As TableHead.",
     "TableHead": "As Table — a code-side grouping element. Figma expresses a header row as a Table Row variant, not a separate component.",
-    "ToastProvider": "Figma draws Toast, which is mapped. The provider is placement, queueing and the live region — runtime behaviour with nothing to draw."
+    "ToastProvider": "Figma draws Toast, which is mapped. The provider is placement, queueing and the live region — runtime behaviour with nothing to draw.",
+    "MenuTrigger": "Composition, not a drawing: a Button followed by a Menu, both already drawn and mapped. What MenuTrigger adds — open state, positioning, aria-haspopup and aria-expanded, focus on open and return on close — is runtime behaviour a static frame cannot hold, the same reason RadioGroup is here.",
+    "Fieldset": "Drawn as the shell of Checkbox Group: the legend, the helper and the Error recolour are Form Field's type, laid around a set of options. A Fieldset of Inputs is the caller composing Form Fields under that legend, so there is no separate frame to point at."
   }
 }

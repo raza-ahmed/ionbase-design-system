@@ -613,6 +613,32 @@
         }
       }
     },
+    "Checkbox Group": {
+      "page": "Checkbox",
+      "id": "1501:475",
+      "kind": "SET",
+      "props": {
+        "Helper Text#1501:7": {
+          "type": "TEXT"
+        },
+        "Label#1501:0": {
+          "type": "TEXT"
+        },
+        "Orientation": {
+          "type": "VARIANT",
+          "options": ["Vertical", "Horizontal"],
+          "default": "Vertical"
+        },
+        "Show Helper#1501:14": {
+          "type": "BOOLEAN"
+        },
+        "State": {
+          "type": "VARIANT",
+          "options": ["Default", "Error", "Disabled"],
+          "default": "Default"
+        }
+      }
+    },
     "Citation": {
       "page": "Citation",
       "id": "1167:247",
@@ -1149,29 +1175,35 @@
       }
     },
     "Menu Item": {
-      "page": "Side Menu",
-      "id": "639:2634",
+      "page": "Menu",
+      "id": "82:217",
       "kind": "SET",
       "props": {
-        "Select Icon#639:20": {
+        "Label#82:0": {
+          "type": "TEXT"
+        },
+        "Leading Icon#82:12": {
           "type": "INSTANCE_SWAP"
         },
-        "Show Icon#639:16": {
+        "Show Leading Icon#82:6": {
           "type": "BOOLEAN"
         },
-        "Status": {
+        "State": {
           "type": "VARIANT",
-          "options": ["Default", "Selected", "Hover", "Selected Primary"],
+          "options": [
+            "Default",
+            "Hover",
+            "Selected",
+            "Selected-hover",
+            "Disabled"
+          ],
           "default": "Default"
-        },
-        "Text#639:12": {
-          "type": "TEXT"
         }
       }
     },
     "Menu Section Title": {
-      "page": "Side Menu",
-      "id": "639:2664",
+      "page": "Menu",
+      "id": "1468:271",
       "kind": "COMPONENT",
       "props": {}
     },
@@ -1264,6 +1296,34 @@
           "type": "BOOLEAN"
         },
         "Value#1389:22": {
+          "type": "TEXT"
+        }
+      }
+    },
+    "Page Header": {
+      "page": "Page Header",
+      "id": "1473:242",
+      "kind": "COMPONENT",
+      "props": {
+        "Description#1473:1": {
+          "type": "TEXT"
+        },
+        "Show Actions#1473:5": {
+          "type": "BOOLEAN"
+        },
+        "Show Below#1473:6": {
+          "type": "BOOLEAN"
+        },
+        "Show Breadcrumb#1473:2": {
+          "type": "BOOLEAN"
+        },
+        "Show Description#1473:4": {
+          "type": "BOOLEAN"
+        },
+        "Show Status#1473:3": {
+          "type": "BOOLEAN"
+        },
+        "Title#1473:0": {
           "type": "TEXT"
         }
       }
@@ -1473,6 +1533,34 @@
       "kind": "COMPONENT",
       "props": {}
     },
+    "Search Field": {
+      "page": "Search Field",
+      "id": "1498:242",
+      "kind": "SET",
+      "props": {
+        "Size": {
+          "type": "VARIANT",
+          "options": ["Large", "Medium", "Small"],
+          "default": "Large"
+        },
+        "State": {
+          "type": "VARIANT",
+          "options": [
+            "Default",
+            "Hover",
+            "Focus",
+            "Filled",
+            "Invalid",
+            "Disabled",
+            "Read-only"
+          ],
+          "default": "Default"
+        },
+        "Value#80:0": {
+          "type": "TEXT"
+        }
+      }
+    },
     "Segmented Control": {
       "page": "Segmented Control",
       "id": "1390:435",
@@ -1576,6 +1664,33 @@
           "type": "BOOLEAN"
         }
       }
+    },
+    "Side Menu Item": {
+      "page": "Side Menu",
+      "id": "639:2634",
+      "kind": "SET",
+      "props": {
+        "Select Icon#639:20": {
+          "type": "INSTANCE_SWAP"
+        },
+        "Show Icon#639:16": {
+          "type": "BOOLEAN"
+        },
+        "Status": {
+          "type": "VARIANT",
+          "options": ["Default", "Selected", "Hover", "Selected Primary"],
+          "default": "Default"
+        },
+        "Text#639:12": {
+          "type": "TEXT"
+        }
+      }
+    },
+    "Side Menu Section Title": {
+      "page": "Side Menu",
+      "id": "639:2664",
+      "kind": "COMPONENT",
+      "props": {}
     },
     "Sidebar": {
       "page": "Sidebar",

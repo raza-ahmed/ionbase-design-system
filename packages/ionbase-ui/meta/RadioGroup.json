@@ -1,6 +1,6 @@
 {
   "status": "stable",
-  "summary": "A <fieldset>/<legend> group of mutually exclusive options. Owns the shared name and the selected value.",
+  "summary": "A <fieldset>/<legend> group of mutually exclusive options. Owns the shared name and the selected value, and the group's label, help and error.",
   "useWhen": [
     "exactly one choice from a small set, all worth showing at once",
     "the options need explaining — each one can carry its own label text"
@@ -12,7 +12,7 @@
     },
     {
       "when": "more than one may be picked",
-      "use": "Checkbox"
+      "use": "CheckboxGroup"
     },
     {
       "when": "there are exactly two states and the change is immediate",
@@ -21,16 +21,34 @@
   ],
   "variants": {
     "size": {
-      "sm": { "use": "dense forms" },
-      "md": { "use": "the default" },
-      "lg": { "use": "touch targets and prominent choices" }
+      "sm": {
+        "use": "dense forms"
+      },
+      "md": {
+        "use": "the default"
+      },
+      "lg": {
+        "use": "touch targets and prominent choices"
+      }
     },
     "intent": {
-      "brand": { "use": "the default" },
+      "brand": {
+        "use": "the default"
+      },
       "neutral": {
         "use": "a choice with no positive reading — sort order, display mode"
       },
-      "danger": { "use": "a set where the options are destructive" }
+      "danger": {
+        "use": "a set where the options are destructive"
+      }
+    },
+    "orientation": {
+      "vertical": {
+        "use": "the default, and always when a label runs past a few words"
+      },
+      "horizontal": {
+        "use": "two to four one-word options. Wraps rather than overflows"
+      }
     }
   },
   "slots": {
@@ -38,14 +56,27 @@
       "accepts": "text",
       "note": "renders as the <legend> — the question the options answer"
     },
-    "children": { "accepts": "Radio" }
+    "description": {
+      "accepts": "text",
+      "note": "help beneath the options; replaced by `errorMessage` while `isInvalid` is set"
+    },
+    "errorMessage": {
+      "accepts": "text",
+      "note": "shown only while `isInvalid` is set"
+    },
+    "children": {
+      "accepts": "Radio"
+    }
   },
   "a11y": {
     "role": "group, from <fieldset> and <legend>",
     "guarantees": [
       "a real fieldset rather than `role=\"radiogroup\"`: both announce correctly, but the fieldset also groups the inputs for form submission and native validation",
       "`name` is generated when omitted, so two groups on one page never collide",
-      "`isDisabled` cascades to every Radio that has not set its own"
+      "`isDisabled` cascades to every Radio that has not set its own",
+      "the fieldset is Fieldset's shell, shared with CheckboxGroup — the same label, help, error and orientation props",
+      "the description or error is on every radio's `aria-describedby` as well as the fieldset's, so it is read on the radio that takes focus",
+      "`isRequired` is native `required` on the radios, which the platform already reads as \"one of this name\""
     ],
     "requires": [
       "`label`, or `aria-label` when the question is already visible elsewhere"
@@ -65,5 +96,10 @@
       "why": "a radio group cannot be returned to empty once touched"
     }
   ],
-  "deprecated": [{ "prop": "disabled", "replacement": "isDisabled" }]
+  "deprecated": [
+    {
+      "prop": "disabled",
+      "replacement": "isDisabled"
+    }
+  ]
 }
