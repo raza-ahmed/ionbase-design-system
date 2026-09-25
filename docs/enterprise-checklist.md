@@ -23,8 +23,8 @@
 
 ## P0 — every enterprise app hits these
 
-- [ ] **Menu** — upgrade to a real ARIA menu: roving focus, arrow keys, typeahead, submenus, checkable items, sections. Migrate the existing contract; do not fork it
-- [ ] **MenuButton / OverflowMenu** — _needs Menu_
+- [x] **Menu** — upgrade to a real ARIA menu: roving focus, arrow keys, typeahead, checkable items, sections — 0.82.0. Submenus moved to MenuButton: a submenu needs a trigger to open from
+- [ ] **MenuButton / OverflowMenu** — the trigger half of Menu, plus submenus. _needs Menu_
 - [ ] **PageHeader** — and add it to the `PageShell` pattern
 - [ ] **SearchField**
 - [ ] **Fieldset / CheckboxGroup**

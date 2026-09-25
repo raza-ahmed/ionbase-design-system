@@ -60,16 +60,24 @@ export function NavSidebar({ route }: { route: Route | null }) {
           isOpen={switcherOpen}
           onOpenChange={setSwitcherOpen}
           content={
-            <Menu aria-label="Workspaces">
+            <Menu
+              aria-label="Workspaces"
+              autoFocus
+              selectionMode="single"
+              disallowEmptySelection
+              selectedKeys={[workspace.id]}
+              onSelectionChange={(keys) => {
+                const next = WORKSPACES.find(
+                  (w) => keys !== 'all' && keys.has(w.id),
+                );
+                if (next) setWorkspace(next);
+              }}
+              onClose={() => setSwitcherOpen(false)}
+            >
               {WORKSPACES.map((w) => (
                 <MenuItem
                   key={w.id}
-                  isSelected={w.id === workspace.id}
                   icon={<Avatar size="mini" initials={w.initials} alt="" />}
-                  onClick={() => {
-                    setWorkspace(w);
-                    setSwitcherOpen(false);
-                  }}
                 >
                   {w.name}
                 </MenuItem>

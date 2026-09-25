@@ -972,7 +972,12 @@
       "code": "Menu",
       "props": {
         "Type": {
-          "ignore": "Single and Multi describe how many items may be selected, which is the caller's state. Menu renders the surface and holds no selection of its own."
+          "prop": "selectionMode",
+          "values": {
+            "Single": "single",
+            "Multi": "multiple"
+          },
+          "note": "selectionMode none — an action menu with no check slot — is not drawn; every Figma menu shows a selection."
         }
       }
     },
@@ -980,12 +985,7 @@
       "code": "MenuItem",
       "props": {
         "Status": {
-          "prop": "isSelected",
-          "when": {
-            "Selected": true,
-            "Selected Primary": true
-          },
-          "note": "Hover is CSS. Selected Primary is a second selected styling Figma draws and code does not yet ship."
+          "ignore": "Selected is the item's key in Menu's selectedKeys, and Hover is the row the keyboard and pointer share — neither is an item prop. Selected Primary is a second selected styling Figma draws and code does not ship."
         },
         "Text#639:12": {
           "prop": "children"
@@ -997,6 +997,10 @@
           "prop": "icon"
         }
       }
+    },
+    "Menu Section Title": {
+      "code": "MenuSection",
+      "props": {}
     },
     "Modal": {
       "code": "Modal",
@@ -1964,7 +1968,6 @@
     "Combobox Menu": "The list Combobox opens. It is not a separate export: the React component renders its own menu, because the two are one control and splitting them would let a caller mount a listbox with no combobox to own it. Drawn separately in Figma because a frame cannot both hug a field and overlay a list on top of it.",
     "Form Field": "Label, helper text and error wiring are built into Input and Select rather than a separate wrapper — the wrapper is how Figma composes them, not how React does.",
     "Line": "An internal part of the Scroll Progress rail, not a component a caller composes.",
-    "Menu Section Title": "No code counterpart yet. It is a heading inside a menu surface; nothing renders it.",
     "Pagination Item": "The cell inside Pagination — a page number, an arrow or the truncation ellipsis. Figma needs it as its own set to hold the Size x State matrix; a caller never places one, so it is internal to Pagination the way Line and Progress are internal to Scroll Progress.",
     "Progress": "As Line — internal to ScrollProgress.",
     "Progress Heading": "As Line — internal to ScrollProgress.",

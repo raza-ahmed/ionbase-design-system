@@ -70,6 +70,7 @@ const fail = (where, what) => failures.push(`${where}: ${what}`);
 let browser;
 let loadingChecked = 0;
 let paletteChecked = 0;
+let menusChecked = 0;
 try {
   await waitForServer();
   browser = await chromium.launch();
@@ -243,6 +244,100 @@ try {
   }
 
   /*
+   * The two menus, both of which live in a popover no page load above opens.
+   * A row's actions: opening lands on the first enabled row, the arrow keys
+   * move, Escape closes and gives focus back to the "⋯" that opened it. The
+   * workspace switcher: the current workspace is announced as checked, and
+   * choosing another closes the menu and switches.
+   */
+  for (const theme of THEMES) {
+    const where = `menus (${theme}, desktop)`;
+    const context = await browser.newContext({
+      viewport: { width: 1280, height: 900 },
+    });
+    await context.addInitScript(
+      (t) =>
+        localStorage.setItem(
+          'ionbase-ops:demo-settings',
+          JSON.stringify({ theme: t, latency: 0 }),
+        ),
+      theme,
+    );
+    const page = await context.newPage();
+    page.on(
+      'console',
+      (m) => m.type() === 'error' && fail(where, `console: ${m.text()}`),
+    );
+    page.on('pageerror', (e) => fail(where, `exception: ${e.message}`));
+    await page.goto(`${BASE}/#/agents`);
+    await page.locator('#page-title').waitFor({ timeout: 10_000 });
+
+    const trigger = page.getByRole('button', { name: /^Actions for / }).first();
+    const name = await trigger.getAttribute('aria-label');
+    await trigger.click();
+    const menu = page.getByRole('menu', { name });
+    try {
+      await menu.waitFor({ timeout: 5_000 });
+      const focused = await page.evaluate(() =>
+        document.activeElement?.getAttribute('role'),
+      );
+      if (focused !== 'menuitem') {
+        fail(where, `row actions opened with focus on ${focused}, not a row`);
+      }
+      await page.addScriptTag({ content: axeSource });
+      const violations = await page.evaluate(async () => {
+        const result = await window.axe.run(
+          document.querySelector('[role="menu"]'),
+          { resultTypes: ['violations'] },
+        );
+        return result.violations.map((v) => `${v.impact} ${v.id}`);
+      });
+      for (const v of violations) fail(where, `axe ${v} in row actions`);
+
+      await page.keyboard.press('Escape');
+      await menu.waitFor({ state: 'detached', timeout: 5_000 });
+      // Focus comes back a frame after the popover unmounts, not in the same
+      // tick — so wait for it. Unlike hover, restored focus is a level that
+      // stays, which is what makes waiting the right tool here.
+      try {
+        await page.waitForFunction(
+          (n) => document.activeElement?.getAttribute('aria-label') === n,
+          name,
+          { timeout: 2_000 },
+        );
+      } catch {
+        const back = await page.evaluate(() =>
+          document.activeElement?.getAttribute('aria-label'),
+        );
+        fail(where, `Escape left focus on "${back}"`);
+      }
+    } catch {
+      fail(where, 'row actions menu did not open and close');
+    }
+
+    await page.getByRole('button', { name: 'Northwind', exact: true }).click();
+    const switcher = page.getByRole('menu', { name: 'Workspaces' });
+    try {
+      await switcher.waitFor({ timeout: 5_000 });
+      const checked = await switcher
+        .getByRole('menuitemradio', { name: 'Northwind', exact: true })
+        .getAttribute('aria-checked');
+      if (checked !== 'true') fail(where, 'current workspace is not checked');
+      await switcher
+        .getByRole('menuitemradio', { name: 'Northwind sandbox' })
+        .click();
+      await switcher.waitFor({ state: 'detached', timeout: 5_000 });
+      await page
+        .getByRole('button', { name: 'Northwind sandbox' })
+        .waitFor({ timeout: 5_000 });
+    } catch {
+      fail(where, 'choosing a workspace did not close the menu and switch');
+    }
+    menusChecked++;
+    await context.close();
+  }
+
+  /*
    * The loading states, at phone width. With no latency a skeleton is gone
    * before anything can measure it, and a skeleton is laid out differently
    * from the content it stands in for — the Agents skeleton once pushed the
@@ -278,7 +373,10 @@ try {
 }
 
 const checked =
-  ROUTES.length * THEMES.length * 2 + loadingChecked + paletteChecked;
+  ROUTES.length * THEMES.length * 2 +
+  loadingChecked +
+  paletteChecked +
+  menusChecked;
 if (failures.length) {
   console.error(
     `Demo smoke: ${failures.length} failures across ${checked} page loads\n`,
