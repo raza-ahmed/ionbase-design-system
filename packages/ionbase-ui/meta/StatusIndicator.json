@@ -17,6 +17,11 @@
       "why": "it has the step vocabulary — pending, active, done, failed, skipped — and says which step is current"
     },
     {
+      "when": "the result of what the user just did, beside it — Saving…, Saved",
+      "use": "InlineLoading",
+      "why": "it is a live region that is always mounted, so each change is announced"
+    },
+    {
       "when": "the change must be announced — a job just failed",
       "use": "Toast",
       "why": "StatusIndicator is not a live region; a table of them would announce every row"

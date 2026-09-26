@@ -70,6 +70,7 @@ const REQUIRED = [
   'PasswordInput',
   'StatusIndicator',
   'Banner',
+  'InlineLoading',
   'MenuItem',
   'MenuSection',
   'MenuTrigger',

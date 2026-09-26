@@ -321,6 +321,25 @@ body {
   background-color: var(--surface-sunken);
 }
 
+/*
+ * A row's switch and its save state. The words grow away from the switch, so
+ * it never moves under the pointer: to its left while the row puts the
+ * control at its end, to its right once the row stacks and the control
+ * starts it. The switch is first in the DOM either way.
+ */
+.demo-inline-save {
+  display: inline-flex;
+  flex-direction: row-reverse;
+  align-items: center;
+  gap: var(--spacing-12);
+}
+
+@container (width < 30rem) {
+  .demo-inline-save {
+    flex-direction: row;
+  }
+}
+
 @media (width <= 767px) {
   .demo-form {
     padding: var(--spacing-16);

@@ -1,5 +1,12 @@
 import { useState } from 'react';
-import { Alert, Card, SettingRow, Toggle } from 'ionbase-ui';
+import {
+  Alert,
+  Card,
+  InlineLoading,
+  SettingRow,
+  Toggle,
+  type InlineLoadingStatus,
+} from 'ionbase-ui';
 
 import {
   saveNotification,
@@ -29,7 +36,14 @@ const ROWS: {
   },
 ];
 
-/** Immediate-apply half of the pattern. Optimistic, reverted on failure, announced either way. */
+/**
+ * Immediate-apply half of the pattern. Optimistic, reverted on failure, and
+ * each row says how its save went beside its switch — Saving…, Saved, Not
+ * saved — with InlineLoading, which is mounted with the row so every change
+ * is announced. The switch stays enabled while it saves: disabling it would
+ * throw a keyboard user's focus to the top of the page. A press mid-save is
+ * ignored instead.
+ */
 export function NotificationsPanel({
   initial,
 }: {
@@ -37,32 +51,31 @@ export function NotificationsPanel({
 }) {
   const settings = useDemoSettings();
   const [values, setValues] = useState(initial);
-  const [saving, setSaving] = useState<keyof NotificationSettings | null>(null);
+  const [status, setStatus] = useState<
+    Partial<Record<keyof NotificationSettings, InlineLoadingStatus>>
+  >({});
   const [failure, setFailure] = useState<string | null>(null);
-  const [announcement, setAnnouncement] = useState('');
 
   async function change(
     key: keyof NotificationSettings,
     on: boolean,
     label: string,
   ) {
-    if (!values) return;
+    if (!values || status[key] === 'active') return;
     const previous = values[key];
     setValues({ ...values, [key]: on });
-    setSaving(key);
+    setStatus((s) => ({ ...s, [key]: 'active' }));
     setFailure(null);
     try {
       await saveNotification(key, on, settings);
-      setAnnouncement(`${label} turned ${on ? 'on' : 'off'}. Saved.`);
+      setStatus((s) => ({ ...s, [key]: 'finished' }));
     } catch (e) {
       // A switch left in the new position after a failed save lies about the server.
       setValues((v) => (v ? { ...v, [key]: previous } : v));
       setFailure(
         `${label} couldn't be turned ${on ? 'on' : 'off'}. ${(e as Error).message}`,
       );
-      setAnnouncement('');
-    } finally {
-      setSaving(null);
+      setStatus((s) => ({ ...s, [key]: 'error' }));
     }
   }
 
@@ -71,9 +84,6 @@ export function NotificationsPanel({
       title="Notifications"
       description="Changes apply as soon as you make them."
     >
-      <p className="ion-visually-hidden" role="status">
-        {announcement}
-      </p>
       {failure && (
         <Alert
           intent="error"
@@ -91,11 +101,23 @@ export function NotificationsPanel({
           label={row.label}
           description={row.description}
         >
-          <Toggle
-            isSelected={values?.[row.key] ?? false}
-            isDisabled={!values || saving === row.key}
-            onSelectionChange={(on) => void change(row.key, on, row.label)}
-          />
+          {({ labelId, descriptionId }) => (
+            <span className="demo-inline-save">
+              <Toggle
+                aria-labelledby={labelId}
+                aria-describedby={descriptionId}
+                isSelected={values?.[row.key] ?? false}
+                isDisabled={!values}
+                onSelectionChange={(on) => void change(row.key, on, row.label)}
+              />
+              <InlineLoading
+                status={status[row.key] ?? 'inactive'}
+                onSuccess={() =>
+                  setStatus((s) => ({ ...s, [row.key]: 'inactive' }))
+                }
+              />
+            </span>
+          )}
         </SettingRow>
       ))}
     </Card>

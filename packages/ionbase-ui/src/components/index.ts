@@ -149,6 +149,11 @@ export type {
   StatusIndicatorIntent,
   StatusIndicatorSize,
 } from './StatusIndicator.js';
+export { InlineLoading } from './InlineLoading.js';
+export type {
+  InlineLoadingProps,
+  InlineLoadingStatus,
+} from './InlineLoading.js';
 export type {
   ButtonGroupProps,
   ButtonGroupAlign,

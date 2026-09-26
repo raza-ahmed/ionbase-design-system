@@ -121,25 +121,25 @@ IonBase column names the component that covers it.
 
 ### Feedback and overlays
 
-| Component                       | Carbon | M3  | SLDS | IonBase       |
-| ------------------------------- | :----: | :-: | :--: | ------------- |
-| Inline notification             |   ●    |     |  ●   | `Alert`       |
-| Toast / snackbar                |   ●    |  ●  |  ●   | `Toast`       |
-| Page banner                     |   ●    |     |  ●   | `Banner`      |
-| Notifications panel             |   ●    |     |  ●   | —             |
-| Progress bar                    |   ●    |  ●  |  ●   | `ProgressBar` |
-| Progress ring (determinate)     |        |  ●  |  ●   | —             |
-| Spinner                         |   ●    |  ●  |  ●   | `Spinner`     |
-| Inline loading (pending → done) |   ●    |     |      | —             |
-| Skeleton                        |   ●    |     |      | `Skeleton`    |
-| Empty state / illustration      |   ◐    |     |  ●   | `EmptyState`  |
-| Tooltip                         |   ●    |  ●  |  ●   | `Tooltip`     |
-| Toggletip (click-open info)     |   ●    |  ◐  |  ◐   | `Toggletip`   |
-| Popover                         |   ●    |     |  ●   | `Popover`     |
-| Modal / dialog                  |   ●    |  ●  |  ●   | `Modal`       |
-| Drawer (modal side sheet)       |   ●    |  ●  |      | `Drawer`      |
-| Side panel (non-modal)          |   ●    |  ●  |  ●   | `SidePanel`   |
-| Coachmark / guided tour         |   ●    |     |  ●   | —             |
+| Component                       | Carbon | M3  | SLDS | IonBase         |
+| ------------------------------- | :----: | :-: | :--: | --------------- |
+| Inline notification             |   ●    |     |  ●   | `Alert`         |
+| Toast / snackbar                |   ●    |  ●  |  ●   | `Toast`         |
+| Page banner                     |   ●    |     |  ●   | `Banner`        |
+| Notifications panel             |   ●    |     |  ●   | —               |
+| Progress bar                    |   ●    |  ●  |  ●   | `ProgressBar`   |
+| Progress ring (determinate)     |        |  ●  |  ●   | —               |
+| Spinner                         |   ●    |  ●  |  ●   | `Spinner`       |
+| Inline loading (pending → done) |   ●    |     |      | `InlineLoading` |
+| Skeleton                        |   ●    |     |      | `Skeleton`      |
+| Empty state / illustration      |   ◐    |     |  ●   | `EmptyState`    |
+| Tooltip                         |   ●    |  ●  |  ●   | `Tooltip`       |
+| Toggletip (click-open info)     |   ●    |  ◐  |  ◐   | `Toggletip`     |
+| Popover                         |   ●    |     |  ●   | `Popover`       |
+| Modal / dialog                  |   ●    |  ●  |  ●   | `Modal`         |
+| Drawer (modal side sheet)       |   ●    |  ●  |      | `Drawer`        |
+| Side panel (non-modal)          |   ●    |  ●  |  ●   | `SidePanel`     |
+| Coachmark / guided tour         |   ●    |     |  ●   | —               |
 
 ### Layout and utilities
 

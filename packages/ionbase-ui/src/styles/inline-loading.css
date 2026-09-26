@@ -1,0 +1,12 @@
+/*
+ * InlineLoading
+ *
+ * A live region around one StatusIndicator — the arc, the check or the
+ * octagon, and a word. Empty while inactive, so it takes no room beside the
+ * control until there is something to say.
+ */
+.ion-inline-loading {
+  display: inline-flex;
+  align-items: center;
+  vertical-align: middle;
+}

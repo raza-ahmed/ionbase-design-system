@@ -1,0 +1,87 @@
+{
+  "status": "stable",
+  "summary": "The pending → done → failed of one action, in place — \"Saving…\", \"Saved\", \"Not saved\" beside the switch that was flipped or the button that was pressed. A live region that is always mounted, around StatusIndicator's arc, check and octagon.",
+  "useWhen": [
+    "one control saves as soon as it is used — a switch, a row's inline edit — and the user needs to see that it worked",
+    "a button's action takes a moment and its result belongs beside it, not in a toast across the screen"
+  ],
+  "useInstead": [
+    {
+      "when": "the whole region is loading — a table, a card, a page",
+      "use": "Skeleton",
+      "why": "it holds the layout of what is coming; InlineLoading is the state of one action"
+    },
+    {
+      "when": "the wait has no outcome to report — a panel opening, a search running",
+      "use": "Spinner",
+      "why": "InlineLoading's point is the \"Saved\" or \"Not saved\" that follows"
+    },
+    {
+      "when": "the result is about something off screen, or the user has moved on — a report finished, an export ready",
+      "use": "Toast",
+      "why": "InlineLoading speaks from where the action was taken"
+    },
+    {
+      "when": "the status of each row, as data",
+      "use": "StatusIndicator",
+      "why": "it is not a live region; fifty rows of InlineLoading would announce fifty times"
+    }
+  ],
+  "composition": {
+    "order": ["InlineLoading", "Toggle"],
+    "note": "Mount it with the control and change `status` — never mount it when the save starts. Set `finished` on success and go back to `inactive` in `onSuccess`; leave `error` until the next attempt, with the detail in an Alert. Keep the control enabled while `active` and ignore presses.",
+    "example": "<InlineLoading status={status} onSuccess={() => setStatus('inactive')} />"
+  },
+  "variants": {
+    "status": {
+      "inactive": { "use": "nothing to say — an empty live region, waiting" },
+      "active": {
+        "use": "the default — under way: a spinning arc and \"Saving…\""
+      },
+      "finished": {
+        "use": "it worked: a check and \"Saved\", until `onSuccess`"
+      },
+      "error": {
+        "use": "it failed: an octagon and \"Not saved\", until the next attempt"
+      }
+    },
+    "size": {
+      "sm": { "use": "the default — beside a small control or in a row; 16px" },
+      "md": { "use": "beside body text; 20px" }
+    }
+  },
+  "a11y": {
+    "requires": [
+      "keep it mounted: the live region must exist before its words change",
+      "`activeLabel`, `finishedLabel` and `errorLabel` — translated, and specific when \"Saving…\" is not what happens"
+    ],
+    "guarantees": [
+      "`role=\"status\"` is rendered in every state, so each change of words is announced, politely",
+      "each state has its own shape and word, so the outcome is not carried by colour alone (WCAG 1.4.1)",
+      "the shape is hidden from assistive tech; only the word is announced",
+      "finished calls `onSuccess` after `successDelay`, and a re-render does not restart the delay",
+      "an error stays until the status changes"
+    ],
+    "notes": [
+      "the region names nothing — it says what happened to the thing the user just pressed, so put it beside that thing",
+      "the in-progress arc stops under `prefers-reduced-motion`; its shape alone says under way"
+    ]
+  },
+  "antiPatterns": [
+    {
+      "dont": "{saving && <InlineLoading />}",
+      "do": "<InlineLoading status={saving ? 'active' : 'inactive'} />",
+      "why": "a live region inserted with its words already in it is usually not announced at all"
+    },
+    {
+      "dont": "<Toggle isDisabled={saving} />",
+      "do": "<Toggle onSelectionChange={(on) => { if (!saving) save(on); }} />",
+      "why": "disabling the switch a keyboard user just pressed moves their focus to the top of the page"
+    },
+    {
+      "dont": "a green check and nothing else when it saves",
+      "do": "<InlineLoading status=\"finished\" />",
+      "why": "a check alone is silent to a screen reader and only a colour to some sighted users"
+    }
+  ]
+}
