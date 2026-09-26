@@ -1560,6 +1560,36 @@
         }
       }
     },
+    "Password Input": {
+      "page": "Password Input",
+      "id": "1590:386",
+      "kind": "SET",
+      "props": {
+        "Revealed": {
+          "type": "VARIANT",
+          "options": ["False", "True"],
+          "default": "False"
+        },
+        "Size": {
+          "type": "VARIANT",
+          "options": ["Large", "Medium", "Small"],
+          "default": "Large"
+        },
+        "State": {
+          "type": "VARIANT",
+          "options": [
+            "Default",
+            "Hover",
+            "Focus",
+            "Filled",
+            "Invalid",
+            "Disabled",
+            "Read-only"
+          ],
+          "default": "Default"
+        }
+      }
+    },
     "Popover": {
       "page": "Popover",
       "id": "825:1853",

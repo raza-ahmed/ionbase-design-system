@@ -1576,6 +1576,98 @@ try {
   }
 
   /*
+   * PasswordInput, in the Delete workspace dialog: the password is asked
+   * again. Delete stays disabled until the name and a password are both in.
+   * From the keyboard the Show password toggle is the next tab stop; Space
+   * shows the password, keeps focus on the toggle, sets aria-pressed and
+   * says "Password shown", and the name stays "Show password". axe runs on
+   * the dialog with the password shown. Then the deletion is scheduled.
+   */
+  {
+    const where = 'password input (light, desktop)';
+    const context = await browser.newContext({
+      viewport: { width: 1280, height: 900 },
+    });
+    await context.addInitScript(() =>
+      localStorage.setItem(
+        'ionbase-ops:demo-settings',
+        JSON.stringify({ theme: 'light', latency: 0 }),
+      ),
+    );
+    const page = await context.newPage();
+    page.on('pageerror', (e) => fail(where, `exception: ${e.message}`));
+    await page.goto(`${BASE}/#/settings`);
+    try {
+      const open = page.getByRole('button', { name: 'Delete workspace…' });
+      await open.waitFor({ timeout: 10_000 });
+      await open.click();
+      const dialog = page.getByRole('dialog');
+      await dialog.waitFor({ timeout: 5_000 });
+      const nameField = dialog.getByLabel(/^Type “.*” to confirm$/);
+      const name =
+        (await nameField.getAttribute('aria-label')) ??
+        (await dialog
+          .locator('label', { hasText: 'to confirm' })
+          .textContent());
+      const workspace = /“(.*)”/.exec(name)[1];
+      await nameField.fill(workspace);
+      const confirm = dialog.getByRole('button', { name: 'Delete workspace' });
+      if (await confirm.isEnabled())
+        fail(where, 'Delete is enabled before the password is entered');
+
+      const password = dialog.getByLabel('Your password');
+      if ((await password.getAttribute('type')) !== 'password')
+        fail(where, 'the password is shown before anyone asked');
+      await password.fill('correct-horse-9');
+      await page.keyboard.press('Tab');
+      const toggle = dialog.getByRole('button', { name: 'Show password' });
+      if (!(await toggle.evaluate((el) => el === document.activeElement)))
+        fail(where, 'Show password is not the tab stop after the field');
+      await page.keyboard.press('Space');
+      if ((await password.getAttribute('type')) !== 'text')
+        fail(where, 'Space on the toggle did not show the password');
+      if ((await toggle.getAttribute('aria-pressed')) !== 'true')
+        fail(where, 'the toggle is not marked pressed');
+      if (!(await toggle.evaluate((el) => el === document.activeElement)))
+        fail(where, 'showing the password moved focus off the toggle');
+      const said = await dialog
+        .locator('.ion-password-input__status')
+        .textContent();
+      if (said !== 'Password shown')
+        fail(where, `the status says "${said}", not "Password shown"`);
+      if ((await password.getAttribute('spellcheck')) !== 'false')
+        fail(where, 'the shown password is spellchecked');
+
+      // Delete has just enabled, and its colours transition: axe measuring
+      // mid-way reports a contrast the button never settles on.
+      await page.waitForFunction(() =>
+        document.getAnimations().every((a) => a.playState !== 'running'),
+      );
+      await page.addScriptTag({ content: axeSource });
+      const violations = await page.evaluate(async () => {
+        const result = await window.axe.run(
+          document.querySelector('[role="dialog"]'),
+          { resultTypes: ['violations'] },
+        );
+        return result.violations.map((v) => `${v.impact} ${v.id}`);
+      });
+      for (const v of violations) fail(where, `axe ${v}, password shown`);
+
+      if (!(await confirm.isEnabled()))
+        fail(where, 'Delete stays disabled with the name and a password in');
+      await confirm.click();
+      await page
+        .getByText(`${workspace} will be deleted on`)
+        .waitFor({ timeout: 5_000 })
+        .catch(() => fail(where, 'the deletion was not scheduled'));
+    } catch (e) {
+      fail(where, `did not run: ${e.message.split('\n')[0]}`);
+    }
+    groupsChecked++;
+    await context.close();
+  }
+
+  /*
    * The wizard's CheckboxGroup, which no page load above reaches: it is on
    * Guardrails, the third step. A saved draft with the first two steps done
    * opens there. "At least one" has to hold three ways — natively (every box

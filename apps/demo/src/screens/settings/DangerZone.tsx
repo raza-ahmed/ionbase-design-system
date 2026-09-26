@@ -7,6 +7,7 @@ import {
   Divider,
   Input,
   Modal,
+  PasswordInput,
   SettingRow,
 } from 'ionbase-ui';
 
@@ -14,7 +15,11 @@ import { scheduleDeletion } from '../../data/settings';
 import { formatDay } from '../../lib/dates';
 import { useDemoSettings } from '../../lib/demo-settings';
 
-/** DestructiveConfirm at its highest consequence: the workspace name must be typed exactly. */
+/**
+ * DestructiveConfirm at its highest consequence: the workspace name must be
+ * typed exactly, and the password entered again. The demo accepts any
+ * password; a real app checks it on the server with the request.
+ */
 export function DangerZone({
   workspaceName,
   scheduledFor,
@@ -27,6 +32,7 @@ export function DangerZone({
   const settings = useDemoSettings();
   const [open, setOpen] = useState(false);
   const [typed, setTyped] = useState('');
+  const [password, setPassword] = useState('');
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -37,6 +43,7 @@ export function DangerZone({
       await scheduleDeletion(schedule, settings);
       setOpen(false);
       setTyped('');
+      setPassword('');
       onChanged();
     } catch (e) {
       setError((e as Error).message);
@@ -106,7 +113,9 @@ export function DangerZone({
               </Button>
               <Button
                 variant="destructive"
-                isDisabled={pending || typed !== workspaceName}
+                isDisabled={
+                  pending || typed !== workspaceName || password === ''
+                }
                 onClick={() => void run(true)}
               >
                 {pending ? 'Scheduling…' : 'Delete workspace'}
@@ -131,6 +140,14 @@ export function DangerZone({
               value={typed}
               onChange={setTyped}
               autoComplete="off"
+              isDisabled={pending}
+            />
+            <PasswordInput
+              size="sm"
+              label="Your password"
+              description="Asked again because this deletes the workspace."
+              value={password}
+              onChange={setPassword}
               isDisabled={pending}
             />
           </div>

@@ -45,7 +45,7 @@
 - [x] **ContextMenu** — Agents table rows, same items as their ⋯ menu — 0.98.0
 - [x] **CopyButton** — the run ID in Runs history's details; confirms on the button, a toast only when the copy failed — 0.99.0
 - [x] **CodeSnippet** — Settings' API access: a CLI command, an API request, an inline command — 0.100.0
-- [ ] **PasswordInput**
+- [x] **PasswordInput** — the password asked again to delete the workspace — 0.101.0
 - [ ] **StatusIndicator**
 - [ ] **Banner**
 - [ ] **InlineLoading**

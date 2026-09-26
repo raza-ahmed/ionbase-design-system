@@ -1378,6 +1378,33 @@
         }
       }
     },
+    "Password Input": {
+      "code": "PasswordInput",
+      "props": {
+        "Size": {
+          "prop": "size",
+          "values": {
+            "Small": "sm",
+            "Medium": "md",
+            "Large": "lg"
+          }
+        },
+        "State": {
+          "prop": "isInvalid",
+          "when": {
+            "Invalid": true
+          },
+          "note": "Hover, Focus and Filled are CSS or content; Disabled is isDisabled and Read-only is isReadOnly — Input's split, because the box is Input's. The eye is the Show password toggle, a tab stop, in every state."
+        },
+        "Revealed": {
+          "prop": "isRevealed",
+          "when": {
+            "True": true
+          },
+          "note": "Usually left to the user: the toggle sets it. Pass isRevealed with onRevealedChange only to control it, or defaultRevealed to start shown. The name stays \"Show password\" either way; aria-pressed says which."
+        }
+      }
+    },
     "Segmented Control": {
       "code": "SegmentedControl",
       "props": {

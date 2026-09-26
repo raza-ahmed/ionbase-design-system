@@ -139,6 +139,8 @@ export { CopyButton } from './CopyButton.js';
 export type { CopyButtonProps, CopyButtonState } from './CopyButton.js';
 export { CodeSnippet } from './CodeSnippet.js';
 export type { CodeSnippetProps, CodeSnippetType } from './CodeSnippet.js';
+export { PasswordInput } from './PasswordInput.js';
+export type { PasswordInputProps, PasswordInputSize } from './PasswordInput.js';
 export type {
   ButtonGroupProps,
   ButtonGroupAlign,

@@ -67,6 +67,7 @@ const REQUIRED = [
   'ContextMenu',
   'CopyButton',
   'CodeSnippet',
+  'PasswordInput',
   'MenuItem',
   'MenuSection',
   'MenuTrigger',
