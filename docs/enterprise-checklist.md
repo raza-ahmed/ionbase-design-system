@@ -50,7 +50,7 @@
 - [x] **Banner** — the app shell: maintenance (dismissed for good) and a scheduled deletion (until cancelled) — 0.103.0
 - [x] **InlineLoading** — each Notifications switch in Settings: Saving…, Saved, Not saved beside it — 0.104.0
 - [x] **NotificationsPanel** — the header bell on every page: grouped by day, read toggles, Mark all as read, empty and loading — 0.105.0
-- [ ] **InlineEdit**
+- [x] **InlineEdit** — an agent's purpose under its name, edited in place — 0.106.0
 - [ ] **SelectableTile**
 - [ ] **TruncatedText**
 - [ ] **Timeline**

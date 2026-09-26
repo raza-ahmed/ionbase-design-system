@@ -132,7 +132,13 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
 
     // No label and no helper: the control is the whole component, and wrapping
     // it in a column that holds nothing else only adds a node.
-    if (!label && !description && !errorMessage) return control;
+    /*
+     * Wrapped whenever an error message is passed, shown or not. A field that
+     * only gained its wrapper when the error appeared was a different element
+     * before and after — it remounted, and focus was lost as the user typed
+     * the character that cleared the error.
+     */
+    if (!label && !description && errorMessage === undefined) return control;
 
     return (
       <div

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { expect, userEvent, waitFor, within } from 'storybook/test';
 import { Tooltip, Button, Popover } from 'ionbase-ui';
@@ -384,5 +384,27 @@ export const InsideAPopoverTrigger: Story = {
       expect(d.right).toBeGreaterThan(b.left);
     });
     await userEvent.keyboard('{Escape}');
+  },
+};
+
+/** The trigger's own ref still reaches it: the Tooltip's does not replace it. */
+export const KeepsTheTriggersOwnRef: Story = {
+  render: () => {
+    function WithRef() {
+      const ref = useRef<HTMLButtonElement>(null);
+      return (
+        <>
+          <Tooltip label="Copy">
+            <Button ref={ref}>Copy</Button>
+          </Tooltip>
+          <Button onPress={() => ref.current?.focus()}>Focus it</Button>
+        </>
+      );
+    }
+    return <WithRef />;
+  },
+  play: async ({ canvas }) => {
+    await userEvent.click(canvas.getByRole('button', { name: 'Focus it' }));
+    await expect(canvas.getByRole('button', { name: 'Copy' })).toHaveFocus();
   },
 };

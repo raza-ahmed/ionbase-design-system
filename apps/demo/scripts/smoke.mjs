@@ -2211,6 +2211,185 @@ try {
   }
 
   /*
+   * InlineEdit, as the agent's purpose under its name. The description is a
+   * div, not a <p> holding an editor. From the keyboard: Edit purpose opens
+   * the field focused with its text selected; Enter saves, focus returns to
+   * Edit and "Purpose saved" is announced; the saved purpose is there after
+   * leaving the tab and coming back. Escape cancels. An empty purpose is
+   * refused as the field's error with focus kept. In the Partial failure
+   * state the save is refused and what was typed is kept. axe runs while
+   * editing; nothing scrolls sideways on a phone.
+   */
+  for (const [device, width, height] of [
+    ['desktop', 1280, 900],
+    ['mobile', 390, 844],
+  ]) {
+    const where = `inline edit (light, ${device})`;
+    const context = await browser.newContext({ viewport: { width, height } });
+    await context.addInitScript(() =>
+      localStorage.setItem(
+        'ionbase-ops:demo-settings',
+        JSON.stringify({ theme: 'light', latency: 0 }),
+      ),
+    );
+    const page = await context.newPage();
+    page.on('pageerror', (e) => fail(where, `exception: ${e.message}`));
+    await page.goto(`${BASE}/#/agents/agt_wx`);
+    try {
+      const edit = page.getByRole('button', { name: 'Edit purpose' });
+      await edit.waitFor({ timeout: 10_000 });
+      const described = await page.evaluate(() => {
+        const d = document.querySelector('.ion-page-header__description');
+        return {
+          tag: d?.tagName,
+          text: d?.querySelector('.ion-inline-edit__value')?.textContent,
+        };
+      });
+      if (described.tag !== 'DIV')
+        fail(where, `the description is a <${described.tag}>`);
+      const original = described.text;
+      const focused = () =>
+        page.evaluate(() => ({
+          name:
+            document.activeElement?.getAttribute('aria-label') ??
+            document.activeElement?.textContent,
+          selected:
+            document.activeElement instanceof window.HTMLInputElement &&
+            document.activeElement.selectionStart === 0 &&
+            document.activeElement.selectionEnd ===
+              document.activeElement.value.length,
+        }));
+      const field = page.getByRole('textbox', { name: 'Purpose' });
+
+      await edit.focus();
+      await page.keyboard.press('Enter');
+      await field.waitFor({ timeout: 2_000 });
+      await page.waitForFunction(
+        () => document.activeElement?.getAttribute('aria-label') === 'Purpose',
+        null,
+        { timeout: 2_000 },
+      );
+      if (!(await focused()).selected)
+        fail(where, 'the field opened without its text selected');
+
+      await page.addScriptTag({ content: axeSource });
+      const violations = await page.evaluate(async () => {
+        await Promise.all(
+          document
+            .getAnimations()
+            .filter((a) => a.effect?.getTiming().iterations !== Infinity)
+            .map((a) => a.finished),
+        );
+        const result = await window.axe.run(document, {
+          resultTypes: ['violations'],
+        });
+        return result.violations.map((v) => `${v.impact} ${v.id}`);
+      });
+      for (const v of violations) fail(where, `axe ${v}`);
+      if (
+        await page.evaluate(
+          () => document.documentElement.scrollWidth > window.innerWidth,
+        )
+      )
+        fail(where, 'the page scrolls sideways while editing');
+
+      const next = 'Reconciles invoices against purchase orders.';
+      await page.keyboard.type(next);
+      await page.keyboard.press('Enter');
+      await page
+        .waitForFunction(
+          () =>
+            document.activeElement?.getAttribute('aria-label') ===
+            'Edit purpose',
+          null,
+          { timeout: 2_000 },
+        )
+        .catch(() => fail(where, 'focus did not return to Edit purpose'));
+      const saved = await page.evaluate(() => ({
+        text: document.querySelector('.ion-inline-edit__value')?.textContent,
+        said: document.querySelector('.ion-inline-edit > [role="status"]')
+          ?.textContent,
+      }));
+      if (saved.text !== next) fail(where, `the purpose is "${saved.text}"`);
+      if (saved.said !== 'Purpose saved') fail(where, 'the save was not said');
+
+      // The agent's own tabs, not the sidebar's Overview.
+      const tabs = page.getByRole('navigation', { name: /sections$/ });
+      await tabs.getByRole('link', { name: 'Runs', exact: true }).click();
+      await tabs.getByRole('link', { name: 'Overview', exact: true }).click();
+      await edit.waitFor({ timeout: 5_000 });
+      if (
+        (await page.locator('.ion-inline-edit__value').textContent()) !== next
+      )
+        fail(where, 'the saved purpose was lost on coming back');
+
+      await edit.focus();
+      await page.keyboard.press('Enter');
+      await field.waitFor({ timeout: 2_000 });
+      await page.keyboard.type('Something else');
+      await page.keyboard.press('Escape');
+      await edit.waitFor({ timeout: 2_000 });
+      if (
+        (await page.locator('.ion-inline-edit__value').textContent()) !== next
+      )
+        fail(where, 'Escape did not throw the edit away');
+
+      await edit.focus();
+      await page.keyboard.press('Enter');
+      await field.waitFor({ timeout: 2_000 });
+      await page.waitForFunction(
+        () => document.activeElement?.getAttribute('aria-label') === 'Purpose',
+        null,
+        { timeout: 2_000 },
+      );
+      await page.keyboard.press('Backspace');
+      await page.keyboard.press('Enter');
+      const refused = await field.evaluate((el) => ({
+        invalid: el.getAttribute('aria-invalid'),
+        why: (el.getAttribute('aria-describedby') ?? '')
+          .split(' ')
+          .map((id) => document.getElementById(id)?.textContent ?? '')
+          .join(' ')
+          .trim(),
+        focused: el === document.activeElement,
+      }));
+      if (
+        refused.invalid !== 'true' ||
+        refused.why !== 'Say what the agent is for.'
+      )
+        fail(where, `an empty purpose was not refused (${refused.why})`);
+      if (!refused.focused) fail(where, 'focus left the refused field');
+      await page.keyboard.press('Escape');
+      await edit.waitFor({ timeout: 2_000 });
+
+      await page.getByRole('button', { name: /^Demo/ }).click();
+      await page.getByLabel('Screen state').selectOption('partial');
+      await page.keyboard.press('Escape');
+      await edit.waitFor({ timeout: 10_000 });
+      await edit.click();
+      await field.waitFor({ timeout: 2_000 });
+      await page.waitForFunction(
+        () => document.activeElement?.getAttribute('aria-label') === 'Purpose',
+        null,
+        { timeout: 2_000 },
+      );
+      await page.keyboard.type('Kept after a refusal');
+      await page.keyboard.press('Enter');
+      await page
+        .getByText('The agents service refused the change (HTTP 409).')
+        .waitFor({ timeout: 5_000 })
+        .catch(() => fail(where, 'the refused save said nothing'));
+      if ((await field.inputValue()) !== 'Kept after a refusal')
+        fail(where, 'the refused save lost what was typed');
+      if (original === next) fail(where, 'the check proves nothing');
+    } catch (e) {
+      fail(where, `did not run: ${e.message.split('\n')[0]}`);
+    }
+    groupsChecked++;
+    await context.close();
+  }
+
+  /*
    * The loading states, at phone width. With no latency a skeleton is gone
    * before anything can measure it, and a skeleton is laid out differently
    * from the content it stands in for — the Agents skeleton once pushed the

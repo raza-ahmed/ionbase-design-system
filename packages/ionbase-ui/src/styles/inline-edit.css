@@ -1,0 +1,42 @@
+/*
+ * InlineEdit
+ *
+ * View: the value as text, and a 32px tertiary Edit button 4px after it —
+ * the button hugs the text rather than sitting at the far end, so it reads as
+ * belonging to this value. The value inherits the text around it — a page
+ * description, a table cell — so it looks like what it replaces. Empty shows
+ * the placeholder in text/secondary.
+ * Editor: the field at full width, then Save and Cancel, 8px apart, 8px
+ * below it. `size` is the field's: Small or Medium.
+ */
+
+.ion-inline-edit__view {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-4);
+  max-width: 100%;
+}
+
+.ion-inline-edit__value {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  cursor: text;
+}
+
+.ion-inline-edit__value[data-empty] {
+  color: var(--text-secondary);
+}
+
+.ion-inline-edit__edit {
+  flex: none;
+}
+
+.ion-inline-edit__editor {
+  display: grid;
+  gap: var(--spacing-8);
+}
+
+.ion-inline-edit__actions {
+  display: flex;
+  gap: var(--spacing-8);
+}

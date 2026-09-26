@@ -1,0 +1,72 @@
+{
+  "status": "stable",
+  "summary": "A value that becomes a field where it stands — an agent's purpose under its name, a row's label. The value is text with an Edit button beside it; editing shows the field with Save and Cancel. Enter saves, Escape cancels, focus goes in and comes back, and a failed or invalid save keeps what was typed.",
+  "useWhen": [
+    "one value on a page that is read far more often than it is changed — a name, a description, a label",
+    "changing it should not take the user to a settings page or a dialog"
+  ],
+  "useInstead": [
+    {
+      "when": "several values are changed and saved together",
+      "use": "Input",
+      "why": "a form with one Save is clearer than several editors each saving on their own"
+    },
+    {
+      "when": "the change needs a warning or a second look — deleting, transferring ownership",
+      "use": "Modal",
+      "why": "an inline Save is one keystroke; a consequential change deserves a confirmation"
+    },
+    {
+      "when": "a switch that applies at once",
+      "use": "Toggle",
+      "why": "there is nothing to type, so there is nothing to save or cancel"
+    }
+  ],
+  "composition": {
+    "order": ["InlineEdit"],
+    "note": "`label` is required: it names the field and the Edit button. Pass `value` and `onSave` to keep the value yourself; return a promise from `onSave` and throw to report a failure. `validate` runs before `onSave`. `placeholder` stands in for an empty value — \"Add a purpose\". `isMultiline` makes it a Textarea: Enter adds a line and ⌘/Ctrl+Enter saves.",
+    "example": "<InlineEdit label=\"Purpose\" editLabel=\"Edit purpose\" value={purpose} onSave={savePurpose} validate={(v) => (v.trim() ? undefined : 'Say what the agent is for.')} />"
+  },
+  "variants": {
+    "size": {
+      "md": {
+        "use": "the default — a medium field, beside body text"
+      },
+      "sm": {
+        "use": "a small field, in a dense row or a table cell"
+      }
+    }
+  },
+  "a11y": {
+    "requires": [
+      "`label` — the name of the value, translated",
+      "`editLabel` when \"Edit\" plus the label does not read naturally — \"Edit purpose\", not \"Edit Purpose\""
+    ],
+    "guarantees": [
+      "the value is plain text, read as text; the Edit button is one tab stop beside it",
+      "opening the editor focuses the field with its text selected",
+      "Save and Cancel return focus to the Edit button",
+      "Escape cancels from the field or either button, and does not reach a dialog around it",
+      "an invalid value or a failed save keeps the editor open, with the message as the field's error and what was typed kept",
+      "while saving, the field is read-only and Save says Saving… — nothing is disabled, so focus stays put",
+      "a save is announced in a status region that is always mounted"
+    ],
+    "notes": [
+      "saving an unchanged value just closes the editor, without calling `onSave`",
+      "nothing happens on blur: leaving the field does not save or throw away what was typed",
+      "the value inherits the text around it — a page description, a table cell — so it looks like the text it replaces; `size` is the field's"
+    ]
+  },
+  "antiPatterns": [
+    {
+      "dont": "<button onClick={edit}>{purpose}</button>",
+      "do": "<InlineEdit label=\"Purpose\" value={purpose} onSave={save} />",
+      "why": "a value that is itself the button is announced as a button, and a sighted user has no sign it can be edited"
+    },
+    {
+      "dont": "saving on blur",
+      "do": "Save and Cancel, with Enter and Escape",
+      "why": "tabbing away to check something commits a half-typed value"
+    }
+  ]
+}

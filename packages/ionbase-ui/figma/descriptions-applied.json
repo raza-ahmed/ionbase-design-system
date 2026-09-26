@@ -19,7 +19,7 @@
   ],
   "file": "gaLbGd0QNb1fUl6BjSpfBA",
   "appliedOn": "2026-09-26",
-  "verifiedInFigma": 95,
+  "verifiedInFigma": 96,
   "applied": {
     "1360:267": {
       "figmaComponent": "Accordion",
@@ -175,6 +175,11 @@
       "figmaComponent": "Icon Button",
       "component": "Button",
       "hash": "f4bdf241a43cf9ef"
+    },
+    "1623:368": {
+      "figmaComponent": "Inline Edit",
+      "component": "InlineEdit",
+      "hash": "effc56e4b233ebac"
     },
     "80:275": {
       "figmaComponent": "Input",

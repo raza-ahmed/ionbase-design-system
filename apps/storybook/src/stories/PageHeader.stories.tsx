@@ -13,6 +13,7 @@ import {
   PageHeader,
   TabItem,
   Tabs,
+  InlineEdit,
 } from 'ionbase-ui';
 import { Ellipsis } from 'ionbase-icons/icons/ellipsis';
 import { Pause, Plus } from 'lucide-react';
@@ -234,5 +235,34 @@ export const GeometryMatchesTheDemo: Story = {
     await expect(getComputedStyle(heading).rowGap).toBe('4px');
     // h4-sized: the page's h1 in the outline, not a marketing headline.
     await expect(getComputedStyle(title).fontWeight).toBe('600');
+  },
+};
+
+/**
+ * Text is a paragraph; an element — an InlineEdit — is a div, so its own
+ * block content is not left outside a paragraph the browser closed early.
+ */
+export const AnElementDescriptionIsADiv: Story = {
+  render: () => (
+    <>
+      <PageHeader title="Text" description="Matches supplier invoices." />
+      <PageHeader
+        title="Element"
+        description={
+          <InlineEdit
+            label="Purpose"
+            defaultValue="Matches supplier invoices."
+          />
+        }
+      />
+    </>
+  ),
+  play: async ({ canvasElement }) => {
+    const [text, element] = [
+      ...canvasElement.querySelectorAll('.ion-page-header__description'),
+    ];
+    await expect(text.tagName).toBe('P');
+    await expect(element.tagName).toBe('DIV');
+    await expect(element.querySelector('.ion-inline-edit')).not.toBeNull();
   },
 };

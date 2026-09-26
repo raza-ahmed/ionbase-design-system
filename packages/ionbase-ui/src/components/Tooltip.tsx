@@ -115,6 +115,7 @@ export function Tooltip({
         children,
         mergeProps(children.props as Record<string, unknown>, outer, {
           ...triggerProps,
+          // mergeProps merges this with the child's own ref.
           ref: mergeRefs(triggerRef, outerRef),
         }),
       )}
