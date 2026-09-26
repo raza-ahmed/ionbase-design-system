@@ -207,7 +207,8 @@ export const CalendarOpensAndCloses: Story = {
       await expect(overlay().queryByRole('dialog')).not.toBeInTheDocument();
     });
     // Focus comes back to where it was, rather than being dropped on <body>.
-    await expect(document.activeElement).toBe(button);
+    // It is restored just after the dialog unmounts, so wait for it.
+    await waitFor(() => expect(document.activeElement).toBe(button));
   },
 };
 
