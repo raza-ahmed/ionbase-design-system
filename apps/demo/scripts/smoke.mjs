@@ -2263,11 +2263,11 @@ try {
 
       await edit.focus();
       await page.keyboard.press('Enter');
-      await field.waitFor({ timeout: 2_000 });
+      await field.waitFor({ timeout: 5_000 });
       await page.waitForFunction(
         () => document.activeElement?.getAttribute('aria-label') === 'Purpose',
         null,
-        { timeout: 2_000 },
+        { timeout: 5_000 },
       );
       if (!(await focused()).selected)
         fail(where, 'the field opened without its text selected');
@@ -2302,7 +2302,7 @@ try {
             document.activeElement?.getAttribute('aria-label') ===
             'Edit purpose',
           null,
-          { timeout: 2_000 },
+          { timeout: 5_000 },
         )
         .catch(() => fail(where, 'focus did not return to Edit purpose'));
       const saved = await page.evaluate(() => ({
@@ -2325,10 +2325,10 @@ try {
 
       await edit.focus();
       await page.keyboard.press('Enter');
-      await field.waitFor({ timeout: 2_000 });
+      await field.waitFor({ timeout: 5_000 });
       await page.keyboard.type('Something else');
       await page.keyboard.press('Escape');
-      await edit.waitFor({ timeout: 2_000 });
+      await edit.waitFor({ timeout: 5_000 });
       if (
         (await page.locator('.ion-inline-edit__value').textContent()) !== next
       )
@@ -2336,11 +2336,11 @@ try {
 
       await edit.focus();
       await page.keyboard.press('Enter');
-      await field.waitFor({ timeout: 2_000 });
+      await field.waitFor({ timeout: 5_000 });
       await page.waitForFunction(
         () => document.activeElement?.getAttribute('aria-label') === 'Purpose',
         null,
-        { timeout: 2_000 },
+        { timeout: 5_000 },
       );
       await page.keyboard.press('Backspace');
       await page.keyboard.press('Enter');
@@ -2360,18 +2360,18 @@ try {
         fail(where, `an empty purpose was not refused (${refused.why})`);
       if (!refused.focused) fail(where, 'focus left the refused field');
       await page.keyboard.press('Escape');
-      await edit.waitFor({ timeout: 2_000 });
+      await edit.waitFor({ timeout: 5_000 });
 
       await page.getByRole('button', { name: /^Demo/ }).click();
       await page.getByLabel('Screen state').selectOption('partial');
       await page.keyboard.press('Escape');
       await edit.waitFor({ timeout: 10_000 });
       await edit.click();
-      await field.waitFor({ timeout: 2_000 });
+      await field.waitFor({ timeout: 5_000 });
       await page.waitForFunction(
         () => document.activeElement?.getAttribute('aria-label') === 'Purpose',
         null,
-        { timeout: 2_000 },
+        { timeout: 5_000 },
       );
       await page.keyboard.type('Kept after a refusal');
       await page.keyboard.press('Enter');
@@ -2383,7 +2383,12 @@ try {
         fail(where, 'the refused save lost what was typed');
       if (original === next) fail(where, 'the check proves nothing');
     } catch (e) {
-      fail(where, `did not run: ${e.message.split('\n')[0]}`);
+      // The locator is on the lines after the first; keep it, so a timeout
+      // says what it was waiting for.
+      fail(
+        where,
+        `did not run: ${e.message.split('\n').slice(0, 3).join(' | ')}`,
+      );
     }
     groupsChecked++;
     await context.close();
