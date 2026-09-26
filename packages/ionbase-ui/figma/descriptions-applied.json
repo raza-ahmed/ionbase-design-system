@@ -19,7 +19,7 @@
   ],
   "file": "gaLbGd0QNb1fUl6BjSpfBA",
   "appliedOn": "2026-09-26",
-  "verifiedInFigma": 94,
+  "verifiedInFigma": 95,
   "applied": {
     "1360:267": {
       "figmaComponent": "Accordion",
@@ -225,6 +225,11 @@
       "figmaComponent": "Nav Item",
       "component": "NavItem",
       "hash": "bda63f21be9e7422"
+    },
+    "1611:4730": {
+      "figmaComponent": "Notifications Panel",
+      "component": "NotificationsPanel",
+      "hash": "74a664fe9cedef4e"
     },
     "1389:473": {
       "figmaComponent": "Number Input",

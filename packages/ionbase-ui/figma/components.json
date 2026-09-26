@@ -12,6 +12,18 @@
   "file": "gaLbGd0QNb1fUl6BjSpfBA",
   "exported": "2026-09-26",
   "components": {
+    ".Notification": {
+      "page": "Notifications Panel",
+      "id": "1611:267",
+      "kind": "SET",
+      "props": {
+        "Read": {
+          "type": "VARIANT",
+          "options": ["Unread", "Read"],
+          "default": "Unread"
+        }
+      }
+    },
     ".Status Indicator": {
       "page": "Avatar",
       "id": "1008:1764",
@@ -1449,6 +1461,18 @@
           "type": "VARIANT",
           "options": ["Default", "Hover", "Current"],
           "default": "Default"
+        }
+      }
+    },
+    "Notifications Panel": {
+      "page": "Notifications Panel",
+      "id": "1611:4730",
+      "kind": "SET",
+      "props": {
+        "State": {
+          "type": "VARIANT",
+          "options": ["List", "Empty", "Loading"],
+          "default": "List"
         }
       }
     },

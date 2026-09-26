@@ -14,9 +14,7 @@ import {
   Kbd,
   Link,
   Logo,
-  Tooltip,
 } from 'ionbase-ui';
-import { Bell } from 'ionbase-icons/icons/bell';
 import { Search } from 'ionbase-icons/icons/search';
 
 import { subscribeWorkspaceNotice, workspaceNotice } from '../data/settings';
@@ -25,6 +23,7 @@ import { href, type Route } from '../lib/router';
 import { AppCommands } from './AppCommands';
 import { DemoControls } from './DemoControls';
 import { NavSidebar } from './NavSidebar';
+import { NotificationsBell } from './NotificationsBell';
 
 /**
  * The PageShell pattern, sidebar form: Header keeps the brand and account
@@ -114,14 +113,7 @@ export function AppShell({
             >
               <span className="demo-search__label">Search</span>
             </Button>
-            <Tooltip label="Notifications">
-              <Button
-                variant="tertiary"
-                size="sm"
-                aria-label="Notifications"
-                startIcon={<Icon as={Bell} size="sm" />}
-              />
-            </Tooltip>
+            <NotificationsBell />
             <Avatar size="sm" initials="AR" alt="Ada Reyes" />
           </>
         }

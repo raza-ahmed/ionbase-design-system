@@ -1,7 +1,7 @@
 import React from 'react';
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { expect, waitFor } from 'storybook/test';
-import { Tooltip, Button } from 'ionbase-ui';
+import { expect, userEvent, waitFor, within } from 'storybook/test';
+import { Tooltip, Button, Popover } from 'ionbase-ui';
 
 const meta: Meta<typeof Tooltip> = {
   title: 'Components/Tooltip',
@@ -340,5 +340,49 @@ export const LongLabelWraps: Story = {
     await expect(bubble.getBoundingClientRect().width).toBeLessThanOrEqual(280);
     // ...and it actually wrapped rather than being clipped.
     await expect(bubble.scrollHeight).toBeGreaterThan(24);
+  },
+};
+
+/**
+ * A Tooltip can be a Popover's trigger: it passes the Popover's ref and
+ * trigger props through to its button. Focus shows the hint; pressing opens
+ * the Popover, and the button says so with aria-expanded.
+ */
+export const InsideAPopoverTrigger: Story = {
+  render: () => (
+    <Popover title="Notifications" content="Nothing new.">
+      <Tooltip label="Notifications">
+        <Button aria-label="Notifications, none unread">Bell</Button>
+      </Tooltip>
+    </Popover>
+  ),
+  play: async ({ canvas }) => {
+    const button = canvas.getByRole('button', {
+      name: 'Notifications, none unread',
+    });
+    await expect(button).toHaveAttribute('aria-expanded', 'false');
+    await userEvent.tab();
+    await expect(button).toHaveFocus();
+    await waitFor(() =>
+      expect(within(document.body).getByRole('tooltip')).toHaveTextContent(
+        'Notifications',
+      ),
+    );
+    await userEvent.keyboard('{Enter}');
+    const dialog = await within(document.body).findByRole('dialog', {
+      name: 'Notifications',
+    });
+    await expect(dialog).toHaveTextContent('Nothing new.');
+    await expect(button).toHaveAttribute('aria-expanded', 'true');
+    // Placed against the button: the Popover got its ref through the Tooltip.
+    const b = button.getBoundingClientRect();
+    await waitFor(() => {
+      const d = dialog.getBoundingClientRect();
+      expect(d.top).toBeGreaterThanOrEqual(b.bottom);
+      expect(d.top - b.bottom).toBeLessThan(24);
+      expect(d.left).toBeLessThan(b.right);
+      expect(d.right).toBeGreaterThan(b.left);
+    });
+    await userEvent.keyboard('{Escape}');
   },
 };

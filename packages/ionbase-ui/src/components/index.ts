@@ -154,6 +154,12 @@ export type {
   InlineLoadingProps,
   InlineLoadingStatus,
 } from './InlineLoading.js';
+export { NotificationsPanel } from './NotificationsPanel.js';
+export type {
+  NotificationsPanelProps,
+  NotificationsPanelLabels,
+  NotificationItem,
+} from './NotificationsPanel.js';
 export type {
   ButtonGroupProps,
   ButtonGroupAlign,

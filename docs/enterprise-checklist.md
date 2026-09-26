@@ -49,7 +49,7 @@
 - [x] **StatusIndicator** — the status column in Agents, Runs history and Overview, replacing Badge dots — 0.102.0
 - [x] **Banner** — the app shell: maintenance (dismissed for good) and a scheduled deletion (until cancelled) — 0.103.0
 - [x] **InlineLoading** — each Notifications switch in Settings: Saving…, Saved, Not saved beside it — 0.104.0
-- [ ] **NotificationsPanel**
+- [x] **NotificationsPanel** — the header bell on every page: grouped by day, read toggles, Mark all as read, empty and loading — 0.105.0
 - [ ] **InlineEdit**
 - [ ] **SelectableTile**
 - [ ] **TruncatedText**

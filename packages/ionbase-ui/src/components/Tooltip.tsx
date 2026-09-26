@@ -7,13 +7,17 @@ import {
   useTooltipTrigger,
   useOverlayPosition,
   mergeProps,
+  mergeRefs,
 } from 'react-aria';
 import { useTooltipTriggerState } from 'react-stately';
 import type { Placement } from 'react-aria';
 
 export type TooltipPlacement = 'top' | 'bottom' | 'left' | 'right';
 
-export interface TooltipProps {
+export interface TooltipProps extends Omit<
+  React.HTMLAttributes<HTMLElement>,
+  'title' | 'children' | 'className'
+> {
   /**
    * The hint. A tooltip is text only — anything interactive or focusable
    * belongs in a popover, because a tooltip cannot be focused, cannot be
@@ -38,6 +42,12 @@ export interface TooltipProps {
   /** The element the tooltip describes. Must accept a ref and DOM props. */
   children: React.ReactElement;
   className?: string;
+  /**
+   * Passed to the trigger with any other props, merged with the tooltip's
+   * own — so a Tooltip can itself be the child of a Popover or MenuTrigger,
+   * which clones its child with a ref and trigger props.
+   */
+  ref?: React.Ref<HTMLElement>;
 }
 
 /**
@@ -64,6 +74,8 @@ export function Tooltip({
   isDisabled,
   children,
   className,
+  ref: outerRef,
+  ...outer
 }: TooltipProps) {
   const state = useTooltipTriggerState({ delay, isDisabled });
   const triggerRef = useRef<HTMLElement>(null);
@@ -101,9 +113,9 @@ export function Tooltip({
     <>
       {cloneElement(
         children,
-        mergeProps(children.props as Record<string, unknown>, {
+        mergeProps(children.props as Record<string, unknown>, outer, {
           ...triggerProps,
-          ref: triggerRef,
+          ref: mergeRefs(triggerRef, outerRef),
         }),
       )}
       {state.isOpen && (

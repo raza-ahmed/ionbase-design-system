@@ -1,5 +1,65 @@
 # Changelog
 
+## 0.105.0 — 2026-09-26
+
+### Added — `NotificationsPanel`
+
+What the bell opens: notifications grouped by day, read and unread, with an
+empty state. It is the tenth P1 item on the enterprise checklist.
+
+- **Content, not a container.** Put it in a Popover titled Notifications
+  (`size="lg"`), or a Drawer on a phone. The caller owns the data, through
+  `notifications`, `onReadChange`, `onMarkAllRead` and `onOpen`.
+- **Grouped by day, newest first.** Today, Yesterday and Earlier are counted
+  from the local calendar day, not in 24-hour windows. Each group is a section
+  named by its heading, and each time is a `<time>` element.
+- **Unread is said, not only shown.** An unread notification has a dot and a
+  semibold title, and a screen reader hears "Unread:" before the title. The
+  bar counts the unread in words.
+- **Nothing that has focus disappears.** Each notification's toggle changes
+  from Mark as read to Mark as unread instead of vanishing. Mark all as read
+  moves focus to the first notification before the button goes. Every change
+  is announced in a status region that is always mounted. Opening an unread
+  notification marks it read.
+- **States:** an empty list shows "You’re all caught up", an EmptyState.
+  `isLoading` shows rows of Skeleton and announces "Loading notifications".
+  Past 28rem, the list scrolls inside the panel.
+- **Translatable:** every string is in `labels`, and `unread` is a function
+  of the count.
+- **Figma:** a new Notifications Panel page. The Notifications Panel set has
+  a State axis: List, Empty and Loading, where Loading is `isLoading`. It is
+  built from a private `.Notification` row set, with Read=Unread and Read.
+  95 blocks verified.
+- **Demo:** the header's bell now works on every page.
+  - Its name carries the count: "Notifications, 2 unread". Its dot is
+    decorative.
+  - It opens the panel in a Popover. Opening a notification goes to it and
+    closes the panel.
+  - The presenter's Empty, Loading and Error states all reach it.
+
+  The smoke check, at desktop and phone widths, covers:
+  - the groups;
+  - focus and the announcement after Mark as read;
+  - the bell's count following the changes;
+  - focus after Mark all as read;
+  - Escape returning focus to the bell;
+  - opening a notification;
+  - the empty state;
+  - axe with the panel open.
+
+  Each of five mutations fails it.
+
+- **Pattern:** PageShell puts the bell in Header's `end`.
+
+### Changed — `Tooltip`
+
+- **It passes other props and a ref through to its trigger.** A Tooltip can
+  now be the child of a Popover or MenuTrigger:
+  `<Popover><Tooltip><Button /></Tooltip></Popover>`. Before this, the
+  Popover's ref and trigger props were dropped. The Popover still opened,
+  but it was placed against nothing. The header's bell uses this to keep its
+  hover label.
+
 ## 0.104.0 — 2026-09-26
 
 ### Added — `InlineLoading`

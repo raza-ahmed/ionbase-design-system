@@ -1,0 +1,67 @@
+{
+  "status": "stable",
+  "summary": "What the bell opens: notifications grouped by day — Today, Yesterday, Earlier — with unread ones marked in words as well as a dot, a read toggle on each that never disappears, Mark all as read, an empty state and a loading state. Content for a Popover or a Drawer; the caller owns the data.",
+  "useWhen": [
+    "the product tells a user about things that happened while they were elsewhere — an approval waiting, a run that failed, a mention",
+    "each item can be opened, and whether it has been seen matters"
+  ],
+  "useInstead": [
+    {
+      "when": "the result of what the user just did — saved, sent, deleted",
+      "use": "Toast",
+      "why": "it comes and goes by itself; a notification waits in the list"
+    },
+    {
+      "when": "a notice about the whole product — maintenance, a trial ending",
+      "use": "Banner",
+      "why": "it is seen on every page without opening anything"
+    },
+    {
+      "when": "the history of one record — who changed it and when",
+      "use": "List",
+      "why": "an activity log has nothing to mark as read; Timeline, when it ships, is the record's history"
+    }
+  ],
+  "composition": {
+    "order": ["Button", "Popover", "NotificationsPanel"],
+    "note": "The bell is a Button whose name says the count — \"Notifications, 3 unread\" — and opens a Popover titled Notifications, lg, whose content is the panel. On a phone use a Drawer instead. The caller keeps the list and updates it from `onReadChange` and `onMarkAllRead`; `href` makes a title a link, `onOpen` a button. With `notifications` empty it shows \"You’re all caught up\"; with `isLoading`, rows of Skeleton and \"Loading notifications\" announced.",
+    "example": "<Popover title=\"Notifications\" size=\"lg\" content={<NotificationsPanel notifications={items} onReadChange={setRead} onMarkAllRead={readAll} />}><Button aria-label=\"Notifications, 3 unread\" … /></Popover>"
+  },
+  "a11y": {
+    "requires": [
+      "the container's name — the Popover's or Drawer's `title`, \"Notifications\"",
+      "the bell's name includes the unread count, since its badge is not read",
+      "`labels` — translated, with `unread` as a function of the count"
+    ],
+    "guarantees": [
+      "an unread notification's title begins \"Unread:\" for a screen reader; the dot and weight are not the only signal",
+      "the unread count is in words in the bar",
+      "each group is a section named by its heading, so a screen reader can jump between days",
+      "each toggle stays where it is and swaps Mark as read for Mark as unread — focus is never on something that vanishes",
+      "Mark all as read moves focus to the first notification before it goes",
+      "every change is announced in a status region that is always mounted",
+      "groups are counted from the local calendar day, not 24-hour windows; each has a machine-readable <time>"
+    ],
+    "notes": [
+      "opening an unread notification marks it read, through `onReadChange`",
+      "the list scrolls inside the panel past 28rem, so the popover never runs off the screen"
+    ]
+  },
+  "antiPatterns": [
+    {
+      "dont": "a blue dot as the only sign a notification is unread",
+      "do": "NotificationsPanel, which also says \"Unread:\" and counts them",
+      "why": "a dot is silent to a screen reader and missing in forced colours"
+    },
+    {
+      "dont": "<Button aria-label=\"Notifications\"><Badge>3</Badge></Button>",
+      "do": "<Button aria-label=\"Notifications, 3 unread\" />",
+      "why": "the badge's number is not part of the name that is read"
+    },
+    {
+      "dont": "a Mark as read button that is removed once pressed",
+      "do": "the panel's toggle, which becomes Mark as unread",
+      "why": "removing the focused button sends a keyboard user to the top of the page"
+    }
+  ]
+}
