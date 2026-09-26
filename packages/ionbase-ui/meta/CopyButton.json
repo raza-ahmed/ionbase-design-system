@@ -1,0 +1,77 @@
+{
+  "status": "stable",
+  "summary": "Copies a value — an ID, a key, a command — confirms in place with a check and \"Copied\" for two seconds, and announces it. When the clipboard refuses it says so, and hands over the text.",
+  "useWhen": [
+    "a value is copied far more often than it is read — a run ID, an API key's prefix, a command, a link",
+    "the copy sits beside the value it copies, so confirming there is confirming where the user is looking"
+  ],
+  "useInstead": [
+    {
+      "when": "copying is a page action that may collapse into an overflow menu — the Copy run ID in a record's header",
+      "use": "Button",
+      "why": "a confirmation drawn on the button cannot be seen once the button is in a menu; a Button that confirms with a Toast can be"
+    }
+  ],
+  "composition": {
+    "order": ["value", "CopyButton"],
+    "note": "Beside the value, after it. Icon-only in a dense row, with `label` saying what is copied; with a visible label where there is room.",
+    "example": "<code>{runId}</code><CopyButton value={runId} isIconOnly label=\"Copy run ID\" copiedLabel=\"Run ID copied\" onCopyError={(_, text) => showForManualCopy(text)} />"
+  },
+  "variants": {
+    "variant": {
+      "tertiary": {
+        "use": "the default — beside the value it copies"
+      },
+      "secondary": {
+        "use": "among other actions, as the only copy of something"
+      }
+    },
+    "size": {
+      "sm": {
+        "use": "in tables, description lists and other dense rows"
+      },
+      "md": {
+        "use": "the default"
+      },
+      "lg": {
+        "use": "beside a large value, such as a one-time key shown once"
+      }
+    }
+  },
+  "a11y": {
+    "requires": [
+      "`label` that says what is copied when `isIconOnly` — \"Copy run ID\", not \"Copy\"; it is the only name the button has",
+      "`label`, `copiedLabel` and `failedLabel` translated"
+    ],
+    "guarantees": [
+      "a polite `status` region beside the button says `copiedLabel` on every press, a second press included, and `failedLabel` on a failure",
+      "the button's name follows what it shows: `label`, then `copiedLabel` for `resetAfter` milliseconds, then `label` again; another press restarts the time",
+      "the labels share one cell, so the button keeps its width and nothing beside it moves",
+      "icon-only, it is square, named by `label`, with `label` as its tooltip on hover and focus",
+      "without the Clipboard API — a non-secure origin — or when it is refused, it copies by selecting the text off-screen, and returns focus to the button",
+      "when both fail it shows and announces `failedLabel` with an alert icon and calls `onCopyError` with the text; it never claims a copy that did not happen",
+      "`value` as a function is read at the press, so it copies what is current"
+    ],
+    "notes": [
+      "on `onCopyError`, put the text where it can be selected by hand — a Toast holding it, or a read-only Input — so the user is never left without it",
+      "a secret shown once, like a new API key, should also be visible in full beside the button: a copy that failed must not be the only way to get it"
+    ]
+  },
+  "antiPatterns": [
+    {
+      "dont": "<Button onPress={() => navigator.clipboard.writeText(id)}><Icon as={Copy} /></Button>",
+      "do": "<CopyButton value={id} isIconOnly label=\"Copy ID\" />",
+      "why": "the hand-built one has no name, gives no confirmation, is silent to a screen reader, and fails without a word on a non-secure origin"
+    },
+    {
+      "dont": "a Toast that says \"Copied\" for a CopyButton",
+      "do": "the CopyButton's own confirmation",
+      "why": "it confirms in a corner the user is not looking at, and stacks up when they copy several things in a row"
+    },
+    {
+      "dont": "<CopyButton isIconOnly label=\"Copy\" /> beside three different values",
+      "do": "label=\"Copy run ID\", label=\"Copy agent ID\", …",
+      "why": "three buttons named \"Copy\" cannot be told apart by name, and a screen reader's list of buttons reads \"Copy, Copy, Copy\""
+    }
+  ]
+}

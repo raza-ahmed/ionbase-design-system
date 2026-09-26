@@ -1,5 +1,44 @@
 # Changelog
 
+## 0.99.0 — 2026-09-26
+
+### Added — `CopyButton`
+
+Copies a value — a run ID, a key, a command — confirms in place and says so.
+It is the fourth P1 item on the enterprise checklist, and CodeSnippet, the
+next, is built on it.
+
+- **Confirms on the button.** The icon becomes a check and the label
+  "Copied" for `resetAfter` milliseconds, 2000 by default, then both return.
+  Another press restarts the time. The three labels share one grid cell, so
+  the button keeps its width and height and nothing beside it moves.
+- **Announces every copy.** A polite `status` region beside the button says
+  `copiedLabel`. Each press puts a new text node there, so a second copy is
+  announced too.
+- **Says when it failed.** Without the Clipboard API — a page on plain http
+  — or when it is refused, it copies by selecting the text in an off-screen
+  textarea and returns focus to the button. When that fails too it shows and
+  announces "Couldn't copy" with an alert icon, and `onCopyError` gets the
+  text so the caller can show it to select by hand. It never claims a copy
+  that did not happen.
+- **Icon-only** with `isIconOnly`: square, named by `label`, with `label` as
+  its tooltip. The label must say what is copied — "Copy run ID".
+- **`value`** is a string, or a function read at the press. **`variant`**
+  is `tertiary` (default) or `secondary`; **`size`** is `sm` to `lg`. Every
+  word is a prop.
+- **Figma:** a Copy Button page, Type × Size × State × Icon Only, built from
+  Button and Icon Button instances with Lucide's copy, check and
+  circle-alert, the glyphs the code inlines. It is mapped, and State is
+  recorded as not a prop; 91 blocks verified.
+- **Demo:** the Run ID in the Runs history's side panel. The smoke check
+  copies it and reads the clipboard, checks the status region, the width and
+  axe. With the clipboard refused it expects "Couldn't copy" and a toast
+  holding the ID. It fails on three mutations.
+- **Pattern and meta:** DataTable says an ID in a row's detail is shown in
+  full with an icon-only CopyButton. The meta sends a copy that sits in a
+  header, and may collapse into a menu, to a Button with a Toast instead:
+  the demo's run header keeps that one.
+
 ## 0.98.0 — 2026-09-26
 
 ### Added — `ContextMenu`

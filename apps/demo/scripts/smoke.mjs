@@ -1367,6 +1367,100 @@ try {
   }
 
   /*
+   * CopyButton, on the Run ID in the Runs history's side panel. With the
+   * clipboard granted it copies the ID, confirms on the button without it
+   * changing width, says so in its status region, and returns after two
+   * seconds. With the clipboard refused and no fallback it says "Couldn't
+   * copy" and the ID goes into a toast, where it can be selected by hand.
+   */
+  for (const refused of [false, true]) {
+    const where = `copy button (light, ${refused ? 'refused' : 'granted'})`;
+    const context = await browser.newContext({
+      viewport: { width: 1280, height: 900 },
+      permissions: refused ? [] : ['clipboard-read', 'clipboard-write'],
+    });
+    await context.addInitScript((refused) => {
+      localStorage.setItem(
+        'ionbase-ops:demo-settings',
+        JSON.stringify({ theme: 'light', latency: 0 }),
+      );
+      if (refused) {
+        Object.defineProperty(window.navigator, 'clipboard', {
+          value: { writeText: () => Promise.reject(new Error('denied')) },
+        });
+        document.execCommand = () => false;
+      }
+    }, refused);
+    const page = await context.newPage();
+    page.on('pageerror', (e) => fail(where, `exception: ${e.message}`));
+    await page.goto(`${BASE}/#/runs`);
+    try {
+      const details = page.getByRole('button', { name: /^Details: / });
+      await details.first().waitFor({ timeout: 10_000 });
+      await details.first().click();
+      const panel = page.locator('.ion-side-panel');
+      const copy = panel.getByRole('button', { name: 'Copy run ID' });
+      await copy.waitFor({ timeout: 5_000 });
+      const id = (
+        await panel.locator('.demo-copy-value code').textContent()
+      ).trim();
+      const width = (await copy.boundingBox()).width;
+      await copy.click();
+
+      if (refused) {
+        await panel
+          .getByRole('button', { name: "Couldn't copy" })
+          .waitFor({ timeout: 5_000 })
+          .catch(() => fail(where, 'a refused copy did not say it failed'));
+        const toast = page.locator('.ion-toast__content', {
+          hasText: "Couldn't copy the run ID",
+        });
+        await toast
+          .waitFor({ timeout: 5_000 })
+          .catch(() => fail(where, 'no toast offered the ID by hand'));
+        if (!(await toast.textContent())?.includes(id))
+          fail(where, 'the toast does not hold the run ID');
+      } else {
+        const copied = panel.getByRole('button', { name: 'Run ID copied' });
+        await copied
+          .waitFor({ timeout: 5_000 })
+          .catch(() => fail(where, 'the button did not confirm the copy'));
+        const text = await page.evaluate(() =>
+          window.navigator.clipboard.readText(),
+        );
+        if (text !== id)
+          fail(where, `the clipboard holds "${text}", not the run ID ${id}`);
+        const said = await panel
+          .locator('.ion-copy-button__status')
+          .textContent();
+        if (said !== 'Run ID copied')
+          fail(where, `the status region says "${said}", not "Run ID copied"`);
+        const after = (await copied.boundingBox()).width;
+        if (Math.abs(after - width) > 0.5)
+          fail(where, `the button changed width, ${width} to ${after}`);
+
+        await page.addScriptTag({ content: axeSource });
+        const violations = await page.evaluate(async () => {
+          const result = await window.axe.run(
+            document.querySelector('.ion-side-panel'),
+            { resultTypes: ['violations'] },
+          );
+          return result.violations.map((v) => `${v.impact} ${v.id}`);
+        });
+        for (const v of violations) fail(where, `axe ${v}, copied`);
+
+        await copy
+          .waitFor({ timeout: 4_000 })
+          .catch(() => fail(where, 'the confirmation never returned to Copy'));
+      }
+    } catch (e) {
+      fail(where, `did not run: ${e.message.split('\n')[0]}`);
+    }
+    groupsChecked++;
+    await context.close();
+  }
+
+  /*
    * The wizard's CheckboxGroup, which no page load above reaches: it is on
    * Guardrails, the third step. A saved draft with the first two steps done
    * opens there. "At least one" has to hold three ways — natively (every box

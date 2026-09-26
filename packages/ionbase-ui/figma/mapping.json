@@ -2295,6 +2295,36 @@
           }
         }
       }
+    },
+    "Copy Button": {
+      "code": "CopyButton",
+      "props": {
+        "Type": {
+          "prop": "variant",
+          "values": {
+            "Tertiary": "tertiary",
+            "Secondary": "secondary"
+          }
+        },
+        "Size": {
+          "prop": "size",
+          "values": {
+            "Small": "sm",
+            "Medium": "md",
+            "Large": "lg"
+          }
+        },
+        "Icon Only": {
+          "prop": "isIconOnly",
+          "when": {
+            "True": true
+          },
+          "note": "`label` is then the name and the tooltip, and must say what is copied — \"Copy run ID\""
+        },
+        "State": {
+          "ignore": "Idle, Copied and Failed are what the button shows after a press, for `resetAfter` milliseconds — not props. Copied and Failed read `copiedLabel` and `failedLabel`."
+        }
+      }
     }
   },
   "unmapped": {

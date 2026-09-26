@@ -43,7 +43,7 @@
 - [x] **ButtonGroup** — wizard, delete dialogs, save bar, run header — 0.96.0
 - [x] **SplitButton** — the wizard's Create agent / Create and start — 0.97.0
 - [x] **ContextMenu** — Agents table rows, same items as their ⋯ menu — 0.98.0
-- [ ] **CopyButton**
+- [x] **CopyButton** — the run ID in Runs history's details; confirms on the button, a toast only when the copy failed — 0.99.0
 - [ ] **CodeSnippet** — _needs CopyButton_
 - [ ] **PasswordInput**
 - [ ] **StatusIndicator**

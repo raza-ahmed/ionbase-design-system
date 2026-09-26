@@ -40,7 +40,7 @@ IonBase column names the component that covers it.
 | Button group / set              |   ●    |  ●  |  ●   | `ButtonGroup`         |
 | Menu button / overflow menu     |   ●    |  ◐  |  ●   | `MenuTrigger`         |
 | Split button / combo button     |   ●    |  ●  |  ●   | `SplitButton`         |
-| Copy button                     |   ●    |     |      | —                     |
+| Copy button                     |   ●    |     |      | `CopyButton`          |
 | Toggle button group             |   ●    |  ●  |  ●   | ◐ `SegmentedControl`  |
 | Link                            |   ●    |     |      | `Link`                |
 | FAB / extended FAB / speed dial |        |  ●  |      | — _non-goal, §4_      |
