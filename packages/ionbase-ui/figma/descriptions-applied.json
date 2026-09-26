@@ -19,7 +19,7 @@
   ],
   "file": "gaLbGd0QNb1fUl6BjSpfBA",
   "appliedOn": "2026-09-26",
-  "verifiedInFigma": 92,
+  "verifiedInFigma": 93,
   "applied": {
     "1360:267": {
       "figmaComponent": "Accordion",
@@ -265,6 +265,11 @@
       "figmaComponent": "Search Field",
       "component": "SearchField",
       "hash": "1a5ef4b0c36796c9"
+    },
+    "1590:386": {
+      "figmaComponent": "Password Input",
+      "component": "PasswordInput",
+      "hash": "03bd5650c9169ada"
     },
     "1390:435": {
       "figmaComponent": "Segmented Control",

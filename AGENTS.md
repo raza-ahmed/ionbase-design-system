@@ -197,6 +197,29 @@ Two things about `contextmenu` that ContextMenu had to learn by failing:
   because Playwright otherwise waits for the element to be clickable, and
   while a menu is open it never is.
 
+## Changing an input's `type` is not a free re-render
+
+Three things PasswordInput found, each by failing:
+
+- **The caret jumps to the start.** Switching `type` between `password` and
+  `text` resets the selection in Chromium, so the next key typed lands in
+  front of the password. The reset happens after React's commit, when the
+  field's editor is rebuilt, so a layout effect puts the caret back too early.
+  Save the selection before the change and restore it on the next animation
+  frame.
+- **A submit listener that sets state is too late.** The form's own
+  `onSubmit`, and the browser's password-manager check, run in the same event
+  before React re-renders. Anything that must be true at submit — here,
+  `type="password"` — is set on the element directly, and the state follows.
+- **Chromium focuses a scroll area without `tabIndex`** (since Chromium 130),
+  so a keyboard-scroll test passes in Chromium with the attribute removed.
+  Safari needs it; axe's `scrollable-region-focusable` is the check that fails
+  (CodeSnippet).
+
+A smoke check that runs axe just after a control enables can measure its
+colours mid-transition and report a contrast it never settles on. Wait for
+`document.getAnimations()` to finish first.
+
 ## Interaction tests — hover is a pulse, not a level
 
 Read this before asserting on `data-hovered` anywhere.

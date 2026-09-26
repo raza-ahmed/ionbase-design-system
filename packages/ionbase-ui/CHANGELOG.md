@@ -1,5 +1,54 @@
 # Changelog
 
+## 0.101.0 — 2026-09-26
+
+### Added — `PasswordInput`
+
+A password field with a way to see what was typed. It is the sixth P1 item
+on the enterprise checklist.
+
+- **The toggle is a toggle.** Its name stays "Show password", and
+  `aria-pressed` says whether the password is shown, with `aria-controls`
+  pointing at the field. A polite status also says "Password shown" or
+  "Password hidden" when it changes, and nothing on first render. The toggle
+  is a tab stop, unlike SearchField's clear button.
+- **Focus and caret stay put.** A mouse press leaves focus in the field; a
+  keyboard press leaves it on the toggle. What was typed and the caret's
+  position are kept.
+- **A shown password goes nowhere.** Spellcheck, autocorrect and
+  autocapitalise are off in both states, and no prop can turn them back on.
+  Submitting the form hides the password first, so a password manager sees
+  `type="password"`.
+- **`autoComplete`** is `current-password` by default; pass `new-password`
+  on a sign-up or change form. `isRevealed` / `defaultRevealed` /
+  `onRevealedChange` control it, and every word is a prop.
+- **The box is Input's,** with its sizes and states, as for SearchField.
+- **Figma:** a Password Input page, Size × State from Search Field with an
+  eye where the clear button was, plus Revealed=True with eye-off on Filled.
+  It is mapped; 93 blocks verified.
+- **Demo:** the Delete workspace dialog asks for the password again. Delete
+  stays disabled until the name and a password are both in. The smoke check
+  shows the password from the keyboard, checks the pressed state, focus, the
+  status and spellcheck, runs axe on the dialog, and schedules the deletion.
+  Each of three mutations fails it.
+- **Pattern:** DestructiveConfirm asks for the password again at the highest
+  consequence.
+
+### Found along the way
+
+All three are recorded in AGENTS.md.
+
+- **Revealing the password moved the caret to the start.** Changing an
+  input's `type` resets its selection in Chromium, after React's commit. The
+  next key typed went in front of the password. The selection is now saved
+  and restored on the next frame.
+- **Hiding on submit came too late at first.** The form's own handler ran
+  before React re-rendered, so it still saw `type="text"`. The type is now
+  set on the element directly.
+- **axe measured the Delete button mid-transition.** The button had just
+  enabled, and axe reported a contrast it never settles on. The smoke check
+  now waits for animations to finish before running axe.
+
 ## 0.100.0 — 2026-09-26
 
 ### Added — `CodeSnippet`

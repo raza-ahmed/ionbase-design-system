@@ -50,7 +50,7 @@ IonBase column names the component that covers it.
 | Component                         | Carbon | M3  | SLDS | IonBase                         |
 | --------------------------------- | :----: | :-: | :--: | ------------------------------- |
 | Text input                        |   ●    |  ●  |  ●   | `Input`                         |
-| Password input (reveal)           |   ●    |     |      | —                               |
+| Password input (reveal)           |   ●    |     |      | `PasswordInput`                 |
 | Search field                      |   ●    |  ●  |  ◐   | `SearchField`                   |
 | Textarea                          |   ●    |  ●  |  ●   | `Textarea`                      |
 | Number input                      |   ●    |     |  ◐   | `NumberInput`                   |
