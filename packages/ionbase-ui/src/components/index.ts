@@ -137,6 +137,8 @@ export { SplitButton } from './SplitButton.js';
 export type { SplitButtonProps, SplitButtonVariant } from './SplitButton.js';
 export { CopyButton } from './CopyButton.js';
 export type { CopyButtonProps, CopyButtonState } from './CopyButton.js';
+export { CodeSnippet } from './CodeSnippet.js';
+export type { CodeSnippetProps, CodeSnippetType } from './CodeSnippet.js';
 export type {
   ButtonGroupProps,
   ButtonGroupAlign,

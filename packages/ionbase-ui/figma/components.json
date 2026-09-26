@@ -711,6 +711,21 @@
         }
       }
     },
+    "Code Snippet": {
+      "page": "Code Snippet",
+      "id": "1585:273",
+      "kind": "SET",
+      "props": {
+        "Show More#1585:4": {
+          "type": "BOOLEAN"
+        },
+        "Type": {
+          "type": "VARIANT",
+          "options": ["Single", "Multi", "Inline"],
+          "default": "Single"
+        }
+      }
+    },
     "Combobox": {
       "page": "Combobox",
       "id": "1370:2359",

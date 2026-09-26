@@ -1,0 +1,80 @@
+{
+  "status": "stable",
+  "summary": "Code shown as code: a name in a sentence, a command to run, a block to paste. Commands and blocks scroll rather than wrap, are named regions a keyboard can scroll, and carry a CopyButton that copies all of it.",
+  "useWhen": [
+    "the user will run, paste or type what is shown — a CLI command, an API request, a config file",
+    "a sentence names something the user types exactly — a flag, a file name, a command — and it should read as code"
+  ],
+  "useInstead": [
+    {
+      "when": "the value is an ID or key shown among other facts, not code",
+      "use": "CopyButton",
+      "why": "an ID beside its label in a DescriptionList reads as a fact; a snippet's block around it reads as something to run"
+    },
+    {
+      "when": "a keyboard shortcut",
+      "use": "Kbd",
+      "why": "keys are pressed, not typed; Kbd draws each key and never prints a plus between them"
+    },
+    {
+      "when": "an agent's tool input or output",
+      "use": "ToolCall",
+      "why": "it shows the payload with the call it belongs to, its status and duration, collapsed until asked for"
+    }
+  ],
+  "composition": {
+    "order": ["CodeSnippet"],
+    "note": "`children` is the code as a string, shown and copied exactly as given. `type` picks inline, single or multi; `label` names a single or multi block, and `copyLabel` its copy button when there is more than one on a page.",
+    "example": "<CodeSnippet label=\"Start command\" copyLabel=\"Copy start command\">iops runs start --agent invoice-reconciler</CodeSnippet>"
+  },
+  "variants": {
+    "type": {
+      "single": {
+        "use": "the default — one command, scrolling sideways if it is long"
+      },
+      "multi": {
+        "use": "a block — a request, a config; cut to `maxLines` with Show more"
+      },
+      "inline": {
+        "use": "in a sentence; no copy button"
+      }
+    }
+  },
+  "a11y": {
+    "requires": [
+      "`label` on each single or multi snippet when a page has more than one — \"Start command\"; the default is \"Code\"",
+      "`copyLabel` naming what is copied when a page has more than one — \"Copy start command\"; the default is \"Copy code\"",
+      "`label`, `copyLabel`, `copiedLabel`, `showMoreLabel` and `showLessLabel` translated"
+    ],
+    "guarantees": [
+      "single and multi are focusable regions named by `label`, so the arrow keys scroll what is off screen",
+      "code never wraps: single stays one line, 32px tall, and scrolls sideways; multi scrolls sideways line by line",
+      "a multi block longer than `maxLines` is cut by height, not by dropping lines: every line is in the page and found by find-in-page",
+      "Show more is a Button with `aria-expanded` and `aria-controls` pointing at the region; it becomes Show less",
+      "the copy button is a CopyButton: it copies the whole text, cut or not, confirms on the button and announces",
+      "a trailing newline is not counted as a line",
+      "inline is a <code> in the sentence, with no region and no button"
+    ],
+    "notes": [
+      "never put a secret in a snippet unless the user must copy it now; redact it everywhere else, as ToolCall's payloads are",
+      "`language` only sets `language-<name>` on the <code>; IonBase does not highlight, and a highlighter added on top must keep the text readable against `surface/muted`"
+    ]
+  },
+  "antiPatterns": [
+    {
+      "dont": "<pre style={{ whiteSpace: 'pre-wrap' }}>{command}</pre>",
+      "do": "<CodeSnippet>{command}</CodeSnippet>",
+      "why": "a wrapped command reads as two, and a hand-built <pre> that scrolls is not focusable, so a keyboard cannot reach what is off screen"
+    },
+    {
+      "dont": "a multi block cut to its first lines with the rest dropped",
+      "do": "`maxLines`, which cuts by height",
+      "why": "dropped lines are missed by find-in-page, by a screen reader and by a copy that copies what is shown"
+    },
+    {
+      "dont": "<CodeSnippet type=\"inline\"> for a command the user will copy",
+      "do": "type=\"single\"",
+      "why": "inline has no copy button, and a command selected by hand from a sentence picks up the full stop"
+    }
+  ]
+}

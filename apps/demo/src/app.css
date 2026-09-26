@@ -520,3 +520,9 @@ body {
   align-items: center;
   gap: var(--spacing-4);
 }
+
+/* A snippet under the sentence that says what it is for. */
+.demo-snippet {
+  display: grid;
+  gap: var(--spacing-6);
+}

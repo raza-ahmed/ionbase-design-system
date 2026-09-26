@@ -2325,6 +2325,23 @@
           "ignore": "Idle, Copied and Failed are what the button shows after a press, for `resetAfter` milliseconds — not props. Copied and Failed read `copiedLabel` and `failedLabel`."
         }
       }
+    },
+    "Code Snippet": {
+      "code": "CodeSnippet",
+      "note": "The code is the snippet's `children`, a string, shown and copied exactly as given. In Figma it is the Code text layer, edited directly.",
+      "props": {
+        "Type": {
+          "prop": "type",
+          "values": {
+            "Single": "single",
+            "Multi": "multi",
+            "Inline": "inline"
+          }
+        },
+        "Show More#1585:4": {
+          "ignore": "Not a prop: Show more appears by itself when a multi block has more lines than `maxLines` (12 by default), and reads Show less once pressed."
+        }
+      }
     }
   },
   "unmapped": {

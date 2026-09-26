@@ -110,7 +110,7 @@ IonBase column names the component that covers it.
 | Status indicator (shape + label) |   ●    |     |      | —                                                                         |
 | Avatar / avatar group            |   ●    |     |  ●   | `Avatar`, `AvatarGroup`                                                   |
 | Big number / stat                |   ●    |     |      | `StatTile`, `StatGroup`                                                   |
-| Code snippet                     |   ●    |     |      | —                                                                         |
+| Code snippet                     |   ●    |     |      | `CodeSnippet`                                                             |
 | Activity timeline / feed         |        |     |  ●   | ◐ `AgentActivity`, agent-only                                             |
 | Truncated text                   |   ●    |     |      | —                                                                         |
 | Keyboard key                     |        |     |      | `Kbd`                                                                     |

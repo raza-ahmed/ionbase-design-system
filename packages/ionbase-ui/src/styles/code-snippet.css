@@ -1,0 +1,74 @@
+/*
+ * CodeSnippet
+ *
+ *   inline   in a sentence, at the sentence's own size: a muted chip,
+ *            radius/xs; no copy button
+ *   single   one line that scrolls sideways, the copy button at its end;
+ *            32 tall, the line centred against the Small button
+ *   multi    a block, the copy button at its top end, and — past `maxLines`
+ *            — cut by height, with Show more below
+ *
+ * Code does not wrap. A wrapped command reads as two, so the text scrolls,
+ * and the scroll area is a focusable region so a keyboard can scroll it.
+ */
+.ion-code-snippet {
+  font-family: var(--font-family-mono);
+}
+
+.ion-code-snippet--inline {
+  padding-inline: var(--spacing-4);
+  border-radius: var(--radius-xs);
+  background-color: var(--surface-muted);
+  color: var(--text-default);
+  font-size: inherit;
+  overflow-wrap: anywhere;
+}
+
+.ion-code-snippet--single,
+.ion-code-snippet--multi {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: start;
+  gap: var(--spacing-4);
+  padding: var(--spacing-4);
+  padding-inline-start: var(--spacing-12);
+  border: var(--border-width-default) solid var(--border-default);
+  border-radius: var(--radius-md);
+  background-color: var(--surface-muted);
+  color: var(--text-default);
+}
+
+.ion-code-snippet--single {
+  align-items: center;
+}
+
+.ion-code-snippet__scroll {
+  margin: 0;
+  padding-block: var(--spacing-6);
+  overflow: auto;
+  color: var(--text-default);
+  font-family: var(--font-family-mono);
+  font-size: var(--type-body-sm);
+  line-height: var(--type-body-sm-line-height);
+  white-space: pre;
+}
+
+.ion-code-snippet__scroll:focus-visible {
+  outline: var(--border-width-thick) solid var(--border-focus);
+  outline-offset: 2px;
+  border-radius: var(--radius-xs);
+}
+
+/* Cut to `maxLines` by height: every line is still in the page. */
+.ion-code-snippet__scroll[data-cut] {
+  max-block-size: calc(
+    var(--ion-code-snippet-lines) * var(--type-body-sm-line-height) + 2 *
+      var(--spacing-6)
+  );
+  overflow-y: hidden;
+}
+
+.ion-code-snippet__toggle {
+  grid-column: 1 / -1;
+  justify-self: start;
+}

@@ -17,13 +17,15 @@
     "Divider",
     "Badge",
     "Tabs",
-    "TabItem"
+    "TabItem",
+    "CodeSnippet"
   ],
   "structure": [
     "Named groups, separated by Divider, each with a heading.",
     "One SettingRow per setting: label and description on the left, control on the right, wired together by the row.",
     "For save-on-submit panels, a save bar that appears only when something is dirty, with save and discard.",
-    "Tabs for panels large enough that a single scroll is unreasonable — but never with unsaved changes hidden behind an inactive tab."
+    "Tabs for panels large enough that a single scroll is unreasonable — but never with unsaved changes hidden behind an inactive tab.",
+    "A setting used from outside the app — an API key, a webhook, a CLI — shows how to use it as CodeSnippets under a sentence saying what each is for: a command as `single`, a request as `multi`, each with its own `label` and `copyLabel`, and a command named in a description as `inline`."
   ],
   "states": {
     "loading": {
@@ -50,13 +52,15 @@
     "Select": ["label", "description", "isInvalid", "errorMessage"],
     "Button": ["variant", "isDisabled"],
     "Alert": ["intent", "title", "actions"],
-    "Tabs": ["type", "size"]
+    "Tabs": ["type", "size"],
+    "CodeSnippet": ["type", "label", "copyLabel", "language"]
   },
   "variantsUsed": {
     "Toggle": { "intent": ["brand", "danger"] },
     "Alert": { "intent": ["error", "warning"] },
     "Button": { "variant": ["primary-brand", "tertiary"] },
-    "Tabs": { "type": ["underline"] }
+    "Tabs": { "type": ["underline"] },
+    "CodeSnippet": { "type": ["single", "multi", "inline"] }
   },
   "a11y": {
     "requires": [
