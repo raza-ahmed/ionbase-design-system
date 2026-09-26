@@ -1,0 +1,154 @@
+/*
+ * NotificationsPanel
+ *
+ * The contents of the bell's Popover (or a Drawer on a phone): a bar with the
+ * unread count and Mark all as read, then groups by day. Each notification
+ * is a row — dot, optional icon, text, toggle — 12px apart, 8px of padding,
+ * divided by border/subtle. Unread rows carry the brand dot and a semibold
+ * title; read rows keep the dot's space, so text does not shift when one is
+ * marked. The list scrolls inside the panel past 28rem.
+ */
+.ion-notifications {
+  display: grid;
+  gap: var(--spacing-8);
+  font-family: var(--font-family-sans);
+  color: var(--text-default);
+}
+
+.ion-notifications__bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-8);
+  min-height: var(--spacing-32);
+}
+
+.ion-notifications__count {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: var(--type-body-sm);
+  line-height: var(--type-body-sm-line-height);
+}
+
+.ion-notifications__list {
+  display: grid;
+  gap: var(--spacing-12);
+  max-height: 28rem;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.ion-notifications__group {
+  display: grid;
+  gap: var(--spacing-4);
+}
+
+.ion-notifications__heading {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: var(--type-caption);
+  line-height: var(--type-caption-line-height);
+  font-weight: var(--font-weight-semibold);
+}
+
+.ion-notifications__items {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ion-notification {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-12);
+  padding: var(--spacing-8) 0;
+  border-top: var(--border-width-default) solid var(--border-subtle);
+}
+
+.ion-notification__dot {
+  flex: none;
+  width: var(--spacing-8);
+  height: var(--spacing-8);
+  margin-top: var(--spacing-6);
+  border-radius: var(--radius-full);
+}
+
+.ion-notification[data-unread] .ion-notification__dot {
+  background-color: var(--surface-primary);
+}
+
+.ion-notification__icon {
+  display: inline-flex;
+  flex: none;
+}
+
+.ion-notification__body {
+  display: grid;
+  flex: 1;
+  gap: var(--spacing-2);
+  min-width: 0;
+}
+
+.ion-notification__title {
+  margin: 0;
+  font-size: var(--type-body-sm);
+  line-height: var(--type-body-sm-line-height);
+  overflow-wrap: anywhere;
+}
+
+.ion-notification[data-unread] .ion-notification__title {
+  font-weight: var(--font-weight-semibold);
+}
+
+.ion-notification__open {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: start;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+@media (hover: hover) {
+  .ion-notification__open:hover {
+    text-decoration: underline;
+  }
+}
+
+.ion-notification__open:focus-visible {
+  outline: var(--border-width-thick) solid var(--ring-focus);
+  outline-offset: 2px;
+  border-radius: var(--radius-xs);
+}
+
+.ion-notification__description {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: var(--type-body-sm);
+  line-height: var(--type-body-sm-line-height);
+  overflow-wrap: anywhere;
+}
+
+.ion-notification__time {
+  color: var(--text-secondary);
+  font-size: var(--type-caption);
+  line-height: var(--type-caption-line-height);
+}
+
+.ion-notification__toggle {
+  flex: none;
+}
+
+.ion-notifications__loading {
+  display: grid;
+  gap: var(--spacing-16);
+}
+
+/* Forced colours drop the fill: the dot must stay visible as a dot. */
+@media (forced-colors: active) {
+  .ion-notification[data-unread] .ion-notification__dot {
+    background-color: CanvasText;
+  }
+}

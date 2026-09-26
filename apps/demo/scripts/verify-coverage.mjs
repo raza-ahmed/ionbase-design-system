@@ -71,6 +71,7 @@ const REQUIRED = [
   'StatusIndicator',
   'Banner',
   'InlineLoading',
+  'NotificationsPanel',
   'MenuItem',
   'MenuSection',
   'MenuTrigger',

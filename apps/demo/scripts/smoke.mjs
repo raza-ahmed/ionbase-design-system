@@ -2061,6 +2061,145 @@ try {
   }
 
   /*
+   * NotificationsPanel, under the header's bell. The bell's name carries the
+   * count ("Notifications, 2 unread") and its dot shows while anything is
+   * unread; it opens a Popover named Notifications with Today, Yesterday
+   * and Earlier. From the keyboard, a row's Mark as read keeps focus, becomes
+   * Mark as unread and is announced, and the bell's count follows. Mark all
+   * as read hands focus to the first notification before it goes. axe runs
+   * with the panel open, which fits the phone's width. Escape returns focus
+   * to the bell; opening a notification navigates and closes the panel. The
+   * presenter's Empty state shows "You're all caught up".
+   */
+  for (const [device, width, height] of [
+    ['desktop', 1280, 900],
+    ['mobile', 390, 844],
+  ]) {
+    const where = `notifications panel (light, ${device})`;
+    const context = await browser.newContext({ viewport: { width, height } });
+    await context.addInitScript(() =>
+      localStorage.setItem(
+        'ionbase-ops:demo-settings',
+        JSON.stringify({ theme: 'light', latency: 0 }),
+      ),
+    );
+    const page = await context.newPage();
+    page.on('pageerror', (e) => fail(where, `exception: ${e.message}`));
+    await page.goto(`${BASE}/#/overview`);
+    try {
+      const bell = page.getByRole('button', { name: /^Notifications, / });
+      await page
+        .getByRole('button', { name: 'Notifications, 2 unread' })
+        .waitFor({ timeout: 10_000 });
+      const dot = () =>
+        bell.evaluate(
+          (el) => window.getComputedStyle(el, '::after').content !== 'none',
+        );
+      if (!(await dot())) fail(where, 'the bell shows no unread dot');
+
+      await bell.click();
+      const panel = page.getByRole('dialog', { name: 'Notifications' });
+      await panel.waitFor({ timeout: 5_000 });
+      const headings = await panel
+        .getByRole('heading', { level: 3 })
+        .allTextContents();
+      if (headings.join('|') !== 'Today|Yesterday|Earlier')
+        fail(where, `the groups are ${headings.join(', ')}`);
+      if (!(await panel.getByText('2 unread').isVisible()))
+        fail(where, 'the bar does not count the unread');
+
+      const toggle = panel
+        .getByRole('button', { name: 'Mark as read' })
+        .first();
+      await toggle.focus();
+      await page.keyboard.press('Enter');
+      const after = await page.evaluate(() => ({
+        name: document.activeElement?.getAttribute('aria-label'),
+        said: document.querySelector('.ion-notifications > [role="status"]')
+          ?.textContent,
+      }));
+      if (after.name !== 'Mark as unread')
+        fail(where, `focus after Mark as read is on "${after.name}"`);
+      if (after.said !== 'Marked as read')
+        fail(where, 'Mark as read was not announced');
+      if (
+        (await page
+          .getByRole('button', { name: 'Notifications, 1 unread' })
+          .count()) !== 1
+      )
+        fail(where, "the bell's count did not follow");
+
+      const box = await panel.boundingBox();
+      if (box.x < 0 || box.x + box.width > width)
+        fail(where, 'the panel runs off the screen');
+
+      await page.addScriptTag({ content: axeSource });
+      const violations = await page.evaluate(async () => {
+        await Promise.all(
+          document
+            .getAnimations()
+            .filter((a) => a.effect?.getTiming().iterations !== Infinity)
+            .map((a) => a.finished),
+        );
+        const result = await window.axe.run(document, {
+          resultTypes: ['violations'],
+        });
+        return result.violations.map((v) => `${v.impact} ${v.id}`);
+      });
+      for (const v of violations) fail(where, `axe ${v}`);
+
+      await panel.getByRole('button', { name: 'Mark all as read' }).focus();
+      await page.keyboard.press('Enter');
+      const first = await page.evaluate(
+        () => document.activeElement?.textContent,
+      );
+      if (first !== 'Invoice reconciler is waiting for you')
+        fail(where, `focus after Mark all as read is on "${first}"`);
+      if (
+        (await page
+          .getByRole('button', { name: 'Notifications, none unread' })
+          .count()) !== 1
+      )
+        fail(where, 'the bell still counts unread');
+      if (await dot()) fail(where, 'the dot stayed after Mark all as read');
+
+      await page.keyboard.press('Escape');
+      await panel.waitFor({ state: 'detached', timeout: 5_000 });
+      if (
+        !(await page.evaluate(() =>
+          document.activeElement
+            ?.getAttribute('aria-label')
+            ?.startsWith('Notifications'),
+        ))
+      )
+        fail(where, 'Escape did not return focus to the bell');
+
+      await bell.click();
+      await panel
+        .getByRole('link', { name: 'Nightly CRM sync failed twice' })
+        .click();
+      await panel.waitFor({ state: 'detached', timeout: 5_000 });
+      if (!page.url().endsWith('#/runs'))
+        fail(where, `opening a notification went to ${page.url()}`);
+
+      await page.getByRole('button', { name: /^Demo/ }).click();
+      await page.getByLabel('Screen state').selectOption('empty');
+      await page.keyboard.press('Escape');
+      await page
+        .getByRole('button', { name: 'Notifications, none unread' })
+        .click();
+      await panel
+        .getByRole('heading', { name: 'You’re all caught up' })
+        .waitFor({ timeout: 5_000 })
+        .catch(() => fail(where, 'the empty panel is not all caught up'));
+    } catch (e) {
+      fail(where, `did not run: ${e.message.split('\n')[0]}`);
+    }
+    groupsChecked++;
+    await context.close();
+  }
+
+  /*
    * The loading states, at phone width. With no latency a skeleton is gone
    * before anything can measure it, and a skeleton is laid out differently
    * from the content it stands in for — the Agents skeleton once pushed the
