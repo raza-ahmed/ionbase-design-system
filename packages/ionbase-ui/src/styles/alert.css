@@ -145,6 +145,7 @@
  * separates a subtle banner from the page behind it.
  */
 .ion-alert--banner {
+  align-items: center;
   border-radius: 0;
   border-inline: none;
 }
@@ -183,6 +184,18 @@
   min-width: 0;
   flex-direction: column;
   gap: var(--spacing-8);
+}
+
+/*
+ * A banner sits above the whole product and should cost it one line, not
+ * four: the title, the message and the actions share a row where there is
+ * room, and wrap onto more lines on a phone rather than stacking at every
+ * width. Figma's Layout=Banner draws the same row.
+ */
+.ion-alert--banner .ion-alert__content {
+  flex-flow: row wrap;
+  align-items: baseline;
+  gap: var(--spacing-4) var(--spacing-12);
 }
 
 .ion-alert__title {

@@ -1658,6 +1658,7 @@ try {
       await confirm.click();
       await page
         .getByText(`${workspace} will be deleted on`)
+        .first()
         .waitFor({ timeout: 5_000 })
         .catch(() => fail(where, 'the deletion was not scheduled'));
     } catch (e) {
@@ -1724,6 +1725,111 @@ try {
         fail(where, 'two intents share a shape');
       if (found.intents < 2)
         fail(where, 'fewer than two intents; the check proves nothing');
+    } catch (e) {
+      fail(where, `did not run: ${e.message.split('\n')[0]}`);
+    }
+    groupsChecked++;
+    await context.close();
+  }
+
+  /*
+   * Banner, in the app shell. The maintenance notice is above the Header on
+   * every page; dismissed from the keyboard, focus moves forward into the
+   * page, and it stays gone on the next route and after a reload. Scheduling
+   * the workspace's deletion puts a warning banner on every page, with no
+   * dismiss button, until the deletion is cancelled.
+   */
+  {
+    const where = 'banner (light, desktop)';
+    const context = await browser.newContext({
+      viewport: { width: 1280, height: 900 },
+    });
+    await context.addInitScript(() =>
+      localStorage.setItem(
+        'ionbase-ops:demo-settings',
+        JSON.stringify({ theme: 'light', latency: 0 }),
+      ),
+    );
+    const page = await context.newPage();
+    page.on('pageerror', (e) => fail(where, `exception: ${e.message}`));
+    await page.goto(`${BASE}/#/agents`);
+    try {
+      const maintenance = page.locator('.ion-banner', {
+        hasText: 'Maintenance on Sunday',
+      });
+      await maintenance.waitFor({ timeout: 10_000 });
+      const above = await page.evaluate(() => {
+        const b = document.querySelector('.ion-banner');
+        const header = document.querySelector('.demo-header');
+        return {
+          before: !!(
+            b.compareDocumentPosition(header) &
+            window.Node.DOCUMENT_POSITION_FOLLOWING
+          ),
+          outsideMain: !b.closest('main'),
+          fullWidth:
+            Math.abs(b.getBoundingClientRect().width - window.innerWidth) < 1,
+        };
+      });
+      if (!above.before) fail(where, 'the banner is not above the Header');
+      if (!above.outsideMain) fail(where, 'the banner is inside <main>');
+      if (!above.fullWidth) fail(where, 'the banner is not the full width');
+
+      await maintenance.getByRole('button', { name: 'Dismiss' }).focus();
+      await page.keyboard.press('Enter');
+      await maintenance.waitFor({ state: 'detached', timeout: 5_000 });
+      const focused = await page.evaluate(() => ({
+        body: document.activeElement === document.body,
+        inHeader: !!document.activeElement?.closest('.demo-header'),
+      }));
+      if (focused.body || !focused.inHeader)
+        fail(where, 'dismissing did not move focus forward, into the Header');
+
+      await page.goto(`${BASE}/#/runs`);
+      await page.locator('#page-title').waitFor({ timeout: 10_000 });
+      if (await maintenance.count())
+        fail(where, 'the dismissed banner came back on the next route');
+      await page.reload();
+      await page.locator('#page-title').waitFor({ timeout: 10_000 });
+      if (await maintenance.count())
+        fail(where, 'the dismissed banner came back after a reload');
+
+      // Schedule the deletion from Settings; the warning follows every page.
+      await page.goto(`${BASE}/#/settings`);
+      await page.getByRole('button', { name: 'Delete workspace…' }).click();
+      const dialog = page.getByRole('dialog');
+      const label = await dialog
+        .locator('label', { hasText: 'to confirm' })
+        .textContent();
+      await dialog
+        .getByLabel(/^Type “.*” to confirm$/)
+        .fill(/“(.*)”/.exec(label)[1]);
+      await dialog.getByLabel('Your password').fill('correct-horse-9');
+      await dialog.getByRole('button', { name: 'Delete workspace' }).click();
+      const deletion = page.locator('.ion-banner', {
+        hasText: 'will be deleted on',
+      });
+      await deletion.waitFor({ timeout: 5_000 });
+      await page.goto(`${BASE}/#/overview`);
+      await page.locator('#page-title').waitFor({ timeout: 10_000 });
+      if (!(await deletion.count()))
+        fail(where, 'the deletion banner is not on the next page');
+      if ((await deletion.getAttribute('role')) !== 'alert')
+        fail(where, 'the deletion warning is not role="alert"');
+      if (await deletion.getByRole('button', { name: 'Dismiss' }).count())
+        fail(where, 'the deletion warning can be dismissed');
+
+      await page.waitForFunction(() =>
+        document.getAnimations().every((a) => a.playState !== 'running'),
+      );
+      await page.addScriptTag({ content: axeSource });
+      const violations = await page.evaluate(async () => {
+        const result = await window.axe.run(document, {
+          resultTypes: ['violations'],
+        });
+        return result.violations.map((v) => `${v.impact} ${v.id}`);
+      });
+      for (const v of violations) fail(where, `axe ${v}`);
     } catch (e) {
       fail(where, `did not run: ${e.message.split('\n')[0]}`);
     }

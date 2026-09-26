@@ -1,0 +1,84 @@
+{
+  "status": "stable",
+  "summary": "A notice about the whole product, across the top of it — maintenance tonight, a trial ending, the workspace read-only or scheduled for deletion. Alert's banner layout on one line, in the app shell; a dismissal is remembered with `dismissKey`.",
+  "useWhen": [
+    "the notice is about the product or the account, not about what is on this page — maintenance, an outage, a plan limit, read-only mode, a pending deletion",
+    "it must be seen on every page until it is dealt with or dismissed"
+  ],
+  "useInstead": [
+    {
+      "when": "the notice is about one part of the page — a form, a panel, a table",
+      "use": "Alert",
+      "why": "an Alert sits with what it is about; a banner about a form reads as a problem with the whole product"
+    },
+    {
+      "when": "a result the user just caused — saved, sent, deleted",
+      "use": "Toast",
+      "why": "it comes and goes by itself; a banner stays until dealt with"
+    }
+  ],
+  "composition": {
+    "order": ["Banner", "Header"],
+    "note": "In the app shell, above the Header and outside <main>, so it persists across routes and is announced once. Several stack, the most severe first. `actions` holds one Link or small Button, beside the message.",
+    "example": "<Banner intent=\"information\" title=\"Maintenance on Sunday\" dismissKey=\"maintenance-2026-10-04\" actions={<Link href=\"/status\">Status page</Link>}>From 02:00 to 03:00 UTC.</Banner>"
+  },
+  "variants": {
+    "intent": {
+      "information": {
+        "use": "the default — maintenance, a new feature, a plan change"
+      },
+      "warning": {
+        "use": "something the user should act on — a trial ending, a deletion scheduled, read-only mode"
+      },
+      "error": {
+        "use": "the product is not working — an outage, a failed payment that has stopped runs"
+      },
+      "success": {
+        "use": "rarely — a state that has just been restored, shown once"
+      },
+      "neutral": { "use": "a notice with no judgement attached" },
+      "primary": { "use": "rarely — a brand announcement" }
+    },
+    "emphasis": {
+      "subtle": { "use": "the default" },
+      "solid": {
+        "use": "one banner that must not be missed, such as an outage"
+      }
+    }
+  },
+  "a11y": {
+    "requires": [
+      "a message that says what is happening and what it means for the user, in words",
+      "`dismissLabel` translated"
+    ],
+    "guarantees": [
+      "the role follows the intent, as Alert's does: `alert` for warning and error, `status` for the rest — announced when it is inserted, not on every page, because it lives in the shell",
+      "with `dismissKey`, dismissed stays dismissed in this browser — on every page and the next visit — and a remembered dismissal is never painted",
+      "without `dismissKey` or `onDismiss` there is no dismiss button: a banner that must stay cannot be dismissed",
+      "dismissing moves focus to the next focusable element after the banner, not to the top of the document",
+      "blocked storage — a private window — leaves it showing and dismissible for the page",
+      "title, message and action share one line where there is room, and wrap on a phone without running past the edge; it is not sticky"
+    ],
+    "notes": [
+      "change the key when the notice changes — `maintenance-2026-10-04`, not `maintenance` — or a user who dismissed last month's will never see this month's",
+      "more than two banners at once is a sign some of them belong elsewhere"
+    ]
+  },
+  "antiPatterns": [
+    {
+      "dont": "a Banner inside each page's content",
+      "do": "one place in the app shell",
+      "why": "remounted on every route, a live region is announced on every route, and it moves with each page's layout"
+    },
+    {
+      "dont": "<Banner dismissKey=\"deletion\"> for a scheduled deletion",
+      "do": "no dismissKey and no onDismiss",
+      "why": "a notice the user must not forget cannot be one they can make go away"
+    },
+    {
+      "dont": "a sticky banner",
+      "do": "a banner that scrolls away with the page",
+      "why": "stuck to the top of a phone, it takes a block of every screen for as long as it is there"
+    }
+  ]
+}

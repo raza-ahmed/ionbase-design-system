@@ -15,6 +15,8 @@ export type {
   AlertEmphasis,
   AlertLayout,
 } from './Alert.js';
+export { Banner } from './Banner.js';
+export type { BannerProps } from './Banner.js';
 export { Badge } from './Badge.js';
 export type {
   BadgeProps,

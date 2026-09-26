@@ -125,7 +125,7 @@ IonBase column names the component that covers it.
 | ------------------------------- | :----: | :-: | :--: | ------------- |
 | Inline notification             |   ●    |     |  ●   | `Alert`       |
 | Toast / snackbar                |   ●    |  ●  |  ●   | `Toast`       |
-| Page banner                     |   ●    |     |  ●   | —             |
+| Page banner                     |   ●    |     |  ●   | `Banner`      |
 | Notifications panel             |   ●    |     |  ●   | —             |
 | Progress bar                    |   ●    |  ●  |  ●   | `ProgressBar` |
 | Progress ring (determinate)     |        |  ●  |  ●   | —             |

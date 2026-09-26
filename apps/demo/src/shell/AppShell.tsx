@@ -1,17 +1,26 @@
-import { useEffect, useState, type ReactNode } from 'react';
+import {
+  useEffect,
+  useState,
+  useSyncExternalStore,
+  type ReactNode,
+} from 'react';
 import {
   Avatar,
+  Banner,
   Button,
   Drawer,
   Header,
   Icon,
   Kbd,
+  Link,
   Logo,
   Tooltip,
 } from 'ionbase-ui';
 import { Bell } from 'ionbase-icons/icons/bell';
 import { Search } from 'ionbase-icons/icons/search';
 
+import { subscribeWorkspaceNotice, workspaceNotice } from '../data/settings';
+import { formatDay } from '../lib/dates';
 import { href, type Route } from '../lib/router';
 import { AppCommands } from './AppCommands';
 import { DemoControls } from './DemoControls';
@@ -37,8 +46,39 @@ export function AppShell({
   // Navigating from the mobile drawer should close it.
   useEffect(() => setNavOpen(false), [route]);
 
+  const notice = useSyncExternalStore(
+    subscribeWorkspaceNotice,
+    workspaceNotice,
+  );
+
   return (
     <div className="demo-app">
+      {/*
+       * The PageShell's banners: above the Header, outside <main>, mounted
+       * once by the shell so they persist across routes and are announced
+       * once. The most severe first. A scheduled deletion must stay until it
+       * is cancelled, so it has no dismissKey; the maintenance notice, once
+       * dismissed, stays dismissed in this browser.
+       */}
+      <div className="demo-banners">
+        {notice.deletionScheduledFor && (
+          <Banner
+            intent="warning"
+            title={`${notice.workspaceName} will be deleted on ${formatDay(notice.deletionScheduledFor)}`}
+            actions={<Link href={href('settings')}>Review in Settings</Link>}
+          >
+            Agents are paused until then.
+          </Banner>
+        )}
+        <Banner
+          intent="information"
+          title="Maintenance on Sunday 4 October"
+          dismissKey="maintenance-2026-10-04"
+        >
+          From 02:00 to 03:00 UTC. Runs started then are queued, not lost.
+        </Banner>
+      </div>
+
       {/*
        * menuType="dialog": the Header's own toggle opens the navigation Drawer,
        * and the account actions stay in the bar at every width.

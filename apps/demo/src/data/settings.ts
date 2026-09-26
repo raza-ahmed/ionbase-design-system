@@ -98,6 +98,27 @@ export async function saveDefaults(
   return { saved: structuredClone(server.defaults), rejected };
 }
 
+/*
+ * What the app shell's banners need, readable from any route. A real app
+ * would get this from its session or a status endpoint; here the shell
+ * subscribes to the same fixture Settings writes, so scheduling a deletion
+ * there puts the banner on every page at once.
+ */
+export interface WorkspaceNotice {
+  workspaceName: string;
+  deletionScheduledFor: string | null;
+}
+let notice: WorkspaceNotice = {
+  workspaceName: server.workspaceName,
+  deletionScheduledFor: server.deletionScheduledFor,
+};
+const noticeListeners = new Set<() => void>();
+export function subscribeWorkspaceNotice(listener: () => void) {
+  noticeListeners.add(listener);
+  return () => void noticeListeners.delete(listener);
+}
+export const workspaceNotice = () => notice;
+
 export async function scheduleDeletion(
   scheduled: boolean,
   settings: CallSettings,
@@ -112,5 +133,10 @@ export async function scheduleDeletion(
       ? new Date(Date.now() + 7 * 86_400_000).toISOString().slice(0, 10)
       : null,
   };
+  notice = {
+    workspaceName: server.workspaceName,
+    deletionScheduledFor: server.deletionScheduledFor,
+  };
+  for (const listener of noticeListeners) listener();
   return server.deletionScheduledFor;
 }
