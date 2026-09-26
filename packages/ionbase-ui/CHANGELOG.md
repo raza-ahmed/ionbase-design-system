@@ -1,5 +1,40 @@
 # Changelog
 
+## 0.102.0 — 2026-09-26
+
+### Added — `StatusIndicator`
+
+A status shown as a shape, a colour and a word together — Running, Failing,
+Paused. It is the seventh P1 item on the enterprise checklist. It replaces a
+table's coloured dots, which fail WCAG 1.4.1: a green dot and a red dot are
+the same shape.
+
+- **Six intents, six shapes:** `neutral` is a ring, `success` a circle with
+  a check, `warning` a triangle, `error` an octagon with a cross,
+  `information` a circle with an i, and `progress` a spinning arc that stays
+  still under reduced motion. The shapes are Lucide's, the same ones the
+  Figma set uses.
+- **Only the shape is coloured,** with the intent's icon colour. The word
+  keeps the text colour, so a column of statuses reads as text with markers,
+  not as a column of chips.
+- **The word is the name.** The shape is hidden from screen readers, and
+  `children` is required. There is no role and no live region, so a table
+  of fifty statuses doesn't announce each change.
+- **`size`** is `sm` (the default: a 16px shape and 14px text, matching the
+  table text around it) or `md` (20px, beside body text). It stays on one
+  line.
+- **Figma:** a Status Indicator page, Intent × Size, bound to the icon, text
+  and type variables. It is mapped; 94 blocks verified. Avatar's private
+  `.Status Indicator` dot is a separate component.
+- **Demo:** the status columns of the Agents table, Runs history and
+  Overview's recent runs, which were Badges with a dot. Record headers keep
+  their Badge. The smoke check runs with forced colours on, where only the
+  shape is left. It finds no dots left, a word and a hidden shape on every
+  status, and one shape per intent, different from every other. Each of
+  three mutations fails it.
+- **Pattern:** DataTable says a status column is a StatusIndicator, not a
+  Badge with a dot.
+
 ## 0.101.0 — 2026-09-26
 
 ### Added — `PasswordInput`

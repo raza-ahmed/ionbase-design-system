@@ -1668,6 +1668,70 @@ try {
   }
 
   /*
+   * StatusIndicator, in every table that lists a status: Agents, Runs
+   * history and Overview's recent runs. No cell is a Badge with a dot any
+   * more. Every status has a word and a hidden shape, and different intents
+   * have different shapes — checked with forced colours on, where colour is
+   * gone and the shape is all that is left.
+   */
+  for (const route of ['agents', 'runs', 'overview']) {
+    const where = `status indicator (#/${route}, forced colours)`;
+    const context = await browser.newContext({
+      viewport: { width: 1280, height: 900 },
+      forcedColors: 'active',
+    });
+    await context.addInitScript(() =>
+      localStorage.setItem(
+        'ionbase-ops:demo-settings',
+        JSON.stringify({ theme: 'light', latency: 0 }),
+      ),
+    );
+    const page = await context.newPage();
+    page.on('pageerror', (e) => fail(where, `exception: ${e.message}`));
+    await page.goto(`${BASE}/#/${route}`);
+    try {
+      await page
+        .locator('table .ion-status')
+        .first()
+        .waitFor({ timeout: 10_000 });
+      const found = await page.evaluate(() => {
+        const cells = [...document.querySelectorAll('table .ion-status')];
+        const shapes = {};
+        const bad = [];
+        for (const s of cells) {
+          const svg = s.querySelector('svg');
+          const word = s.querySelector('.ion-status__label')?.textContent;
+          if (!word) bad.push('a status with no word');
+          if (svg?.getAttribute('aria-hidden') !== 'true')
+            bad.push(`"${word}" has a shape that is read out`);
+          if (!svg || svg.getBoundingClientRect().width === 0)
+            bad.push(`"${word}" has no visible shape`);
+          (shapes[s.dataset.intent] ??= new Set()).add(svg?.innerHTML);
+        }
+        return {
+          dots: document.querySelectorAll('table .ion-badge__dot').length,
+          bad,
+          intents: Object.keys(shapes).length,
+          perIntent: Object.values(shapes).map((x) => x.size),
+          distinct: new Set(Object.values(shapes).flatMap((x) => [...x])).size,
+        };
+      });
+      if (found.dots) fail(where, `${found.dots} Badge dots left in a table`);
+      for (const b of found.bad) fail(where, b);
+      if (found.perIntent.some((n) => n !== 1))
+        fail(where, 'one intent is drawn with more than one shape');
+      if (found.distinct !== found.intents)
+        fail(where, 'two intents share a shape');
+      if (found.intents < 2)
+        fail(where, 'fewer than two intents; the check proves nothing');
+    } catch (e) {
+      fail(where, `did not run: ${e.message.split('\n')[0]}`);
+    }
+    groupsChecked++;
+    await context.close();
+  }
+
+  /*
    * The wizard's CheckboxGroup, which no page load above reaches: it is on
    * Guardrails, the third step. A saved draft with the first two steps done
    * opens there. "At least one" has to hold three ways — natively (every box

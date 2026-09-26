@@ -46,7 +46,7 @@
 - [x] **CopyButton** — the run ID in Runs history's details; confirms on the button, a toast only when the copy failed — 0.99.0
 - [x] **CodeSnippet** — Settings' API access: a CLI command, an API request, an inline command — 0.100.0
 - [x] **PasswordInput** — the password asked again to delete the workspace — 0.101.0
-- [ ] **StatusIndicator**
+- [x] **StatusIndicator** — the status column in Agents, Runs history and Overview, replacing Badge dots — 0.102.0
 - [ ] **Banner**
 - [ ] **InlineLoading**
 - [ ] **NotificationsPanel**

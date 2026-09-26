@@ -1,0 +1,88 @@
+{
+  "status": "stable",
+  "summary": "A status as a shape, a colour and a word together — Running, Failing, Paused. Every intent has its own shape, so the status survives greyscale and colour blindness; only the shape is coloured, and the word keeps the text colour.",
+  "useWhen": [
+    "the status of each row in a table or list — an agent's state, a run's outcome, a job's health",
+    "a status beside other text, where a Badge's chip would shout"
+  ],
+  "useInstead": [
+    {
+      "when": "a label that should stand out — a record's status in its header, Beta, New",
+      "use": "Badge",
+      "why": "a Badge's chip draws the eye; a column of them turns a table into a wall of colour"
+    },
+    {
+      "when": "the steps of an agent's run",
+      "use": "AgentActivity",
+      "why": "it has the step vocabulary — pending, active, done, failed, skipped — and says which step is current"
+    },
+    {
+      "when": "the change must be announced — a job just failed",
+      "use": "Toast",
+      "why": "StatusIndicator is not a live region; a table of them would announce every row"
+    }
+  ],
+  "composition": {
+    "order": ["StatusIndicator"],
+    "note": "`intent` picks the shape; `children` is the status in words, and is required.",
+    "example": "<TableCell><StatusIndicator intent=\"error\">Failing</StatusIndicator></TableCell>"
+  },
+  "variants": {
+    "intent": {
+      "success": {
+        "use": "healthy or done well: Running, Passed, Paid — a circle with a check"
+      },
+      "warning": {
+        "use": "needs attention, not broken: Expiring, Degraded — a triangle"
+      },
+      "error": {
+        "use": "failed or blocked: Failing, Rejected — an octagon with a cross"
+      },
+      "information": {
+        "use": "a fact worth marking: Draft, Scheduled — a circle with an i"
+      },
+      "neutral": {
+        "use": "the default — no judgement: Paused, Stopped — a ring"
+      },
+      "progress": {
+        "use": "under way right now: Deploying, Syncing — a spinning arc, still when motion is reduced"
+      }
+    },
+    "size": {
+      "sm": { "use": "the default — table cells and dense lists; 16px" },
+      "md": { "use": "beside body text; 20px" }
+    }
+  },
+  "a11y": {
+    "requires": ["`children` — the status in words, translated"],
+    "guarantees": [
+      "each intent has a different shape, so the status is not carried by colour alone (WCAG 1.4.1)",
+      "the shape is hidden from assistive tech; the word is what is read",
+      "no role and no live region: it does not announce itself when it changes",
+      "the word keeps the text colour in every intent; only the shape takes the intent's icon colour",
+      "it stays on one line, so the shape is never left alone above its word",
+      "progress spins, and is still under `prefers-reduced-motion`; its shape alone says in progress"
+    ],
+    "notes": [
+      "pick the intent for what the status means to the user, not for its colour: Paused is neutral even if a designer wants it grey-blue",
+      "keep the word short — one or two words — and put the detail beside it or in a Tooltip on the cell"
+    ]
+  },
+  "antiPatterns": [
+    {
+      "dont": "<span className=\"dot dot--green\" /> Running",
+      "do": "<StatusIndicator intent=\"success\">Running</StatusIndicator>",
+      "why": "a green dot and a red dot are the same shape; to a colour-blind user every row looks the same"
+    },
+    {
+      "dont": "<StatusIndicator intent=\"error\" aria-label=\"Failing\" />",
+      "do": "<StatusIndicator intent=\"error\">Failing</StatusIndicator>",
+      "why": "a shape with no word has to be learned, and a sighted user cannot read the aria-label"
+    },
+    {
+      "dont": "a Badge with a dot in every row of a table",
+      "do": "StatusIndicator in the cell",
+      "why": "the chips' backgrounds compete with the data, and the dot is the same shape for every status"
+    }
+  ]
+}

@@ -68,6 +68,7 @@ const REQUIRED = [
   'CopyButton',
   'CodeSnippet',
   'PasswordInput',
+  'StatusIndicator',
   'MenuItem',
   'MenuSection',
   'MenuTrigger',
