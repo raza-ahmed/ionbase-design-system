@@ -17,6 +17,11 @@
     {
       "when": "there are exactly two states and the change is immediate",
       "use": "Toggle"
+    },
+    {
+      "when": "each option needs a sentence to be chosen well — a plan, a trigger, a schedule",
+      "use": "SelectableTile",
+      "why": "the same group with tiles for its options: each a real radio the size of a card, its sentence read after its name"
     }
   ],
   "variants": {

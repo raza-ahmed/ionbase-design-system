@@ -63,7 +63,7 @@ IonBase column names the component that covers it.
 | Checkbox group                    |   ●    |     |  ●   | `CheckboxGroup`                 |
 | Radio / radio group               |   ●    |  ●  |  ●   | `Radio`, `RadioGroup`           |
 | Switch                            |   ●    |  ●  |  ●   | `Toggle`                        |
-| Selectable tile / visual picker   |   ●    |     |  ●   | —                               |
+| Selectable tile / visual picker   |   ●    |     |  ●   | `SelectableTile`                |
 | Slider (single and range)         |   ●    |  ●  |  ●   | `Slider`                        |
 | Date picker / range               |   ●    |  ●  |  ●   | `DatePicker`, `DateRangePicker` |
 | Time picker                       |   ●    |  ●  |  ●   | `TimeField`                     |

@@ -21,7 +21,8 @@
     "ButtonGroup",
     "Alert",
     "Divider",
-    "InlineEdit"
+    "InlineEdit",
+    "SelectableTile"
   ],
   "structure": [
     "Fields in a single column. Two columns only for genuinely paired values, and they stack below the mobile breakpoint.",
@@ -31,7 +32,8 @@
     "Choices that form a hierarchy — folders, teams within departments — are one TreeView with `selectionMode=\"multiple\"` and an `aria-label` naming the question, not Checkboxes indented by hand. The tree announces each choice's level and place; indentation alone announces nothing.",
     "An error summary Alert above the form after a failed submit, listing each invalid field as a link to it.",
     "The actions in a ButtonGroup at the end: cancel first, the submit Button last — the primary last, as every action row in the system has it, so it is reached after the options it is chosen over and sits at the end of the row. `stack` on a form a phone will fill.",
-    "One value on a page that is read far more often than changed — a record's name or description — is an InlineEdit where it stands, not a form of one field: Edit, then Save or Cancel, with `validate` for its rule. Several values that belong together are still a form with one submit."
+    "One value on a page that is read far more often than changed — a record's name or description — is an InlineEdit where it stands, not a form of one field: Edit, then Save or Cancel, with `validate` for its rule. Several values that belong together are still a form with one submit.",
+    "A choice whose options each need a sentence to be chosen well — a plan, a trigger — is the same RadioGroup or CheckboxGroup with SelectableTiles for options: real radios or checkboxes the size of a card, in a grid, the sentence read after each name. Links go beside the group, never inside a tile."
   ],
   "states": {
     "loading": {
@@ -55,6 +57,7 @@
   },
   "propsUsed": {
     "InlineEdit": ["label", "editLabel", "value", "onSave", "validate"],
+    "SelectableTile": ["value", "title", "description"],
     "NumberInput": [
       "label",
       "minValue",

@@ -1,0 +1,61 @@
+{
+  "status": "stable",
+  "summary": "A choice the size of a card — a plan, a schedule, a template, each with a sentence. A real Radio inside a RadioGroup, a real Checkbox inside a CheckboxGroup or alone; its label is stretched over the tile, so the whole card is the target. The title is the name; the description is read after it.",
+  "useWhen": [
+    "each option needs a sentence or a detail to be chosen well — what a plan includes, what a schedule costs",
+    "there are a handful of options, two to six, worth seeing side by side"
+  ],
+  "useInstead": [
+    {
+      "when": "the options are short labels that need no explanation",
+      "use": "RadioGroup",
+      "why": "a column of radios is denser and quicker to scan than a grid of cards"
+    },
+    {
+      "when": "more than about six options, or a list that grows",
+      "use": "Select",
+      "why": "a grid of tiles for twenty options is a wall of cards"
+    },
+    {
+      "when": "the card leads somewhere, or holds actions",
+      "use": "Card",
+      "why": "a tile is one control and must hold nothing interactive"
+    }
+  ],
+  "composition": {
+    "order": ["RadioGroup", "SelectableTile"],
+    "note": "Inside a RadioGroup the tiles are radios — one choice; inside a CheckboxGroup, checkboxes — several. The group's label, description, isRequired, isInvalid and errorMessage apply as they do to Radio and Checkbox, and the tiles wrap into a grid. Alone, a tile is a checkbox with `isSelected` and `onSelectionChange`. Put links — \"Compare plans\" — beside the group, not in a tile.",
+    "example": "<RadioGroup label=\"Plan\" value={plan} onChange={setPlan}><SelectableTile value=\"team\" title=\"Team\" description=\"Up to 20 agents.\">€49 a month</SelectableTile></RadioGroup>"
+  },
+  "a11y": {
+    "requires": [
+      "`title` — the option's name, short: it is the input's accessible name",
+      "a group label on the RadioGroup or CheckboxGroup — the question the tiles answer"
+    ],
+    "guarantees": [
+      "it is a native radio or checkbox: arrow keys move between radios, Space toggles a checkbox, and a form submits its value",
+      "the whole tile is the target, through the input's own label",
+      "the description and extra detail are read after the name, through aria-describedby",
+      "the group's help or error is read on each tile, as on Radio and Checkbox",
+      "selected thickens the border and fills the indicator — not a colour change alone",
+      "a keyboard focus ring goes round the whole tile",
+      "the icon is hidden from assistive tech"
+    ],
+    "notes": [
+      "nothing inside a tile may be interactive — the whole tile is one control",
+      "the tiles wrap into a grid 14rem and up, so a phone gets one column"
+    ]
+  },
+  "antiPatterns": [
+    {
+      "dont": "<Card onClick={() => setPlan('team')} aria-pressed={plan === 'team'}>",
+      "do": "<SelectableTile value=\"team\" title=\"Team\" />",
+      "why": "a clickable card is not a radio: it is not grouped, arrow keys do nothing, and a form does not submit it"
+    },
+    {
+      "dont": "a \"Learn more\" link inside a tile",
+      "do": "the link beside the group",
+      "why": "the whole tile is the control; a link on top of it is a second target in the same place"
+    }
+  ]
+}

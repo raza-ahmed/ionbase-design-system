@@ -12,9 +12,9 @@ import {
   Input,
   NumberInput,
   PhoneInput,
-  Radio,
   RadioGroup,
   Select,
+  SelectableTile,
   Textarea,
   TimeField,
 } from 'ionbase-ui';
@@ -164,9 +164,23 @@ export function TriggerStep({ values, errors, onChange, onBlur }: StepProps) {
           onChange({ trigger: trigger as AgentDraft['trigger'] })
         }
       >
-        <Radio value="schedule">On a schedule</Radio>
-        <Radio value="webhook">When a webhook is called</Radio>
-        <Radio value="manual">Only when someone starts it</Radio>
+        {/* Three ways to start, each needing its sentence to be chosen
+            well: tiles, which are the same radios the size of a card. */}
+        <SelectableTile
+          value="schedule"
+          title="On a schedule"
+          description="Runs at the times you set below, in the workspace's time zone."
+        />
+        <SelectableTile
+          value="webhook"
+          title="When a webhook is called"
+          description="Another system starts it with a POST to its URL."
+        />
+        <SelectableTile
+          value="manual"
+          title="Only when someone starts it"
+          description="From its page or the API. It never runs on its own."
+        />
       </RadioGroup>
 
       {values.trigger === 'schedule' && (

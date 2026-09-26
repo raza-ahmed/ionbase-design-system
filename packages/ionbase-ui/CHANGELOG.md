@@ -1,5 +1,51 @@
 # Changelog
 
+## 0.107.0 — 2026-09-27
+
+### Added — `SelectableTile`
+
+A choice the size of a card: a plan, a trigger or a schedule, each with a
+sentence. It is the twelfth P1 item on the enterprise checklist.
+
+- **A real radio or checkbox.** Inside a RadioGroup a tile is a Radio, and
+  inside a CheckboxGroup, or on its own, a Checkbox. It is the same native
+  input, so the group's name, value, required rule, disabled state and error
+  all apply. Arrow keys move between radios, and a form submits the value.
+- **The whole card is the target.** The input's own label is stretched over
+  the tile.
+- **The name is the title.** The description and any extra detail, such as
+  a price, are read after the name through `aria-describedby`.
+- **Selected is more than a colour.** The border doubles, drawn inside so
+  nothing moves, and the indicator fills. The keyboard focus ring goes round
+  the whole tile.
+- **Layout:** in a group, the tiles wrap into a grid 14rem and up. Nothing
+  inside a tile may be interactive, so links go beside the group.
+- **Figma:** a new Selectable Tile page. The set has Kind (Radio, Checkbox)
+  and State (Default, Selected, Disabled) axes, built from the Radio and
+  Checkbox components. Disabled is `isDisabled`; Kind is decided by the
+  group. 97 blocks verified.
+- **Demo:** the new-agent wizard's "What starts a run?" is now three radio
+  tiles, each with a sentence. The smoke check, at desktop and phone widths,
+  covers:
+  - the names and descriptions;
+  - a press on a tile's far corner;
+  - the arrow keys;
+  - one column on a phone;
+  - axe.
+
+  Each of five mutations fails it.
+
+- **Pattern:** Form uses tiles for options that need a sentence. RadioGroup
+  and CheckboxGroup now point to it.
+
+### Fixed — the client-boundary gate
+
+- **A hook imported from one of the library's own modules now needs
+  `'use client'`.** The gate recognised only React's and React Aria's hooks.
+  So SelectableTile, which calls Radio's `useIsInRadioGroup`, was reported as
+  needing no directive, and removing it passed. A Server Component importing
+  it would have got a client reference it could not call.
+
 ## 0.106.0 — 2026-09-26
 
 ### Added — `InlineEdit`

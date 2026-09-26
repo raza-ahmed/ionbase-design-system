@@ -162,6 +162,8 @@ export type {
 } from './NotificationsPanel.js';
 export { InlineEdit } from './InlineEdit.js';
 export type { InlineEditProps, InlineEditSize } from './InlineEdit.js';
+export { SelectableTile } from './SelectableTile.js';
+export type { SelectableTileProps } from './SelectableTile.js';
 export type {
   ButtonGroupProps,
   ButtonGroupAlign,

@@ -2395,6 +2395,125 @@ try {
   }
 
   /*
+   * SelectableTile, as the wizard's "What starts a run?" — Trigger, the
+   * second step, which a draft with Basics done opens on. Three radios named
+   * by their titles and described by their sentences. A press on a tile's
+   * far corner chooses it (and the Schedule fields go when it is not the
+   * schedule); the arrow keys move between them. One column on a phone,
+   * nothing sideways; axe.
+   */
+  for (const [device, width, height] of [
+    ['desktop', 1280, 900],
+    ['mobile', 390, 844],
+  ]) {
+    const where = `selectable tile (light, ${device})`;
+    const context = await browser.newContext({ viewport: { width, height } });
+    await context.addInitScript(() => {
+      localStorage.setItem(
+        'ionbase-ops:demo-settings',
+        JSON.stringify({ theme: 'light', latency: 0 }),
+      );
+      localStorage.setItem(
+        'ionbase-ops:new-agent-draft',
+        JSON.stringify({
+          values: { name: 'Smoke test agent', trigger: 'schedule' },
+          completed: 0,
+          model: 'atlas-m',
+        }),
+      );
+    });
+    const page = await context.newPage();
+    page.on('pageerror', (e) => fail(where, `exception: ${e.message}`));
+    await page.goto(`${BASE}/#/agents/new`);
+    try {
+      const group = page.getByRole('group', { name: 'What starts a run?' });
+      await group.waitFor({ timeout: 10_000 });
+      const radios = group.getByRole('radio');
+      if ((await radios.count()) !== 3)
+        fail(where, `${await radios.count()} radios, not 3`);
+      const manual = group.getByRole('radio', {
+        name: 'Only when someone starts it',
+      });
+      const described = await manual.evaluate((el) =>
+        (el.getAttribute('aria-describedby') ?? '')
+          .split(' ')
+          .map((id) => document.getElementById(id)?.textContent ?? '')
+          .join(' '),
+      );
+      if (!described.includes('It never runs on its own.'))
+        fail(where, 'the tile is not described by its sentence');
+
+      // The tile itself — `ion-tile` as a whole class, not the label's
+      // `ion-tile__control`, whose corner would prove nothing.
+      const tile = manual.locator(
+        "xpath=ancestor::*[contains(concat(' ', normalize-space(@class), ' '), ' ion-tile ')][1]",
+      );
+      // Mid-screen first: coordinates off the viewport, or under the
+      // floating Demo button, would press something else.
+      await tile.evaluate((el) => el.scrollIntoView({ block: 'center' }));
+      const box = await tile.boundingBox();
+      await page.mouse.click(box.x + box.width - 8, box.y + box.height - 8);
+      if (!(await manual.isChecked()))
+        fail(where, "a press on the tile's corner did not choose it");
+      await page
+        .getByRole('group', { name: 'Schedule' })
+        .waitFor({ state: 'detached', timeout: 5_000 })
+        .catch(() =>
+          fail(where, 'the Schedule fields stayed for a manual trigger'),
+        );
+
+      await manual.focus();
+      await page.keyboard.press('ArrowUp');
+      const webhook = group.getByRole('radio', {
+        name: 'When a webhook is called',
+      });
+      await page
+        .waitForFunction(
+          () =>
+            document.activeElement?.getAttribute('value') === 'webhook' &&
+            document.activeElement.checked,
+          null,
+          { timeout: 5_000 },
+        )
+        .catch(() => fail(where, 'ArrowUp did not move to the webhook tile'));
+      if (!(await webhook.isChecked()))
+        fail(where, 'the webhook is not chosen');
+
+      if (device === 'mobile') {
+        const lefts = await group
+          .locator('.ion-tile')
+          .evaluateAll((els) =>
+            els.map((el) => Math.round(el.getBoundingClientRect().left)),
+          );
+        if (new Set(lefts).size !== 1)
+          fail(where, 'the tiles are not one column on a phone');
+      }
+      if (
+        await page.evaluate(
+          () => document.documentElement.scrollWidth > window.innerWidth,
+        )
+      )
+        fail(where, 'the page scrolls sideways');
+
+      await page.addScriptTag({ content: axeSource });
+      const violations = await page.evaluate(async () => {
+        const result = await window.axe.run(document, {
+          resultTypes: ['violations'],
+        });
+        return result.violations.map((v) => `${v.impact} ${v.id}`);
+      });
+      for (const v of violations) fail(where, `axe ${v}`);
+    } catch (e) {
+      fail(
+        where,
+        `did not run: ${e.message.split('\n').slice(0, 3).join(' | ')}`,
+      );
+    }
+    groupsChecked++;
+    await context.close();
+  }
+
+  /*
    * The loading states, at phone width. With no latency a skeleton is gone
    * before anything can measure it, and a skeleton is laid out differently
    * from the content it stands in for — the Agents skeleton once pushed the

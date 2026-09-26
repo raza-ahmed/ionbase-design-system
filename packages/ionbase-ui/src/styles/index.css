@@ -96,6 +96,7 @@
 @import url('./inline-loading.css');
 @import url('./notifications-panel.css');
 @import url('./inline-edit.css');
+@import url('./selectable-tile.css');
 @import url('./segmented-control.css');
 @import url('./sidebar.css');
 @import url('./file-upload.css');

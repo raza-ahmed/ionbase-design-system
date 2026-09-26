@@ -73,6 +73,7 @@ const REQUIRED = [
   'InlineLoading',
   'NotificationsPanel',
   'InlineEdit',
+  'SelectableTile',
   'MenuItem',
   'MenuSection',
   'MenuTrigger',

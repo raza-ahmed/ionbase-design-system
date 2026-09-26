@@ -1,0 +1,108 @@
+/*
+ * SelectableTile
+ *
+ * A card that is one checkbox or radio: the control's label is stretched over
+ * the whole tile, so every pixel of it is the target. 16px padding, radius/lg,
+ * a 1px border/default that becomes 2px border/primary-strong when selected —
+ * drawn as an inset shadow, so the content does not move by the extra pixel.
+ * Title semibold in text/default; description body-sm in text/secondary.
+ * In a group the tiles wrap into a grid, 14rem wide and up, 12px apart.
+ */
+.ion-tile {
+  position: relative;
+  display: grid;
+  align-content: start;
+  gap: var(--spacing-8);
+  padding: var(--spacing-16);
+  border: var(--border-width-default) solid var(--border-default);
+  border-radius: var(--radius-lg);
+  background-color: var(--surface-default);
+  font-family: var(--font-family-sans);
+  cursor: pointer;
+}
+
+@media (hover: hover) {
+  .ion-tile:hover {
+    background-color: var(--surface-hover);
+  }
+}
+
+/* The label, stretched: its box covers the tile, so a press anywhere on it
+   is a press on the control. */
+.ion-tile__control::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+}
+
+.ion-tile__control .ion-checkbox__label,
+.ion-tile__control .ion-radio__label {
+  color: var(--text-default);
+  font-weight: var(--font-weight-semibold);
+}
+
+.ion-tile__icon {
+  display: inline-flex;
+  color: var(--icon-secondary);
+}
+
+.ion-tile__details {
+  display: grid;
+  gap: var(--spacing-4);
+  font-size: var(--type-body-sm);
+  line-height: var(--type-body-sm-line-height);
+}
+
+.ion-tile__description {
+  margin: 0;
+  color: var(--text-secondary);
+}
+
+.ion-tile__extra {
+  color: var(--text-default);
+}
+
+/* Before the selected rule: a chosen tile in an invalid group keeps its
+   selected border, and the group's message says what is wrong. */
+.ion-fieldset--error .ion-tile {
+  border-color: var(--border-error-strong);
+}
+
+.ion-tile:has(input:checked) {
+  border-color: var(--border-primary-strong);
+  box-shadow: inset 0 0 0 var(--border-width-default)
+    var(--border-primary-strong);
+}
+
+.ion-tile:has(input:focus-visible) {
+  outline: var(--border-width-thick) solid var(--ring-focus);
+  outline-offset: 2px;
+}
+
+.ion-tile:has(input:disabled) {
+  border-color: var(--border-disabled);
+  background-color: var(--surface-disabled);
+  cursor: not-allowed;
+}
+
+.ion-tile:has(input:disabled) .ion-tile__description,
+.ion-tile:has(input:disabled) .ion-tile__extra,
+.ion-tile:has(input:disabled) .ion-checkbox__label,
+.ion-tile:has(input:disabled) .ion-radio__label {
+  color: var(--text-disabled);
+}
+
+.ion-fieldset__content:has(> .ion-tile) {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(14rem, 100%), 1fr));
+  gap: var(--spacing-12);
+}
+
+/* Forced colours drop the border colours; selected still reads as heavier. */
+@media (forced-colors: active) {
+  .ion-tile:has(input:checked) {
+    border-color: Highlight;
+    box-shadow: inset 0 0 0 var(--border-width-default) Highlight;
+  }
+}
