@@ -335,6 +335,22 @@ export async function setPaused(
   );
 }
 
+/**
+ * An agent's purpose, as edited in place on its page. Partial failure loads
+ * the page but refuses the edit, so the inline editor's failure path can be
+ * shown on a working page.
+ */
+export async function setPurpose(
+  id: string,
+  purpose: string,
+  settings: CallSettings,
+): Promise<void> {
+  await write(settings, 'The agents service did not respond (HTTP 503).');
+  if (settings.state === 'partial')
+    throw new Error('The agents service refused the change (HTTP 409).');
+  agents = agents.map((a) => (a.id === id ? { ...a, purpose } : a));
+}
+
 export interface DeleteResult {
   deleted: string[];
   failed: { id: string; name: string; reason: string }[];

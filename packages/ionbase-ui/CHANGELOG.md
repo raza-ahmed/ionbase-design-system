@@ -1,5 +1,65 @@
 # Changelog
 
+## 0.106.0 — 2026-09-26
+
+### Added — `InlineEdit`
+
+A value that becomes a field where it stands, with Save, Cancel and Escape.
+It is the eleventh P1 item on the enterprise checklist.
+
+- **The value is text, and Edit is a button.** The value is plain text, read
+  as text, with a pencil Edit button beside it as its one tab stop. Clicking
+  the text also opens the editor.
+- **Focus goes in, then back.** The field opens focused with its text
+  selected. Enter saves, or ⌘/Ctrl+Enter with `isMultiline`. Escape cancels
+  from the field or either button and goes no further, so a dialog around it
+  stays open. Save and Cancel return focus to Edit.
+- **Nothing typed is lost.** `validate` runs first. An invalid value, or an
+  `onSave` that rejects, keeps the editor open with the message as the
+  field's error and what was typed still in it. While an async save runs,
+  Save says "Saving…" and the field is read-only rather than disabled. Nothing
+  happens on blur.
+- **Saved is said.** "Purpose saved" is announced in a status region that is
+  always mounted. Saving an unchanged value just closes the editor.
+- **It looks like what it replaces.** The value inherits the text around it,
+  and `size` is the field's size.
+- **Figma:** a new Inline Edit page. The set has State (View, Empty, Editing,
+  Invalid) and Size (Small, Medium) axes. Size is mapped; State is runtime.
+  96 blocks verified.
+- **Demo:** the agent page's purpose, under its name, is edited in place.
+  - It is refused if empty or over 140 characters.
+  - It is kept after changing tabs.
+  - In the presenter's Partial failure state, the save is refused and what
+    was typed is kept.
+
+  The smoke check, at desktop and phone widths, covers:
+  - the selection when the editor opens;
+  - Enter saving, focus returning and the announcement;
+  - Escape;
+  - the refused empty value;
+  - the refused save;
+  - axe while editing.
+
+  Each of five mutations fails it.
+
+- **Pattern:** Form covers a single value edited in place.
+
+### Fixed — fields remounting when their error appeared
+
+- **`Input`, `Textarea`, `NumberInput`, `PasswordInput`, `SearchField` and
+  `Select` keep their element while an error comes and goes.** A field with
+  no visible label or description gained its wrapper only while an error
+  showed. It was a different element before and after, so it remounted, and
+  focus was lost on the keystroke that cleared the error. Now the wrapper is
+  there whenever `errorMessage` is passed. Textarea already behaved this way
+  for a non-empty message.
+
+### Changed — `PageHeader`
+
+- **A `description` that is an element renders in a `<div>`.** Text is still
+  a `<p>`. A `<div>` inside a `<p>` is invalid: the browser closes the
+  paragraph early, and the element ends up outside it.
+
 ## 0.105.0 — 2026-09-26
 
 ### Added — `NotificationsPanel`

@@ -102,9 +102,18 @@ export const PageHeader = forwardRef<HTMLDivElement, PageHeaderProps>(
                 <div className="ion-page-header__status">{status}</div>
               )}
             </div>
-            {description && (
-              <p className="ion-page-header__description">{description}</p>
-            )}
+            {/* Text is a paragraph; anything else — an InlineEdit — a div,
+                because a <div> inside a <p> is invalid and the browser
+                closes the paragraph early. */}
+            {description &&
+              (typeof description === 'string' ||
+              typeof description === 'number' ? (
+                <p className="ion-page-header__description">{description}</p>
+              ) : (
+                <div className="ion-page-header__description">
+                  {description}
+                </div>
+              ))}
           </div>
           {actions && <div className="ion-page-header__actions">{actions}</div>}
         </div>

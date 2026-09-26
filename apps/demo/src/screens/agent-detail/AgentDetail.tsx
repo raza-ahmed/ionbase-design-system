@@ -12,6 +12,7 @@ import {
   EmptyState,
   FullCard,
   Icon,
+  InlineEdit,
   Link,
   NavItem,
   PageHeader,
@@ -33,6 +34,7 @@ import {
   STATUS_LABEL,
   TEAMS,
   getAgent,
+  setPurpose,
   setPaused,
   type AgentDetail as Detail,
   type AgentRunRow,
@@ -79,6 +81,11 @@ export function AgentDetail({ id, tab }: { id: string; tab: AgentTab }) {
   const toast = useToast();
   const [version, setVersion] = useState(0);
   const [busy, setBusy] = useState(false);
+  // The purpose as saved in place, for this agent — kept rather than
+  // refetched, so a save does not drop the page back to its skeleton.
+  const [edited, setEdited] = useState<{ id: string; purpose: string } | null>(
+    null,
+  );
   const detail = useResource(
     (signal) => getAgent(id, settings, signal),
     `${id}|${settings.state}|${settings.latency}|${version}`,
@@ -167,7 +174,26 @@ export function AgentDetail({ id, tab }: { id: string; tab: AgentTab }) {
       <PageHeader
         titleId="page-title"
         title={agent.name}
-        description={agent.purpose}
+        description={
+          // Edited in place: read far more often than it is changed, and
+          // one value — not worth a settings page or a dialog.
+          <InlineEdit
+            label="Purpose"
+            editLabel="Edit purpose"
+            value={edited?.id === agent.id ? edited.purpose : agent.purpose}
+            validate={(v) =>
+              !v.trim()
+                ? 'Say what the agent is for.'
+                : v.length > 140
+                  ? 'Keep it under 140 characters.'
+                  : undefined
+            }
+            onSave={async (v) => {
+              await setPurpose(agent.id, v, settings);
+              setEdited({ id: agent.id, purpose: v });
+            }}
+          />
+        }
         breadcrumb={<AgentBreadcrumb name={agent.name} />}
       >
         <nav aria-label={`${agent.name} sections`} className="demo-subnav">

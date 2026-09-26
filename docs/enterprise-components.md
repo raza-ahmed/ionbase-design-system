@@ -71,7 +71,7 @@ IonBase column names the component that covers it.
 | Color picker                      |        |     |  ●   | —                               |
 | File uploader                     |   ●    |     |  ●   | `FileUpload`                    |
 | Fieldset / form group             |   ●    |     |  ●   | `Fieldset`                      |
-| Inline edit                       |   ●    |     |  ●   | —                               |
+| Inline edit                       |   ●    |     |  ●   | `InlineEdit`                    |
 | Tag / pill input                  |   ●    |  ●  |  ●   | `TagGroup`, `Tag`               |
 | Rich text editor                  |        |     |  ●   | — _deferred, §4_                |
 | Fluid (borderless) input variants |   ●    |     |      | — _non-goal, §4_                |

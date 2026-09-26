@@ -160,6 +160,8 @@ export type {
   NotificationsPanelLabels,
   NotificationItem,
 } from './NotificationsPanel.js';
+export { InlineEdit } from './InlineEdit.js';
+export type { InlineEditProps, InlineEditSize } from './InlineEdit.js';
 export type {
   ButtonGroupProps,
   ButtonGroupAlign,

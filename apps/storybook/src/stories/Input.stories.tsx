@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { expect, fn } from 'storybook/test';
+import { expect, fn, waitFor } from 'storybook/test';
+import { userEvent as browserUser } from 'vitest/browser';
 import { Input, Icon } from 'ionbase-ui';
 import { Search, X } from 'lucide-react';
 
@@ -358,5 +359,42 @@ export const UnknownPropsReachTheInput: Story = {
         ].includes(n.toLowerCase()),
       );
     await expect(leaked).toEqual([]);
+  },
+};
+
+/**
+ * A field with no visible label keeps its element while its error comes and
+ * goes. It used to gain its wrapper only while invalid, so it remounted —
+ * and focus was lost on the keystroke that cleared the error.
+ */
+export const TheErrorDoesNotRemountTheField: Story = {
+  render: () => {
+    function Code() {
+      const [value, setValue] = useState('');
+      const invalid = value.length > 0 && value.length < 4;
+      return (
+        <Input
+          aria-label="Code"
+          value={value}
+          onChange={setValue}
+          isInvalid={invalid}
+          errorMessage={invalid ? 'At least 4 characters.' : ''}
+        />
+      );
+    }
+    return <Code />;
+  },
+  play: async ({ canvas }) => {
+    const input = canvas.getByRole('textbox', { name: 'Code' });
+    await browserUser.click(input);
+    await browserUser.keyboard('ab');
+    await waitFor(() =>
+      expect(input).toHaveAccessibleDescription('At least 4 characters.'),
+    );
+    await browserUser.keyboard('cd');
+    await waitFor(() => expect(input).not.toHaveAttribute('aria-invalid'));
+    await expect(canvas.getByRole('textbox', { name: 'Code' })).toBe(input);
+    await expect(input).toHaveFocus();
+    await expect(input).toHaveValue('abcd');
   },
 };

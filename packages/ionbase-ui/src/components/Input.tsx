@@ -188,7 +188,13 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
     const helperProps =
       isInvalid && errorMessage ? errorMessageProps : descriptionProps;
 
-    if (!label && !helper) return control;
+    /*
+     * Wrapped whenever an error message is passed, shown or not. A field that
+     * only gained its wrapper when the error appeared was a different element
+     * before and after — it remounted, and focus was lost as the user typed
+     * the character that cleared the error.
+     */
+    if (!label && !helper && errorMessage === undefined) return control;
 
     return (
       <div

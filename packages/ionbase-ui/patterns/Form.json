@@ -20,7 +20,8 @@
     "Button",
     "ButtonGroup",
     "Alert",
-    "Divider"
+    "Divider",
+    "InlineEdit"
   ],
   "structure": [
     "Fields in a single column. Two columns only for genuinely paired values, and they stack below the mobile breakpoint.",
@@ -29,7 +30,8 @@
     "Related fields that answer one question — an address, a pair of limits, a set of checkboxes — sit in a Fieldset, CheckboxGroup or RadioGroup, so the question is announced with each field and a group-level error has somewhere to live.",
     "Choices that form a hierarchy — folders, teams within departments — are one TreeView with `selectionMode=\"multiple\"` and an `aria-label` naming the question, not Checkboxes indented by hand. The tree announces each choice's level and place; indentation alone announces nothing.",
     "An error summary Alert above the form after a failed submit, listing each invalid field as a link to it.",
-    "The actions in a ButtonGroup at the end: cancel first, the submit Button last — the primary last, as every action row in the system has it, so it is reached after the options it is chosen over and sits at the end of the row. `stack` on a form a phone will fill."
+    "The actions in a ButtonGroup at the end: cancel first, the submit Button last — the primary last, as every action row in the system has it, so it is reached after the options it is chosen over and sits at the end of the row. `stack` on a form a phone will fill.",
+    "One value on a page that is read far more often than changed — a record's name or description — is an InlineEdit where it stands, not a form of one field: Edit, then Save or Cancel, with `validate` for its rule. Several values that belong together are still a form with one submit."
   ],
   "states": {
     "loading": {
@@ -52,6 +54,7 @@
     }
   },
   "propsUsed": {
+    "InlineEdit": ["label", "editLabel", "value", "onSave", "validate"],
     "NumberInput": [
       "label",
       "minValue",
@@ -156,6 +159,11 @@
       "dont": "a CheckboxGroup whose boxes are indented with margins to show which folder each file is in",
       "do": "<TreeView aria-label=\"…\" selectionMode=\"multiple\" items={…} />",
       "why": "the indentation is visual only: a screen reader hears one flat list, and there is no way to close a branch that is not wanted"
+    },
+    {
+      "dont": "a record's name as a button that turns into a field and saves on blur",
+      "do": "<InlineEdit label=\"Name\" value={name} onSave={save} />",
+      "why": "the value is announced as a button, and tabbing away to check something commits a half-typed value"
     }
   ]
 }

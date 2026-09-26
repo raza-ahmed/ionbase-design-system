@@ -888,6 +888,22 @@
         }
       }
     },
+    "Inline Edit": {
+      "code": "InlineEdit",
+      "note": "The value, and the Value text layer here, is `value` (or `defaultValue`); edit it directly. The label is not drawn — `label` names the field and the Edit button in code — and neither is the status that announces a save. In code the value inherits the text around it — a page description, a table cell — so the type drawn here is a sample; Size is the field's.",
+      "props": {
+        "Size": {
+          "prop": "size",
+          "values": {
+            "Small": "sm",
+            "Medium": "md"
+          }
+        },
+        "State": {
+          "ignore": "Runtime, not props. View is the value with its Edit button; Empty is no value, showing `placeholder`; Editing is after Edit is pressed — the field focused with its text selected, Save and Cancel below; Invalid is `validate` returning a message, or `onSave` rejecting, shown as the field's error with what was typed kept. Enter saves and Escape cancels."
+        }
+      }
+    },
     "Input": {
       "code": "Input",
       "props": {

@@ -1145,6 +1145,23 @@
         }
       }
     },
+    "Inline Edit": {
+      "page": "Inline Edit",
+      "id": "1623:368",
+      "kind": "SET",
+      "props": {
+        "Size": {
+          "type": "VARIANT",
+          "options": ["Small", "Medium"],
+          "default": "Small"
+        },
+        "State": {
+          "type": "VARIANT",
+          "options": ["View", "Empty", "Editing", "Invalid"],
+          "default": "View"
+        }
+      }
+    },
     "Input": {
       "page": "Input",
       "id": "80:275",

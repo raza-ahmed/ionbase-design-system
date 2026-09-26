@@ -72,6 +72,7 @@ const REQUIRED = [
   'Banner',
   'InlineLoading',
   'NotificationsPanel',
+  'InlineEdit',
   'MenuItem',
   'MenuSection',
   'MenuTrigger',
