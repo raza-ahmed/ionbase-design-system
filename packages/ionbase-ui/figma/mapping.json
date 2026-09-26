@@ -1655,6 +1655,31 @@
         }
       }
     },
+    "Status Indicator": {
+      "code": "StatusIndicator",
+      "note": "The word is the component's children — the status in words, required — and the Label text layer here, edited directly.",
+      "props": {
+        "Intent": {
+          "prop": "intent",
+          "values": {
+            "Neutral": "neutral",
+            "Success": "success",
+            "Warning": "warning",
+            "Error": "error",
+            "Information": "information",
+            "Progress": "progress"
+          },
+          "note": "Each intent is its own shape, so the status is not carried by colour alone. Progress spins in code, and stands still under reduced motion."
+        },
+        "Size": {
+          "prop": "size",
+          "values": {
+            "Small": "sm",
+            "Medium": "md"
+          }
+        }
+      }
+    },
     "Stepper": {
       "code": "Stepper",
       "props": {

@@ -1,10 +1,10 @@
 import {
   Avatar,
-  Badge,
   Button,
   ContextMenu,
   Icon,
   Link,
+  StatusIndicator,
   Menu,
   MenuItem,
   MenuSection,
@@ -185,9 +185,9 @@ export function AgentsTable({
                   </span>
                 </TableCell>
                 <TableCell>
-                  <Badge size="sm" intent={STATUS_INTENT[a.status]} dot>
+                  <StatusIndicator intent={STATUS_INTENT[a.status]}>
                     {STATUS_LABEL[a.status]}
-                  </Badge>
+                  </StatusIndicator>
                 </TableCell>
                 <TableCell>{teamLabel(a.team)}</TableCell>
                 <TableCell>

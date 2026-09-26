@@ -2129,6 +2129,30 @@
         }
       }
     },
+    "Status Indicator": {
+      "page": "Status Indicator",
+      "id": "1593:290",
+      "kind": "SET",
+      "props": {
+        "Intent": {
+          "type": "VARIANT",
+          "options": [
+            "Neutral",
+            "Success",
+            "Warning",
+            "Error",
+            "Information",
+            "Progress"
+          ],
+          "default": "Neutral"
+        },
+        "Size": {
+          "type": "VARIANT",
+          "options": ["Small", "Medium"],
+          "default": "Small"
+        }
+      }
+    },
     "Stepper": {
       "page": "Stepper",
       "id": "1391:431",

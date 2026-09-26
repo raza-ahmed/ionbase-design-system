@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import {
   Alert,
-  Badge,
   Button,
   Card,
   DateRangePicker,
@@ -13,6 +12,7 @@ import {
   Skeleton,
   StatGroup,
   StatTile,
+  StatusIndicator,
   TabItem,
   Table,
   TableBody,
@@ -279,9 +279,9 @@ function OverviewReady({
                 </TableCell>
                 <TableCell>{r.agent}</TableCell>
                 <TableCell>
-                  <Badge size="sm" dot intent={OUTCOME[r.outcome].intent}>
+                  <StatusIndicator intent={OUTCOME[r.outcome].intent}>
                     {OUTCOME[r.outcome].text}
-                  </Badge>
+                  </StatusIndicator>
                 </TableCell>
                 <TableCell align="trailing">
                   {ago(r.startedMinutesAgo)}

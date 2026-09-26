@@ -107,7 +107,7 @@ IonBase column names the component that covers it.
 | Card / tile                      |   ●    |  ●  |  ●   | `Card`, `FullCard`                                                        |
 | Badge                            |   ●    |  ●  |  ●   | `Badge`                                                                   |
 | Tag                              |   ●    |  ●  |  ●   | `Tag`                                                                     |
-| Status indicator (shape + label) |   ●    |     |      | —                                                                         |
+| Status indicator (shape + label) |   ●    |     |      | `StatusIndicator`                                                         |
 | Avatar / avatar group            |   ●    |     |  ●   | `Avatar`, `AvatarGroup`                                                   |
 | Big number / stat                |   ●    |     |      | `StatTile`, `StatGroup`                                                   |
 | Code snippet                     |   ●    |     |      | `CodeSnippet`                                                             |

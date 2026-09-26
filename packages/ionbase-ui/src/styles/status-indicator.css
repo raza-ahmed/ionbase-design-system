@@ -1,0 +1,83 @@
+/*
+ * StatusIndicator
+ *
+ *   sm   16px icon, body-sm text, 4 apart — table cells and dense lists,
+ *        at the size of the text in the cells around it
+ *   md   20px icon, body-md text, 6 apart — beside body text
+ *
+ * Only the icon is coloured, with the intent's icon token; the word keeps the
+ * text colour, so a column of them reads as text with markers. The icon's
+ * colour is the second signal: its shape is the first.
+ */
+.ion-status {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-4);
+  color: var(--text-default);
+  font-family: var(--font-family-sans);
+  font-size: var(--type-body-sm);
+  line-height: var(--type-body-sm-line-height);
+  white-space: nowrap;
+}
+
+.ion-status--md {
+  gap: var(--spacing-6);
+  font-size: var(--type-body-md);
+  line-height: var(--type-body-md-line-height);
+}
+
+.ion-status__icon {
+  display: inline-flex;
+  flex: none;
+}
+
+.ion-status__icon svg {
+  width: var(--icon-size-sm);
+  height: var(--icon-size-sm);
+}
+
+.ion-status--md .ion-status__icon svg {
+  width: var(--icon-size-md);
+  height: var(--icon-size-md);
+}
+
+.ion-status--neutral .ion-status__icon {
+  color: var(--icon-secondary);
+}
+
+.ion-status--success .ion-status__icon {
+  color: var(--icon-success);
+}
+
+.ion-status--warning .ion-status__icon {
+  color: var(--icon-warning);
+}
+
+.ion-status--error .ion-status__icon {
+  color: var(--icon-error);
+}
+
+.ion-status--information .ion-status__icon {
+  color: var(--icon-information);
+}
+
+.ion-status--progress .ion-status__icon {
+  color: var(--icon-primary);
+}
+
+.ion-status--progress .ion-status__icon svg {
+  animation: ion-status-spin 1.2s linear infinite;
+}
+
+@keyframes ion-status-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Still, not gone: the arc's shape is what says "in progress". */
+@media (prefers-reduced-motion: reduce) {
+  .ion-status--progress .ion-status__icon svg {
+    animation: none;
+  }
+}

@@ -19,7 +19,7 @@
   ],
   "file": "gaLbGd0QNb1fUl6BjSpfBA",
   "appliedOn": "2026-09-26",
-  "verifiedInFigma": 93,
+  "verifiedInFigma": 94,
   "applied": {
     "1360:267": {
       "figmaComponent": "Accordion",
@@ -325,6 +325,11 @@
       "figmaComponent": "Stat Tile",
       "component": "StatTile",
       "hash": "6d9d0a3d5c48ab2b"
+    },
+    "1593:290": {
+      "figmaComponent": "Status Indicator",
+      "component": "StatusIndicator",
+      "hash": "af062f096d0d80e6"
     },
     "1391:431": {
       "figmaComponent": "Stepper",

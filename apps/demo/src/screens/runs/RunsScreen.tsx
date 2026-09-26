@@ -18,6 +18,7 @@ import {
   SidePanelLayout,
   Skeleton,
   Slider,
+  StatusIndicator,
   Table,
   TableBody,
   TableCell,
@@ -255,9 +256,9 @@ function History({ runs: all }: { runs: RunSummary[] }) {
                     </span>
                   </TableCell>
                   <TableCell>
-                    <Badge size="sm" dot intent={OUTCOME[r.outcome].intent}>
+                    <StatusIndicator intent={OUTCOME[r.outcome].intent}>
                       {OUTCOME[r.outcome].text}
-                    </Badge>
+                    </StatusIndicator>
                   </TableCell>
                   <TableCell>{ago(r.startedMinutesAgo)}</TableCell>
                   <TableCell align="trailing">

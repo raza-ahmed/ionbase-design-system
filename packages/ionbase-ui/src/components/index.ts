@@ -141,6 +141,12 @@ export { CodeSnippet } from './CodeSnippet.js';
 export type { CodeSnippetProps, CodeSnippetType } from './CodeSnippet.js';
 export { PasswordInput } from './PasswordInput.js';
 export type { PasswordInputProps, PasswordInputSize } from './PasswordInput.js';
+export { StatusIndicator } from './StatusIndicator.js';
+export type {
+  StatusIndicatorProps,
+  StatusIndicatorIntent,
+  StatusIndicatorSize,
+} from './StatusIndicator.js';
 export type {
   ButtonGroupProps,
   ButtonGroupAlign,
