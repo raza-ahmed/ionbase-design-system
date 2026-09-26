@@ -164,6 +164,11 @@ export { InlineEdit } from './InlineEdit.js';
 export type { InlineEditProps, InlineEditSize } from './InlineEdit.js';
 export { SelectableTile } from './SelectableTile.js';
 export type { SelectableTileProps } from './SelectableTile.js';
+export { TruncatedText } from './TruncatedText.js';
+export type {
+  TruncatedTextProps,
+  TruncatedTextOverflow,
+} from './TruncatedText.js';
 export type {
   ButtonGroupProps,
   ButtonGroupAlign,

@@ -1,0 +1,74 @@
+{
+  "status": "stable",
+  "summary": "Long text cut to its space — a line in a table cell, a paragraph under a heading — with the whole of it still reachable: a cut line is a tab stop with a tooltip on hover and focus, a cut paragraph has a Show more button. While the text fits it is plain text. The whole text is always in the DOM, so a screen reader reads all of it.",
+  "useWhen": [
+    "text of any length lands in a space of fixed size — a description in a table row, a name in a card, a summary in a list",
+    "the text is written by users or agents, so no one can promise it is short"
+  ],
+  "useInstead": [
+    {
+      "when": "the text is short by construction — a status, a label you wrote",
+      "use": "plain text",
+      "why": "a label that is cut was written for a space it does not fit; shorten it instead"
+    },
+    {
+      "when": "an ID or key the user needs whole",
+      "use": "CopyButton",
+      "why": "an ID is copied, not read; cutting it hides the part that tells two apart"
+    },
+    {
+      "when": "a long block of code or output",
+      "use": "CodeSnippet",
+      "why": "it cuts by lines with Show more too, and keeps the code's spacing and a copy button"
+    }
+  ],
+  "composition": {
+    "order": ["TruncatedText"],
+    "note": "`children` is the text, as a string. It takes the font of whatever it is in — put a caption class on it or on its parent. It never widens what it sits in: in a table cell, a grid or a flex row it shrinks to the space it is given and is cut there. `lines` above 1 clamps by line count; `overflow=\"expand\"` swaps the tooltip for Show more, which a paragraph needs.",
+    "example": "<TableCell><TruncatedText className=\"ion-text-caption\">{agent.purpose}</TruncatedText></TableCell>"
+  },
+  "variants": {
+    "overflow": {
+      "tooltip": {
+        "use": "the default — a short line in a narrow place: the cut line is a tab stop, and the tooltip shows the whole text on hover and focus"
+      },
+      "expand": {
+        "use": "a paragraph, with `lines` above 1 — Show more opens it in place, since a tooltip is too small to hold it"
+      }
+    }
+  },
+  "a11y": {
+    "requires": [
+      "plain text as `children` — nothing interactive inside a line that may be cut"
+    ],
+    "guarantees": [
+      "the whole text is in the DOM, cut by CSS: a screen reader reads all of it, find-in-page finds it, a copy copies it",
+      "a cut line is a tab stop, and focus opens the same tooltip as hover; Escape closes it",
+      "the tooltip is not the text's description — it repeats what is already read, so a screen reader does not hear it twice",
+      "Show more is a real button, with aria-expanded and aria-controls pointing at the text",
+      "text that fits is plain text: no tab stop, no tooltip, no button; it measures again when its size changes"
+    ],
+    "notes": [
+      "a `title` attribute is hover-only and never reaches a keyboard — this replaces it",
+      "the focus ring is drawn inside the text's box, so a table's scroll container cannot clip it",
+      "it never widens its container: a table column, a grid track or a flex item shrinks to its share and cuts it"
+    ]
+  },
+  "antiPatterns": [
+    {
+      "dont": "<span title={purpose} className=\"truncate\">{purpose}</span>",
+      "do": "<TruncatedText>{purpose}</TruncatedText>",
+      "why": "a title appears on hover only, after a delay; a keyboard or touch user never gets the rest of the text"
+    },
+    {
+      "dont": "{purpose.slice(0, 40) + '…'}",
+      "do": "<TruncatedText>{purpose}</TruncatedText>",
+      "why": "the rest is gone from the page: a screen reader, find-in-page and a copy all get the stub"
+    },
+    {
+      "dont": "<TruncatedText overflow=\"tooltip\" lines={4}>{longDescription}</TruncatedText>",
+      "do": "<TruncatedText overflow=\"expand\" lines={4}>{longDescription}</TruncatedText>",
+      "why": "a tooltip holds a sentence; a paragraph in one is unreadable and closes when the pointer leaves"
+    }
+  ]
+}

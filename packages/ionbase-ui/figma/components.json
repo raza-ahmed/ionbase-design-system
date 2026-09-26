@@ -10,7 +10,7 @@
     "Do not hand-edit. Re-export when the Figma components change."
   ],
   "file": "gaLbGd0QNb1fUl6BjSpfBA",
-  "exported": "2026-09-26",
+  "exported": "2026-09-27",
   "components": {
     ".Notification": {
       "page": "Notifications Panel",
@@ -2746,6 +2746,23 @@
           "type": "VARIANT",
           "options": ["Default", "Hover", "Selected", "Focus", "Disabled"],
           "default": "Default"
+        }
+      }
+    },
+    "Truncated Text": {
+      "page": "Truncated Text",
+      "id": "1637:287",
+      "kind": "SET",
+      "props": {
+        "Overflow": {
+          "type": "VARIANT",
+          "options": ["Tooltip", "Expand"],
+          "default": "Tooltip"
+        },
+        "State": {
+          "type": "VARIANT",
+          "options": ["Collapsed", "Expanded"],
+          "default": "Collapsed"
         }
       }
     }

@@ -2163,6 +2163,22 @@
         }
       }
     },
+    "Truncated Text": {
+      "code": "TruncatedText",
+      "note": "Text is `children`, the whole text as a string; the layer is edited directly. Figma cuts it with the text layer's own truncation and max lines — `lines` in code. The tooltip is Tooltip's own component and is not drawn here: in code it appears only when the text is cut, on hover and on focus. The text takes the font of what it sits in.",
+      "props": {
+        "Overflow": {
+          "prop": "overflow",
+          "values": {
+            "Tooltip": "tooltip",
+            "Expand": "expand"
+          }
+        },
+        "State": {
+          "ignore": "Not a prop: Expanded is what Show more does, and Show less undoes. Collapsed is the text cut to `lines`."
+        }
+      }
+    },
     "Chart Tooltip": {
       "code": "ChartTooltip",
       "props": {

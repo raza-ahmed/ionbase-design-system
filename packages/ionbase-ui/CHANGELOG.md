@@ -1,5 +1,49 @@
 # Changelog
 
+## 0.108.0 — 2026-09-27
+
+### Added — `TruncatedText`
+
+Long text cut to its space, with the whole of it still reachable. It is the
+thirteenth P1 item on the enterprise checklist.
+
+- **Not hover only.** A cut line is a tab stop, and focus opens the same
+  tooltip as hover; Escape closes it. A `title` attribute, which it replaces,
+  never reaches a keyboard.
+- **Only when it is cut.** It measures itself, and again whenever its size
+  changes. Text that fits is plain text: no tab stop, no tooltip, no button.
+- **The whole text is always there.** It is cut by CSS, so a screen reader
+  reads all of it, and find-in-page and a copy get all of it too. The
+  tooltip repeats text already read, so it is kept out of the description.
+- **Paragraphs:** `lines` clamps by line count, and `overflow="expand"`
+  swaps the tooltip for a Show more button with `aria-expanded`.
+- **It inherits the font** of whatever it sits in, and never widens it: in
+  a table cell, a grid or a flex row it shrinks to its share and is cut
+  there.
+- **Figma:** a new Truncated Text page. The set has Overflow (Tooltip,
+  Expand) and State (Collapsed, Expanded) axes, cut with the text layer's own
+  truncation and max lines. Overflow is `overflow`; State is internal.
+  98 blocks verified.
+- **Demo:** an agent's purpose in the Agents table is one line, and one
+  purpose is now long enough to be cut. The smoke check, at desktop and
+  phone widths, covers:
+  - the whole text in the DOM, cut to one line;
+  - Tab from the name to the purpose;
+  - the tooltip on focus, aria-hidden, and closed by Escape;
+  - no tab stop on a purpose that fits;
+  - axe.
+
+  Each of six mutations fails it.
+
+- **Pattern:** DataTable uses it for text of any length in a cell.
+
+### Added — `Tooltip`'s `describesTrigger`
+
+- **`describesTrigger={false}`** keeps a tooltip out of its trigger's
+  `aria-describedby` and out of the reading order. It is for a label that
+  repeats the trigger's own text, as TruncatedText's does. The default is
+  unchanged.
+
 ## 0.107.0 — 2026-09-27
 
 ### Added — `SelectableTile`

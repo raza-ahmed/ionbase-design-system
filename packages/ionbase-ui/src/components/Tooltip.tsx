@@ -39,6 +39,13 @@ export interface TooltipProps extends Omit<
   delay?: number;
   /** Disable the tooltip without unmounting the trigger. */
   isDisabled?: boolean;
+  /**
+   * Whether the tooltip is the trigger's accessible description. Default
+   * true. Set false only when the label repeats text the trigger already
+   * contains — the full text of a truncated line — so a screen reader, which
+   * reads the whole text anyway, does not hear it twice.
+   */
+  describesTrigger?: boolean;
   /** The element the tooltip describes. Must accept a ref and DOM props. */
   children: React.ReactElement;
   className?: string;
@@ -72,6 +79,7 @@ export function Tooltip({
   placement = 'top',
   delay = 400,
   isDisabled,
+  describesTrigger = true,
   children,
   className,
   ref: outerRef,
@@ -87,6 +95,10 @@ export function Tooltip({
     triggerRef,
   );
   const { tooltipProps: ariaTooltipProps } = useTooltip(tooltipProps, state);
+  // The trigger props without the description, for `describesTrigger={false}`.
+  const silentTriggerProps = Object.fromEntries(
+    Object.entries(triggerProps).filter(([key]) => key !== 'aria-describedby'),
+  );
 
   /*
    * `offset` is the gap between trigger and bubble, and it has to clear the
@@ -114,7 +126,7 @@ export function Tooltip({
       {cloneElement(
         children,
         mergeProps(children.props as Record<string, unknown>, outer, {
-          ...triggerProps,
+          ...(describesTrigger ? triggerProps : silentTriggerProps),
           // mergeProps merges this with the child's own ref.
           ref: mergeRefs(triggerRef, outerRef),
         }),
@@ -124,6 +136,9 @@ export function Tooltip({
           <div
             {...mergeProps(ariaTooltipProps, overlayProps)}
             ref={overlayRef}
+            // A copy of text already on the page is kept out of the reading
+            // order as well as the description.
+            aria-hidden={describesTrigger ? undefined : true}
             className={['ion-tooltip', `ion-tooltip--${side}`, className || '']
               .filter(Boolean)
               .join(' ')}
