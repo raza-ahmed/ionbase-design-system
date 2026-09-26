@@ -112,7 +112,7 @@ IonBase column names the component that covers it.
 | Big number / stat                |   ●    |     |      | `StatTile`, `StatGroup`                                                   |
 | Code snippet                     |   ●    |     |      | `CodeSnippet`                                                             |
 | Activity timeline / feed         |        |     |  ●   | ◐ `AgentActivity`, agent-only                                             |
-| Truncated text                   |   ●    |     |      | —                                                                         |
+| Truncated text                   |   ●    |     |      | `TruncatedText`                                                           |
 | Keyboard key                     |        |     |      | `Kbd`                                                                     |
 | Divider                          |        |  ●  |      | `Divider`                                                                 |
 | Charts                           |   ●    |     |      | ◐ helpers for visx — _by design_                                          |

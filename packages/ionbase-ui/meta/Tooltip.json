@@ -20,6 +20,11 @@
       "when": "the information is required to complete the field",
       "use": "Input",
       "why": "Input's helper text is always visible; a tooltip is not discoverable on touch"
+    },
+    {
+      "when": "the hint is the rest of a cut line of text",
+      "use": "TruncatedText",
+      "why": "it shows the tooltip only when the text is cut, makes the line a tab stop, and keeps the tooltip from being read twice"
     }
   ],
   "variants": {
@@ -58,7 +63,8 @@
       "focus opens it, not only hover — a hover-only tooltip is invisible to keyboard and switch users",
       "Escape dismisses it",
       "one tooltip open at a time with a shared warmup, so moving along a row of icon buttons does not flash one per button",
-      "`placement` flips to the opposite side when there is no room"
+      "`placement` flips to the opposite side when there is no room",
+      "it is the trigger's accessible description, unless `describesTrigger={false}` — for a label that repeats the trigger's own text, as TruncatedText's does"
     ],
     "requires": [
       "a trigger that is already labelled for icon-only controls — Tooltip supplies the hint, not the trigger's name"
