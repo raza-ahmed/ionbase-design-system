@@ -845,8 +845,16 @@ try {
         await dialog.waitFor({ timeout: 5_000 });
         await page.keyboard.press('Escape');
         await dialog.waitFor({ state: 'detached', timeout: 5_000 });
-        if (!(await first.evaluate((el) => el === document.activeElement)))
-          fail(where, 'closing the drawer did not return focus to the row');
+        // Restored just after the drawer unmounts; poll, don't sample.
+        await page
+          .waitForFunction(
+            (el) => el === document.activeElement,
+            await first.elementHandle(),
+            { timeout: 2_000 },
+          )
+          .catch(() =>
+            fail(where, 'closing the drawer did not return focus to the row'),
+          );
       } else {
         const region = page.getByRole('region', { name: firstTask });
         await region.waitFor({ timeout: 5_000 });
@@ -2165,14 +2173,17 @@ try {
 
       await page.keyboard.press('Escape');
       await panel.waitFor({ state: 'detached', timeout: 5_000 });
-      if (
-        !(await page.evaluate(() =>
-          document.activeElement
-            ?.getAttribute('aria-label')
-            ?.startsWith('Notifications'),
-        ))
-      )
-        fail(where, 'Escape did not return focus to the bell');
+      // Focus is restored just after the panel unmounts; poll, don't sample.
+      await page
+        .waitForFunction(
+          () =>
+            document.activeElement
+              ?.getAttribute('aria-label')
+              ?.startsWith('Notifications'),
+          null,
+          { timeout: 2_000 },
+        )
+        .catch(() => fail(where, 'Escape did not return focus to the bell'));
 
       await bell.click();
       await panel
