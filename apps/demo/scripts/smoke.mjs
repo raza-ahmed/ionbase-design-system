@@ -1461,6 +1461,121 @@ try {
   }
 
   /*
+   * CodeSnippet, in Settings' API access, at phone width — where the start
+   * command is longer than the screen. The command stays one line and
+   * scrolls inside its region, not the page; the arrow keys scroll it once
+   * it has focus. Each copy button copies its snippet exactly, the request's
+   * newlines included. The inline command sits in the key's description.
+   */
+  {
+    const where = 'code snippet (light, mobile)';
+    const context = await browser.newContext({
+      viewport: { width: 390, height: 844 },
+      permissions: ['clipboard-read', 'clipboard-write'],
+    });
+    await context.addInitScript(() =>
+      localStorage.setItem(
+        'ionbase-ops:demo-settings',
+        JSON.stringify({ theme: 'light', latency: 0 }),
+      ),
+    );
+    const page = await context.newPage();
+    page.on('pageerror', (e) => fail(where, `exception: ${e.message}`));
+    await page.goto(`${BASE}/#/settings`);
+    try {
+      const api = page.getByRole('button', { name: 'API access' });
+      await api.waitFor({ timeout: 10_000 });
+      await api.click();
+      const command = page.getByRole('region', { name: 'Start run command' });
+      await command.waitFor({ timeout: 5_000 });
+
+      const described = await page
+        .getByLabel('Workspace API key')
+        .evaluate((el) =>
+          (el.getAttribute('aria-describedby') ?? '')
+            .split(' ')
+            .map((id) => document.getElementById(id)?.innerHTML ?? '')
+            .join(' '),
+        );
+      if (
+        !/<code[^>]*ion-code-snippet--inline[^>]*>iops keys rotate</.test(
+          described,
+        )
+      )
+        fail(where, "the key's description has no inline iops keys rotate");
+
+      const box = await command.evaluate((el) => ({
+        wraps: el.getBoundingClientRect().height > 33,
+        scrolls: el.scrollWidth > el.clientWidth,
+      }));
+      if (box.wraps) fail(where, 'the start command wraps');
+      if (!box.scrolls)
+        fail(
+          where,
+          'the start command fits at 390px; the check proves nothing',
+        );
+      const overflow = await page.evaluate(
+        () => document.documentElement.scrollWidth > window.innerWidth,
+      );
+      if (overflow) fail(where, 'the page scrolls sideways');
+
+      await command.focus();
+      await page.keyboard.press('ArrowRight');
+      await page.keyboard.press('ArrowRight');
+      await page
+        .waitForFunction(
+          () =>
+            document.activeElement?.getAttribute('aria-label') ===
+              'Start run command' && document.activeElement.scrollLeft > 0,
+          null,
+          { timeout: 3_000 },
+        )
+        .catch(() => fail(where, 'the arrow keys do not scroll the command'));
+
+      for (const [name, region] of [
+        ['Copy start run command', 'Start run command'],
+        ['Copy API request', 'API request'],
+      ]) {
+        const shown = await page
+          .getByRole('region', { name: region })
+          .evaluate((el) => el.textContent);
+        await page.getByRole('button', { name }).click();
+        await page
+          .getByRole('button', { name: 'Copied' })
+          .first()
+          .waitFor({ timeout: 5_000 })
+          .catch(() => fail(where, `${name} did not confirm`));
+        const text = await page.evaluate(() =>
+          window.navigator.clipboard.readText(),
+        );
+        if (text !== shown)
+          fail(
+            where,
+            `${name} copied "${text.slice(0, 40)}…", not what it shows`,
+          );
+      }
+      const request = await page.evaluate(() =>
+        window.navigator.clipboard.readText(),
+      );
+      if (request.split('\n').length < 5)
+        fail(where, 'the API request lost its newlines');
+
+      await page.addScriptTag({ content: axeSource });
+      const violations = await page.evaluate(async () => {
+        const result = await window.axe.run(document, {
+          resultTypes: ['violations'],
+        });
+        return result.violations.map((v) => `${v.impact} ${v.id}`);
+      });
+      for (const v of violations) fail(where, `axe ${v}`);
+    } catch (e) {
+      fail(where, `did not run: ${e.message.split('\n')[0]}`);
+    }
+    groupsChecked++;
+    await context.close();
+  }
+
+  /*
    * The wizard's CheckboxGroup, which no page load above reaches: it is on
    * Guardrails, the third step. A saved draft with the first two steps done
    * opens there. "At least one" has to hold three ways — natively (every box

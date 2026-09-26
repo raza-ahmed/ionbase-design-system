@@ -1,5 +1,49 @@
 # Changelog
 
+## 0.100.0 — 2026-09-26
+
+### Added — `CodeSnippet`
+
+Code shown as code: a command to run, a request to paste, a name in a
+sentence. It is the fifth P1 item on the enterprise checklist, built on
+CopyButton.
+
+- **`type="single"`** (default): one line with a copy button at its end. A
+  long command scrolls sideways rather than wrapping, since a wrapped command
+  reads as two.
+- **`type="multi"`**: a block. Past `maxLines` (12) it is cut by height, not
+  by dropping lines, so find-in-page still finds every line. Show more, a
+  Button with `aria-expanded` and `aria-controls`, becomes Show less. A
+  trailing newline is not counted as a line.
+- **`type="inline"`**: a `<code>` inside a sentence, with no copy button.
+- **Keyboard scrolling:** single and multi are focusable regions named by
+  `label` (default "Code"), so the arrow keys scroll what is off screen.
+- **Copying:** the copy button is a CopyButton named `copyLabel` (default
+  "Copy code"). It copies the whole text, cut or not.
+- **`language`** sets `language-<name>` on the `<code>` for a highlighter to
+  pick up. IonBase itself does not highlight.
+- **Figma:** a Code Snippet page with Single, Multi and Inline, bound to the
+  code's variables, with the Copy Button nested. Show More is marked as not a
+  prop, and the code is the text layer. Mapped; 92 blocks verified.
+- **Demo:** Settings → Advanced → API access has a CLI command, a curl
+  request, and `iops keys rotate` inside the key's description. The smoke
+  check runs at 390px. The command stays on one line, scrolls inside its box
+  and not the page, and the arrow keys scroll it. Both copy buttons copy
+  exactly what they show, newlines included. axe finds nothing. Each of three
+  mutations fails the check.
+- **Pattern:** SettingsPanel says a setting used from outside the app shows
+  how to use it with CodeSnippets.
+
+### Found along the way
+
+- **Chromium makes a scroll area focusable by itself** (since Chromium 130).
+  With `tabIndex` removed, the arrow keys still scrolled the command there.
+  Only axe's `scrollable-region-focusable` failed. Safari needs the
+  `tabIndex`, so it stays.
+- **A Figma text property is shared by every variant.** Binding one "Code"
+  property gave Single, Multi and Inline the same sample text. The code is
+  therefore the text layer, edited directly, and the mapping says so.
+
 ## 0.99.0 — 2026-09-26
 
 ### Added — `CopyButton`

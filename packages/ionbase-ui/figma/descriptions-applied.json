@@ -19,7 +19,7 @@
   ],
   "file": "gaLbGd0QNb1fUl6BjSpfBA",
   "appliedOn": "2026-09-26",
-  "verifiedInFigma": 91,
+  "verifiedInFigma": 92,
   "applied": {
     "1360:267": {
       "figmaComponent": "Accordion",
@@ -475,6 +475,11 @@
       "figmaComponent": "Copy Button",
       "component": "CopyButton",
       "hash": "459394cdef0dbbb0"
+    },
+    "1585:273": {
+      "figmaComponent": "Code Snippet",
+      "component": "CodeSnippet",
+      "hash": "06bf9dd909d416fd"
     }
   }
 }

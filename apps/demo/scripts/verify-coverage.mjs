@@ -66,6 +66,7 @@ const REQUIRED = [
   'SplitButton',
   'ContextMenu',
   'CopyButton',
+  'CodeSnippet',
   'MenuItem',
   'MenuSection',
   'MenuTrigger',
