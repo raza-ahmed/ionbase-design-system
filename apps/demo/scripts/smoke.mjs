@@ -1973,9 +1973,7 @@ try {
       });
       const x = () =>
         alerts.evaluate((el) =>
-          Math.round(
-            el.closest('.ion-toggle').getBoundingClientRect().left,
-          ),
+          Math.round(el.closest('.ion-toggle').getBoundingClientRect().left),
         );
       const before = await x();
       const was = await alerts.isChecked();
