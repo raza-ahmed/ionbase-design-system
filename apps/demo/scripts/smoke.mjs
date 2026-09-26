@@ -2260,6 +2260,11 @@ try {
               document.activeElement.value.length,
         }));
       const field = page.getByRole('textbox', { name: 'Purpose' });
+      // Each return to view mode names itself, so a timeout says which.
+      const backToView = (when) =>
+        edit.waitFor({ timeout: 5_000 }).catch(() => {
+          throw new Error(`Edit purpose did not come back ${when}`);
+        });
 
       await edit.focus();
       await page.keyboard.press('Enter');
@@ -2317,7 +2322,7 @@ try {
       const tabs = page.getByRole('navigation', { name: /sections$/ });
       await tabs.getByRole('link', { name: 'Runs', exact: true }).click();
       await tabs.getByRole('link', { name: 'Overview', exact: true }).click();
-      await edit.waitFor({ timeout: 5_000 });
+      await backToView('after coming back to Overview');
       if (
         (await page.locator('.ion-inline-edit__value').textContent()) !== next
       )
@@ -2326,9 +2331,16 @@ try {
       await edit.focus();
       await page.keyboard.press('Enter');
       await field.waitFor({ timeout: 5_000 });
+      // Focus moves in a frame after the field appears; typing before it
+      // lands sends the Escape below to nothing, and the edit stays open.
+      await page.waitForFunction(
+        () => document.activeElement?.getAttribute('aria-label') === 'Purpose',
+        null,
+        { timeout: 5_000 },
+      );
       await page.keyboard.type('Something else');
       await page.keyboard.press('Escape');
-      await edit.waitFor({ timeout: 5_000 });
+      await backToView('after Escape threw the edit away');
       if (
         (await page.locator('.ion-inline-edit__value').textContent()) !== next
       )
@@ -2360,7 +2372,7 @@ try {
         fail(where, `an empty purpose was not refused (${refused.why})`);
       if (!refused.focused) fail(where, 'focus left the refused field');
       await page.keyboard.press('Escape');
-      await edit.waitFor({ timeout: 5_000 });
+      await backToView('after Escape left the refused field');
 
       await page.getByRole('button', { name: /^Demo/ }).click();
       await page.getByLabel('Screen state').selectOption('partial');
