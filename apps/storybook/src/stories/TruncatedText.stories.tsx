@@ -124,17 +124,20 @@ export const TextThatFitsIsPlain: Story = {
   },
 };
 
+// Wide enough for the purpose in any font: CI's fallback is wider than ours.
+const WIDE = 2000;
+
 /** It measures again when its box changes: narrowed, it becomes a tab stop; widened, plain again. */
 export const ItRemeasuresOnResize: Story = {
   render: (args) => {
     function Resizable() {
-      const [width, setWidth] = useState(900);
+      const [width, setWidth] = useState(WIDE);
       return (
         <>
           <button type="button" onClick={() => setWidth(160)}>
             Narrow
           </button>
-          <button type="button" onClick={() => setWidth(900)}>
+          <button type="button" onClick={() => setWidth(WIDE)}>
             Widen
           </button>
           <div style={{ width }}>
