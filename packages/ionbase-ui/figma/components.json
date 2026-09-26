@@ -10,7 +10,7 @@
     "Do not hand-edit. Re-export when the Figma components change."
   ],
   "file": "gaLbGd0QNb1fUl6BjSpfBA",
-  "exported": "2026-09-25",
+  "exported": "2026-09-26",
   "components": {
     ".Status Indicator": {
       "page": "Avatar",
@@ -805,6 +805,33 @@
           "type": "VARIANT",
           "options": ["Low", "Medium", "High"],
           "default": "Low"
+        }
+      }
+    },
+    "Copy Button": {
+      "page": "Copy Button",
+      "id": "1578:563",
+      "kind": "SET",
+      "props": {
+        "Icon Only": {
+          "type": "VARIANT",
+          "options": ["False", "True"],
+          "default": "False"
+        },
+        "Size": {
+          "type": "VARIANT",
+          "options": ["Small", "Medium", "Large"],
+          "default": "Small"
+        },
+        "State": {
+          "type": "VARIANT",
+          "options": ["Idle", "Copied", "Failed"],
+          "default": "Idle"
+        },
+        "Type": {
+          "type": "VARIANT",
+          "options": ["Tertiary", "Secondary"],
+          "default": "Tertiary"
         }
       }
     },

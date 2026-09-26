@@ -1,0 +1,29 @@
+/*
+ * CopyButton
+ *
+ * A Button whose label and icon change for two seconds after a copy. The
+ * three labels — Copy, Copied, Couldn't copy — are stacked in one grid cell
+ * and only the current one is visible, so the button is always as wide as the
+ * longest and nothing beside it moves when it confirms. `visibility: hidden`
+ * also takes the others out of the accessible name.
+ *
+ *   icon-only   square: as wide as the button is tall, the icon centred
+ */
+.ion-copy-button__labels {
+  display: inline-grid;
+}
+
+.ion-copy-button__labels > span {
+  grid-area: 1 / 1;
+}
+
+.ion-copy-button__labels > span:not([data-current]) {
+  visibility: hidden;
+}
+
+.ion-copy-button--icon-only {
+  --ion-button-gap: 0;
+
+  width: var(--ion-button-size);
+  padding-inline: 0;
+}

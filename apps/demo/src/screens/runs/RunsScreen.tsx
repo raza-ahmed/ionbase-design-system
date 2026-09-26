@@ -5,6 +5,7 @@ import {
   AvatarGroup,
   Badge,
   Button,
+  CopyButton,
   DescriptionList,
   DescriptionListItem,
   EmptyState,
@@ -22,6 +23,7 @@ import {
   TableCell,
   TableHead,
   TableRow,
+  useToast,
   type ListItem,
 } from 'ionbase-ui';
 
@@ -161,6 +163,7 @@ const DURATION = [0, 360] as const;
 type Range = readonly [number, number];
 
 function History({ runs: all }: { runs: RunSummary[] }) {
+  const toast = useToast();
   const [filter, setFilter] = useState<Filter>('all');
   // The thumbs move on onChange; the table filters on onChangeEnd, once per
   // drag — the DataTable pattern's rule, so a drag is not dozens of refilters.
@@ -310,6 +313,28 @@ function History({ runs: all }: { runs: RunSummary[] }) {
           >
             {open && (
               <DescriptionList layout="stacked">
+                <DescriptionListItem term="Run ID">
+                  {/* Copied into tickets and CLI commands far more often
+                      than read. Confirmed on the button; if the clipboard
+                      refuses, the ID goes into a toast to select by hand. */}
+                  <span className="demo-copy-value">
+                    <code className="ion-text-body-sm">{open.id}</code>
+                    <CopyButton
+                      value={open.id}
+                      isIconOnly
+                      size="sm"
+                      label="Copy run ID"
+                      copiedLabel="Run ID copied"
+                      onCopyError={(_, text) =>
+                        toast.toast({
+                          intent: 'error',
+                          title: "Couldn't copy the run ID",
+                          message: text,
+                        })
+                      }
+                    />
+                  </span>
+                </DescriptionListItem>
                 <DescriptionListItem term="Outcome">
                   <Badge size="sm" dot intent={OUTCOME[open.outcome].intent}>
                     {OUTCOME[open.outcome].text}

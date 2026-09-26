@@ -513,3 +513,10 @@ body {
 .demo-knowledge-tree {
   max-width: 28rem;
 }
+
+/* A value and the CopyButton that copies it, on one line. */
+.demo-copy-value {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-4);
+}
