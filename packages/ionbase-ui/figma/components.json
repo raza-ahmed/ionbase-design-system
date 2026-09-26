@@ -1895,6 +1895,23 @@
         }
       }
     },
+    "Selectable Tile": {
+      "page": "Selectable Tile",
+      "id": "1628:294",
+      "kind": "SET",
+      "props": {
+        "Kind": {
+          "type": "VARIANT",
+          "options": ["Radio", "Checkbox"],
+          "default": "Radio"
+        },
+        "State": {
+          "type": "VARIANT",
+          "options": ["Default", "Selected", "Disabled"],
+          "default": "Default"
+        }
+      }
+    },
     "Setting Row": {
       "page": "Setting Row",
       "id": "1418:260",

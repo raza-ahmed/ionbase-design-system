@@ -75,6 +75,14 @@ function clientApis(source) {
 
       if (CLIENT_PACKAGES.test(pkg)) {
         if (/^use[A-Z]/.test(name)) found.add(`${name} (${pkg})`);
+      } else if (pkg.startsWith('.')) {
+        /*
+         * A hook from one of our own modules. It lives in a client module, so
+         * a Server Component importing it gets a client reference it cannot
+         * call. SelectableTile calling Radio's useIsInRadioGroup was reported
+         * as needing no directive until this branch existed.
+         */
+        if (/^use[A-Z]/.test(name)) found.add(`${name} (${pkg})`);
       } else if (pkg === 'react') {
         if (
           (/^use[A-Z]/.test(name) || name === 'createContext') &&

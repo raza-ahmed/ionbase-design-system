@@ -1508,6 +1508,22 @@
         }
       }
     },
+    "Selectable Tile": {
+      "code": "SelectableTile",
+      "note": "Title is `title` — the Control's Label, the input's name; Description is `description` and Extra is `children`, both read after the name. The text layers are edited directly. The whole tile is the target in code; nothing inside it may be interactive.",
+      "props": {
+        "Kind": {
+          "ignore": "Not a prop: the group decides. Radio is a tile inside a RadioGroup — one choice, arrow keys between them; Checkbox is a tile inside a CheckboxGroup, or alone."
+        },
+        "State": {
+          "prop": "isDisabled",
+          "when": {
+            "Disabled": true
+          },
+          "note": "Selected is the group's value (or `isSelected` alone), not a tile prop; Default is neither. Selected draws the 2px border/primary-strong and the filled indicator."
+        }
+      }
+    },
     "Setting Row": {
       "code": "SettingRow",
       "props": {

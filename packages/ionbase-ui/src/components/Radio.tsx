@@ -38,6 +38,9 @@ interface RadioGroupContextValue {
  */
 const RadioGroupContext = createContext<RadioGroupContextValue | null>(null);
 
+/** Whether this is inside a RadioGroup — for SelectableTile. Not exported from the package. */
+export const useIsInRadioGroup = () => useContext(RadioGroupContext) !== null;
+
 export interface RadioProps extends Omit<
   React.InputHTMLAttributes<HTMLInputElement>,
   'size' | 'type' | 'value'

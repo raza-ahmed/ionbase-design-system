@@ -19,7 +19,7 @@
   ],
   "file": "gaLbGd0QNb1fUl6BjSpfBA",
   "appliedOn": "2026-09-26",
-  "verifiedInFigma": 96,
+  "verifiedInFigma": 97,
   "applied": {
     "1360:267": {
       "figmaComponent": "Accordion",
@@ -295,6 +295,11 @@
       "figmaComponent": "Select",
       "component": "Select",
       "hash": "6f30dd4afd7565f5"
+    },
+    "1628:294": {
+      "figmaComponent": "Selectable Tile",
+      "component": "SelectableTile",
+      "hash": "3b0a100ff8fa5275"
     },
     "1418:260": {
       "figmaComponent": "Setting Row",

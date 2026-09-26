@@ -23,6 +23,11 @@
     {
       "when": "each option takes effect immediately",
       "use": "Toggle"
+    },
+    {
+      "when": "each option needs a sentence to be chosen well, and several can be",
+      "use": "SelectableTile",
+      "why": "the same group with tiles for its options: each a real checkbox the size of a card, its sentence read after its name"
     }
   ],
   "composition": {
