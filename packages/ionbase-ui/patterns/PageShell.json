@@ -18,10 +18,12 @@
     "Divider",
     "ToastProvider",
     "CommandPalette",
-    "Kbd"
+    "Kbd",
+    "Banner"
   ],
   "structure": [
     "Header at the top with the brand in `brand`, primary navigation in `center` and account actions in `end`.",
+    "A Banner, for a notice about the whole product — maintenance, read-only mode, a scheduled deletion — goes above the Header, outside <main>, mounted by the shell so it persists across routes and is announced once. Several stack, the most severe first; one that must stay has no `dismissKey`.",
     "One <main> content region, named by the page's PageHeader: pass PageHeader a `titleId` and point <main aria-labelledby> at it. The PageHeader's title is the page's h1.",
     "ToastProvider mounted once around the whole shell, not per route.",
     "Breadcrumbs, when present, go in PageHeader's `breadcrumb` slot, inside <main> above the h1 — they describe where the content is, not where the chrome is.",
@@ -43,6 +45,7 @@
     }
   },
   "propsUsed": {
+    "Banner": ["intent", "title", "actions", "dismissKey"],
     "Header": [
       "brand",
       "center",

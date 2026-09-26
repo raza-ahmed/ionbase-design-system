@@ -1,5 +1,51 @@
 # Changelog
 
+## 0.103.0 — 2026-09-26
+
+### Added — `Banner`
+
+A notice about the whole product, across the top of it: maintenance tonight,
+a trial ending, read-only mode, a scheduled deletion. It is the eighth P1
+item on the enterprise checklist.
+
+- **It is Alert's banner.** It uses Alert with `layout="banner"`, so the
+  intents, roles, icons and colours are Alert's. It goes in the app shell,
+  above the Header and outside `<main>`, so it persists across routes. A
+  live region is announced when it is inserted, so it is announced once,
+  not on every page.
+- **Dismissed means dismissed.** With `dismissKey`, a dismissal is
+  remembered in this browser, on every page and on the next visit. A
+  remembered dismissal is never painted, not even for a frame. Change the
+  key when the notice changes. With blocked storage it still shows and can
+  still be dismissed for the page.
+- **A banner that must stay** has neither `dismissKey` nor `onDismiss`, and
+  so no dismiss button.
+- **Focus goes forward.** Dismissing moves focus to the next focusable
+  element after the banner, not back to the top of the document.
+- **Figma:** nothing new is drawn. Banner is Alert's `Layout=Banner`, and
+  is recorded as `codeUnmapped` with that reason. Alert's mapping now points
+  page-level notices at Banner; 94 blocks verified.
+- **Demo:** the app shell shows two banners. The maintenance notice appears
+  on every page until dismissed, then stays gone. Scheduling the workspace's
+  deletion puts a warning on every page, with no dismiss button, until the
+  deletion is cancelled. The smoke check covers:
+  - where it sits: above the Header, outside `<main>`, full width;
+  - dismissing from the keyboard, and where focus goes;
+  - that it is gone on the next route and after a reload;
+  - that the deletion warning is `role="alert"` with no dismiss button;
+  - axe.
+
+  Each of three mutations fails it.
+
+- **Pattern:** PageShell has a place for banners, above the Header.
+
+### Changed — `Alert`
+
+- **`layout="banner"` puts its content on one row.** The title, message and
+  actions sit side by side, and wrap on a phone rather than stacking at
+  every width. A banner now takes one line on a desktop. Figma's
+  `Layout=Banner` variants draw the same row. Inline alerts are unchanged.
+
 ## 0.102.0 — 2026-09-26
 
 ### Added — `StatusIndicator`

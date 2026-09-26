@@ -126,7 +126,8 @@
           "values": {
             "Inline": "inline",
             "Banner": "banner"
-          }
+          },
+          "note": "Banner is the layout; for a notice about the whole product — maintenance, read-only mode — at the top of the app shell, use the Banner component, which is this layout plus a remembered dismissal"
         },
         "Title#812:0": {
           "prop": "title"
@@ -2430,6 +2431,7 @@
     "MenuTrigger": "Composition, not a drawing: a Button followed by a Menu, both already drawn and mapped. What MenuTrigger adds — open state, positioning, aria-haspopup and aria-expanded, focus on open and return on close — is runtime behaviour a static frame cannot hold, the same reason RadioGroup is here.",
     "Fieldset": "Drawn as the shell of Checkbox Group: the legend, the helper and the Error recolour are Form Field's type, laid around a set of options. A Fieldset of Inputs is the caller composing Form Fields under that legend, so there is no separate frame to point at.",
     "SidePanelLayout": "Layout, not a drawn component: the flex row a SidePanel sits in, content first. In Figma the Side Panel is placed beside the content on the frame; there is no row to draw.",
-    "ContextMenu": "Draws nothing of its own: what opens is Menu — the same Menu component, rows and sections as the thing's ⋯ menu — placed at the pointer instead of under a button. A second Menu set drawn for it would be a copy that drifts. Design the menu as Menu; where it opens is behaviour."
+    "ContextMenu": "Draws nothing of its own: what opens is Menu — the same Menu component, rows and sections as the thing's ⋯ menu — placed at the pointer instead of under a button. A second Menu set drawn for it would be a copy that drifts. Design the menu as Menu; where it opens is behaviour.",
+    "Banner": "Draws nothing of its own: it is Alert with Layout=Banner (812:1902), the one-line row drawn there. What it adds is behaviour — a dismissal remembered under dismissKey, focus moved forward on dismiss, its place in the app shell. A Banner set would be a copy of Alert's that drifts."
   }
 }

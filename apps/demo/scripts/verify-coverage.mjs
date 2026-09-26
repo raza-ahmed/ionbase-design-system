@@ -69,6 +69,7 @@ const REQUIRED = [
   'CodeSnippet',
   'PasswordInput',
   'StatusIndicator',
+  'Banner',
   'MenuItem',
   'MenuSection',
   'MenuTrigger',

@@ -22,8 +22,13 @@ body {
 
   display: grid;
   grid-template-columns: calc(var(--spacing-128) * 2) minmax(0, 1fr);
-  grid-template-rows: auto 1fr;
+  grid-template-rows: auto auto 1fr;
   min-height: 100vh;
+}
+
+/* Above the Header, the full width, scrolling away with the page. */
+.demo-banners {
+  grid-column: 1 / -1;
 }
 
 .demo-header {
