@@ -5,8 +5,10 @@ import React, {
   createContext,
   forwardRef,
   useContext,
+  useEffect,
   useMemo,
   useRef,
+  useState,
 } from 'react';
 import {
   DismissButton,
@@ -648,3 +650,210 @@ export function MenuTrigger({
 }
 
 MenuTrigger.displayName = 'MenuTrigger';
+
+export interface ContextMenuProps {
+  /**
+   * The thing the menu is for — a table row, a card, a file. One element; it
+   * receives the right-click and keyboard handlers, and keeps its own. It
+   * must pass `onContextMenu` and `onKeyDown` through to the DOM, as
+   * IonBase's TableRow and any host element do.
+   */
+  children: React.ReactElement;
+  /** The Menu to open, with its MenuItems and `onAction`. */
+  menu: React.ReactElement;
+  /**
+   * The menu's name, since no button names it: "Actions for Invoice
+   * reconciler". Required.
+   */
+  'aria-label': string;
+  /** Leaves the browser's own menu in place. */
+  isDisabled?: boolean;
+  onOpenChange?: (isOpen: boolean) => void;
+}
+
+/**
+ * A keyboard-opened contextmenu event — the Menu key. Chromium sends it with
+ * `button` -1 (a right-click is 2), and a position of its own choosing near
+ * the element, so the position cannot be trusted; others send 0,0 and button
+ * 0. A Mac's Ctrl-click is also button 0, but at a real position.
+ */
+const fromKeyboard = (e: React.MouseEvent) =>
+  e.button === -1 ||
+  (e.button === 0 && !e.ctrlKey && e.clientX === 0 && e.clientY === 0);
+
+/**
+ * ContextMenu — the menu a right-click opens on a thing: a row's actions, a
+ * file's. Shift+F10 and the Menu key open it from the keyboard, anchored to
+ * the thing rather than to a pointer that is not there.
+ *
+ * A SHORTCUT, NEVER THE ONLY WAY. Nothing on the page says a right-click
+ * does anything, touch screens have no right-click, and on iOS a long press
+ * opens the browser's callout instead. Every action in a context menu must
+ * also be reachable without it — the row's own actions menu, a button, a
+ * toolbar. The menu is the same Menu, so it can be the same items.
+ *
+ * HOW IT OPENS
+ *
+ *   - Right-click: at the pointer, as a desktop app's does. The browser's own
+ *     menu is prevented, and only on this element.
+ *   - Shift+F10 or the Menu key, with focus on the element or anything in it:
+ *     under the element, at its start edge. Focus moves to the first item.
+ *   - Escape, an outside click or choosing an item closes it and returns focus
+ *     to where it was — the row's link, the card.
+ *
+ * A second right-click on the element moves the open menu there, rather than
+ * opening the browser's menu over it; one elsewhere closes ours.
+ */
+export function ContextMenu({
+  children,
+  menu,
+  'aria-label': ariaLabel,
+  isDisabled,
+  onOpenChange,
+}: ContextMenuProps) {
+  /*
+   * Where focus was when the menu opened. The overlay's own restore returns
+   * focus to what it saw focused when it mounted, which for a menu moved by a
+   * second right-click is a row of the menu it replaced — gone. So focus goes
+   * back here, if nothing else took it.
+   */
+  const returnTo = useRef<HTMLElement | null>(null);
+  const rootState = useMenuTriggerState({
+    onOpenChange: (isOpen) => {
+      if (!isOpen) {
+        const el = returnTo.current;
+        requestAnimationFrame(() => {
+          const active = document.activeElement;
+          if (el?.isConnected && (!active || active === document.body))
+            el.focus();
+        });
+      }
+      onOpenChange?.(isOpen);
+    },
+  });
+  const anchorRef = useRef<HTMLSpanElement>(null);
+  const targetRef = useRef<Element | null>(null);
+  const popoverRef = useRef<HTMLDivElement>(null);
+  // The pointer's position, or null when the element itself is the anchor.
+  const [point, setPoint] = useState<{ x: number; y: number } | null>(null);
+
+  /*
+   * A second right-click while the menu is open. The modal overlay makes the
+   * rest of the page ignore the pointer, so the event lands on <body>, not on
+   * the element: it is caught here instead. On the element, the menu moves to
+   * the new point and the browser's menu is prevented; on the menu itself,
+   * nothing happens; anywhere else, ours closes and the browser's is left to
+   * open, as it would have with ours shut.
+   */
+  useEffect(() => {
+    if (!rootState.isOpen) return;
+    const onContextMenu = (e: MouseEvent) => {
+      if (popoverRef.current?.contains(e.target as globalThis.Node)) {
+        e.preventDefault();
+        return;
+      }
+      const r = targetRef.current?.getBoundingClientRect();
+      const inside =
+        r &&
+        e.clientX >= r.left &&
+        e.clientX <= r.right &&
+        e.clientY >= r.top &&
+        e.clientY <= r.bottom;
+      if (inside) {
+        e.preventDefault();
+        setPoint({ x: e.clientX, y: e.clientY });
+      } else rootState.close();
+    };
+    document.addEventListener('contextmenu', onContextMenu, true);
+    return () =>
+      document.removeEventListener('contextmenu', onContextMenu, true);
+  }, [rootState, rootState.isOpen]);
+
+  const open = (target: Element, at: { x: number; y: number } | null) => {
+    targetRef.current = target;
+    if (!rootState.isOpen) {
+      const active = document.activeElement;
+      returnTo.current = active instanceof HTMLElement ? active : null;
+    }
+    setPoint(at);
+    rootState.open('first');
+  };
+
+  const child = children as React.ReactElement<
+    React.HTMLAttributes<HTMLElement>
+  >;
+  const target = isDisabled
+    ? child
+    : cloneElement(child, {
+        onContextMenu: (e: React.MouseEvent<HTMLElement>) => {
+          child.props.onContextMenu?.(e);
+          if (e.defaultPrevented) return;
+          e.preventDefault();
+          open(
+            e.currentTarget,
+            fromKeyboard(e) ? null : { x: e.clientX, y: e.clientY },
+          );
+        },
+        onKeyDown: (e: React.KeyboardEvent<HTMLElement>) => {
+          child.props.onKeyDown?.(e);
+          if (e.defaultPrevented) return;
+          /*
+           * Shift+F10 is caught as a key: not every browser turns it into a
+           * contextmenu event (Chromium on macOS does not). The Menu key needs
+           * no handler — the browser fires a keyboard contextmenu for it,
+           * which onContextMenu above anchors to the element.
+           */
+          if (e.shiftKey && e.key === 'F10') {
+            // Prevented, so a browser that would also fire contextmenu does not.
+            e.preventDefault();
+            open(e.currentTarget, null);
+          }
+        },
+      });
+
+  return (
+    <>
+      {target}
+      {rootState.isOpen && (
+        <>
+          {/* A zero-size point for the popover to anchor to, where the
+              pointer was. Fixed, so a scrolled page does not move it. */}
+          {point && (
+            <span
+              ref={anchorRef}
+              aria-hidden="true"
+              className="ion-context-menu__anchor"
+              style={{ left: point.x, top: point.y }}
+            />
+          )}
+          {/* Keyed by the point, so a menu moved by a second right-click is
+              placed afresh rather than left where the first one was. */}
+          <MenuPopover
+            key={point ? `${point.x},${point.y}` : 'element'}
+            state={rootState}
+            triggerRef={
+              point ? anchorRef : (targetRef as React.RefObject<Element | null>)
+            }
+            popoverRef={popoverRef}
+            placement="bottom start"
+          >
+            <MenuTriggerContext.Provider
+              value={{
+                rootState,
+                menuProps: {
+                  'aria-label': ariaLabel,
+                  autoFocus: rootState.focusStrategy || 'first',
+                  onClose: rootState.close,
+                } as AriaMenuOptions<object>,
+              }}
+            >
+              {menu}
+            </MenuTriggerContext.Provider>
+          </MenuPopover>
+        </>
+      )}
+    </>
+  );
+}
+
+ContextMenu.displayName = 'ContextMenu';

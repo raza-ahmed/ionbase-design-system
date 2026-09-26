@@ -1268,6 +1268,105 @@ try {
   }
 
   /*
+   * ContextMenu on the Agents table. A right-click on a running agent's row
+   * opens the row's own menu, named for the agent, with focus on its first
+   * item; choosing Pause pauses it. Shift+F10 from the row's link opens it
+   * too, and Escape gives focus back to the link. The row's ⋯ button still
+   * opens the same items — the context menu is a shortcut, not the only way.
+   */
+  {
+    const where = 'context menu (light, desktop)';
+    const context = await browser.newContext({
+      viewport: { width: 1280, height: 900 },
+    });
+    await context.addInitScript(() =>
+      localStorage.setItem(
+        'ionbase-ops:demo-settings',
+        JSON.stringify({ theme: 'light', latency: 0 }),
+      ),
+    );
+    const page = await context.newPage();
+    page.on('pageerror', (e) => fail(where, `exception: ${e.message}`));
+    try {
+      await page.goto(`${BASE}/#/agents`);
+      const row = page
+        .locator('tbody tr')
+        .filter({ hasText: 'Running' })
+        .first();
+      await row.waitFor({ timeout: 10_000 });
+      const link = row.getByRole('link').first();
+      const name = (await link.innerText()).trim();
+      // Found by name from here on: once paused it no longer says Running.
+      const thisRow = page.locator('tbody tr', { hasText: name });
+
+      await row.getByRole('cell').nth(3).click({ button: 'right' });
+      const menu = page.getByRole('menu', { name: `Actions for ${name}` });
+      await menu
+        .waitFor({ timeout: 5_000 })
+        .catch(() =>
+          fail(where, 'a right-click on a row opened no named menu'),
+        );
+      const focusedItem = await page.evaluate(() =>
+        document.activeElement?.getAttribute('role'),
+      );
+      if (focusedItem !== 'menuitem')
+        fail(where, 'focus is not on the menu when it opens');
+
+      await page.addScriptTag({ content: axeSource });
+      const violations = await page.evaluate(async () => {
+        const result = await window.axe.run(
+          document.querySelector('.ion-menu-popover'),
+          { resultTypes: ['violations'] },
+        );
+        return result.violations.map((v) => `${v.impact} ${v.id}`);
+      });
+      for (const v of violations) fail(where, `axe ${v}`);
+      await page.keyboard.press('Escape');
+      await menu.waitFor({ state: 'detached' });
+
+      await link.focus();
+      await page.keyboard.press('Shift+F10');
+      await menu
+        .waitFor({ timeout: 5_000 })
+        .catch(() => fail(where, 'Shift+F10 on a row did not open its menu'));
+      await page.keyboard.press('Escape');
+      await menu.waitFor({ state: 'detached' });
+      await page.waitForTimeout(100);
+      if (!(await link.evaluate((el) => el === document.activeElement)))
+        fail(where, 'Escape did not give focus back to the row');
+
+      const items = async () =>
+        page
+          .getByRole('menuitem')
+          .evaluateAll((els) => els.map((e) => e.textContent.trim()));
+      await row.getByRole('cell').nth(3).click({ button: 'right' });
+      await menu.waitFor();
+      const fromContext = await items();
+      await page.getByRole('menuitem', { name: 'Pause' }).click();
+      await page
+        .locator('tbody tr', { hasText: name })
+        .filter({ hasText: 'Paused' })
+        .waitFor({ timeout: 5_000 })
+        .catch(() => fail(where, 'Pause from the context menu did not pause'));
+
+      await thisRow
+        .getByRole('button', { name: `Actions for ${name}` })
+        .click();
+      await page.getByRole('menu').waitFor();
+      const fromButton = await items();
+      if (fromButton.length !== fromContext.length)
+        fail(
+          where,
+          `the ⋯ menu has ${fromButton.length} items, the context menu ${fromContext.length}`,
+        );
+    } catch (e) {
+      fail(where, `did not run: ${e.message.split('\n')[0]}`);
+    }
+    groupsChecked++;
+    await context.close();
+  }
+
+  /*
    * The wizard's CheckboxGroup, which no page load above reaches: it is on
    * Guardrails, the third step. A saved draft with the first two steps done
    * opens there. "At least one" has to hold three ways — natively (every box

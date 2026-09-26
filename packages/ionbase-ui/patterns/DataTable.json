@@ -20,7 +20,8 @@
     "Slider",
     "TagGroup",
     "SidePanel",
-    "SidePanelLayout"
+    "SidePanelLayout",
+    "ContextMenu"
   ],
   "structure": [
     "A toolbar above the table: a SearchField (size sm, with an aria-label naming what it searches) and filter controls — a MultiSelect with `hideTags` for any filter that can match more than one value, and a range Slider (`defaultValue={[low, high]}`, with `formatOptions` for the unit) for a quantity bounded at both ends — duration, cost — which applies on `onChangeEnd`, not per step. They stay ordinary tab stops, not a Toolbar — see Toolbar's contract.",
@@ -29,6 +30,7 @@
     "Table, with an `id` passed to the bar as `tableId`, and a TableHead whose first cell carries the select-all Checkbox — `headSelection(pageKeys)`, which reaches the page on screen only — and a TableBody whose rows each carry `rowSelection(key, label)` and `isSelected(key)`.",
     "Sortable columns: every header that sorts gets `sortDirection` — the current direction on the sorted column, `none` on the others — so each shows it can be sorted before anyone tries.",
     "A row's detail, when it is read beside the list rather than on its own page, goes in a SidePanel: Table and SidePanel inside a SidePanelLayout, opened from a per-row Button with `aria-expanded`, and closed when its row is filtered out. The table stays usable, so the next row can be opened without closing anything; below 768px it opens as a Drawer.",
+    "A row's actions, when it has more than one, in a ⋯ MenuTrigger in its last cell, named for the row — \"Actions for Invoice reconciler\". For a table people work in all day, wrap each row in a ContextMenu given the same Menu element, so a right-click or Shift+F10 opens those actions too — a shortcut, never the only way to them.",
     "One region below the table for pagination or a load-more Button.",
     "The table region is replaced — not overlaid — by the empty, loading and error states."
   ],
@@ -102,7 +104,8 @@
       "footer",
       "size",
       "headingLevel"
-    ]
+    ],
+    "ContextMenu": ["aria-label", "menu"]
   },
   "variantsUsed": {
     "Alert": {
