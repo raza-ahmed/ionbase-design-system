@@ -1,5 +1,46 @@
 # Changelog
 
+## 0.104.0 — 2026-09-26
+
+### Added — `InlineLoading`
+
+How one action is going, shown beside the control that started it: "Saving…",
+"Saved", "Not saved". It is the ninth P1 item on the enterprise checklist.
+
+- **The region is always there.** It renders its `role="status"` span in every
+  state, empty while `inactive`, and only its words change. A live region
+  inserted with its words already in it is usually not announced, so it is
+  mounted with the control and `status` is what changes.
+- **Words, not a spinner.** Each state is a StatusIndicator: a spinning arc
+  and "Saving…", a check and "Saved", an octagon and "Not saved". The shape
+  is hidden from assistive tech, and the word is announced politely.
+- **"Saved" goes away by itself.** `onSuccess` fires `successDelay` (1500ms)
+  after `finished`, with the latest callback. Re-rendering does not restart
+  the delay, and leaving `finished` cancels it. An error stays until the next
+  attempt.
+- **Translatable:** `activeLabel`, `finishedLabel` and `errorLabel`. `size` is
+  `sm` (16px) or `md` (20px).
+- **Figma:** nothing new is drawn. Each state is a Status Indicator variant,
+  and InlineLoading is recorded as `codeUnmapped` with that reason. Status
+  Indicator's description now points to it; 94 blocks verified.
+- **Demo:** each switch in Settings → Notifications shows its save beside it.
+  The row's hidden announcement is gone, since InlineLoading is the
+  announcement. The switch is no longer disabled while it saves; a second
+  press is ignored instead. Disabling it had thrown a keyboard user's focus
+  to the top of the page. The words grow away from the switch, so it never
+  moves. The smoke check, at desktop and phone widths, covers:
+  - focus staying on the switch;
+  - one region going Saving… → Saved → empty;
+  - the switch not moving;
+  - the Partial failure state's digest saying Not saved, staying so, and
+    being put back;
+  - axe.
+
+  Each of five mutations fails it.
+
+- **Pattern:** SettingsPanel's immediate-apply rows use it. An
+  anti-pattern is added: a Toggle disabled mid-save.
+
 ## 0.103.0 — 2026-09-26
 
 ### Added — `Banner`

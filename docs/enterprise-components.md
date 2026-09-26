@@ -130,7 +130,7 @@ IonBase column names the component that covers it.
 | Progress bar                    |   ●    |  ●  |  ●   | `ProgressBar` |
 | Progress ring (determinate)     |        |  ●  |  ●   | —             |
 | Spinner                         |   ●    |  ●  |  ●   | `Spinner`     |
-| Inline loading (pending → done) |   ●    |     |      | —             |
+| Inline loading (pending → done) |   ●    |     |      | `InlineLoading` |
 | Skeleton                        |   ●    |     |      | `Skeleton`    |
 | Empty state / illustration      |   ◐    |     |  ●   | `EmptyState`  |
 | Tooltip                         |   ●    |  ●  |  ●   | `Tooltip`     |

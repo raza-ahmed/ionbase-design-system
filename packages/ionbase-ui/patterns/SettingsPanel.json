@@ -18,11 +18,13 @@
     "Badge",
     "Tabs",
     "TabItem",
-    "CodeSnippet"
+    "CodeSnippet",
+    "InlineLoading"
   ],
   "structure": [
     "Named groups, separated by Divider, each with a heading.",
     "One SettingRow per setting: label and description on the left, control on the right, wired together by the row.",
+    "For immediate-apply panels, an InlineLoading beside each Toggle, mounted with the row: Saving… while the save runs, Saved until `onSuccess` sets it back to `inactive`, Not saved until the next attempt. The Toggle stays enabled mid-save and a second press is ignored; the words grow away from the Toggle, so it never moves.",
     "For save-on-submit panels, a save bar that appears only when something is dirty, with save and discard.",
     "Tabs for panels large enough that a single scroll is unreasonable — but never with unsaved changes hidden behind an inactive tab.",
     "A setting used from outside the app — an API key, a webhook, a CLI — shows how to use it as CodeSnippets under a sentence saying what each is for: a command as `single`, a request as `multi`, each with its own `label` and `copyLabel`, and a command named in a description as `inline`."
@@ -53,20 +55,22 @@
     "Button": ["variant", "isDisabled"],
     "Alert": ["intent", "title", "actions"],
     "Tabs": ["type", "size"],
-    "CodeSnippet": ["type", "label", "copyLabel", "language"]
+    "CodeSnippet": ["type", "label", "copyLabel", "language"],
+    "InlineLoading": ["status", "onSuccess"]
   },
   "variantsUsed": {
     "Toggle": { "intent": ["brand", "danger"] },
     "Alert": { "intent": ["error", "warning"] },
     "Button": { "variant": ["primary-brand", "tertiary"] },
     "Tabs": { "type": ["underline"] },
-    "CodeSnippet": { "type": ["single", "multi", "inline"] }
+    "CodeSnippet": { "type": ["single", "multi", "inline"] },
+    "InlineLoading": { "status": ["inactive", "active", "finished", "error"] }
   },
   "a11y": {
     "requires": [
       "a label on every control — the row's visible text, wired up, not just placed beside it",
       "the description associated with the control rather than floating next to it, so it is announced with the setting",
-      "an announcement when an immediate-apply setting saves; the visual state change is not enough"
+      "an announcement when an immediate-apply setting saves; the visual state change is not enough — the row's InlineLoading, already mounted, is that announcement"
     ],
     "notes": [
       "Toggle for immediate effect, Checkbox for values saved with a submit. Mixing both in one panel means the user cannot tell which is which."
@@ -81,6 +85,11 @@
       "dont": "a destructive setting with no confirmation",
       "do": "the DestructiveConfirm pattern",
       "why": "\"delete this workspace\" as a Toggle row is one mis-click"
+    },
+    {
+      "dont": "<Toggle isDisabled={saving} /> on an immediate-apply row",
+      "do": "an enabled Toggle that ignores presses while its InlineLoading is active",
+      "why": "disabling the switch a keyboard user just pressed throws their focus to the top of the page"
     },
     {
       "dont": "unsaved changes on an inactive tab",

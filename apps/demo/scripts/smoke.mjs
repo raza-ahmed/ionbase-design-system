@@ -1931,6 +1931,138 @@ try {
   }
 
   /*
+   * InlineLoading, on each Notifications switch, in the Partial failure state
+   * — where the weekly digest's save fails. From the keyboard, Space on Failure
+   * alerts keeps focus on the switch (it is not disabled mid-save), and the
+   * row's one status region goes Saving… → Saved → empty, the same element
+   * throughout. The switch does not move while the words come and go — to
+   * its left on a desktop, to its right once the row stacks on a phone. The
+   * digest says Not saved, stays saying it, and its switch goes back.
+   */
+  for (const [device, width, height] of [
+    ['desktop', 1280, 900],
+    ['mobile', 390, 844],
+  ]) {
+    const where = `inline loading (light, ${device})`;
+    const context = await browser.newContext({ viewport: { width, height } });
+    await context.addInitScript(() =>
+      localStorage.setItem(
+        'ionbase-ops:demo-settings',
+        JSON.stringify({ theme: 'light', latency: 0 }),
+      ),
+    );
+    const page = await context.newPage();
+    page.on('pageerror', (e) => fail(where, `exception: ${e.message}`));
+    await page.goto(`${BASE}/#/settings`);
+    try {
+      // Never restored from storage, so set through the Demo controls.
+      await page.getByRole('button', { name: /^Demo/ }).click();
+      await page.getByLabel('Screen state').selectOption('partial');
+      await page.keyboard.press('Escape');
+      const alerts = page.getByRole('switch', { name: 'Failure alerts' });
+      await alerts.waitFor({ timeout: 10_000 });
+      const row = (name) =>
+        page.locator('.ion-setting-row', {
+          has: page.getByRole('switch', { name }),
+        });
+      const region = row('Failure alerts').getByRole('status');
+      if ((await region.count()) !== 1)
+        fail(where, 'the row has no single status region before a save');
+      await region.evaluate((el) => {
+        window.__region = el;
+      });
+      const x = () =>
+        alerts.evaluate((el) =>
+          Math.round(
+            el.closest('.ion-toggle').getBoundingClientRect().left,
+          ),
+        );
+      const before = await x();
+      const was = await alerts.isChecked();
+
+      await alerts.focus();
+      await page.keyboard.press('Space');
+      await page
+        .waitForFunction(
+          () => window.__region.textContent === 'Saving…',
+          null,
+          { timeout: 2_000 },
+        )
+        .catch(() => fail(where, 'the row never said Saving…'));
+      const during = await x();
+      if (during !== before)
+        fail(where, `the switch moved ${during - before}px while saving`);
+      const focus = await page.evaluate(() => ({
+        role: document.activeElement?.getAttribute('role'),
+        disabled: document.activeElement?.disabled,
+      }));
+      if (focus.role !== 'switch' || focus.disabled)
+        fail(where, `focus left the switch mid-save (${focus.role})`);
+      await page
+        .waitForFunction(
+          () =>
+            window.__region.isConnected &&
+            window.__region.textContent === 'Saved',
+          null,
+          { timeout: 5_000 },
+        )
+        .catch(() => fail(where, 'the same region never said Saved'));
+      if ((await x()) !== before) fail(where, 'the switch moved once saved');
+      if ((await alerts.isChecked()) === was)
+        fail(where, 'the switch did not change');
+      if (
+        !(await page.evaluate(
+          () => document.activeElement?.getAttribute('role') === 'switch',
+        ))
+      )
+        fail(where, 'focus left the switch once saved');
+      await page
+        .waitForFunction(
+          () =>
+            window.__region.isConnected && window.__region.textContent === '',
+          null,
+          { timeout: 5_000 },
+        )
+        .catch(() => fail(where, 'Saved never went away'));
+
+      const digest = page.getByRole('switch', { name: 'Weekly digest' });
+      const digestWas = await digest.isChecked();
+      await digest.focus();
+      await page.keyboard.press('Space');
+      const digestRegion = row('Weekly digest').getByRole('status');
+      await digestRegion
+        .filter({ hasText: 'Not saved' })
+        .waitFor({ timeout: 5_000 })
+        .catch(() => fail(where, 'the failed save never said Not saved'));
+      await page.waitForTimeout(2_000);
+      if ((await digestRegion.textContent()) !== 'Not saved')
+        fail(where, 'Not saved went away by itself');
+      if ((await digest.isChecked()) !== digestWas)
+        fail(where, 'the failed switch was not put back');
+
+      await page.addScriptTag({ content: axeSource });
+      const violations = await page.evaluate(async () => {
+        // Finite ones only: a spinner's never finishes.
+        await Promise.all(
+          document
+            .getAnimations()
+            .filter((a) => a.effect?.getTiming().iterations !== Infinity)
+            .map((a) => a.finished),
+        );
+        const result = await window.axe.run(document, {
+          resultTypes: ['violations'],
+        });
+        return result.violations.map((v) => `${v.impact} ${v.id}`);
+      });
+      for (const v of violations) fail(where, `axe ${v}`);
+    } catch (e) {
+      fail(where, `did not run: ${e.message.split('\n')[0]}`);
+    }
+    groupsChecked++;
+    await context.close();
+  }
+
+  /*
    * The loading states, at phone width. With no latency a skeleton is gone
    * before anything can measure it, and a skeleton is laid out differently
    * from the content it stands in for — the Agents skeleton once pushed the

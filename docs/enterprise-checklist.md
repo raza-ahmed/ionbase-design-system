@@ -48,7 +48,7 @@
 - [x] **PasswordInput** — the password asked again to delete the workspace — 0.101.0
 - [x] **StatusIndicator** — the status column in Agents, Runs history and Overview, replacing Badge dots — 0.102.0
 - [x] **Banner** — the app shell: maintenance (dismissed for good) and a scheduled deletion (until cancelled) — 0.103.0
-- [ ] **InlineLoading**
+- [x] **InlineLoading** — each Notifications switch in Settings: Saving…, Saved, Not saved beside it — 0.104.0
 - [ ] **NotificationsPanel**
 - [ ] **InlineEdit**
 - [ ] **SelectableTile**
