@@ -16,7 +16,9 @@ import {
   TableHead,
   TableRow,
   TruncatedText,
+  type TableColumn,
   type TableSortProps,
+  type UseTableColumnsResult,
   type UseTableSelectionResult,
 } from 'ionbase-ui';
 import { Ellipsis } from 'ionbase-icons/icons/ellipsis';
@@ -53,42 +55,78 @@ export type HeaderSort = (
   options?: { firstDirection?: 'ascending' | 'descending' },
 ) => TableSortProps;
 
+export type AgentColumn =
+  'agent' | 'status' | 'team' | 'owner' | 'runs' | 'success' | 'lastRun';
+
+/*
+ * The columns people choose from, and how each resizes. The agent names the
+ * row, so it always stays; it is the one that resizes, since a wider column
+ * shows more of each purpose under the name.
+ */
+export const AGENT_COLUMNS: TableColumn<AgentColumn>[] = [
+  {
+    key: 'agent',
+    label: 'Agent',
+    canHide: false,
+    canResize: true,
+    // The cell's own floor — 16rem and its padding — so the narrowest the
+    // handle says is the narrowest it is.
+    minWidth: 288,
+    maxWidth: 560,
+  },
+  { key: 'status', label: 'Status' },
+  { key: 'team', label: 'Team' },
+  { key: 'owner', label: 'Owner' },
+  { key: 'runs', label: 'Runs (7d)' },
+  { key: 'success', label: 'Success' },
+  { key: 'lastRun', label: 'Last run' },
+];
+
+export type AgentColumns = UseTableColumnsResult<AgentColumn>;
+
 /*
  * Which columns sort, and which way each starts: runs and last run newest or
  * largest first, success lowest first — the failing agents are what someone
  * sorting by success is looking for.
  */
-const COLUMNS: {
-  label: string;
-  align?: 'trailing';
-  sort?: AgentSortColumn;
-  first?: 'ascending' | 'descending';
-}[] = [
-  { label: 'Agent', sort: 'name' },
-  { label: 'Status' },
-  { label: 'Team' },
-  { label: 'Owner' },
+const HEADER: Record<
+  AgentColumn,
   {
-    label: 'Runs (7d)',
-    align: 'trailing',
-    sort: 'runs7d',
-    first: 'descending',
-  },
-  { label: 'Success', align: 'trailing', sort: 'successRate' },
-  { label: 'Last run', sort: 'lastRun', first: 'descending' },
-];
+    align?: 'trailing';
+    sort?: AgentSortColumn;
+    first?: 'ascending' | 'descending';
+  }
+> = {
+  agent: { sort: 'name' },
+  status: {},
+  team: {},
+  owner: {},
+  runs: { align: 'trailing', sort: 'runs7d', first: 'descending' },
+  success: { align: 'trailing', sort: 'successRate' },
+  lastRun: { sort: 'lastRun', first: 'descending' },
+};
 
-function ColumnHeaders({ sortProps }: { sortProps: HeaderSort }) {
-  return COLUMNS.map((c) => (
-    <TableCell
-      key={c.label}
-      header
-      align={c.align}
-      {...(c.sort && sortProps(c.sort, { firstDirection: c.first }))}
-    >
-      {c.label}
-    </TableCell>
-  ));
+function ColumnHeaders({
+  sortProps,
+  columns,
+}: {
+  sortProps: HeaderSort;
+  columns: AgentColumns;
+}) {
+  return columns.visibleColumns.map((c) => {
+    const h = HEADER[c.key];
+    return (
+      <TableCell
+        key={c.key}
+        header
+        align={h.align}
+        {...(h.sort && sortProps(h.sort, { firstDirection: h.first }))}
+        {...columns.headerProps(c.key)}
+      >
+        {c.label}
+      </TableCell>
+    );
+  });
 }
 
 /** A metric the partial state failed to load: a dash to see, a word to hear. */
@@ -101,10 +139,88 @@ function Missing() {
   );
 }
 
+/** One agent's cell in one column. */
+function AgentCell({
+  column,
+  agent: a,
+}: {
+  column: AgentColumn;
+  agent: Agent;
+}) {
+  switch (column) {
+    case 'agent':
+      return (
+        <TableCell>
+          <span className="demo-cell-stack">
+            <Link href={href(`agents/${a.id}`)} className="ion-text--semibold">
+              {a.name}
+            </Link>
+            {/* A purpose is written by whoever edits the agent, so no one
+                can promise it is short: one line, and the rest a tab stop
+                and a tooltip away — or a wider column. */}
+            <TruncatedText className="ion-text-caption demo-muted">
+              {a.purpose}
+            </TruncatedText>
+          </span>
+        </TableCell>
+      );
+    case 'status':
+      return (
+        <TableCell>
+          <StatusIndicator intent={STATUS_INTENT[a.status]}>
+            {STATUS_LABEL[a.status]}
+          </StatusIndicator>
+        </TableCell>
+      );
+    case 'team':
+      return <TableCell>{teamLabel(a.team)}</TableCell>;
+    case 'owner':
+      return (
+        <TableCell>
+          <span className="demo-cell-inline">
+            <span aria-hidden="true">
+              <Avatar size="mini" initials={a.owner.initials} />
+            </span>
+            {a.owner.name}
+          </span>
+        </TableCell>
+      );
+    case 'runs':
+      return (
+        <TableCell align="trailing">
+          {a.runs7d === null ? <Missing /> : a.runs7d.toLocaleString('en')}
+        </TableCell>
+      );
+    case 'success':
+      return (
+        <TableCell align="trailing">
+          {a.successRate === null ? (
+            <Missing />
+          ) : (
+            `${a.successRate.toFixed(1)}%`
+          )}
+        </TableCell>
+      );
+    case 'lastRun':
+      return (
+        <TableCell>
+          {a.lastRun === null && a.runs7d === null ? (
+            <Missing />
+          ) : a.lastRun ? (
+            formatDay(a.lastRun)
+          ) : (
+            'Never'
+          )}
+        </TableCell>
+      );
+  }
+}
+
 export function AgentsTable({
   id,
   rows,
   sortProps,
+  columns,
   selection,
   onPause,
   onDelete,
@@ -112,6 +228,7 @@ export function AgentsTable({
   id: string;
   rows: Agent[];
   sortProps: HeaderSort;
+  columns: AgentColumns;
   selection: UseTableSelectionResult<string>;
   onPause: (agent: Agent, paused: boolean) => void;
   onDelete: (agent: Agent) => void;
@@ -125,7 +242,7 @@ export function AgentsTable({
             'Select all agents on this page',
           )}
         >
-          <ColumnHeaders sortProps={sortProps} />
+          <ColumnHeaders sortProps={sortProps} columns={columns} />
           <TableCell header>
             <span className="ion-visually-hidden">Actions</span>
           </TableCell>
@@ -172,59 +289,9 @@ export function AgentsTable({
                 isSelected={selection.isSelected(a.id)}
                 selection={selection.rowSelection(a.id, `Select ${a.name}`)}
               >
-                <TableCell>
-                  <span className="demo-cell-stack">
-                    <Link
-                      href={href(`agents/${a.id}`)}
-                      className="ion-text--semibold"
-                    >
-                      {a.name}
-                    </Link>
-                    {/* A purpose is written by whoever edits the agent, so
-                        no one can promise it is short: one line, and the
-                        rest a tab stop and a tooltip away. */}
-                    <TruncatedText className="ion-text-caption demo-muted">
-                      {a.purpose}
-                    </TruncatedText>
-                  </span>
-                </TableCell>
-                <TableCell>
-                  <StatusIndicator intent={STATUS_INTENT[a.status]}>
-                    {STATUS_LABEL[a.status]}
-                  </StatusIndicator>
-                </TableCell>
-                <TableCell>{teamLabel(a.team)}</TableCell>
-                <TableCell>
-                  <span className="demo-cell-inline">
-                    <span aria-hidden="true">
-                      <Avatar size="mini" initials={a.owner.initials} />
-                    </span>
-                    {a.owner.name}
-                  </span>
-                </TableCell>
-                <TableCell align="trailing">
-                  {a.runs7d === null ? (
-                    <Missing />
-                  ) : (
-                    a.runs7d.toLocaleString('en')
-                  )}
-                </TableCell>
-                <TableCell align="trailing">
-                  {a.successRate === null ? (
-                    <Missing />
-                  ) : (
-                    `${a.successRate.toFixed(1)}%`
-                  )}
-                </TableCell>
-                <TableCell>
-                  {a.lastRun === null && a.runs7d === null ? (
-                    <Missing />
-                  ) : a.lastRun ? (
-                    formatDay(a.lastRun)
-                  ) : (
-                    'Never'
-                  )}
-                </TableCell>
+                {columns.visibleColumns.map((c) => (
+                  <AgentCell key={c.key} column={c.key} agent={a} />
+                ))}
                 <TableCell align="trailing">
                   <MenuTrigger placement="bottom end">
                     <Button
@@ -260,9 +327,11 @@ const SKELETON_WIDTH: Record<string, string> = {
 export function AgentsTableSkeleton({
   rows,
   sortProps,
+  columns,
 }: {
   rows: number;
   sortProps: HeaderSort;
+  columns: AgentColumns;
 }) {
   return (
     <div aria-busy="true">
@@ -277,7 +346,7 @@ export function AgentsTableSkeleton({
             </TableCell>
             {/* The real headers, sort state and all, so nothing moves when
                 the rows arrive. */}
-            <ColumnHeaders sortProps={sortProps} />
+            <ColumnHeaders sortProps={sortProps} columns={columns} />
             <TableCell header>
               <span className="ion-visually-hidden">Actions</span>
             </TableCell>
@@ -293,8 +362,8 @@ export function AgentsTableSkeleton({
                   height="var(--spacing-20)"
                 />
               </TableCell>
-              {COLUMNS.map((c) => (
-                <TableCell key={c.label}>
+              {columns.visibleColumns.map((c) => (
+                <TableCell key={c.key}>
                   <Skeleton
                     variant="text"
                     width={SKELETON_WIDTH[c.label] ?? 'var(--spacing-48)'}

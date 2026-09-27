@@ -1,5 +1,78 @@
 # Changelog
 
+## 0.112.0 — 2026-09-27
+
+### Added — table column visibility and resize
+
+People choose which of a table's columns they see, and give a long one more
+room. It is the seventeenth P1 item on the enterprise checklist.
+
+- **`useTableColumns(columns)`.** Holds which columns are shown and how wide
+  the resized ones are. Each `TableColumn` takes:
+  - `key` and `label`;
+  - `canHide: false`, for the column that names each row;
+  - `defaultHidden`;
+  - `canResize`, with `defaultWidth`, `minWidth` and `maxWidth`.
+
+  It returns `visibleColumns` to render. A hidden column's cells are not in
+  the table at all, so a screen reader counts the columns on screen. It also
+  returns `headerProps(key)` for each header, and `hidden` and `widths` with
+  setters. `initial` starts from a saved view, and `resizeLabel` translates
+  the handle's name.
+
+- **`TableColumnsMenu`.** A Button that opens a multiple-selection Menu:
+  - Each column is a `menuitemcheckbox`, and the menu stays open while
+    several are changed.
+  - A column that cannot be hidden, and the last one shown, are listed
+    checked and disabled.
+- **`resize` on a header TableCell.** A handle on the trailing edge, following
+  the window-splitter pattern:
+  - a focusable `role="separator"` named "Resize Agent", with the width as
+    its value;
+  - drag it, use the arrow keys (16px, or 64px with Shift), or Home and End
+    for the limits; a double-click puts the width back;
+  - right to left, ArrowLeft widens.
+
+  A resizable header is named by its label alone, so it doesn't also read
+  the handle's name. The width includes padding, so a drag tracks the
+  pointer. It is set as `min-width` too, because a table whose other columns
+  fill it would otherwise squeeze a widened column back to its content. With
+  both, the table scrolls sideways instead.
+
+- **Known gap:** dragging is the only way to resize with a pointer alone
+  (WCAG 2.5.7). The contract says to keep long content readable at the
+  default width, with TruncatedText, so a width is a preference.
+
+### Fixed
+
+- **A held column now follows a resize.** `stickyFirstColumn` measured again
+  only when the whole table changed size. A column resized inside a
+  full-width table leaves the table's size alone, so the held width went
+  stale. The first row's cells are now watched too.
+
+### Also
+
+- **Figma:** TableColumnsMenu is code-only, built from Button and Menu, which
+  are both mapped. The Table page has an example of the menu open beside a
+  table, with the Agent header's resize handle.
+- **Demo:** Agents has a Columns menu at the toolbar's end and a resizable
+  Agent column; a wider one shows more of each purpose. The view is kept in
+  the browser. The smoke check covers:
+  - the menu: every column listed, Agent fixed, unchecking Owner removes a
+    cell from every row, and the menu stays open;
+  - the handle: its value, End to 560px, and more of a cut purpose shown;
+  - the view kept across a reload;
+  - a double-click putting the width back;
+  - nothing sideways on a phone, and axe.
+
+  Each of six mutations fails it.
+
+- **Stories:** 21 in TableColumnsMenu. Of 28 mutations, 27 fail a story. The survivor
+  was a `stopPropagation` that guarded nothing: the handle sits beside the
+  sort button, not inside it, so it was removed.
+- **Pattern:** DataTable adds the columns menu for a table with more columns
+  than most people need.
+
 ## 0.111.0 — 2026-09-27
 
 ### Added — sticky table header and first column

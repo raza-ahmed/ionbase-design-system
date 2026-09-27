@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
   Alert,
   Button,
@@ -11,6 +11,8 @@ import {
   MultiSelect,
   Select,
   TableBatchBar,
+  TableColumnsMenu,
+  useTableColumns,
   useTableSelection,
   Tag,
   TagGroup,
@@ -36,8 +38,10 @@ import { href } from '../../lib/router';
 import { useDebounced } from '../../lib/use-debounced';
 import { useResource } from '../../lib/use-resource';
 import {
+  AGENT_COLUMNS,
   AgentsTable,
   AgentsTableSkeleton,
+  type AgentColumn,
   type HeaderSort,
 } from './AgentsTable';
 import { DeleteAgentsModal } from './DeleteAgentsModal';
@@ -49,6 +53,33 @@ const STATUS_OPTIONS = [
   { value: 'failing', label: 'Failing' },
 ];
 
+/*
+ * The columns someone chose and sized, kept in this browser: a view of the
+ * table is theirs, and coming back to the page should not undo it.
+ */
+const VIEW_KEY = 'ionbase-ops:agents-columns';
+type ColumnsView = {
+  hidden: AgentColumn[];
+  widths: Partial<Record<AgentColumn, number>>;
+};
+
+function loadView(): ColumnsView | undefined {
+  try {
+    const raw = window.localStorage.getItem(VIEW_KEY);
+    return raw ? (JSON.parse(raw) as ColumnsView) : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
+function saveView(view: string) {
+  try {
+    window.localStorage.setItem(VIEW_KEY, view);
+  } catch {
+    // Storage blocked: the view lasts until the page is left.
+  }
+}
+
 /**
  * The DataTable pattern, with DestructiveConfirm for delete. The toolbar stays
  * usable in every state; only the table region is replaced.
@@ -56,6 +87,14 @@ const STATUS_OPTIONS = [
 export function AgentsScreen() {
   const settings = useDemoSettings();
   const toast = useToast();
+
+  const columns = useTableColumns(AGENT_COLUMNS, { initial: loadView() });
+  // Saved as text, so it is written when the view changes, not each render.
+  const view = JSON.stringify({
+    hidden: columns.hidden,
+    widths: columns.widths,
+  } satisfies ColumnsView);
+  useEffect(() => saveView(view), [view]);
 
   const [search, setSearch] = useState('');
   const [status, setStatus] = useState<AgentStatus | 'all'>('all');
@@ -244,6 +283,9 @@ export function AgentsScreen() {
           hideTags
           wrapperClassName="demo-toolbar__teams"
         />
+        <span className="demo-toolbar__end">
+          <TableColumnsMenu columns={columns} />
+        </span>
       </div>
 
       {/* Always rendered: its count is a live region that must already be in
@@ -318,7 +360,11 @@ export function AgentsScreen() {
       )}
 
       {result.status === 'loading' && (
-        <AgentsTableSkeleton rows={pageSize} sortProps={headerSort} />
+        <AgentsTableSkeleton
+          rows={pageSize}
+          sortProps={headerSort}
+          columns={columns}
+        />
       )}
 
       {result.status === 'error' && (
@@ -392,6 +438,7 @@ export function AgentsScreen() {
             id="agents-table"
             rows={rows}
             sortProps={headerSort}
+            columns={columns}
             selection={selection}
             onPause={(a, paused) => void pause([a], paused)}
             onDelete={(a) => setToDelete([a])}

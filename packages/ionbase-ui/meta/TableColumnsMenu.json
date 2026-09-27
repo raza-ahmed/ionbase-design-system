@@ -1,0 +1,71 @@
+{
+  "status": "stable",
+  "summary": "A Button that opens a checklist of a table's columns — checked is shown. Pair it with useTableColumns, which also gives resizable headers their handles.",
+  "useWhen": [
+    "a table has more columns than most people need at once, and which ones matter differs by person",
+    "a column's content is long — a purpose, a description — and people should be able to give it more room"
+  ],
+  "useInstead": [
+    {
+      "when": "some columns matter only on a narrow screen, or only on a wide one",
+      "use": "Table",
+      "why": "that is layout, not a choice: stickyFirstColumn and the table's own sideways scroll handle it; a menu asks each person to fix what the page should"
+    },
+    {
+      "when": "the choice is between a few fixed views of the same data — summary and detail",
+      "use": "SegmentedControl",
+      "why": "one control naming each view says what the choices are; a checklist of twelve columns makes each person build the view"
+    }
+  ],
+  "composition": {
+    "order": ["TableColumnsMenu", "Table"],
+    "note": "Declare the columns once as `TableColumn`s and pass them to `useTableColumns(columns)`. Render the header and body cells of `visibleColumns`, in that order, so a hidden column's cells are not in the table at all; spread `headerProps(key)` onto each header TableCell for its resize handle. Pass the hook's result to `TableColumnsMenu` as `columns`. Give the column that names each row `canHide: false`, and `canResize: true` with `defaultWidth`, `minWidth` and `maxWidth` to the columns whose content is long. To keep a view, store `hidden` and `widths` and restore them with `setHidden` and `setWidths`.",
+    "example": "const cols = useTableColumns([{ key: 'agent', label: 'Agent', canHide: false }, { key: 'purpose', label: 'Purpose', canResize: true, defaultWidth: 240 }, { key: 'owner', label: 'Owner' }]);\n<TableColumnsMenu columns={cols} />\n<Table aria-label=\"Agents\"><TableHead><TableRow>{cols.visibleColumns.map((c) => <TableCell key={c.key} header {...cols.headerProps(c.key)}>{c.label}</TableCell>)}</TableRow></TableHead>…</Table>"
+  },
+  "slots": {
+    "columns": {
+      "accepts": "useTableColumns",
+      "note": "the hook's whole result; the menu lists `columns` and changes `hidden`"
+    },
+    "label": {
+      "accepts": "text",
+      "note": "the button's text and so the menu's name; \"Columns\" by default"
+    }
+  },
+  "a11y": {
+    "role": "button that opens a menu of menuitemcheckbox rows",
+    "guarantees": [
+      "each column is a `menuitemcheckbox` that says whether it is shown; Space or a click toggles it, and the menu stays open for the next",
+      "a column that cannot be hidden is listed, checked and disabled, and the arrow keys skip it; so is the last column shown",
+      "the menu is named by its button, opens on ArrowDown and ArrowUp, and Escape returns focus to the button",
+      "a hidden column's cells are not rendered, so a screen reader's column count is the columns on screen"
+    ],
+    "requires": [
+      "every `TableColumn` has a `label` — its header text, and its row in the menu"
+    ],
+    "notes": [
+      "Resizing is a drag or the arrow keys on the handle. There is no single-pointer way to set a width other than dragging (WCAG 2.5.7); long content should still be readable at the default width — TruncatedText shows the rest on focus — so a width is a preference, never the only way to read a cell."
+    ]
+  },
+  "antiPatterns": [
+    {
+      "dont": "hiding a column with CSS, or rendering empty cells for it",
+      "do": "render the cells of `visibleColumns` only",
+      "why": "a screen reader still counts and reads the column, and the headers stop matching what is on screen"
+    },
+    {
+      "dont": "letting the naming column be hidden",
+      "do": "`canHide: false` on it",
+      "why": "rows of statuses and dates with nothing to say which row is which are not a table of anything"
+    },
+    {
+      "dont": "making every column resizable",
+      "why": "a handle on every header is a row of drag targets beside every sort button; give one to the columns whose content is long"
+    },
+    {
+      "dont": "clipping a cell's text to fit its width",
+      "do": "TruncatedText, which puts the rest in a tooltip on focus",
+      "why": "text cut off with no way to read it is lost, whatever width someone chose"
+    }
+  ]
+}
