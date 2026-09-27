@@ -62,7 +62,7 @@
 - [x] **Stack** — the Agents toolbar, its filters and the Assistant's suggestions, with their flex CSS deleted — 0.115.0
 - [x] **Grid** — the Overview's main column and its aside, and the new-agent form's paired fields, with their grid CSS and media queries deleted — 0.116.0
 - [x] **ThemeZone** — audited first: `data-theme` left light-inside-dark, plain text, `color-scheme` and every overlay behind. The shell's Header, dark on a light page, its Notifications dark with it — 0.117.0
-- [ ] **SkipLink** — and add it to the `PageShell` pattern
+- [x] **SkipLink** — first in the demo's shell on every page, Enter lands in <main> without touching the hash route; added to the `PageShell` pattern — 0.118.0
 
 ## P2 — build when a product asks
 

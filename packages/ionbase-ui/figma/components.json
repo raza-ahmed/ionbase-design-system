@@ -2135,6 +2135,16 @@
         }
       }
     },
+    "Skip Link": {
+      "page": "Link",
+      "id": "1668:241",
+      "kind": "COMPONENT",
+      "props": {
+        "Label#1668:0": {
+          "type": "TEXT"
+        }
+      }
+    },
     "Slider": {
       "page": "Slider",
       "id": "1533:308",

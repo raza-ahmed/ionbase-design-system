@@ -93,6 +93,17 @@ function clientApis(source) {
       }
     }
   }
+  // A function this module writes into its own JSX as a handler —
+  // `onClick={(e) => …}` — is a function the server would have to send, and
+  // React refuses to serialise one to anything, a DOM element included.
+  // Forwarding the caller's prop (`onClick={onDismiss}`) forces nothing: a
+  // Server Component could not have passed a function in the first place,
+  // so there it is undefined. SkipLink, whose one client-only need is its
+  // `onClick`, was reported as server-safe until this branch existed.
+  for (const [, prop] of source
+    .replace(/\/\*[\s\S]*?\*\/|\/\/.*$/gm, '')
+    .matchAll(/\s(on[A-Z]\w*)=\{\s*(?:\(|async\b|function\b|\w+\s*=>)/g))
+    found.add(`an inline ${prop} handler`);
   return found;
 }
 

@@ -3424,6 +3424,89 @@ try {
   }
 
   /*
+   * SkipLink, first on every page. One Tab from a fresh load reaches it,
+   * shown and on top of everything at the window's top-left; Enter moves
+   * focus into <main> without touching the hash route, and the next Tab is
+   * a control inside the content, past the whole Header.
+   */
+  for (const [device, width, height] of [
+    ['desktop', 1280, 900],
+    ['mobile', 390, 844],
+  ]) {
+    const where = `skip link (light, ${device})`;
+    if (skip(where)) continue;
+    const context = await browser.newContext({ viewport: { width, height } });
+    await context.addInitScript(() => {
+      localStorage.setItem(
+        'ionbase-ops:demo-settings',
+        JSON.stringify({ theme: 'light', latency: 0 }),
+      );
+    });
+    const page = await context.newPage();
+    page.on('pageerror', (e) => fail(where, `exception: ${e.message}`));
+    try {
+      for (const route of ['overview', 'agents']) {
+        // A fresh load each time: going from one hash route to another is
+        // the same document, and Tab would carry on from where focus was.
+        await page.goto(`${BASE}/#/${route}`);
+        await page.reload();
+        await page.locator('#page-title').waitFor({ timeout: 10_000 });
+        await page.keyboard.press('Tab');
+        const shown = await page.evaluate(() => {
+          const a = document.activeElement;
+          if (!a?.classList.contains('ion-skip-link'))
+            return { first: a?.textContent?.trim() || a?.tagName };
+          const r = a.getBoundingClientRect();
+          const hit = document.elementFromPoint(
+            r.left + r.width / 2,
+            r.top + r.height / 2,
+          );
+          return {
+            name: a.textContent,
+            onTop: a.contains(hit),
+            inView: r.top >= 0 && r.left >= 0 && r.width > 40,
+          };
+        });
+        if (shown.first)
+          fail(where, `${route}: the first Tab reaches "${shown.first}"`);
+        else {
+          if (shown.name !== 'Skip to main content')
+            fail(where, `${route}: the skip link says "${shown.name}"`);
+          if (!shown.inView)
+            fail(where, `${route}: the skip link is not shown`);
+          if (!shown.onTop)
+            fail(where, `${route}: something covers the skip link`);
+        }
+        await page.keyboard.press('Enter');
+        const landed = await page.evaluate(() => ({
+          main: document.activeElement?.id === 'main',
+          hash: window.location.hash,
+        }));
+        if (!landed.main) fail(where, `${route}: Enter did not reach <main>`);
+        if (landed.hash !== `#/${route}`)
+          fail(where, `${route}: the route became ${landed.hash}`);
+        await page.keyboard.press('Tab');
+        const next = await page.evaluate(() => ({
+          inMain: !!document.activeElement?.closest('main'),
+          what: document.activeElement?.textContent?.trim().slice(0, 40),
+        }));
+        if (!next.inMain)
+          fail(
+            where,
+            `${route}: the next Tab went to "${next.what}", outside <main>`,
+          );
+      }
+    } catch (e) {
+      fail(
+        where,
+        `did not run: ${e.message.split('\n').slice(0, 3).join(' | ')}`,
+      );
+    }
+    groupsChecked++;
+    await context.close();
+  }
+
+  /*
    * Timeline, as an agent's History on its Overview. An ordered list named
    * History, newest first; each event says what happened, who, and when in
    * a <time> with the exact instant; the markers are hidden. A purpose saved

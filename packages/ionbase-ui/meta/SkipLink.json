@@ -1,0 +1,54 @@
+{
+  "status": "stable",
+  "summary": "The first focusable thing on the page: a keyboard user's way past the header and navigation, straight to the content. Hidden until it has focus.",
+  "useWhen": [
+    "every page of an app with a header or navigation before its content — one, first in the body, pointing at <main>"
+  ],
+  "useInstead": [
+    {
+      "when": "a link to a section further down the same page",
+      "use": "Link",
+      "why": "a table of contents or an in-page link is always visible; a skip link exists only for the keyboard, only at the top"
+    }
+  ],
+  "composition": {
+    "order": ["SkipLink"],
+    "note": "Render it once, in the app shell, as the very first element in the body: before banners, before the Header. `target` is the `id` of the page's <main>. It moves focus to the target itself rather than following `#id`, so it works under a hash router; a target that is not focusable gets `tabindex=\"-1\"` while it holds focus, and the next Tab continues from inside it. Its words default to \"Skip to main content\"; pass children only to translate them. It is fixed at the window's top-left above everything while focused, so where it sits in the shell's layout does not matter.",
+    "example": "<body>\n  <SkipLink target=\"main\" />\n  <Header … />\n  <main id=\"main\" aria-labelledby=\"page-title\">…</main>\n</body>"
+  },
+  "slots": {
+    "children": {
+      "accepts": "text",
+      "note": "optional; the default is \"Skip to main content\""
+    }
+  },
+  "a11y": {
+    "guarantees": [
+      "the first Tab on a freshly loaded page reaches it, and it is shown, above anything fixed on the page, while it has focus",
+      "activating it puts focus inside the content: the next Tab is the content's first control, not the Header's",
+      "it leaves the URL alone, so a hash route is not replaced by `#main`",
+      "hidden by clipping, not `display: none`, so it stays in the tab order"
+    ],
+    "requires": [
+      "an element with the `target` id — the page's <main> — rendered on every page the link is"
+    ],
+    "notes": [
+      "It satisfies WCAG 2.4.1 Bypass Blocks. A missing target falls back to following the link, so it is never a dead control. After an in-app navigation the app's own focus management decides where focus goes; the skip link is for a fresh load and for anyone who returns to the top."
+    ]
+  },
+  "antiPatterns": [
+    {
+      "dont": "a skip link after the Header or the banners",
+      "why": "it is only useful as the first stop: a keyboard user has already tabbed through what it was meant to skip"
+    },
+    {
+      "dont": "`<a href=\"#main\">` by hand in an app with a hash router",
+      "do": "SkipLink",
+      "why": "following `#main` replaces the route: the page changes, or the router shows its not-found screen"
+    },
+    {
+      "dont": "several skip links, to each section",
+      "why": "a list of stops before the content is a second navigation to tab through; headings and landmarks already let a screen reader jump between sections"
+    }
+  ]
+}

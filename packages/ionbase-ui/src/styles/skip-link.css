@@ -1,0 +1,45 @@
+/*
+ * SkipLink
+ *
+ * Out of sight and out of the layout until it has focus — clipped, not
+ * `display: none`, which would take it out of the tab order too. Focused, it
+ * is fixed at the window's top-left over everything: z-index 1300, above the
+ * toast layer (1200), so nothing the page shows can cover it.
+ *
+ * Shown on any focus, not only `:focus-visible`: the only way to reach it is
+ * the keyboard, and a skip link that might stay hidden while focused is a
+ * focus indicator that might not show.
+ */
+.ion-skip-link {
+  position: fixed;
+  top: var(--spacing-8);
+  left: var(--spacing-8);
+  z-index: 1300;
+  padding: var(--spacing-8) var(--spacing-16);
+  border-radius: var(--radius-md);
+  background-color: var(--surface-raised);
+  box-shadow: var(--ion-shadow-shadow-lg);
+  color: var(--text-primary);
+  font-family: var(--font-family-sans);
+  font-size: var(--type-body-sm);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--type-body-sm-line-height);
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+  white-space: nowrap;
+
+  /* Fixed, so it takes no layout; clipped to nothing, so it paints none. */
+  clip-path: inset(50%);
+}
+
+.ion-skip-link:focus {
+  clip-path: none;
+  outline: var(--border-width-thick) solid var(--ring-focus);
+  outline-offset: 2px;
+}
+
+/* The target takes focus so the next Tab starts inside it; it is not a
+   control, and a ring around the whole page's content is noise. */
+[data-ion-skip-target]:focus {
+  outline: none;
+}

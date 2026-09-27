@@ -4,6 +4,7 @@
     "building any full application screen rather than an embedded widget"
   ],
   "composes": [
+    "SkipLink",
     "Header",
     "NavItem",
     "Sidebar",
@@ -28,6 +29,7 @@
     "ThemeZone"
   ],
   "structure": [
+    "A SkipLink first in the body, before any Banner and the Header, with `target` the id of <main>: the first Tab on any page reaches it, and Enter lands in the content. The shell renders it once; <main> carries the `id` on every route.",
     "Header at the top with the brand in `brand`, primary navigation in `center` and account actions in `end`.",
     "A Header that is dark whatever the page's theme is wrapped in `<ThemeZone theme=\"dark\" contents>`: `contents` keeps the Header the shell's sticky row, and what it opens — Notifications, an account menu — opens dark with it. What the shell mounts outside the Header, the navigation Drawer and the CommandPalette, follows the page. The page's own theme is `data-theme` on the root, never a zone around <main>.",
     "A Banner, for a notice about the whole product — maintenance, read-only mode, a scheduled deletion — goes above the Header, outside <main>, mounted by the shell so it persists across routes and is announced once. Several stack, the most severe first; one that must stay has no `dismissKey`.",
@@ -108,7 +110,8 @@
       "align",
       "as"
     ],
-    "ThemeZone": ["theme", "contents"]
+    "ThemeZone": ["theme", "contents"],
+    "SkipLink": ["target"]
   },
   "variantsUsed": {
     "ToastProvider": {
@@ -160,6 +163,11 @@
       "dont": "`data-theme=\"dark\"` by hand on the Header or a wrapper around it",
       "do": "ThemeZone with `contents`",
       "why": "the attribute alone leaves the Header's menus and popovers in the page's theme, since they are portalled out of it, and a wrapper with a box of its own unsticks the Header"
+    },
+    {
+      "dont": "a skip link anywhere but first, or none",
+      "do": "SkipLink as the first element of the shell",
+      "why": "a keyboard user otherwise tabs through every banner button and Header control on every page before reaching the content — WCAG 2.4.1"
     }
   ]
 }
