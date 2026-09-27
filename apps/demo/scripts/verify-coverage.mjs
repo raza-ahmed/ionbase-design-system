@@ -74,6 +74,7 @@ const REQUIRED = [
   'NotificationsPanel',
   'InlineEdit',
   'SelectableTile',
+  'TruncatedText',
   'MenuItem',
   'MenuSection',
   'MenuTrigger',

@@ -15,6 +15,7 @@ import {
   TableCell,
   TableHead,
   TableRow,
+  TruncatedText,
   type TableSortProps,
   type UseTableSelectionResult,
 } from 'ionbase-ui';
@@ -179,9 +180,12 @@ export function AgentsTable({
                     >
                       {a.name}
                     </Link>
-                    <span className="ion-text-caption demo-muted">
+                    {/* A purpose is written by whoever edits the agent, so
+                        no one can promise it is short: one line, and the
+                        rest a tab stop and a tooltip away. */}
+                    <TruncatedText className="ion-text-caption demo-muted">
                       {a.purpose}
-                    </span>
+                    </TruncatedText>
                   </span>
                 </TableCell>
                 <TableCell>

@@ -19,7 +19,7 @@
   ],
   "file": "gaLbGd0QNb1fUl6BjSpfBA",
   "appliedOn": "2026-09-26",
-  "verifiedInFigma": 97,
+  "verifiedInFigma": 98,
   "applied": {
     "1360:267": {
       "figmaComponent": "Accordion",
@@ -435,6 +435,11 @@
       "figmaComponent": "Tooltip",
       "component": "Tooltip",
       "hash": "7ad87137b8699fb8"
+    },
+    "1637:287": {
+      "figmaComponent": "Truncated Text",
+      "component": "TruncatedText",
+      "hash": "749c424a624c63bf"
     },
     "1432:282": {
       "figmaComponent": "Chart Tooltip",

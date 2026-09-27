@@ -1,0 +1,66 @@
+/*
+ * TruncatedText
+ *
+ * CUT BY CSS, NOT BY DROPPING CHARACTERS. The whole text stays in the DOM, so
+ * a screen reader, find-in-page and a copy all get all of it; the component
+ * measures `scrollWidth`/`scrollHeight` against the box to know it is cut.
+ *
+ * IT NEVER WIDENS ITS CONTAINER. One line is cut with `white-space: nowrap`,
+ * and nowrap text is as wide as its content — as a plain block in a table
+ * cell or a flex item it would push the column or the row wider instead of
+ * being cut. The root is a grid, so the text is a grid item with
+ * `overflow: hidden`, whose smallest size is zero: a table column shrinks to
+ * its share and cuts it. `min-width: 0` does the same for a flex or grid
+ * parent.
+ */
+.ion-truncated {
+  display: grid;
+  min-width: 0;
+  max-width: 100%;
+}
+
+.ion-truncated__text {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/*
+ * More than one line: clamped by line count. `-webkit-box` is the one layout
+ * `line-clamp` works with, in every engine, including Firefox.
+ */
+.ion-truncated--lines .ion-truncated__text {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: var(--ion-truncated-lines);
+  line-clamp: var(--ion-truncated-lines);
+  white-space: normal;
+
+  /* A long token — a URL, an ID — breaks rather than overflowing sideways. */
+  overflow-wrap: anywhere;
+}
+
+.ion-truncated__text[data-expanded] {
+  -webkit-line-clamp: unset;
+  line-clamp: none;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+/*
+ * A cut line is a tab stop, so it shows focus like one. The ring is drawn
+ * inset: the usual place for this text is a table cell, and a table's
+ * scroll container clips an outline drawn outside the box.
+ */
+.ion-truncated__text:focus-visible {
+  border-radius: var(--radius-xs);
+  outline: var(--border-width-thick) solid var(--border-focus);
+  outline-offset: calc(-1 * var(--border-width-thick));
+}
+
+.ion-truncated__toggle {
+  /* A grid item stretches; the button stays its own width. */
+  justify-self: start;
+  margin-top: var(--spacing-4);
+}

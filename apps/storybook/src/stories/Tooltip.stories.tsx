@@ -171,6 +171,32 @@ export const DescribesItsTrigger: Story = {
 };
 
 /**
+ * `describesTrigger={false}`: for a label that repeats the trigger's own
+ * text. It still opens on focus, but it is neither the description nor in
+ * the reading order, so a screen reader does not hear the text twice.
+ */
+export const CanRepeatWithoutDescribing: Story = {
+  render: (args) => (
+    <Frame>
+      <Tooltip {...args} label="Focus me" describesTrigger={false}>
+        <Button>Focus me</Button>
+      </Tooltip>
+    </Frame>
+  ),
+  play: async ({ canvas, userEvent }) => {
+    const trigger = canvas.getByRole('button', { name: 'Focus me' });
+    await userEvent.tab();
+    const tip = await waitFor(() => {
+      const el = document.querySelector('.ion-tooltip');
+      if (!el) throw new Error('tooltip not open');
+      return el as HTMLElement;
+    });
+    await expect(trigger).not.toHaveAttribute('aria-describedby');
+    await expect(tip).toHaveAttribute('aria-hidden', 'true');
+  },
+};
+
+/**
  * Keyboard focus opens it too — the assertion that matters most here.
  *
  * A hover-only tooltip is invisible to keyboard and switch users, and it is

@@ -52,7 +52,7 @@
 - [x] **NotificationsPanel** — the header bell on every page: grouped by day, read toggles, Mark all as read, empty and loading — 0.105.0
 - [x] **InlineEdit** — an agent's purpose under its name, edited in place — 0.106.0
 - [x] **SelectableTile** — the new-agent wizard's "What starts a run?", three radio tiles with a sentence each — 0.107.0
-- [ ] **TruncatedText**
+- [x] **TruncatedText** — an agent's purpose in the Agents table, one line with the rest on focus — 0.108.0
 - [ ] **Timeline**
 - [ ] **Table: expandable rows**
 - [ ] **Table: sticky header and first column**

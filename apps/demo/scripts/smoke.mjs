@@ -2260,6 +2260,11 @@ try {
               document.activeElement.value.length,
         }));
       const field = page.getByRole('textbox', { name: 'Purpose' });
+      // Each return to view mode names itself, so a timeout says which.
+      const backToView = (when) =>
+        edit.waitFor({ timeout: 5_000 }).catch(() => {
+          throw new Error(`Edit purpose did not come back ${when}`);
+        });
 
       await edit.focus();
       await page.keyboard.press('Enter');
@@ -2317,7 +2322,7 @@ try {
       const tabs = page.getByRole('navigation', { name: /sections$/ });
       await tabs.getByRole('link', { name: 'Runs', exact: true }).click();
       await tabs.getByRole('link', { name: 'Overview', exact: true }).click();
-      await edit.waitFor({ timeout: 5_000 });
+      await backToView('after coming back to Overview');
       if (
         (await page.locator('.ion-inline-edit__value').textContent()) !== next
       )
@@ -2326,9 +2331,16 @@ try {
       await edit.focus();
       await page.keyboard.press('Enter');
       await field.waitFor({ timeout: 5_000 });
+      // Focus moves in a frame after the field appears; typing before it
+      // lands sends the Escape below to nothing, and the edit stays open.
+      await page.waitForFunction(
+        () => document.activeElement?.getAttribute('aria-label') === 'Purpose',
+        null,
+        { timeout: 5_000 },
+      );
       await page.keyboard.type('Something else');
       await page.keyboard.press('Escape');
-      await edit.waitFor({ timeout: 5_000 });
+      await backToView('after Escape threw the edit away');
       if (
         (await page.locator('.ion-inline-edit__value').textContent()) !== next
       )
@@ -2360,7 +2372,7 @@ try {
         fail(where, `an empty purpose was not refused (${refused.why})`);
       if (!refused.focused) fail(where, 'focus left the refused field');
       await page.keyboard.press('Escape');
-      await edit.waitFor({ timeout: 5_000 });
+      await backToView('after Escape left the refused field');
 
       await page.getByRole('button', { name: /^Demo/ }).click();
       await page.getByLabel('Screen state').selectOption('partial');
@@ -2488,6 +2500,112 @@ try {
         if (new Set(lefts).size !== 1)
           fail(where, 'the tiles are not one column on a phone');
       }
+      if (
+        await page.evaluate(
+          () => document.documentElement.scrollWidth > window.innerWidth,
+        )
+      )
+        fail(where, 'the page scrolls sideways');
+
+      await page.addScriptTag({ content: axeSource });
+      const violations = await page.evaluate(async () => {
+        const result = await window.axe.run(document, {
+          resultTypes: ['violations'],
+        });
+        return result.violations.map((v) => `${v.impact} ${v.id}`);
+      });
+      for (const v of violations) fail(where, `axe ${v}`);
+    } catch (e) {
+      fail(
+        where,
+        `did not run: ${e.message.split('\n').slice(0, 3).join(' | ')}`,
+      );
+    }
+    groupsChecked++;
+    await context.close();
+  }
+
+  /*
+   * TruncatedText, as an agent's purpose in the Agents table. A long purpose
+   * is cut to one line with the whole text still in the DOM; cut, it is the
+   * next tab stop after the agent's name, and focus shows the whole text in
+   * a tooltip that is not read a second time. Escape closes it. A purpose
+   * that fits is no tab stop; axe.
+   */
+  for (const [device, width, height] of [
+    ['desktop', 1280, 900],
+    ['mobile', 390, 844],
+  ]) {
+    const where = `truncated text (light, ${device})`;
+    const context = await browser.newContext({ viewport: { width, height } });
+    await context.addInitScript(() => {
+      localStorage.setItem(
+        'ionbase-ops:demo-settings',
+        JSON.stringify({ theme: 'light', latency: 0 }),
+      );
+    });
+    const page = await context.newPage();
+    page.on('pageerror', (e) => fail(where, `exception: ${e.message}`));
+    await page.goto(`${BASE}/#/agents`);
+    const FULL =
+      'Highlights non-standard terms in vendor contracts and flags every clause that needs legal review before signature';
+    try {
+      const search = page.getByRole('searchbox', { name: 'Search agents' });
+      await search.waitFor({ timeout: 10_000 });
+      await search.fill('contract');
+      const name = page.getByRole('link', { name: 'Contract clause checker' });
+      await name.waitFor({ timeout: 5_000 });
+      const row = page.getByRole('row').filter({ has: name });
+      const line = row.locator('.ion-truncated__text');
+      const state = await line.evaluate((el) => ({
+        text: el.textContent,
+        cut: el.scrollWidth > el.clientWidth,
+      }));
+      if (state.text !== FULL)
+        fail(where, `the purpose in the DOM is "${state.text}"`);
+      if (!state.cut) fail(where, 'the long purpose is not cut');
+      await line
+        .and(page.locator('[tabindex="0"]'))
+        .waitFor({ timeout: 5_000 })
+        .catch(() => fail(where, 'the cut purpose is not a tab stop'));
+
+      await name.focus();
+      await page.keyboard.press('Tab');
+      await page
+        .waitForFunction(
+          (full) => document.activeElement?.textContent === full,
+          FULL,
+          { timeout: 5_000 },
+        )
+        .catch(() =>
+          fail(where, 'Tab from the name did not reach the purpose'),
+        );
+      const tip = page.locator('.ion-tooltip');
+      await tip
+        .waitFor({ timeout: 5_000 })
+        .catch(() => fail(where, 'focus did not open the tooltip'));
+      if ((await tip.textContent()) !== FULL)
+        fail(where, 'the tooltip is not the whole purpose');
+      if ((await tip.getAttribute('aria-hidden')) !== 'true')
+        fail(where, 'the tooltip copy is in the reading order');
+      if ((await line.getAttribute('aria-describedby')) !== null)
+        fail(where, 'the purpose is described by its own copy');
+      await page.keyboard.press('Escape');
+      await tip
+        .waitFor({ state: 'detached', timeout: 5_000 })
+        .catch(() => fail(where, 'Escape did not close the tooltip'));
+
+      await search.fill('expense');
+      const short = page
+        .getByRole('row')
+        .filter({
+          has: page.getByRole('link', { name: 'Expense auditor' }),
+        })
+        .locator('.ion-truncated__text');
+      await short.waitFor({ timeout: 5_000 });
+      if ((await short.getAttribute('tabindex')) !== null)
+        fail(where, 'a purpose that fits is a tab stop');
+
       if (
         await page.evaluate(
           () => document.documentElement.scrollWidth > window.innerWidth,

@@ -60,7 +60,7 @@ const SEED: [string, string, AgentStatus, string][] = [
   ],
   [
     'Contract clause checker',
-    'Highlights non-standard terms in vendor contracts',
+    'Highlights non-standard terms in vendor contracts and flags every clause that needs legal review before signature',
     'running',
     'legal',
   ],
