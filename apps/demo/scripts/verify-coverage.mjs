@@ -95,6 +95,7 @@ const REQUIRED = [
   'PhoneInput',
   'FileUpload',
   'Divider',
+  'Stack',
   'Accordion',
   'AccordionItem',
   // Phase 3 — Runs and Assistant

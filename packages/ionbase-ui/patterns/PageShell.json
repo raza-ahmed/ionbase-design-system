@@ -22,7 +22,8 @@
     "Banner",
     "Popover",
     "Tooltip",
-    "NotificationsPanel"
+    "NotificationsPanel",
+    "Stack"
   ],
   "structure": [
     "Header at the top with the brand in `brand`, primary navigation in `center` and account actions in `end`.",
@@ -32,7 +33,8 @@
     "Breadcrumbs, when present, go in PageHeader's `breadcrumb` slot, inside <main> above the h1 — they describe where the content is, not where the chrome is.",
     "When navigation is hierarchical or longer than a header row holds, a Sidebar replaces the NavItems in Header's `center`: Header keeps the brand and account actions, and the Sidebar sits beside <main> as the primary navigation. Below the tablet breakpoint the same Sidebar moves into a Drawer opened by Header's own toggle with `menuType=\"dialog\"` — one copy, not two, and one menu button.",
     "A CommandPalette, when the product has one, is mounted once inside the shell beside ToastProvider, not per route. Header's `end` carries a Search button showing <Kbd shortcut=\"mod+k\" /> — the visible door for anyone who does not know the shortcut, and the only one on a phone. Everything in the palette is also reachable from the navigation.",
-    "Notifications, when the product has them, are a bell in Header's `end`: a Tooltip inside a Popover titled Notifications, size `lg`, whose content is a NotificationsPanel. The bell's name carries the count — \"Notifications, 2 unread\" — because a dot on it is not read. The shell loads them once, so the count is right on every page before the panel is opened, and opening a notification closes the panel."
+    "Notifications, when the product has them, are a bell in Header's `end`: a Tooltip inside a Popover titled Notifications, size `lg`, whose content is a NotificationsPanel. The bell's name carries the count — \"Notifications, 2 unread\" — because a dot on it is not read. The shell loads them once, so the count is right on every page before the panel is opened, and opening a notification closes the panel.",
+    "Inside <main>, the page is a Stack: its sections one after another — PageHeader, a filter row, the content — with a gap from the scale (20 to 32 between sections). A row of filters or suggestions inside it is a `direction=\"row\" wrap` Stack with gap 8, never hand-written flex CSS."
   ],
   "states": {
     "loading": {
@@ -91,7 +93,8 @@
       "breadcrumb",
       "status",
       "actions"
-    ]
+    ],
+    "Stack": ["direction", "gap", "align", "justify", "wrap", "as"]
   },
   "variantsUsed": {
     "ToastProvider": {
@@ -133,6 +136,11 @@
     {
       "dont": "a hand-built title block instead of PageHeader",
       "why": "the demo had five, in three shapes, with actions aligned three ways; PageHeader is the one shape, and the one place its gaps and alignment are decided"
+    },
+    {
+      "dont": "a page laid out with hand-written flex CSS and pixel gaps",
+      "do": "Stack, with a gap from the spacing scale",
+      "why": "every screen then has its own spacing, and nothing checks it against the tokens"
     }
   ]
 }

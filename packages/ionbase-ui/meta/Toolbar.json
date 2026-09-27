@@ -8,8 +8,8 @@
   "useInstead": [
     {
       "when": "the row holds a search field or filters",
-      "use": "a plain flex row",
-      "why": "Tab leaves a toolbar in one press and ← → belong to the caret, so a text field inside strands every filter after it — WAI-ARIA's own caution"
+      "use": "Stack",
+      "why": "a `direction=\"row\" wrap` Stack keeps every control its own tab stop — Tab leaves a toolbar in one press and ← → belong to the caret, so a text field inside strands every filter after it (WAI-ARIA's own caution)"
     },
     {
       "when": "two or three actions in a dialog, drawer or form footer",

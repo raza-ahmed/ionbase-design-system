@@ -1,0 +1,80 @@
+{
+  "status": "stable",
+  "summary": "Children in a column or a row with a gap from the spacing scale between them. Reach for it before writing flex CSS; `gap` takes the scale's steps and nothing else.",
+  "useWhen": [
+    "laying out a group of things one after another — the sections of a page, the fields of a form, the controls of a filter row",
+    "a row of controls that should wrap onto more lines on a narrow screen rather than overflow"
+  ],
+  "useInstead": [
+    {
+      "when": "the layout has columns that line up across rows — cards, stat tiles, a form in two columns",
+      "use": "a CSS grid",
+      "why": "a wrapping row lines its items up per line, not across lines; a grid keeps every row's columns the same width"
+    },
+    {
+      "when": "a row of related controls a keyboard user should cross with the arrow keys",
+      "use": "Toolbar",
+      "why": "a Toolbar is one tab stop with arrow keys between its controls; a Stack is layout and leaves every control its own tab stop"
+    },
+    {
+      "when": "two or three actions at the end of a dialog, drawer or form",
+      "use": "ButtonGroup",
+      "why": "it orders the primary action, and moves the rest into More actions when there is no room"
+    }
+  ],
+  "composition": {
+    "order": ["Stack"],
+    "note": "`direction` is `column` (the default) or `row`; `gap` is a step of the spacing scale — 16 by default. A row centres its children on the line and a column stretches them; `align` overrides either, `justify=\"between\"` pushes the first and last to the ends, and `wrap` lets a row break onto more lines. Pass `as` for the element that means something — `ul` for a list (its bullets and indent are removed; give each child an `li`), `nav` for links, `form`, `fieldset`. Nest Stacks for a row inside a column; each keeps its own gap. Gaps by what they separate: 4 for tight pairs (an icon and its label), 8 for controls in a row, 16 for fields and items (the default), 24 for sections of a card or panel, 32 for sections of a page.",
+    "example": "<Stack gap={24}>\n  <PageHeader title=\"Agents\" />\n  <Stack direction=\"row\" wrap gap={8}>\n    <SearchField size=\"sm\" aria-label=\"Search agents\" />\n    <Select size=\"sm\" aria-label=\"Status\" options={statuses} />\n  </Stack>\n  <Table aria-label=\"Agents\">…</Table>\n</Stack>"
+  },
+  "variants": {
+    "direction": {
+      "column": {
+        "use": "the default — things read top to bottom: page sections, fields, cards in a list"
+      },
+      "row": {
+        "use": "things along a line: a filter row, a name beside its avatar, suggestions; add `wrap` when it may not fit"
+      }
+    }
+  },
+  "slots": {
+    "children": {
+      "accepts": "any",
+      "note": "laid out in order; `li` children when `as` is `ul` or `ol`"
+    }
+  },
+  "a11y": {
+    "guarantees": [
+      "layout only: it adds no role, so the element given by `as` — or the children — carry the meaning",
+      "the visual order is the DOM order: no `order` or reversed direction that would make reading and tabbing disagree",
+      "a row's children shrink to fit, so text wraps or is cut rather than pushing the row past the screen's edge",
+      "`as=\"ul\"` stays a list to a screen reader while losing its bullets"
+    ],
+    "requires": [
+      "`as` for a group that means something — a list, navigation, a form — rather than a div"
+    ],
+    "notes": [
+      "It renders on a server. A gap off the spacing scale is a type error, not a style."
+    ]
+  },
+  "antiPatterns": [
+    {
+      "dont": "a hand-written `display: flex` with a pixel gap",
+      "do": "Stack with a `gap` step",
+      "why": "a gap outside the scale is the first place a screen drifts off the tokens, and nothing catches it"
+    },
+    {
+      "dont": "wrapping a single child in a Stack",
+      "why": "a gap between one thing and nothing is no layout at all — the Stack is noise in the tree"
+    },
+    {
+      "dont": "a Stack of cards that should line up in columns",
+      "do": "a CSS grid",
+      "why": "a wrapping row sizes each line on its own, so the columns never line up"
+    },
+    {
+      "dont": "reversing a row with CSS to put the primary action last",
+      "why": "the visual order and the tab order then disagree — write the children in the order they are read"
+    }
+  ]
+}

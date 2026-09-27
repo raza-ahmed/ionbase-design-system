@@ -1,5 +1,41 @@
 # Changelog
 
+## 0.115.0 — 2026-09-27
+
+### Added — Stack
+
+Children in a column or a row, with a gap from the spacing scale between
+them. It is the twentieth P1 item on the enterprise checklist: the layout
+primitive an agent reaches for before writing flex CSS, which is where
+token discipline breaks.
+
+- **`gap` is the spacing scale, typed.** `0 | 2 | 4 | … | 64`, one class per
+  step, never an inline style. `gap={10}` is a type error, and a story with
+  `@ts-expect-error` makes the typecheck gate prove it.
+- **Direction and alignment.** `direction` is `column` (the default) or
+  `row`. A column stretches its children; a row centres them on the line.
+  `align` and `justify` override either (`between` pushes the first and
+  last to the ends), and `wrap` lets a row break onto more lines.
+- **A row's children shrink.** Text in them wraps or is cut, rather than
+  pushing the row past the screen's edge.
+- **`as`** picks the element that means something: `ul`, `nav`, `form`,
+  `fieldset` and others. A `ul` loses its bullets and indent but stays a
+  list. Stack itself adds no role, and it renders on a server.
+- **Figma:** code-only. Auto layout is Stack, so a Stack component would be
+  a frame wrapped in a frame.
+- **Meta:** Toolbar's "use a plain flex row instead" now points at Stack.
+- **Demo:** four rows are now Stacks, and their hand-written flex CSS is
+  deleted: the Agents toolbar, its active filters, and the Assistant's two
+  suggestion rows. The smoke check measures each gap between siblings
+  against `--spacing-8`, checks that the toolbar wraps on a phone, and
+  checks every line of the empty state's suggestions is centred. Each of
+  four mutations fails it; two first survived until the check judged "same
+  line" by vertical overlap and looked at every line.
+- **Stories:** 15. All 11 mutations fail one, the dropped type scale
+  through the typecheck. One first survived, a row child's `min-width: 0`,
+  until a story with a one-line child that cannot wrap was added.
+- **Pattern:** PageShell lays the page out as a Stack.
+
 ## 0.114.0 — 2026-09-27
 
 ### Added — ChatMessage

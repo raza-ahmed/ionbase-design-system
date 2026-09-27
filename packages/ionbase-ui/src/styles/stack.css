@@ -1,0 +1,129 @@
+/*
+ * Stack
+ *
+ * Flex, a direction, and a gap from the spacing scale — one class per step,
+ * so no gap is ever an inline style or a number outside the scale.
+ *
+ * A column stretches its children across; a row centres them on the line,
+ * which is what a row of controls wants. `align` overrides either.
+ *
+ * `min-width: 0` on a row's children, so text in one can shrink and wrap
+ * rather than pushing the row wider than its container.
+ */
+.ion-stack {
+  display: flex;
+  gap: var(--ion-stack-gap, var(--spacing-16));
+}
+
+.ion-stack--column {
+  flex-direction: column;
+}
+
+.ion-stack--row {
+  flex-direction: row;
+  align-items: center;
+}
+
+.ion-stack--row > * {
+  min-width: 0;
+}
+
+/* Lists lose their bullets and indent: the Stack is the layout. */
+ul.ion-stack,
+ol.ion-stack {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ion-stack--wrap {
+  flex-wrap: wrap;
+}
+
+.ion-stack--gap-0 {
+  --ion-stack-gap: var(--spacing-0);
+}
+
+.ion-stack--gap-2 {
+  --ion-stack-gap: var(--spacing-2);
+}
+
+.ion-stack--gap-4 {
+  --ion-stack-gap: var(--spacing-4);
+}
+
+.ion-stack--gap-6 {
+  --ion-stack-gap: var(--spacing-6);
+}
+
+.ion-stack--gap-8 {
+  --ion-stack-gap: var(--spacing-8);
+}
+
+.ion-stack--gap-12 {
+  --ion-stack-gap: var(--spacing-12);
+}
+
+.ion-stack--gap-16 {
+  --ion-stack-gap: var(--spacing-16);
+}
+
+.ion-stack--gap-20 {
+  --ion-stack-gap: var(--spacing-20);
+}
+
+.ion-stack--gap-24 {
+  --ion-stack-gap: var(--spacing-24);
+}
+
+.ion-stack--gap-32 {
+  --ion-stack-gap: var(--spacing-32);
+}
+
+.ion-stack--gap-40 {
+  --ion-stack-gap: var(--spacing-40);
+}
+
+.ion-stack--gap-48 {
+  --ion-stack-gap: var(--spacing-48);
+}
+
+.ion-stack--gap-64 {
+  --ion-stack-gap: var(--spacing-64);
+}
+
+.ion-stack--align-start {
+  align-items: flex-start;
+}
+
+.ion-stack--align-center {
+  align-items: center;
+}
+
+.ion-stack--align-end {
+  align-items: flex-end;
+}
+
+.ion-stack--align-stretch {
+  align-items: stretch;
+}
+
+.ion-stack--align-baseline {
+  align-items: baseline;
+}
+
+.ion-stack--justify-start {
+  justify-content: flex-start;
+}
+
+.ion-stack--justify-center {
+  justify-content: center;
+}
+
+.ion-stack--justify-end {
+  justify-content: flex-end;
+}
+
+.ion-stack--justify-between {
+  justify-content: space-between;
+}

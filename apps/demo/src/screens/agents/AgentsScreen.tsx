@@ -8,6 +8,7 @@ import {
   PageHeader,
   Pagination,
   SearchField,
+  Stack,
   MultiSelect,
   Select,
   TableBatchBar,
@@ -252,7 +253,7 @@ export function AgentsScreen() {
         </Alert>
       )}
 
-      <div className="demo-toolbar">
+      <Stack direction="row" wrap gap={8} className="demo-toolbar">
         <SearchField
           size="sm"
           ref={searchRef}
@@ -286,7 +287,7 @@ export function AgentsScreen() {
         <span className="demo-toolbar__end">
           <TableColumnsMenu columns={columns} />
         </span>
-      </div>
+      </Stack>
 
       {/* Always rendered: its count is a live region that must already be in
           the page when the first row is ticked. Hidden while nothing is. */}
@@ -329,7 +330,7 @@ export function AgentsScreen() {
       {/* What is applied, each removable on its own — the selects only show
           their own value, and the search box can be scrolled out of view. */}
       {filtered && (
-        <div className="demo-active-filters">
+        <Stack direction="row" wrap align="end" gap={8}>
           <TagGroup
             label="Active filters"
             items={activeFilters}
@@ -356,7 +357,7 @@ export function AgentsScreen() {
           >
             Clear all
           </Button>
-        </div>
+        </Stack>
       )}
 
       {result.status === 'loading' && (

@@ -15,6 +15,7 @@ import {
   PromptInput,
   ScrollProgress,
   Spinner,
+  Stack,
   StreamingText,
 } from 'ionbase-ui';
 
@@ -189,7 +190,13 @@ export function AssistantScreen() {
             title="Ask about your agents"
             description="Every answer shows what it was drawn from and how far to trust it. Try one of these:"
           >
-            <div className="demo-suggestions">
+            <Stack
+              direction="row"
+              wrap
+              justify="center"
+              gap={8}
+              className="demo-suggestions"
+            >
               {SUGGESTIONS.map((s) => (
                 <Button
                   key={s.id}
@@ -205,7 +212,7 @@ export function AssistantScreen() {
                   {s.question}
                 </Button>
               ))}
-            </div>
+            </Stack>
           </EmptyState>
         )}
 
@@ -238,7 +245,13 @@ export function AssistantScreen() {
             sendLabel="Ask"
           />
           {turns.length > 0 && !busy && (
-            <span className="demo-suggestions">
+            <Stack
+              as="span"
+              direction="row"
+              wrap
+              gap={8}
+              className="demo-suggestions"
+            >
               {SUGGESTIONS.filter(
                 (s) => !turns.some((t) => t.answer.id === s.id),
               ).map((s) => (
@@ -256,7 +269,7 @@ export function AssistantScreen() {
                   {s.question}
                 </Button>
               ))}
-            </span>
+            </Stack>
           )}
         </div>
       </div>
