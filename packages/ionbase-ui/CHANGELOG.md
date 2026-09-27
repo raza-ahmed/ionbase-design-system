@@ -1,5 +1,42 @@
 # Changelog
 
+## 0.116.0 — 2026-09-27
+
+### Added — Grid
+
+Columns that line up across rows, with gaps from the spacing scale. It is
+the twenty-first P1 item on the enterprise checklist and Stack's partner:
+Stack lays things along one line, Grid keeps every row's columns the same
+width.
+
+- **`columns`** is a count of equal columns (`1`–`6` or `12`) or each
+  column's share of the row (`[2, 1]`: a main column twice its aside). It
+  defaults to 2. Every column is `minmax(0, …)`, so a wide child such as a
+  table or a long ID scrolls inside its cell instead of widening the page.
+- **`collapse`** says where fixed columns fall to one, at the tokens' own
+  breakpoints: `mobile` (767px and below, the default), `tablet` (1023px
+  and below) or `never`.
+- **`minColumnWidth`** (160–360) fills each row with as many equal columns
+  as fit, so a set of cards needs no breakpoint. With fewer cards than fit,
+  each keeps a column's width, and on a space narrower than the minimum it
+  becomes one column that does not overflow.
+- **`gap` and `rowGap`** are the spacing scale, typed, as in Stack. A
+  nested Grid keeps its own gaps.
+- **`align`**: cells in a row stretch to the tallest by default; `start`
+  lets each keep its own height. **`as`** picks the element (`ul` loses its
+  bullets and stays a list). Grid adds no role, and it renders on a server.
+- **Figma:** code-only. Auto layout's grid mode is Grid, so a Grid
+  component would be a frame wrapped in a frame.
+- **Meta:** Stack's "use a CSS grid instead" now points at Grid.
+- **Patterns:** PageShell says a main column and its aside are a Grid, and
+  that cards use `minColumnWidth`. Form's paired fields are a two-column
+  Grid.
+- **Demo:** the Overview's main column and its aside (loaded and loading)
+  and the new-agent form's Owning team and Model are now Grids, and their
+  grid CSS and media queries are deleted. The smoke check measures each
+  pair: on one row on a desktop, 2:1 and equal, with the named gap between
+  them; on a phone, one column at full width with the gap between the rows.
+
 ## 0.115.0 — 2026-09-27
 
 ### Added — Stack

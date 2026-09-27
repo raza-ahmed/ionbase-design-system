@@ -9,6 +9,7 @@ import {
   Divider,
   Fieldset,
   FileUpload,
+  Grid,
   Input,
   NumberInput,
   PhoneInput,
@@ -125,7 +126,7 @@ export function BasicsStep({
         description="One or two sentences a reviewer can check a run against."
         {...invalid(errors, 'purpose')}
       />
-      <div className="demo-form__pair">
+      <Grid columns={2} align="start">
         <Select
           id="field-team"
           label="Owning team"
@@ -149,7 +150,7 @@ export function BasicsStep({
           emptyLabel="No model matches. Try a size, like “L”, or a use, like “code”."
           {...invalid(errors, 'model')}
         />
-      </div>
+      </Grid>
     </div>
   );
 }

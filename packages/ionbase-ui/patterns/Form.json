@@ -22,10 +22,11 @@
     "Alert",
     "Divider",
     "InlineEdit",
-    "SelectableTile"
+    "SelectableTile",
+    "Grid"
   ],
   "structure": [
-    "Fields in a single column. Two columns only for genuinely paired values, and they stack below the mobile breakpoint.",
+    "Fields in a single column. Two columns only for genuinely paired values — a Grid with `columns={2}` and `align=\"start\"`, so a field with an error does not stretch its neighbour; its default `collapse=\"mobile\"` puts them one above the other below the mobile breakpoint.",
     "Each field carries its own label and, when invalid, its own errorMessage — the message sits with the control it is about.",
     "Guidance needed to fill a field in goes in its `description`, always visible. An explanation most people will not need — why a limit exists, where to read more — goes in a Toggletip right after the label text, where it can hold a link.",
     "Related fields that answer one question — an address, a pair of limits, a set of checkboxes — sit in a Fieldset, CheckboxGroup or RadioGroup, so the question is announced with each field and a group-level error has somewhere to live.",
@@ -104,7 +105,8 @@
       "selectedKeys",
       "onSelectionChange",
       "defaultExpandedKeys"
-    ]
+    ],
+    "Grid": ["columns", "align"]
   },
   "variantsUsed": {
     "Alert": {

@@ -8,8 +8,8 @@
   "useInstead": [
     {
       "when": "the layout has columns that line up across rows — cards, stat tiles, a form in two columns",
-      "use": "a CSS grid",
-      "why": "a wrapping row lines its items up per line, not across lines; a grid keeps every row's columns the same width"
+      "use": "Grid",
+      "why": "a wrapping row lines its items up per line, not across lines; a Grid keeps every row's columns the same width"
     },
     {
       "when": "a row of related controls a keyboard user should cross with the arrow keys",
@@ -69,7 +69,7 @@
     },
     {
       "dont": "a Stack of cards that should line up in columns",
-      "do": "a CSS grid",
+      "do": "Grid",
       "why": "a wrapping row sizes each line on its own, so the columns never line up"
     },
     {

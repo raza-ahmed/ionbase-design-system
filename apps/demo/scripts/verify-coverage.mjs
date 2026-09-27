@@ -96,6 +96,7 @@ const REQUIRED = [
   'FileUpload',
   'Divider',
   'Stack',
+  'Grid',
   'Accordion',
   'AccordionItem',
   // Phase 3 — Runs and Assistant
