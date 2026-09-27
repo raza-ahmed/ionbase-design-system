@@ -66,6 +66,29 @@
         }
       }
     },
+    "AI Label": {
+      "page": "AI Label",
+      "id": "1661:272",
+      "kind": "SET",
+      "props": {
+        "Explanation#1661:5": {
+          "type": "TEXT"
+        },
+        "Show Edited#1661:0": {
+          "type": "BOOLEAN"
+        },
+        "Size": {
+          "type": "VARIANT",
+          "options": ["Medium", "Small"],
+          "default": "Medium"
+        },
+        "State": {
+          "type": "VARIANT",
+          "options": ["Closed", "Open"],
+          "default": "Closed"
+        }
+      }
+    },
     "Accordion": {
       "page": "Accordion",
       "id": "1360:267",

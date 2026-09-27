@@ -1,0 +1,79 @@
+/*
+ * AILabel
+ *
+ * A Toggletip whose button is the mark, so the bubble is Toggletip's own —
+ * `.ion-toggletip__bubble` and its arrow, from toggletip.css. Only the
+ * button and the explanation's heading are drawn here.
+ *
+ *   mark     a pill in the primary role, not information blue: it says who
+ *            made the content, not the state of anything. Caption, semibold.
+ *   md       24px tall — the target (WCAG 2.5.8) — pulled into the line
+ *            with a negative margin, like Toggletip's button
+ *   sm       20px drawn, the target still 24 through an invisible margin
+ *   edited   "Edited" after a rule, regular weight: the mark stays first
+ *
+ * The root is also `.ion-toggletip`, which places it in the line; its own
+ * class is a hook for sizing and for callers, with no rules of its own.
+ */
+.ion-ai-label__button {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-4);
+  height: var(--spacing-24);
+  margin-block: calc(var(--spacing-4) * -1);
+  padding: 0 var(--spacing-8);
+  color: var(--text-primary);
+  background-color: var(--surface-primary-subtle);
+  border: var(--border-width-default) solid var(--border-primary-subtle);
+  border-radius: var(--radius-full);
+  font-family: var(--font-family-sans);
+  font-size: var(--type-caption);
+  line-height: var(--type-caption-line-height);
+  font-weight: var(--font-weight-semibold);
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background-color var(--ion-duration-base) var(--ion-ease-out);
+}
+
+.ion-ai-label--sm .ion-ai-label__button {
+  height: var(--spacing-20);
+  margin-block: calc(var(--spacing-2) * -1);
+  padding: 0 var(--spacing-6);
+}
+
+/* The 24px target around the 20px mark. */
+.ion-ai-label--sm .ion-ai-label__button::after {
+  position: absolute;
+  inset: calc(var(--spacing-2) * -1) 0;
+  content: '';
+}
+
+.ion-ai-label__button:hover,
+.ion-ai-label__button[data-open] {
+  background-color: var(--surface-primary-subtle-hover);
+}
+
+.ion-ai-label__button[data-focus-visible] {
+  outline: var(--border-width-thick) solid var(--border-focus);
+  outline-offset: 2px;
+}
+
+.ion-ai-label__edited {
+  padding-inline-start: var(--spacing-4);
+  border-inline-start: var(--border-width-default) solid
+    var(--border-primary-subtle);
+  font-weight: var(--font-weight-regular);
+}
+
+.ion-ai-label__title {
+  display: block;
+  margin-bottom: var(--spacing-4);
+  font-weight: var(--font-weight-semibold);
+}
+
+@media (forced-colors: active) {
+  .ion-ai-label__button {
+    border-color: ButtonText;
+  }
+}

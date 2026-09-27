@@ -18,13 +18,24 @@
     {
       "when": "it is a status rather than a reliability",
       "use": "Badge"
+    },
+    {
+      "when": "the reader needs to know the content was generated, not how far to trust it",
+      "use": "AILabel",
+      "why": "who made it and how good it is are different questions; pair them when both matter"
     }
   ],
   "variants": {
     "level": {
-      "low": { "use": "thin or conflicting evidence. One bar, warning colour" },
-      "medium": { "use": "reasonable support with real gaps. Two bars" },
-      "high": { "use": "corroborated, and you can say by what. Three bars" }
+      "low": {
+        "use": "thin or conflicting evidence. One bar, warning colour"
+      },
+      "medium": {
+        "use": "reasonable support with real gaps. Two bars"
+      },
+      "high": {
+        "use": "corroborated, and you can say by what. Three bars"
+      }
     }
   },
   "a11y": {

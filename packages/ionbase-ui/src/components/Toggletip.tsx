@@ -76,16 +76,39 @@ const InfoGlyph = () => (
  *     when focus leaves the button and bubble together. It never traps focus
  *     and never hides the page — it is not modal.
  */
-export function Toggletip({
+export function Toggletip({ children, ...props }: ToggletipProps) {
+  return (
+    <ToggletipBase {...props} content={children}>
+      <InfoGlyph />
+    </ToggletipBase>
+  );
+}
+
+Toggletip.displayName = 'Toggletip';
+
+/**
+ * The behaviour both Toggletip and AILabel are: a button that opens an
+ * explanation in the page. `children` is what the button shows; `content`
+ * is the explanation. Internal — not exported from the package.
+ */
+export function ToggletipBase({
   'aria-label': ariaLabel,
-  children,
+  children: face,
+  content: children,
   placement = 'top',
   size = 'md',
   isOpen,
   defaultOpen,
   onOpenChange,
   className,
-}: ToggletipProps) {
+  rootClassName = 'ion-toggletip',
+  buttonClassName = 'ion-toggletip__button',
+}: Omit<ToggletipProps, 'children'> & {
+  children: React.ReactNode;
+  content: React.ReactNode;
+  rootClassName?: string;
+  buttonClassName?: string;
+}) {
   const state = useOverlayTriggerState({ isOpen, defaultOpen, onOpenChange });
   const rootRef = useRef<HTMLSpanElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
@@ -142,7 +165,8 @@ export function Toggletip({
       onKeyDown={onKeyDown}
       className={[
         'ion-toggletip',
-        size !== 'md' ? `ion-toggletip--${size}` : '',
+        rootClassName !== 'ion-toggletip' ? rootClassName : '',
+        size !== 'md' ? `${rootClassName}--${size}` : '',
         className || '',
       ]
         .filter(Boolean)
@@ -152,11 +176,11 @@ export function Toggletip({
         {...mergeProps(buttonProps, focusProps)}
         ref={buttonRef}
         type="button"
-        className="ion-toggletip__button"
+        className={buttonClassName}
         data-open={state.isOpen || undefined}
         data-focus-visible={isFocusVisible || undefined}
       >
-        <InfoGlyph />
+        {face}
       </button>
       <span
         ref={bubbleRef}
@@ -185,5 +209,3 @@ export function Toggletip({
     </span>
   );
 }
-
-Toggletip.displayName = 'Toggletip';
