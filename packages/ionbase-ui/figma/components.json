@@ -647,6 +647,24 @@
         }
       }
     },
+    "Chat Message": {
+      "page": "Chat Message",
+      "id": "1664:292",
+      "kind": "SET",
+      "props": {
+        "From": {
+          "type": "VARIANT",
+          "options": ["Person", "Assistant"],
+          "default": "Person"
+        },
+        "Show Actions#1664:9": {
+          "type": "BOOLEAN"
+        },
+        "Show Avatar#1664:12": {
+          "type": "BOOLEAN"
+        }
+      }
+    },
     "Checkbox": {
       "page": "Checkbox",
       "id": "87:350",

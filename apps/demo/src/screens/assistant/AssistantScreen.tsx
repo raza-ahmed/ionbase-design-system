@@ -3,11 +3,12 @@ import {
   Alert,
   AvatarGradient,
   Button,
-  Card,
+  ChatMessage,
   Citation,
   CitationList,
   CitationListItem,
   ConfidenceIndicator,
+  CopyButton,
   EmptyState,
   LogoMark,
   PageHeader,
@@ -34,6 +35,9 @@ interface Turn {
   answer: CannedAnswer;
   revealed: number;
   status: TurnStatus;
+  askedAt: Date;
+  /** When the answer ended — complete or interrupted. */
+  answeredAt?: Date;
 }
 
 const CHARS_PER_TICK = 6;
@@ -76,12 +80,19 @@ export function AssistantScreen() {
           const revealed = Math.min(total, t.revealed + CHARS_PER_TICK);
           // Forced "error": the stream drops a little under halfway through.
           if (settings.state === 'error' && revealed >= total * 0.45) {
-            return { ...t, revealed, status: 'interrupted' };
+            return {
+              ...t,
+              revealed,
+              status: 'interrupted',
+              answeredAt: new Date(),
+            };
           }
+          const done = revealed >= total;
           return {
             ...t,
             revealed,
-            status: revealed >= total ? 'done' : 'streaming',
+            status: done ? 'done' : 'streaming',
+            answeredAt: done ? new Date() : undefined,
           };
         }),
       );
@@ -118,6 +129,7 @@ export function AssistantScreen() {
         answer,
         revealed: 0,
         status: 'searching',
+        askedAt: new Date(),
       },
     ]);
     setDraft('');
@@ -132,7 +144,7 @@ export function AssistantScreen() {
     setTurns((all) =>
       all.map((t) =>
         t.status === 'searching' || t.status === 'streaming'
-          ? { ...t, status: 'interrupted' }
+          ? { ...t, status: 'interrupted', answeredAt: new Date() }
           : t,
       ),
     );
@@ -252,6 +264,14 @@ export function AssistantScreen() {
   );
 }
 
+/** A turn's time, as a thread shows it: the hour and minute. */
+const clock = new Intl.DateTimeFormat(undefined, { timeStyle: 'short' });
+
+/**
+ * One question and its answer: two ChatMessages. The question keeps its h2 —
+ * the thread's headings are how the rail and a screen reader move through
+ * it — and the answer holds the AssistantAnswer pattern.
+ */
 function TurnView({ turn }: { turn: Turn }) {
   const { answer, revealed, status } = turn;
   const complete = status === 'done';
@@ -270,6 +290,9 @@ function TurnView({ turn }: { turn: Turn }) {
       <Citation key={i} index={src.index} source={src.source} href={src.href} />
     );
   });
+  const plain = answer.segments
+    .filter((seg): seg is string => typeof seg === 'string')
+    .join('');
 
   return (
     <section
@@ -277,72 +300,98 @@ function TurnView({ turn }: { turn: Turn }) {
       className="demo-turn"
       aria-labelledby={`q-${turn.id}`}
     >
-      <div className="demo-turn__question">
-        <AvatarGradient size="sm" color="blue" initials="AR" alt="Ada Reyes" />
+      <ChatMessage
+        from="person"
+        author="Ada Reyes"
+        avatar={
+          <AvatarGradient
+            size="sm"
+            color="blue"
+            initials="AR"
+            alt="Ada Reyes"
+          />
+        }
+        timestamp={turn.askedAt}
+        timestampLabel={clock.format(turn.askedAt)}
+      >
         <h2
           id={`q-${turn.id}`}
           tabIndex={-1}
-          className="ion-text-body ion-text--semibold"
+          className="demo-turn__question ion-text-body ion-text--semibold"
         >
           {turn.question}
         </h2>
-      </div>
+      </ChatMessage>
 
-      <Card className="demo-turn__answer">
-        <div className="demo-turn__meta">
-          <LogoMark size="sm" label="Ionbase assistant" />
+      <ChatMessage
+        from="assistant"
+        author="Ionbase assistant"
+        avatar={<LogoMark size="sm" label="Ionbase assistant" />}
+        timestamp={turn.answeredAt}
+        timestampLabel={turn.answeredAt && clock.format(turn.answeredAt)}
+        // Copy only once the answer is whole: a copied half-answer reads as
+        // the whole one wherever it is pasted.
+        actions={
+          complete ? (
+            <CopyButton value={plain} label="Copy answer" size="sm" />
+          ) : undefined
+        }
+      >
+        <div className="demo-turn__answer">
           {complete && answer.confidence && (
-            <ConfidenceIndicator
-              level={answer.confidence.level}
-              basis={answer.confidence.basis}
+            <div className="demo-turn__meta">
+              <ConfidenceIndicator
+                level={answer.confidence.level}
+                basis={answer.confidence.basis}
+              />
+            </div>
+          )}
+
+          {status === 'searching' ? (
+            <Spinner
+              size="sm"
+              label="Searching workspace sources"
+              isLabelVisible
             />
+          ) : (
+            <StreamingText
+              isStreaming={status === 'streaming'}
+              minLines={3}
+              label={`Answer to: ${turn.question}`}
+            >
+              {nodes}
+            </StreamingText>
+          )}
+
+          {status === 'interrupted' && (
+            <Alert intent="warning" title="This answer is incomplete">
+              It stopped part-way, so it has no sources or confidence rating.
+              Ask again for the full answer.
+            </Alert>
+          )}
+
+          {complete && answer.notice && (
+            <Alert intent={answer.notice.intent} title={answer.notice.title}>
+              {answer.notice.body}
+            </Alert>
+          )}
+
+          {complete && answer.sources.length > 0 && (
+            <CitationList label="Sources">
+              {answer.sources.map((s) => (
+                <CitationListItem
+                  key={s.index}
+                  index={s.index}
+                  source={s.source}
+                  href={s.href}
+                >
+                  {s.passage}
+                </CitationListItem>
+              ))}
+            </CitationList>
           )}
         </div>
-
-        {status === 'searching' ? (
-          <Spinner
-            size="sm"
-            label="Searching workspace sources"
-            isLabelVisible
-          />
-        ) : (
-          <StreamingText
-            isStreaming={status === 'streaming'}
-            minLines={3}
-            label={`Answer to: ${turn.question}`}
-          >
-            {nodes}
-          </StreamingText>
-        )}
-
-        {status === 'interrupted' && (
-          <Alert intent="warning" title="This answer is incomplete">
-            It stopped part-way, so it has no sources or confidence rating. Ask
-            again for the full answer.
-          </Alert>
-        )}
-
-        {complete && answer.notice && (
-          <Alert intent={answer.notice.intent} title={answer.notice.title}>
-            {answer.notice.body}
-          </Alert>
-        )}
-
-        {complete && answer.sources.length > 0 && (
-          <CitationList label="Sources">
-            {answer.sources.map((s) => (
-              <CitationListItem
-                key={s.index}
-                index={s.index}
-                source={s.source}
-                href={s.href}
-              >
-                {s.passage}
-              </CitationListItem>
-            ))}
-          </CitationList>
-        )}
-      </Card>
+      </ChatMessage>
     </section>
   );
 }

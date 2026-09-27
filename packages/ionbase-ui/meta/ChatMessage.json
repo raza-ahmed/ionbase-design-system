@@ -1,0 +1,102 @@
+{
+  "status": "stable",
+  "summary": "One turn in a transcript — who, when, what, and what can be done with it. An article named by its author and time; never a live region.",
+  "useWhen": [
+    "a conversation with an assistant, shown as a thread of turns",
+    "a transcript people read back — a support chat, a review thread between a person and an agent"
+  ],
+  "useInstead": [
+    {
+      "when": "the entries are changes to a record — who changed what, when",
+      "use": "Timeline",
+      "why": "that is history, read as an ordered list of events; a transcript is turns people and an assistant took"
+    },
+    {
+      "when": "an agent is working through steps now",
+      "use": "AgentActivity",
+      "why": "a run has a live status per step; a message holds what was said"
+    },
+    {
+      "when": "a system message tells the reader something went wrong or changed",
+      "use": "Alert",
+      "why": "an alert has an intent and a title; a message from a \"System\" author reads as a turn nobody took"
+    }
+  ],
+  "composition": {
+    "order": [
+      "ChatMessage",
+      "StreamingText",
+      "Citation",
+      "CitationList",
+      "Alert"
+    ],
+    "note": "One ChatMessage per turn, in the order they were taken, oldest first. `from=\"person\"` for what a person typed, `from=\"assistant\"` for the reply. The assistant's content is the AssistantAnswer pattern: a StreamingText with Citations, then a CitationList and an Alert when degraded. `actions` follow the content — Copy, Ask again — as Buttons. Say when an answer is ready once, from a status region outside the messages, never from each message.",
+    "example": "<ChatMessage from=\"person\" author=\"Ada Reyes\" avatar={<AvatarGradient size=\"sm\" initials=\"AR\" alt=\"Ada Reyes\" />} timestamp={askedAt}>What is our refund limit?</ChatMessage>\n<ChatMessage from=\"assistant\" author=\"Ionbase assistant\" avatar={<LogoMark size=\"sm\" label=\"Ionbase assistant\" />} timestamp={answeredAt} actions={<CopyButton value={text} label=\"Copy answer\" />}><StreamingText isStreaming={false}>…</StreamingText></ChatMessage>"
+  },
+  "variants": {
+    "from": {
+      "person": {
+        "use": "what a person wrote — on the trailing side, in a muted bubble at most 80% across"
+      },
+      "assistant": {
+        "use": "the assistant's reply — spans the column, since answers carry lists, sources and tables"
+      }
+    }
+  },
+  "slots": {
+    "author": {
+      "accepts": "text",
+      "note": "the author's name, shown and read — the message's name starts with it"
+    },
+    "avatar": {
+      "accepts": "Avatar, AvatarGradient, LogoMark",
+      "note": "decoration, hidden from assistive tech; the name says who"
+    },
+    "children": {
+      "accepts": "text, StreamingText, Citation, CitationList, Alert, Link",
+      "note": "the message"
+    },
+    "actions": {
+      "accepts": "Button, CopyButton",
+      "note": "after the content, in reading order"
+    }
+  },
+  "a11y": {
+    "role": "article",
+    "guarantees": [
+      "each message is an `<article>` named by its header — the author, then the time — so a screen reader moves message to message and hears who and when first",
+      "the time is a `<time>` with the exact instant as `dateTime`, whatever its label says",
+      "the avatar is hidden from assistive tech",
+      "it is not a live region: a thread never reads a streaming answer out as it arrives",
+      "the actions come after the content in the DOM, so Tab reaches a source in the answer before Copy",
+      "logical properties throughout, so right to left mirrors it"
+    ],
+    "requires": [
+      "`author` on every message, a person's included — \"You\" at the least",
+      "a status region outside the messages that says once when an answer is ready or incomplete"
+    ],
+    "notes": [
+      "It renders on a server. It holds a message; it does not send, stream or store one."
+    ]
+  },
+  "antiPatterns": [
+    {
+      "dont": "`role=\"log\"` or `aria-live` on the thread",
+      "why": "a streaming answer is announced token by token, re-read with every chunk; announce completion once instead"
+    },
+    {
+      "dont": "a person's message in the primary tint",
+      "why": "the primary tint is AILabel's mark for generated content; a person's words must never read as generated"
+    },
+    {
+      "dont": "a message with only an avatar to say who wrote it",
+      "do": "`author` with the name",
+      "why": "the avatar is hidden from assistive tech, so the message has no author for anyone who cannot see it"
+    },
+    {
+      "dont": "a \"System\" message for an error or a notice",
+      "do": "Alert",
+      "why": "it reads as a turn in the conversation, and it has no intent to say whether anything is wrong"
+    }
+  ]
+}

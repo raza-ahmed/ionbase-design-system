@@ -2930,6 +2930,141 @@ try {
   }
 
   /*
+   * ChatMessage, on the Assistant. A suggested question makes one turn: two
+   * articles, each named by its author then its time, with a real <time>.
+   * The question is Ada's, on the trailing side in a muted bubble, and keeps
+   * its h2; the answer is the assistant's, spans the column, and gets Copy
+   * answer after its sources once it is whole. No live region in the thread
+   * — "Answer ready." is said once, outside it. Nothing sideways; axe.
+   */
+  for (const [device, width, height] of [
+    ['desktop', 1280, 900],
+    ['mobile', 390, 844],
+  ]) {
+    const where = `chat message (light, ${device})`;
+    if (skip(where)) continue;
+    const context = await browser.newContext({ viewport: { width, height } });
+    await context.addInitScript(() => {
+      localStorage.setItem(
+        'ionbase-ops:demo-settings',
+        JSON.stringify({ theme: 'light', latency: 0 }),
+      );
+    });
+    const page = await context.newPage();
+    page.on('pageerror', (e) => fail(where, `exception: ${e.message}`));
+    await page.goto(`${BASE}/#/assistant`);
+    try {
+      const first = page.locator('.demo-suggestions button').first();
+      await first.waitFor({ timeout: 10_000 });
+      const question = (await first.textContent()).trim();
+      await first.click();
+      await page
+        .getByRole('status')
+        .filter({ hasText: 'Answer ready.' })
+        .waitFor({ timeout: 20_000 });
+
+      const articles = page.getByRole('article');
+      if ((await articles.count()) !== 2)
+        fail(where, `one turn made ${await articles.count()} articles, not 2`);
+      const asked = page.getByRole('article', { name: /^Ada Reyes \S/ });
+      const answered = page.getByRole('article', {
+        name: /^Ionbase assistant \S/,
+      });
+      if ((await asked.count()) !== 1)
+        fail(where, 'the question is not named by Ada and its time');
+      if ((await answered.count()) !== 1)
+        fail(where, 'the answer is not named by the assistant and its time');
+
+      for (const [who, a] of [
+        ['question', asked],
+        ['answer', answered],
+      ]) {
+        const iso = await a.locator('time').getAttribute('datetime');
+        if (!iso || Number.isNaN(Date.parse(iso)))
+          fail(where, `the ${who}'s time has no exact instant`);
+      }
+      if (
+        (await asked
+          .getByRole('heading', { level: 2, name: question })
+          .count()) !== 1
+      )
+        fail(where, 'the question lost its heading');
+
+      const layout = await page.evaluate(() => {
+        const [q, a] = document.querySelectorAll('article');
+        const box = (el) => el.getBoundingClientRect();
+        const probe = document.createElement('span');
+        probe.style.backgroundColor = 'var(--surface-muted)';
+        document.body.append(probe);
+        const muted = window.getComputedStyle(probe).backgroundColor;
+        probe.remove();
+        const body = q.querySelector('.ion-chat-message__body');
+        return {
+          qAvatarAtEnd:
+            Math.abs(
+              box(q.querySelector('.ion-chat-message__avatar')).right -
+                box(q).right,
+            ) < 1,
+          bubble: window.getComputedStyle(body).backgroundColor === muted,
+          aSpans:
+            Math.abs(
+              box(a.querySelector('.ion-chat-message__main')).right -
+                box(a).right,
+            ) < 1,
+          // The messages and the thread themselves. Inside them,
+          // StreamingText is aria-live="off" on purpose, and CopyButton
+          // announces its own "Copied".
+          live: !!document.querySelector(
+            'article[aria-live], .demo-turn[aria-live], .demo-assistant__thread[aria-live], [role="log"]',
+          ),
+        };
+      });
+      if (!layout.qAvatarAtEnd) fail(where, "Ada's avatar is not at the end");
+      if (!layout.bubble) fail(where, 'the question is not in a muted bubble');
+      if (!layout.aSpans) fail(where, 'the answer does not span the column');
+      if (layout.live) fail(where, 'the thread is a live region');
+
+      const copy = answered.getByRole('button', { name: 'Copy answer' });
+      if ((await copy.count()) !== 1)
+        fail(where, 'the whole answer has no Copy answer');
+      const after = await answered.evaluate((a) => {
+        const list = a.querySelector('.ion-chat-message__body');
+        const actions = a.querySelector('.ion-chat-message__actions');
+        return !!(
+          list &&
+          actions &&
+          list.compareDocumentPosition(actions) &
+            window.Node.DOCUMENT_POSITION_FOLLOWING
+        );
+      });
+      if (!after) fail(where, 'Copy answer comes before the answer');
+
+      if (
+        await page.evaluate(
+          () => document.documentElement.scrollWidth > window.innerWidth,
+        )
+      )
+        fail(where, 'the page scrolls sideways');
+
+      await page.addScriptTag({ content: axeSource });
+      const violations = await page.evaluate(async () => {
+        const result = await window.axe.run(document, {
+          resultTypes: ['violations'],
+        });
+        return result.violations.map((v) => `${v.impact} ${v.id}`);
+      });
+      for (const v of violations) fail(where, `axe ${v}`);
+    } catch (e) {
+      fail(
+        where,
+        `did not run: ${e.message.split('\n').slice(0, 3).join(' | ')}`,
+      );
+    }
+    groupsChecked++;
+    await context.close();
+  }
+
+  /*
    * Timeline, as an agent's History on its Overview. An ordered list named
    * History, newest first; each event says what happened, who, and when in
    * a <time> with the exact instant; the markers are hidden. A purpose saved

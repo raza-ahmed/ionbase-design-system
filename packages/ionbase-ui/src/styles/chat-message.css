@@ -1,0 +1,89 @@
+/*
+ * ChatMessage
+ *
+ * One turn: the avatar, then the header (author and time), the message, and
+ * its actions. A person's message is set apart on the trailing side in a
+ * muted bubble; the assistant's spans the column, since its answers carry
+ * lists, sources and tables that a bubble would squeeze.
+ *
+ * The person's bubble is `surface/muted`, not a primary tint: the primary
+ * tint is AILabel's, and a person's words must never read as generated.
+ *
+ * Logical properties throughout, so right to left mirrors it.
+ */
+.ion-chat-message {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-12);
+  color: var(--text-default);
+  font-family: var(--font-family-sans);
+  font-size: var(--type-body-sm);
+  line-height: var(--type-body-sm-line-height);
+}
+
+.ion-chat-message__avatar {
+  display: inline-flex;
+  flex: none;
+}
+
+.ion-chat-message__main {
+  display: grid;
+  flex: 1 1 auto;
+  min-width: 0;
+  gap: var(--spacing-4);
+}
+
+.ion-chat-message__header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  column-gap: var(--spacing-8);
+}
+
+.ion-chat-message__author {
+  font-weight: var(--font-weight-semibold);
+}
+
+.ion-chat-message__time {
+  color: var(--text-secondary);
+  font-size: var(--type-caption);
+  line-height: var(--type-caption-line-height);
+}
+
+.ion-chat-message__body {
+  overflow-wrap: anywhere;
+}
+
+.ion-chat-message__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-4);
+  margin-top: var(--spacing-4);
+}
+
+/* A person's turn: on the trailing side, the avatar at the edge. */
+.ion-chat-message--person {
+  flex-direction: row-reverse;
+}
+
+.ion-chat-message--person .ion-chat-message__main {
+  flex: 0 1 auto;
+  max-width: min(80%, 40rem);
+  justify-items: end;
+}
+
+.ion-chat-message--person .ion-chat-message__body {
+  padding: var(--spacing-8) var(--spacing-12);
+  border-radius: var(--radius-lg);
+  background-color: var(--surface-muted);
+}
+
+.ion-chat-message--person .ion-chat-message__actions {
+  justify-content: flex-end;
+}
+
+@media (forced-colors: active) {
+  .ion-chat-message--person .ion-chat-message__body {
+    border: var(--border-width-default) solid CanvasText;
+  }
+}

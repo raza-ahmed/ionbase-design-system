@@ -6,6 +6,7 @@
     "the answer may be wrong in ways that are not visible from the text alone"
   ],
   "composes": [
+    "ChatMessage",
     "StreamingText",
     "Citation",
     "CitationList",
@@ -16,6 +17,7 @@
     "AILabel"
   ],
   "structure": [
+    "In a conversation, each turn is a ChatMessage, oldest first: `from=\"person\"` for the question, with the person's name as `author`; `from=\"assistant\"` for the answer, holding everything below. The answer's actions — Copy, Ask again — go in its `actions`, after the sources. Say once, from a status region outside the messages, when the newest answer is ready or incomplete; never make the thread a live region.",
     "The answer in a StreamingText, with inline Citation markers at the claims they support — not gathered at the end.",
     "A CitationList below the answer, one CitationListItem per source, numbered to match the inline markers.",
     "A ConfidenceIndicator beside the answer, with `basis` saying what the level is derived from.",
@@ -48,7 +50,8 @@
     "ConfidenceIndicator": ["level", "basis", "label"],
     "Alert": ["intent", "title"],
     "Link": ["variant", "href"],
-    "AILabel": ["aria-label", "isEdited", "size"]
+    "AILabel": ["aria-label", "isEdited", "size"],
+    "ChatMessage": ["from", "author", "avatar", "timestamp", "actions"]
   },
   "variantsUsed": {
     "ConfidenceIndicator": {
@@ -99,6 +102,11 @@
       "dont": "generated text shown on a record or a card with nothing saying a model wrote it",
       "do": "an AILabel beside its heading, with what it was written from",
       "why": "out of the conversation, nothing else tells the reader it was generated, or what to check before relying on it"
+    },
+    {
+      "dont": "`role=\"log\"` or `aria-live` on the conversation",
+      "do": "one status message outside the ChatMessages when an answer ends",
+      "why": "a live thread reads the streaming answer out chunk by chunk, and every earlier turn again"
     }
   ]
 }
