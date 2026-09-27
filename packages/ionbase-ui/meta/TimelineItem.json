@@ -1,0 +1,23 @@
+{
+  "status": "stable",
+  "summary": "One event in a Timeline: what happened, who did it, when — then the detail. An `<li>` with a decorative marker.",
+  "useWhen": ["one event in a Timeline"],
+  "a11y": {
+    "requires": [
+      "a Timeline parent — an `<li>` outside a list is invalid",
+      "a `title` in words: the icon is hidden, so it cannot be the only sign of what kind of event it was"
+    ],
+    "guarantees": [
+      "the time is a `<time>` whose `dateTime` is the exact instant",
+      "`timestampLabel` changes only the words shown, never the instant",
+      "the separator between actor and time, the marker and the icon are hidden from assistive tech"
+    ]
+  },
+  "antiPatterns": [
+    {
+      "dont": "title=\"purpose\" with the change as the detail",
+      "do": "title=\"Changed the purpose\", and the old and new text as the detail",
+      "why": "the title is what a screen reader hears first and what a person scans; a field name alone does not say what happened"
+    }
+  ]
+}

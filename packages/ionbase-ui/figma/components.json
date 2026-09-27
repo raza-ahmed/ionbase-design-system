@@ -2538,6 +2538,29 @@
         }
       }
     },
+    "Timeline": {
+      "page": "Timeline",
+      "id": "1647:291",
+      "kind": "COMPONENT",
+      "props": {}
+    },
+    "Timeline Item": {
+      "page": "Timeline",
+      "id": "1647:290",
+      "kind": "SET",
+      "props": {
+        "Line": {
+          "type": "VARIANT",
+          "options": ["Yes", "No"],
+          "default": "Yes"
+        },
+        "Marker": {
+          "type": "VARIANT",
+          "options": ["Dot", "Icon"],
+          "default": "Dot"
+        }
+      }
+    },
     "Toast": {
       "page": "Toast",
       "id": "820:1655",

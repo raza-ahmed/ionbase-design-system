@@ -1,5 +1,39 @@
 # Changelog
 
+## 0.109.0 — 2026-09-27
+
+### Added — `Timeline` and `TimelineItem`
+
+What happened to a record, in order: an audit log, a record's history. It is
+the fourteenth P1 item on the enterprise checklist.
+
+- **An ordered list.** A screen reader says how many events there are and
+  which one it is on. The list is named with `aria-label`.
+- **One sentence per event.** Each reads what happened, who did it and when,
+  then the detail — what it changed from and to.
+- **A real `<time>`.** Its `dateTime` is the exact instant, so
+  `timestampLabel` can say "2 hours ago" without losing it. The default
+  label is a medium date and a short time, from `locale` and `timeZone`.
+- **Decoration stays decoration.** The line, the markers and any icon are
+  hidden from assistive tech, so the kind of event is in its title.
+- **History, not activity.** No status and no announcements; an agent run
+  is still AgentActivity. It renders on a server: no hooks.
+- **Figma:** a new Timeline page, with a Timeline Item set — Marker (Dot,
+  Icon) and Line (Yes, No), neither a prop — and a Timeline built from it.
+  100 blocks verified.
+- **Demo:** an agent's Overview has a History card. It is seeded from each
+  agent's story, and a purpose saved in place or a pause is added as it
+  happens. The smoke check, at desktop and phone widths, covers:
+  - an `<ol>` named History, newest first, every event with an exact time;
+  - the markers hidden;
+  - a saved purpose as the newest event at once, with what it changed;
+  - a pause as the next, with the purpose change kept;
+  - axe.
+
+  Each of six mutations fails it.
+
+- **Pattern:** DataTable gives a record's history as a Timeline.
+
 ## 0.108.0 — 2026-09-27
 
 ### Added — `TruncatedText`

@@ -227,6 +227,85 @@ let agents: Agent[] = SEED.map(([name, purpose, status, team], i) => {
   };
 });
 
+/* ------------------------------------------------------------ history */
+
+export type AgentEventKind =
+  'created' | 'purpose' | 'paused' | 'resumed' | 'knowledge' | 'owner';
+
+/** One change to an agent, as its History shows it. */
+export interface AgentEvent {
+  id: string;
+  kind: AgentEventKind;
+  /** What happened, as a sentence: "Paused the agent". */
+  title: string;
+  actor: string;
+  /** ISO instant. */
+  at: string;
+  /** What it changed from and to, when that is worth saying. */
+  detail?: string;
+}
+
+/** Who the demo is signed in as — the avatar in the header. */
+const ME = 'Ada Reyes';
+
+/** A time of day on a day some days ago, as an ISO instant. */
+const daysAgo = (n: number, time: string) =>
+  new Date(`${addDays(today(), -n)}T${time}:00Z`).toISOString();
+
+/** Newest first, per agent. Seeded from each agent's own story. */
+const history = new Map<string, AgentEvent[]>(
+  agents.map((a, i) => {
+    const events: AgentEvent[] = [
+      {
+        id: `${a.id}-e1`,
+        kind: 'created',
+        title: 'Created the agent',
+        actor: a.owner.name,
+        at: daysAgo(40 + i, '16:45'),
+      },
+      {
+        id: `${a.id}-e2`,
+        kind: 'knowledge',
+        title: 'Connected knowledge sources',
+        actor: a.owner.name,
+        at: daysAgo(38 + i, '10:12'),
+        detail: 'Policies, Product docs and FAQ.md.',
+      },
+    ];
+    if (i % 3 === 1)
+      events.push({
+        id: `${a.id}-e3`,
+        kind: 'owner',
+        title: 'Changed the owner',
+        actor: PEOPLE[(i * 3 + 1) % PEOPLE.length].name,
+        at: daysAgo(20 + (i % 7), '14:30'),
+        detail: `To ${a.owner.name}.`,
+      });
+    if (a.status === 'paused')
+      events.push({
+        id: `${a.id}-e4`,
+        kind: 'paused',
+        title: 'Paused the agent',
+        actor: a.owner.name,
+        at: daysAgo(9 + (i % 20), '08:05'),
+      });
+    return [a.id, events.sort((x, y) => y.at.localeCompare(x.at))];
+  }),
+);
+
+function record(id: string, event: Omit<AgentEvent, 'id' | 'at' | 'actor'>) {
+  const events = history.get(id) ?? [];
+  history.set(id, [
+    {
+      ...event,
+      id: `${id}-e${events.length + 1}-${Date.now().toString(36)}`,
+      actor: ME,
+      at: new Date().toISOString(),
+    },
+    ...events,
+  ]);
+}
+
 /**
  * Every agent's id, name and team, synchronously, for the command palette.
  * Chrome never waits on data, the same rule as `listWaitingRuns`; the list is
@@ -328,6 +407,12 @@ export async function setPaused(
   settings: CallSettings,
 ): Promise<void> {
   await write(settings, 'The agents service did not respond (HTTP 503).');
+  for (const a of agents)
+    if (ids.includes(a.id) && a.status !== 'draft')
+      record(a.id, {
+        kind: paused ? 'paused' : 'resumed',
+        title: paused ? 'Paused the agent' : 'Resumed the agent',
+      });
   agents = agents.map((a) =>
     ids.includes(a.id) && a.status !== 'draft'
       ? { ...a, status: paused ? 'paused' : 'running' }
@@ -344,11 +429,21 @@ export async function setPurpose(
   id: string,
   purpose: string,
   settings: CallSettings,
-): Promise<void> {
+): Promise<AgentEvent[]> {
   await write(settings, 'The agents service did not respond (HTTP 503).');
   if (settings.state === 'partial')
     throw new Error('The agents service refused the change (HTTP 409).');
+  const before = agents.find((a) => a.id === id)?.purpose;
+  if (before !== undefined && before !== purpose)
+    record(id, {
+      kind: 'purpose',
+      title: 'Changed the purpose',
+      detail: `From “${before}” to “${purpose}”.`,
+    });
   agents = agents.map((a) => (a.id === id ? { ...a, purpose } : a));
+  // The history as it now stands, so the page shows the change without a
+  // reload.
+  return history.get(id) ?? [];
 }
 
 export interface DeleteResult {
@@ -426,6 +521,7 @@ export async function createAgent(
     lastRun: null,
   };
   agents = [agent, ...agents];
+  record(agent.id, { kind: 'created', title: 'Created the agent' });
   return agent;
 }
 
@@ -451,6 +547,8 @@ export interface AgentDetail {
   daily: AgentDay[] | null;
   /** Newest first. */
   recentRuns: AgentRunRow[];
+  /** Changes to the agent, newest first. */
+  history: AgentEvent[];
   medianDurationSec: number | null;
 }
 
@@ -527,6 +625,7 @@ export async function getAgent(
     // Partial: the agent loaded, its metrics did not — the page still works.
     daily: settings.state === 'partial' ? null : daily,
     recentRuns,
+    history: history.get(id) ?? [],
     medianDurationSec: sorted.length
       ? sorted[Math.floor(sorted.length / 2)]
       : null,
