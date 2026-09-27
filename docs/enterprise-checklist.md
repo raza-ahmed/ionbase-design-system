@@ -78,7 +78,7 @@
 
 ## Patterns
 
-- [ ] **FullPageError** — 403, 404, 500, offline
+- [x] **FullPageError** — 404, 403, 500 and offline as one pattern, always inside the shell; the demo's four kinds on one component, an error boundary, a Member role and real offline paths, with a smoke check of each — 0.123.0
 - [ ] **ListDetail** — _needs List and SidePanel_
 - [ ] **FilteredDataTable** — _needs SearchField, MultiSelect, Table: row selection_
 

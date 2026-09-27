@@ -273,7 +273,7 @@ is to build:
 A missing pattern is a gap in the same way as a missing component — see
 "Patterns" in AGENTS.md. Each needs empty, loading and error states.
 
-- **FullPageError** — 403, 404, 500 and offline.
+- **FullPageError** — 403, 404, 500 and offline. Shipped 0.123.0, `patterns/FullPageError.json`.
 - **ListDetail** — List or Table beside a SidePanel. The shape of most admin UIs.
 - **FilteredDataTable** — extend `DataTable` with filters, search and batch actions
   once the components exist.

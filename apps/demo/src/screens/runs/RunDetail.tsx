@@ -15,7 +15,6 @@ import {
   DescriptionList,
   DescriptionListItem,
   Drawer,
-  EmptyState,
   Link,
   NumberInput,
   PageHeader,
@@ -34,6 +33,7 @@ import {
 } from '../../data/runs';
 import { useDemoSettings } from '../../lib/demo-settings';
 import { href } from '../../lib/router';
+import { FullPageError } from '../../shell/FullPageError';
 import {
   EXPIRY_SECONDS,
   useRunEngine,
@@ -94,21 +94,17 @@ export function RunDetail({ runId }: { runId: string }) {
   const [detailsOpen, setDetailsOpen] = useState(false);
   const run = useRunEngine(script, summary?.outcome, scenario, settings);
 
-  if (!script || !summary || !run.state) {
+  if (!script || !summary || !run.state)
     return (
-      <div className="demo-page">
-        <PageHeader titleId="page-title" title="Run not found" />
-        <EmptyState
-          reason="no-results"
-          size="page"
-          headingLevel={2}
-          title="There is no run with this ID"
-          description="It may have been from a different workspace."
-          action={<Link href={href('runs')}>Back to runs</Link>}
-        />
-      </div>
+      <FullPageError
+        kind="not-found"
+        pageTitle="Run not found"
+        title="There is no run with this ID"
+        description="It may have been from a different workspace."
+        action={<Link href={href('runs')}>Back to runs</Link>}
+        secondaryAction={null}
+      />
     );
-  }
 
   const { state } = run;
   const live = summary.outcome === 'waiting';

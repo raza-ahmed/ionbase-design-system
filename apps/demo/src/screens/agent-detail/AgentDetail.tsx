@@ -33,7 +33,6 @@ import { Pause } from 'ionbase-icons/icons/pause';
 import { Pencil } from 'ionbase-icons/icons/pencil';
 import { Play } from 'ionbase-icons/icons/play';
 import { Plus } from 'ionbase-icons/icons/plus';
-import { RefreshCw } from 'ionbase-icons/icons/refresh-cw';
 import { UserPen } from 'ionbase-icons/icons/user-pen';
 
 import {
@@ -51,8 +50,10 @@ import {
 import { KnowledgeSources } from './KnowledgeSources';
 import { formatDay } from '../../lib/dates';
 import { useDemoSettings } from '../../lib/demo-settings';
+import { isOffline } from '../../lib/online';
 import { href } from '../../lib/router';
 import { useResource } from '../../lib/use-resource';
+import { FullPageError } from '../../shell/FullPageError';
 import { RunsByDayChart } from '../../local/charts/RunsByDayChart';
 
 const STATUS_INTENT: Record<
@@ -103,54 +104,34 @@ export function AgentDetail({ id, tab }: { id: string; tab: AgentTab }) {
 
   if (detail.status === 'loading') return <AgentLoading />;
 
-  if (detail.status === 'error') {
+  if (detail.status === 'error')
     return (
-      <div className="demo-page">
-        <PageHeader
-          titleId="page-title"
-          title="Agent"
-          breadcrumb={<AgentBreadcrumb name="Agent" />}
-        />
-        <EmptyState
-          reason="error"
-          size="page"
-          headingLevel={2}
-          title="This agent couldn't load"
-          description={`${detail.error.message} The agent itself is unaffected — only this page is missing.`}
-          action={
-            <Button
-              variant="secondary"
-              startIcon={<Icon as={RefreshCw} size="sm" />}
-              onClick={detail.retry}
-            >
-              Try again
-            </Button>
-          }
-          secondaryAction={<Link href={href('agents')}>Back to agents</Link>}
-        />
-      </div>
+      <FullPageError
+        kind={isOffline(detail.error) ? 'offline' : 'failed'}
+        pageTitle="Agent"
+        breadcrumb={<AgentBreadcrumb name="Agent" />}
+        title="This agent couldn't load"
+        description={`${detail.error.message} The agent itself is unaffected — only this page is missing.`}
+        error={detail.error}
+        onRetry={detail.retry}
+        secondaryAction={<Link href={href('agents')}>Back to agents</Link>}
+      />
     );
-  }
 
-  if (detail.data === null) {
+  // 404, not 403, for an ID this account cannot see: saying "no access"
+  // would confirm the agent exists.
+  if (detail.data === null)
     return (
-      <div className="demo-page">
-        <PageHeader
-          titleId="page-title"
-          title="Agent not found"
-          breadcrumb={<AgentBreadcrumb name="Not found" />}
-        />
-        <EmptyState
-          reason="no-results"
-          size="page"
-          headingLevel={2}
-          title="There is no agent with this ID"
-          description="It may have been deleted, or be in a different workspace."
-          action={<Link href={href('agents')}>Back to agents</Link>}
-        />
-      </div>
+      <FullPageError
+        kind="not-found"
+        pageTitle="Agent not found"
+        breadcrumb={<AgentBreadcrumb name="Not found" />}
+        title="There is no agent with this ID"
+        description="It may have been deleted, or be in a different workspace."
+        action={<Link href={href('agents')}>Back to agents</Link>}
+        secondaryAction={null}
+      />
     );
-  }
 
   const { agent } = detail.data;
   const canToggle = agent.status !== 'draft';

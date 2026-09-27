@@ -1,0 +1,149 @@
+{
+  "summary": "When a whole page cannot be shown — it does not exist, this account may not see it, it failed to load or render, or there is no connection — the page says which, inside the shell, with a way forward.",
+  "useWhen": [
+    "a route has no page: an unknown address, or a record that does not exist (404)",
+    "the page exists and this account may not open it: a shared link, an old bookmark, a role that changed (403)",
+    "the page's own data failed to load, or the page threw while rendering (500)",
+    "there is no connection and the page has nothing loaded to show"
+  ],
+  "useInstead": [
+    {
+      "when": "a region of a page failed and the rest works",
+      "use": "EmptyState with `reason=\"error\"` and `size=\"panel\"` in that region",
+      "why": "replacing a working page because one card failed takes away everything that did load"
+    },
+    {
+      "when": "the page loaded and is empty — no records yet, or none match",
+      "use": "EmptyState with `reason=\"first-run\"` or `\"no-results\"`",
+      "why": "nothing to show is not an error, and calling it one tells the user something broke"
+    },
+    {
+      "when": "the connection drops on a page that already loaded",
+      "use": "a Banner in the shell",
+      "why": "what is on screen is still true and still readable; a full-page error would throw it away"
+    }
+  ],
+  "composes": [
+    "PageHeader",
+    "EmptyState",
+    "Button",
+    "Link",
+    "CopyButton",
+    "Banner",
+    "Spinner"
+  ],
+  "structure": [
+    "Inside the PageShell, never instead of it: the Header, the navigation and any Banner stay, and only <main> is replaced. The one exception is a failure above the shell itself — then a plain page with the product's name, the sentence and a Reload link, because nothing else is left to render.",
+    "A PageHeader whose title names what could not be shown — \"Page not found\", \"Settings\", \"Agent\" — with the same `titleId` the route's page uses, so <main aria-labelledby> and the shell's focus-on-navigate work unchanged. Never \"Error\" or \"Oops\".",
+    "Beneath it an EmptyState, `size=\"page\"`, `headingLevel={2}`, with the reason that is true: `no-results` for 404, `no-access` for 403, `error` for a failed load, a crash or no connection. Its title says what happened in the user's words; its description says what it means for them and what is unaffected.",
+    "`action` is the one thing most likely to fix it: a way back to a list for 404, a way to ask for access for 403 (who to ask, by name or role), Try again for a failed load, Reload page for a crash. `secondaryAction` is a Link somewhere that works — the section's list, or the overview.",
+    "A failed load or a crash shows a reference the user can quote to support — \"Reference err_7Q2KX\" — with a CopyButton beside it. The same reference goes to the error log. Never a stack trace, an exception name or an HTTP code on its own.",
+    "A crash is caught by an error boundary around the route's content, inside the shell and keyed by the route, so navigating away clears it. Reload page resets the boundary; it does not reload the browser unless resetting fails again. A page whose code could not download — a lazily loaded chunk, offline — is not a crash: show the offline kind, and reload rather than reset, because a browser may remember the failed import.",
+    "No connection: `navigator.onLine` and the `online` / `offline` events. While offline, a Banner in the shell says so on every page. A page that could not load because of it shows the offline kind — \"You're offline\" — and tries again by itself when the connection returns, as well as on Try again.",
+    "403 or 404 for a record that exists but is hidden: 404, unless the user can already know it exists. Saying \"you don't have access to Payroll agent\" to someone who guessed the ID tells them there is a Payroll agent.",
+    "Navigation does not offer what the account cannot open: an item the role cannot enter is hidden, not shown and then refused. The 403 page is for arriving anyway — by a link, a bookmark, a role changed mid-session.",
+    "When the page is rendered by a server, it returns the matching status — 404, 403, 500, or 503 when a service it needs is down — so crawlers and monitoring see what the user sees. Offline has no status: no request reached a server."
+  ],
+  "kinds": {
+    "not-found": {
+      "reason": "no-results",
+      "title": "There is no page at this address — or, for a record, \"There is no agent with this ID\"",
+      "action": "a Link back to the list the record would be in"
+    },
+    "no-access": {
+      "reason": "no-access",
+      "title": "\"You don't have access to workspace settings\"",
+      "action": "who can grant it — \"Ask a workspace admin\", with the admin's name when the product knows it"
+    },
+    "failed": {
+      "reason": "error",
+      "title": "\"This agent couldn't load\" for data; \"Something went wrong on this page\" for a crash",
+      "action": "Try again, or Reload page for a crash, with the reference and its CopyButton"
+    },
+    "offline": {
+      "reason": "error",
+      "title": "\"You're offline\"",
+      "action": "Try again; the page also retries on its own when the connection returns"
+    }
+  },
+  "states": {
+    "loading": {
+      "must": "While Try again or Reload page runs, keep the error on screen and put a Spinner in the action — or show the page's own loading state once the retry has started. Never blank <main> between the error and the answer.",
+      "why": "a page that goes blank on retry looks like the retry broke it, and a user who looks away comes back to nothing"
+    },
+    "empty": {
+      "must": "A page that loads and has nothing is not this pattern: show the page, and an EmptyState for its content with `first-run` or `no-results`.",
+      "why": "an error message over an empty but working page tells the user their data is gone"
+    },
+    "error": {
+      "must": "When the retry fails too, stay on the error with a new reference and the same actions. Do not retry in a loop; after the connection returns, retry once.",
+      "why": "an automatic loop hides the failure behind a spinner and hammers a service that is already down"
+    }
+  },
+  "propsUsed": {
+    "PageHeader": ["title", "titleId", "breadcrumb"],
+    "EmptyState": [
+      "reason",
+      "size",
+      "headingLevel",
+      "title",
+      "description",
+      "action",
+      "secondaryAction"
+    ],
+    "Button": ["variant", "startIcon"],
+    "CopyButton": ["value", "label", "size", "variant"],
+    "Banner": ["intent", "title"],
+    "Spinner": ["size", "label"]
+  },
+  "variantsUsed": {
+    "EmptyState": {
+      "reason": ["no-results", "no-access", "error"],
+      "size": ["page"]
+    },
+    "Button": {
+      "variant": ["secondary"]
+    },
+    "CopyButton": {
+      "variant": ["tertiary"]
+    },
+    "Banner": {
+      "intent": ["warning"]
+    }
+  },
+  "a11y": {
+    "requires": [
+      "the PageHeader's `titleId` on <main aria-labelledby>, as on every page — the error page is the page",
+      "the document title set for the error — \"Page not found · Ops\" — so a tab and the history say what happened",
+      "the connection's change said through a `role=\"status\"` region the shell always renders — \"You're offline\", then \"Back online\" — because a Banner inserted with its message is not reliably announced"
+    ],
+    "notes": [
+      "No `role=\"alert\"` on the page: arriving at an error is reading a page, and the shell's focus-on-navigate already takes the user to its heading.",
+      "Retrying on `online` changes the page under the user; the page's own loading state announces it, and the offline Banner going away says the connection is back."
+    ]
+  },
+  "antiPatterns": [
+    {
+      "dont": "a full-screen error that replaces the Header and navigation",
+      "do": "the PageShell pattern, with this in <main>",
+      "why": "the navigation is how the user gets somewhere that works; without it the only way out is the browser's back button"
+    },
+    {
+      "dont": "\"Something went wrong\" for every failure",
+      "why": "not found, no access, a failed load and no connection each have a different fix, and one message hides which the user needs"
+    },
+    {
+      "dont": "a stack trace, an exception name, or a bare \"Error 500\"",
+      "do": "a sentence, and a reference to quote",
+      "why": "the user cannot act on it, and support cannot find it without the reference"
+    },
+    {
+      "dont": "redirecting an unknown address to the home page",
+      "why": "the user never learns the link was wrong and keeps using it"
+    },
+    {
+      "dont": "a 403 for a record the user could not already know exists",
+      "why": "confirming that an ID exists is itself a leak"
+    }
+  ]
+}

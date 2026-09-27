@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 
+import { isOffline } from './online';
+
 export type Resource<T> =
   | { status: 'loading' }
   | { status: 'error'; error: Error }
@@ -35,5 +37,17 @@ export function useResource<T>(
   }, [key, attempt]);
 
   const retry = useCallback(() => setAttempt((n) => n + 1), []);
+
+  /*
+   * Refused for want of a connection: try again once when it returns. Once,
+   * not on a timer — a loop would hide the failure behind a spinner.
+   */
+  const offline = resource.status === 'error' && isOffline(resource.error);
+  useEffect(() => {
+    if (!offline) return;
+    window.addEventListener('online', retry, { once: true });
+    return () => window.removeEventListener('online', retry);
+  }, [offline, retry]);
+
   return { ...resource, retry };
 }

@@ -536,3 +536,14 @@ body {
   display: grid;
   gap: var(--spacing-6);
 }
+
+/*
+ * FullPageError: the reference a person quotes to support, with its copy
+ * button beside it rather than under it.
+ */
+.demo-error-reference {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-8);
+  margin: 0;
+}

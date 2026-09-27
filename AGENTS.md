@@ -703,8 +703,9 @@ leave an approval pending fails `StopKeepsWhatWasDone`.
 
 ## Patterns — the tier that owns the states nothing else does
 
-`patterns/*.json` describes compositions. Six for classic screens — `DataTable`,
-`Form`, `PageShell`, `DestructiveConfirm`, `SettingsPanel`, `Wizard` — and three
+`patterns/*.json` describes compositions. Seven for classic screens — `DataTable`,
+`Form`, `PageShell`, `DestructiveConfirm`, `SettingsPanel`, `Wizard`,
+`FullPageError` — and three
 for the agentic tier: `AgentRun`, `HumanApproval`, `AssistantAnswer`. They are
 built and verified into `dist/meta/patterns/` by `scripts/build-patterns.mjs` and
 published beside the component pages.
@@ -735,6 +736,56 @@ that quietly went stale.
 
 Adding a pattern means adding all three states. If you cannot say what the empty
 state is, the pattern is not understood well enough to write down yet.
+
+### FullPageError: four kinds, and the traps the demo hit — 28 Sep 2026
+
+**The four kinds.** A page that cannot be shown is one of four, and each has
+a different fix, so each says a different thing:
+
+| Kind                               | Status                             | EmptyState reason |
+| ---------------------------------- | ---------------------------------- | ----------------- |
+| Not found                          | 404                                | `no-results`      |
+| No access                          | 403                                | `no-access`       |
+| Failed (a load, or a render crash) | 500                                | `error`           |
+| Offline                            | none — no request reached a server | `error`           |
+
+**Always inside the shell.** Only `<main>` changes. The page's name stays the
+h1, so `<main aria-labelledby>` works as it does on every other page.
+
+**The demo builds it once** in `apps/demo/src/shell/FullPageError.tsx`. That
+file is a product's code following the recipe, not something this package
+ships.
+
+**The traps:**
+
+1. **A lazily loaded page cannot download while offline.** That surfaces as a
+   render error, and the error boundary took it for a crash: "This page
+   stopped working" for someone who had only lost their Wi-Fi. The boundary
+   now tells a download failure apart, shows the offline kind, and reloads
+   when the connection returns. It reloads rather than resets, because a
+   browser may remember a failed `import()`.
+2. **A Banner inserted with its message is not announced.** The shell keeps a
+   `role="status"` region mounted, which says "You're offline" and then
+   "Back online".
+3. **403 leaks.** "You don't have access to Payroll agent" confirms that
+   Payroll agent exists. A record the user could not already know about gets 404. 403 is for places they can know: Settings, for a member who followed
+   a link.
+4. **Hide what the role cannot open.** The navigation, the command palette
+   and the deletion Banner's "Review in Settings" all drop Settings for a
+   member. The 403 page is for arriving anyway.
+5. **A retry that fails gets a new reference.** Support searches the log by
+   the reference, and two failures sharing one would be one entry.
+
+**Checked by the demo's smoke test,** in one pass on desktop:
+
+- each kind's words and document title;
+- the shell staying up, and <main> still named;
+- a member not being offered Settings;
+- the crash reference changing on a failed retry, and Reload page recovering
+  once the cause is gone;
+- both offline paths recovering by themselves when the connection returns:
+  the refused request, and the page whose code never arrived;
+- axe on each kind.
 
 ---
 

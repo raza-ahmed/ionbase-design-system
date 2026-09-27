@@ -13,15 +13,20 @@ import { I18nProvider } from 'ionbase-ui';
  * step through every state a pattern requires without editing code.
  */
 export type Theme = 'light' | 'dark';
-export type ForcedState = 'live' | 'loading' | 'empty' | 'error' | 'partial';
+/** `crash` throws while the page renders — the error boundary's case. */
+export type ForcedState =
+  'live' | 'loading' | 'empty' | 'error' | 'partial' | 'crash';
 export type Latency = 0 | 800 | 3000;
 export type Direction = 'ltr' | 'rtl';
+/** Who is signed in. A member cannot open workspace settings. */
+export type Role = 'admin' | 'member';
 
 export interface DemoSettings {
   theme: Theme;
   state: ForcedState;
   latency: Latency;
   direction: Direction;
+  role: Role;
 }
 
 interface DemoSettingsContextValue extends DemoSettings {
@@ -38,6 +43,7 @@ function initial(): DemoSettings {
     state: 'live',
     latency: 800,
     direction: 'ltr',
+    role: 'admin',
   };
   try {
     const saved = window.localStorage.getItem(STORAGE_KEY);

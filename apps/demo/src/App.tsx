@@ -2,9 +2,10 @@ import { lazy, Suspense } from 'react';
 import { Spinner, ToastProvider } from 'ionbase-ui';
 
 import { DemoSettingsProvider } from './lib/demo-settings';
-import { useRoute } from './lib/router';
+import { useRoute, type Route } from './lib/router';
 import { AppShell } from './shell/AppShell';
 import { NotFound } from './screens/NotFound';
+import { CrashWhenForced, PageErrorBoundary } from './shell/PageErrorBoundary';
 
 /*
  * One chunk per screen. The shell is eager — the PageShell pattern says never
@@ -46,6 +47,22 @@ const SettingsScreen = lazy(() =>
   })),
 );
 
+/** Each route's page name, for a page that crashed before it could say. */
+function pageTitleOf(route: Route | null): string {
+  if (route === null) return 'Page not found';
+  if (route === 'agents/new') return 'New agent';
+  if (route.startsWith('agents/')) return 'Agent';
+  if (route.startsWith('runs/')) return 'Run';
+  const names: Record<string, string> = {
+    overview: 'Overview',
+    agents: 'Agents',
+    runs: 'Runs',
+    assistant: 'Assistant',
+    settings: 'Settings',
+  };
+  return names[route] ?? 'Page';
+}
+
 export function App() {
   const route = useRoute();
 
@@ -53,31 +70,41 @@ export function App() {
     <DemoSettingsProvider>
       <ToastProvider placement="top-right" label="Status messages">
         <AppShell route={route}>
-          <Suspense
-            fallback={
-              <div className="demo-page" aria-busy="true">
-                <Spinner label="Loading page" />
-              </div>
-            }
+          {/*
+            The FullPageError pattern's crash case: caught inside the shell,
+            keyed by the route so going elsewhere clears it.
+          */}
+          <PageErrorBoundary
+            key={route ?? 'not-found'}
+            pageTitle={pageTitleOf(route)}
           >
-            {route === 'overview' && <Overview />}
-            {route === 'agents' && <AgentsScreen />}
-            {route === 'agents/new' && <NewAgentWizard />}
-            {route?.startsWith('agents/') && route !== 'agents/new' && (
-              <AgentDetail
-                key={route.split('/')[1]}
-                id={route.split('/')[1]}
-                tab={route.endsWith('/runs') ? 'runs' : 'overview'}
-              />
-            )}
-            {route === 'runs' && <RunsScreen />}
-            {route?.startsWith('runs/') && (
-              <RunDetail key={route} runId={route.slice('runs/'.length)} />
-            )}
-            {route === 'assistant' && <AssistantScreen />}
-            {route === 'settings' && <SettingsScreen />}
-            {route === null && <NotFound />}
-          </Suspense>
+            <CrashWhenForced />
+            <Suspense
+              fallback={
+                <div className="demo-page" aria-busy="true">
+                  <Spinner label="Loading page" />
+                </div>
+              }
+            >
+              {route === 'overview' && <Overview />}
+              {route === 'agents' && <AgentsScreen />}
+              {route === 'agents/new' && <NewAgentWizard />}
+              {route?.startsWith('agents/') && route !== 'agents/new' && (
+                <AgentDetail
+                  key={route.split('/')[1]}
+                  id={route.split('/')[1]}
+                  tab={route.endsWith('/runs') ? 'runs' : 'overview'}
+                />
+              )}
+              {route === 'runs' && <RunsScreen />}
+              {route?.startsWith('runs/') && (
+                <RunDetail key={route} runId={route.slice('runs/'.length)} />
+              )}
+              {route === 'assistant' && <AssistantScreen />}
+              {route === 'settings' && <SettingsScreen />}
+              {route === null && <NotFound />}
+            </Suspense>
+          </PageErrorBoundary>
         </AppShell>
       </ToastProvider>
     </DemoSettingsProvider>

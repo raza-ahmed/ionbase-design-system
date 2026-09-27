@@ -20,6 +20,7 @@ import { Plus } from 'ionbase-icons/icons/plus';
 import { Settings } from 'ionbase-icons/icons/settings';
 
 import { listWaitingRuns } from '../data/runs';
+import { useDemoSettings } from '../lib/demo-settings';
 import { href, navigate, sectionOf, type Route } from '../lib/router';
 
 const WORKSPACES = [
@@ -41,6 +42,7 @@ const ic = (as: typeof Bot) => <Icon as={as} size="sm" />;
 export function NavSidebar({ route }: { route: Route | null }) {
   const section = route && sectionOf(route);
   const waiting = listWaitingRuns();
+  const { role } = useDemoSettings();
   const [workspace, setWorkspace] = useState(WORKSPACES[0]);
 
   // A run that is not in the waiting list still belongs to Runs.
@@ -148,14 +150,20 @@ export function NavSidebar({ route }: { route: Route | null }) {
         </SidebarItem>
       </SidebarSection>
 
-      <SidebarSection title="Workspace">
-        <SidebarItem
-          label="Settings"
-          icon={ic(Settings)}
-          href={href('settings')}
-          isCurrent={section === 'settings'}
-        />
-      </SidebarSection>
+      {/*
+        Hidden, not shown and refused: a member cannot open Settings. The
+        403 page is for arriving anyway — a link, a bookmark.
+      */}
+      {role === 'admin' && (
+        <SidebarSection title="Workspace">
+          <SidebarItem
+            label="Settings"
+            icon={ic(Settings)}
+            href={href('settings')}
+            isCurrent={section === 'settings'}
+          />
+        </SidebarSection>
+      )}
     </Sidebar>
   );
 }
