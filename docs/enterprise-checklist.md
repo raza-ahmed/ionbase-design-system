@@ -84,7 +84,7 @@
 
 ## Cross-cutting audits
 
-- [ ] **RTL** — logical properties everywhere; Storybook RTL toggle
+- [x] **RTL** — logical properties everywhere, enforced by stylelint in the shipped config; a Storybook Direction toggle and RTL stories; the demo's Right to left setting and an RTL smoke sweep of every route — 0.119.0
 - [ ] **Localised strings** — inventory every built-in string; make each overridable
 - [ ] **Forced colours** — every stylesheet that needs a rule has one
 - [ ] **Density** — decide system-wide or per-component, then apply

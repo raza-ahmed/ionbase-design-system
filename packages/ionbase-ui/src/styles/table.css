@@ -59,12 +59,21 @@
   font-family: var(--font-family-sans);
   font-size: var(--type-body-sm);
   line-height: var(--type-body-sm-line-height);
-  text-align: left;
 }
 
 .ion-table th,
 .ion-table td {
   padding: var(--spacing-16) var(--spacing-16);
+
+  /*
+   * On the cells, not only on the table. A <th> is centred by the browser
+   * unless the table's own alignment is something other than the initial
+   * value — and `start` IS the initial value, so `text-align: start` on the
+   * table alone centred every header. `left` never had the problem, which is
+   * how converting it to its logical form broke the headers in both
+   * directions until the right-to-left stories measured one.
+   */
+  text-align: start;
   vertical-align: middle;
 }
 
@@ -161,7 +170,7 @@
 
 .ion-table th[data-align='trailing'],
 .ion-table td[data-align='trailing'] {
-  text-align: right;
+  text-align: end;
 }
 
 .ion-table th[data-align='center'],
@@ -262,7 +271,7 @@
  */
 .ion-table th[data-divider='true'],
 .ion-table td[data-divider='true'] {
-  border-right: var(--border-width-default) solid var(--border-default);
+  border-inline-end: var(--border-width-default) solid var(--border-default);
 }
 
 /*
@@ -351,7 +360,7 @@
 }
 
 .ion-table-container--sticky-column {
-  scroll-padding-left: var(--ion-table-held-width, 0);
+  scroll-padding-inline-start: var(--ion-table-held-width, 0);
 }
 
 /*
@@ -375,7 +384,7 @@
 .ion-table-container--sticky-column [data-sticky] {
   position: sticky;
   z-index: 1;
-  left: var(--ion-table-sticky-left, 0);
+  inset-inline-start: var(--ion-table-sticky-left, 0);
   background-color: inherit;
 }
 
@@ -391,6 +400,12 @@
   clip-path: inset(0 -16px 0 0);
 }
 
+/* The shadow falls past the column's end: the left, in right-to-left. */
+.ion-table-container--sticky-column[data-scrolled-x='true']
+  [data-sticky-edge]:dir(rtl) {
+  clip-path: inset(0 0 0 -16px);
+}
+
 /*
  * Expandable rows — `expansion` on TableRow, Figma's `Show Expander`.
  *
@@ -401,7 +416,7 @@
 .ion-table th.ion-table__expander,
 .ion-table td.ion-table__expander {
   width: 1%;
-  padding-right: 0;
+  padding-inline-end: 0;
 }
 
 /* A 24px target (WCAG 2.5.8), reset to read as part of the row. */
@@ -426,7 +441,13 @@
   transition: transform var(--ion-duration-base) var(--ion-ease-out);
 }
 
-/* Open points down; closed points right — the shape says it, not only the name. */
+/* Open points down; closed points the reading direction — the shape says it,
+   not only the name. Right-to-left turns it half round; the open rule below
+   weighs the same and comes later, so open still wins. */
+.ion-table__expander-button:dir(rtl) svg {
+  transform: rotate(180deg);
+}
+
 .ion-table__expander-button[aria-expanded='true'] svg {
   transform: rotate(90deg);
 }
@@ -457,5 +478,5 @@
 /* The detail starts under the row's content, past the toggle. */
 .ion-table .ion-table__detail > td {
   padding-top: 0;
-  padding-left: calc(var(--spacing-16) + var(--spacing-24));
+  padding-inline-start: calc(var(--spacing-16) + var(--spacing-24));
 }

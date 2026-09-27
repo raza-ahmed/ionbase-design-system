@@ -1,5 +1,6 @@
 import React from 'react';
 import type { Preview, Decorator } from '@storybook/react-vite';
+import { I18nProvider } from 'ionbase-ui';
 /*
  * The source CSS, by relative path, on purpose.
  *
@@ -23,6 +24,29 @@ const withTheme: Decorator = (Story, context) => {
   }, [theme]);
 
   return <Story />;
+};
+
+/*
+ * Direction. Right-to-left is two settings, and a story gets both: `dir` on
+ * the document for the layout, and an RTL locale for react-aria, whose arrow
+ * keys follow the locale rather than `dir`. Hebrew keeps Latin digits, so a
+ * story's numbers read the same in either direction.
+ *
+ * A story sets it for itself with `globals: { direction: 'rtl' }`.
+ */
+const withDirection: Decorator = (Story, context) => {
+  const rtl = context.globals.direction === 'rtl';
+  // Set during render, not in an effect: a play function measuring layout
+  // runs straight after the first paint, and must see the direction it asked
+  // for.
+  document.documentElement.dir = rtl ? 'rtl' : 'ltr';
+  return rtl ? (
+    <I18nProvider locale="he-IL">
+      <Story />
+    </I18nProvider>
+  ) : (
+    <Story />
+  );
 };
 
 const preview: Preview = {
@@ -54,7 +78,7 @@ const preview: Preview = {
     },
   },
   // Apply our custom theme decorator globally
-  decorators: [withTheme],
+  decorators: [withTheme, withDirection],
 };
 
 // Add a theme dropdown toolbar selector
@@ -68,6 +92,19 @@ export const globalTypes = {
       items: [
         { value: 'light', icon: 'circlehollow', title: 'Light Mode' },
         { value: 'dark', icon: 'circle', title: 'Dark Mode' },
+      ],
+      showName: true,
+    },
+  },
+  direction: {
+    name: 'Direction',
+    description: 'Left-to-right or right-to-left',
+    defaultValue: 'ltr',
+    toolbar: {
+      icon: 'transfer',
+      items: [
+        { value: 'ltr', title: 'Left to right' },
+        { value: 'rtl', title: 'Right to left' },
       ],
       showName: true,
     },

@@ -200,7 +200,7 @@
  */
 .ion-avatar__indicator {
   position: absolute;
-  right: 0;
+  inset-inline-end: 0;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -296,7 +296,7 @@
 }
 
 .ion-avatar-group > * + * {
-  margin-left: var(--ion-avatar-group-overlap);
+  margin-inline-start: var(--ion-avatar-group-overlap);
 }
 
 /* The group publishes its size to the children so the overlap and the avatars

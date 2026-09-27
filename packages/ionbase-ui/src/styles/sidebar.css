@@ -200,6 +200,15 @@ button.ion-sidebar__link {
   transition: transform var(--ion-duration-base) var(--ion-ease-out);
 }
 
+/*
+ * Closed, it points the reading direction: right, or in right-to-left, left —
+ * turned half round, so opening animates to 90° either way. `:where()` keeps
+ * the rule's weight a single class, so the open rules after it still win.
+ */
+.ion-sidebar__chevron:where(:dir(rtl)) {
+  transform: rotate(180deg);
+}
+
 .ion-sidebar__chevron--expanded,
 .ion-sidebar__section-title--expanded .ion-sidebar__chevron {
   transform: rotate(90deg);

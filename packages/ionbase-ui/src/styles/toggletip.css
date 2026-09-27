@@ -102,6 +102,14 @@
   transform: rotate(45deg);
 }
 
+/*
+ * Physical on purpose: the side is the one react-aria RESOLVED the toggletip onto,
+ * already mirrored for right-to-left, so a logical property here would flip
+ * it a second time and point the arrow away from its trigger. The borders
+ * cleared are the rotated square's own two outer edges, which are physical
+ * in either direction.
+ */
+/* stylelint-disable property-disallowed-list */
 .ion-toggletip__bubble--top .ion-toggletip__arrow {
   bottom: -7px;
   border-top: none;
@@ -125,6 +133,7 @@
   border-top: none;
   border-right: none;
 }
+/* stylelint-enable property-disallowed-list */
 
 @media (forced-colors: active) {
   .ion-toggletip__bubble {

@@ -1,0 +1,49 @@
+{
+  "status": "stable",
+  "summary": "Sets the locale every IonBase component reads: react-aria's provider, re-exported. For right-to-left it is half the switch — arrow keys follow the locale, while the layout follows `dir` on the page.",
+  "useWhen": [
+    "the app is in a language other than the browser's, or must not depend on it",
+    "the app is right-to-left: an RTL locale here, and `dir=\"rtl\"` on the root element"
+  ],
+  "useInstead": [
+    {
+      "when": "one region should be in the other theme",
+      "use": "ThemeZone",
+      "why": "a locale is language and direction; a theme is colour"
+    }
+  ],
+  "composition": {
+    "order": ["I18nProvider"],
+    "note": "Mount it once, around the whole app, with the locale the product is written in (`he-IL`, `ar-EG`, `en-GB`). With no `locale`, react-aria falls back to the browser's language. It decides the arrow keys in Tabs, Toolbar, Menu, TreeView, Slider and the calendars, the order of date segments, and number formatting; it does not set `dir`. Right-to-left is both: `dir=\"rtl\"` on <html> for the layout — every stylesheet is logical, so nothing else is needed — and an RTL locale here for the keys. Set only one and the page is mirrored but ← still moves back, or the keys flip on a page that is not mirrored.",
+    "example": "<html lang=\"he\" dir=\"rtl\">\n  <body>\n    <I18nProvider locale=\"he-IL\">\n      <App />\n    </I18nProvider>\n  </body>\n</html>"
+  },
+  "slots": {
+    "children": {
+      "accepts": "any",
+      "note": "the whole app"
+    }
+  },
+  "a11y": {
+    "guarantees": [
+      "with an RTL locale, arrow keys move in the reading direction: ← goes forward along a toolbar, a tab list or a slider",
+      "react-aria's own strings — a calendar's Previous and Next, a date field's segment names — are announced in the locale's language"
+    ],
+    "requires": [
+      "`dir` on the root element to match the locale's direction, and `lang` to match the content's language"
+    ],
+    "notes": [
+      "`useLocale()` is re-exported with it and returns `{ locale, direction }`, for a component of the app's own that has to know."
+    ]
+  },
+  "antiPatterns": [
+    {
+      "dont": "`dir=\"rtl\"` without an RTL locale",
+      "do": "both, set together",
+      "why": "the page mirrors, but react-aria's arrow keys still move as if left-to-right: → steps back through a toolbar that now reads right to left"
+    },
+    {
+      "dont": "one provider per component or per page",
+      "why": "the locale is the app's; nested providers let parts of a page disagree about the language and the direction"
+    }
+  ]
+}

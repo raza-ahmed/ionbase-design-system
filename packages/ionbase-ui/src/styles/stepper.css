@@ -95,8 +95,10 @@
   bottom: var(--spacing-4);
 
   /* Centred under the indicator. */
-  left: calc((var(--icon-size-lg) - var(--border-width-thick)) / 2);
-  border-left: var(--border-width-thick) solid var(--border-default);
+  inset-inline-start: calc(
+    (var(--icon-size-lg) - var(--border-width-thick)) / 2
+  );
+  border-inline-start: var(--border-width-thick) solid var(--border-default);
 }
 
 .ion-stepper__trigger {

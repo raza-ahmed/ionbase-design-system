@@ -6,6 +6,7 @@ import {
   useState,
   type ReactNode,
 } from 'react';
+import { I18nProvider } from 'ionbase-ui';
 
 /**
  * Presenter controls — not part of the fictional product. They let a live demo
@@ -14,11 +15,13 @@ import {
 export type Theme = 'light' | 'dark';
 export type ForcedState = 'live' | 'loading' | 'empty' | 'error' | 'partial';
 export type Latency = 0 | 800 | 3000;
+export type Direction = 'ltr' | 'rtl';
 
 export interface DemoSettings {
   theme: Theme;
   state: ForcedState;
   latency: Latency;
+  direction: Direction;
 }
 
 interface DemoSettingsContextValue extends DemoSettings {
@@ -34,6 +37,7 @@ function initial(): DemoSettings {
       : 'light',
     state: 'live',
     latency: 800,
+    direction: 'ltr',
   };
   try {
     const saved = window.localStorage.getItem(STORAGE_KEY);
@@ -57,6 +61,9 @@ export function DemoSettingsProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     // The selector the token CSS already themes on — see theme-dark.css.
     document.documentElement.setAttribute('data-theme', settings.theme);
+    // Right to left is `dir` for the layout. The content stays English, so
+    // `lang` does not change.
+    document.documentElement.dir = settings.direction;
     try {
       window.localStorage.setItem(STORAGE_KEY, JSON.stringify(settings));
     } catch {
@@ -75,7 +82,14 @@ export function DemoSettingsProvider({ children }: { children: ReactNode }) {
 
   return (
     <DemoSettingsContext.Provider value={value}>
-      {children}
+      {/*
+       * And an RTL locale for react-aria, whose arrow keys follow the locale,
+       * not `dir`. Hebrew, for its Latin digits. Left to right, no locale:
+       * react-aria falls back to the browser's, as it did before.
+       */}
+      <I18nProvider locale={settings.direction === 'rtl' ? 'he-IL' : undefined}>
+        {children}
+      </I18nProvider>
     </DemoSettingsContext.Provider>
   );
 }

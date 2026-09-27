@@ -130,6 +130,8 @@ export type {
 } from './Grid.js';
 export { ThemeZone } from './ThemeZone.js';
 export type { ThemeZoneProps, ThemeZoneElement, Theme } from './ThemeZone.js';
+export { I18nProvider, useLocale } from './I18nProvider.js';
+export type { I18nProviderProps } from './I18nProvider.js';
 export { SkipLink } from './SkipLink.js';
 export type { SkipLinkProps } from './SkipLink.js';
 export type { ChatMessageProps, ChatMessageFrom } from './ChatMessage.js';

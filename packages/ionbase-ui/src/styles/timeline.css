@@ -39,7 +39,7 @@
   position: absolute;
   top: var(--ion-timeline-marker);
   bottom: calc(-1 * var(--spacing-16));
-  left: calc(var(--ion-timeline-marker) / 2);
+  inset-inline-start: calc(var(--ion-timeline-marker) / 2);
   width: var(--border-width-default);
   background-color: var(--border-subtle);
   content: '';

@@ -31,6 +31,8 @@
   display: inline-block;
   width: 0.5em;
   height: 1em;
+  /* stylelint-disable-next-line scale-unlimited/declaration-strict-value --
+     em, not a token: the gap follows the glyphs it sits beside. */
   margin-inline-start: 0.1em;
   vertical-align: text-bottom;
   background-color: var(--text-tertiary);

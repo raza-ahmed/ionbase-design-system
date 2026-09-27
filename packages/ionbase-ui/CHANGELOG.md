@@ -1,5 +1,68 @@
 # Changelog
 
+## 0.119.0 — 2026-09-27
+
+### Right to left — the first cross-cutting audit
+
+A page with `dir="rtl"` now mirrors with no stylesheet of its own. The audit
+found 47 physical left and right declarations in 16 stylesheets, four in the
+demo, and a table that did not work right-to-left at all.
+
+- **Logical properties everywhere.** Examples: `inset-inline-start` for
+  `left`, `padding-inline` for Button's two paddings, `text-align: start`
+  and `end` in Table. Mirrored as a result: an avatar's status dot, an
+  avatar group's overlap, the Stepper and Timeline lines, a toggle's "on"
+  side, the SkipLink's corner, and the mobile Header menu.
+- **Kept physical on purpose**, each with a `stylelint-disable` and its
+  reason:
+  - overlay arrows, which follow the side react-aria resolved;
+  - the Slider fill, which Slider mirrors itself;
+  - Toast regions and ScrollProgress panels, whose names are screen corners
+    and sides.
+- **Table, fixed:**
+  - The held column is at the right.
+  - Its "scrolled under" shadow showed only if `scrollLeft > 0`. That is
+    never true in right-to-left, where `scrollLeft` is negative. The shadow
+    also fell on the wrong side.
+  - Focus on a cell half under the held column now scrolls it clear from
+    the right.
+- **Table headers, fixed in both directions.** Converting the table's
+  `text-align: left` to `start` centred every `<th>`: a browser centres a
+  header unless the table's alignment differs from the initial value. The
+  cells now carry `text-align: start` themselves, and a left-to-right story
+  measures it.
+- **Chevrons point the reading direction.** Calendar and Pagination arrows
+  mirror. The Sidebar, Table expander and TreeView chevrons turn half round
+  when closed, so opening animates to 90° rather than flipping. Every
+  direction rule is now `:dir(rtl)`.
+- **`I18nProvider` and `useLocale`, re-exported from react-aria.**
+  react-aria's arrow keys follow the locale, not `dir`, so right-to-left
+  needs both. This means an app no longer needs its own react-aria
+  dependency to set the locale.
+- **Stylelint, in the shipped config:**
+  - `property-disallowed-list` rejects physical left and right properties.
+  - `text-align`, `float` and `clear` with `left` or `right` are rejected.
+  - Each message names the logical form.
+  - The token check also covers the logical properties now. Without that,
+    turning `padding-left` into `padding-inline-start` would have taken it
+    out of the token check. It caught one: the streaming cursor's `0.1em`,
+    which follows the glyphs and is exempted with a reason.
+- **Client boundaries:** a module that re-exports from react-aria now needs
+  `'use client'`, since everything in react-aria is client-only.
+  `I18nProvider` was the first such module.
+- **Storybook** gains a Direction toolbar that sets `dir` and a Hebrew
+  locale. There are 13 stories under Foundations/Right to left, each
+  measuring where things land.
+- **Demo:** a "Right to left" setting in the demo controls. The smoke test
+  sweeps every route right-to-left on a desktop and a phone: no errors, no
+  sideways scroll, axe clean. It also measures the sidebar, the brand and
+  the Agents table's first column on the right.
+- **Known, and content rather than components:** the demo's copy is
+  English. In right-to-left, a sentence's full stop and a signed figure's
+  sign reorder, which is the Unicode bidi algorithm doing its job on
+  left-to-right text. A product shipping in Hebrew or Arabic ships its
+  strings in them.
+
 ## 0.118.0 — 2026-09-27
 
 ### Added — SkipLink

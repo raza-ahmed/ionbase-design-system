@@ -84,7 +84,14 @@
  *
  * The half-width negative offset centres the rotated square on the edge, and
  * clearing two borders leaves the seam continuous with the panel.
+ *
+ * Physical on purpose: the side is the one react-aria RESOLVED the popover onto,
+ * already mirrored for right-to-left, so a logical property here would flip
+ * it a second time and point the arrow away from its trigger. The borders
+ * cleared are the rotated square's own two outer edges, which are physical
+ * in either direction.
  */
+/* stylelint-disable property-disallowed-list */
 .ion-popover--top .ion-popover__arrow {
   bottom: -7px;
   border-top: none;
@@ -108,6 +115,7 @@
   border-top: none;
   border-right: none;
 }
+/* stylelint-enable property-disallowed-list */
 
 .ion-popover__header {
   display: flex;

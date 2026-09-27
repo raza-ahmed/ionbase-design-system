@@ -105,6 +105,13 @@
   border-top-width: 0;
 }
 
+/*
+ * Physical on purpose: the side is the one react-aria RESOLVED the tooltip onto,
+ * already mirrored for right-to-left, so a logical property here would flip
+ * it a second time and point the arrow away from its trigger. The border drawn
+ * is the triangle's own edge, physical in either direction.
+ */
+/* stylelint-disable property-disallowed-list */
 .ion-tooltip--left .ion-tooltip__arrow {
   right: calc(-2 * var(--ion-tooltip-arrow));
   border-left-color: var(--surface-inverse);
@@ -116,3 +123,4 @@
   border-right-color: var(--surface-inverse);
   border-left-width: 0;
 }
+/* stylelint-enable property-disallowed-list */

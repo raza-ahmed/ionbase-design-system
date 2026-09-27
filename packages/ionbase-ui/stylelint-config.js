@@ -57,6 +57,63 @@ export const TOKENISED_PROPERTIES = [
   'border-bottom-width',
   'border-left-width',
   'border-right-width',
+  // Their logical forms — what the RTL rule below sends everyone to. Without
+  // these, converting `padding-left` to `padding-inline-start` would have
+  // taken it out of the token check without anyone noticing.
+  'margin-inline',
+  'margin-inline-start',
+  'margin-inline-end',
+  'margin-block',
+  'margin-block-start',
+  'margin-block-end',
+  'padding-inline',
+  'padding-inline-start',
+  'padding-inline-end',
+  'padding-block',
+  'padding-block-start',
+  'padding-block-end',
+  'border-inline-start-color',
+  'border-inline-end-color',
+  'border-inline-start-width',
+  'border-inline-end-width',
+  'border-start-start-radius',
+  'border-start-end-radius',
+  'border-end-start-radius',
+  'border-end-end-radius',
+];
+
+/**
+ * Physical left and right — wrong the moment the page is right-to-left.
+ *
+ * Top and bottom stay allowed: IonBase is horizontal-script only, where the
+ * block axis does not flip. Each of these has a logical form that follows
+ * `dir`, named in the message. The few places that must stay physical — an
+ * arrow on the side react-aria actually placed a popover, a toast region
+ * named `top-left` — disable the rule on that line and say why.
+ */
+export const PHYSICAL_INLINE_PROPERTIES = [
+  'left',
+  'right',
+  'margin-left',
+  'margin-right',
+  'padding-left',
+  'padding-right',
+  'border-left',
+  'border-right',
+  'border-left-color',
+  'border-right-color',
+  'border-left-width',
+  'border-right-width',
+  'border-left-style',
+  'border-right-style',
+  'border-top-left-radius',
+  'border-top-right-radius',
+  'border-bottom-left-radius',
+  'border-bottom-right-radius',
+  'scroll-padding-left',
+  'scroll-padding-right',
+  'scroll-margin-left',
+  'scroll-margin-right',
 ];
 
 /**
@@ -123,9 +180,57 @@ const config = {
      *           box-shadow: var(--ion-shadow-button-raised);
      * Rejected: box-shadow: 0 1px 2px rgb(0 0 0 / 40%);
      */
-    'declaration-property-value-disallowed-list': {
-      'box-shadow': [/rgba?\(/i, /hsla?\(/i, /#[0-9a-f]{3,8}/i],
-    },
+    'declaration-property-value-disallowed-list': [
+      {
+        'box-shadow': [/rgba?\(/i, /hsla?\(/i, /#[0-9a-f]{3,8}/i],
+        // Right-to-left: `start` and `end` follow `dir`; left and right do not.
+        'text-align': ['left', 'right'],
+        float: ['left', 'right'],
+        clear: ['left', 'right'],
+      },
+      {
+        message: (property, value) =>
+          property === 'box-shadow'
+            ? `No raw colour in a shadow ("${value}"): use a token — var(--ion-shadow-*) or a colour token.`
+            : `"${property}: ${value}" does not flip for right-to-left. Use \`${value === 'left' ? 'start' : 'end'}\` — or \`inline-${value === 'left' ? 'start' : 'end'}\` for float and clear.`,
+      },
+    ],
+
+    /*
+     * Right-to-left. `inset-inline-start` for `left`, `margin-inline-end` for
+     * `margin-right`, `border-start-end-radius` for `border-top-right-radius`:
+     * the logical forms follow `dir`, so a component written with them needs
+     * no RTL stylesheet at all.
+     */
+    'property-disallowed-list': [
+      PHYSICAL_INLINE_PROPERTIES,
+      {
+        message: (property) =>
+          `"${property}" does not flip for right-to-left. Use its logical form — ${
+            {
+              left: 'inset-inline-start',
+              right: 'inset-inline-end',
+            }[property] ??
+            property
+              .replace(
+                /^(margin|padding|border|scroll-padding|scroll-margin)-left/,
+                '$1-inline-start',
+              )
+              .replace(
+                /^(margin|padding|border|scroll-padding|scroll-margin)-right/,
+                '$1-inline-end',
+              )
+              .replace(
+                /^border-(inline-(?:start|end))-(color|width|style)$/,
+                'border-$1-$2',
+              )
+              .replace('border-top-left-radius', 'border-start-start-radius')
+              .replace('border-top-right-radius', 'border-start-end-radius')
+              .replace('border-bottom-left-radius', 'border-end-start-radius')
+              .replace('border-bottom-right-radius', 'border-end-end-radius')
+          }. If it must stay physical, disable the rule on that line and say why.`,
+      },
+    ],
   },
 
   overrides: [

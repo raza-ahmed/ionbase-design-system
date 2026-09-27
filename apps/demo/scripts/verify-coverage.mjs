@@ -99,6 +99,7 @@ const REQUIRED = [
   'Grid',
   'ThemeZone',
   'SkipLink',
+  'I18nProvider',
   'Accordion',
   'AccordionItem',
   // Phase 3 — Runs and Assistant

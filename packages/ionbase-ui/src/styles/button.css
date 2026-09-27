@@ -89,8 +89,7 @@
    * deriving height from padding instead is what left all three sizes 2px off.
    */
   min-height: var(--ion-button-size);
-  padding-left: var(--ion-button-padding-x);
-  padding-right: var(--ion-button-padding-x);
+  padding-inline: var(--ion-button-padding-x);
   gap: var(--ion-button-gap);
   font-family: var(--font-family-sans);
   font-weight: var(--font-weight-medium);

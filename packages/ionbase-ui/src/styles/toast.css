@@ -192,7 +192,12 @@
 }
 
 /* Above Modal's 1000 and Tooltip's 1100: a toast confirming what a dialog just
- * did has to be visible over it. */
+ * did has to be visible over it.
+ *
+ * Physical on purpose: `placement` names a corner of the screen —
+ * `top-left` — and a corner does not move when the text direction does.
+ */
+/* stylelint-disable property-disallowed-list */
 .ion-toast-region--top-left {
   top: 0;
   left: 0;
@@ -214,3 +219,4 @@
   right: 0;
   flex-direction: column-reverse;
 }
+/* stylelint-enable property-disallowed-list */

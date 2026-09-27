@@ -138,6 +138,12 @@
   flex-shrink: 0;
 }
 
+/* Previous is at the row's start and points there: the right, in
+   right-to-left. */
+.ion-pagination__icon:dir(rtl) {
+  transform: scaleX(-1);
+}
+
 /*
  * The truncation marker. Not a button and not focusable — it is the absence of
  * pages, and giving it a tab stop would put a control in the sequence that does
