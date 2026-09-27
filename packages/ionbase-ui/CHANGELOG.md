@@ -1,5 +1,44 @@
 # Changelog
 
+## 0.111.0 — 2026-09-27
+
+### Added — sticky table header and first column
+
+A long table keeps its header, and a wide one keeps its first column. It is
+the sixteenth P1 item on the enterprise checklist.
+
+- **`maxHeight` on Table.** The rows scroll inside the table, and the header
+  stays at its top. It holds to the table's own scroll region, not the
+  page: the region already scrolls sideways, and a sticky cell sticks to its
+  nearest scroller. The header's bottom rule is drawn by the cells, so it
+  moves with them.
+- **`stickyFirstColumn` on Table.** The first column stays while the rest
+  scrolls sideways. Any toggle and checkbox cells before it are held too,
+  each placed after the one before. A held cell takes its row's background,
+  so nothing shows through, and its edge casts a shadow once something has
+  scrolled under it.
+- **Nothing focused hides under them (WCAG 2.4.11).** The region's scroll
+  padding is the header's height and the column's width, both measured, and
+  a control half under either is scrolled clear when it takes focus.
+  Browsers don't do that on their own sideways.
+- **Rows that arrive later are held too**, even ones exactly the size of the
+  rows they replace, which no resize reports. An open row's detail spans
+  everything and is not held.
+- **Figma:** Table stays code-only, with its reason updated. The Table page
+  has a prototype of the header held over scrolling rows.
+- **Demo:** the Runs history scrolls under a held header at 24rem, and keeps
+  its Run column on a phone. The smoke check covers:
+  - desktop: the rows scrolling inside, the header held, and a task half
+    under the header focused clear of it;
+  - phone: the Run column held, and its edge's shadow;
+  - axe.
+
+  Each of four mutations fails it; the fifth, focus scrolled clear, is
+  caught in Storybook, since Chromium clears a sticky header itself.
+
+- **Pattern:** DataTable holds the header on an unpaged list and the first
+  column on a table wider than its space.
+
 ## 0.110.0 — 2026-09-27
 
 ### Added — expandable table rows

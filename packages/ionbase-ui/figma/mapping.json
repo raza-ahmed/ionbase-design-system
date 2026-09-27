@@ -2513,7 +2513,7 @@
     "LogoMark": "Logo-Ionbase maps to Logo. Figma spells the no-wordmark case as that component's Type axis rather than a separate component; LogoMark is how code spells the same thing.",
     "RadioGroup": "Figma draws Radio only. The group is the thing that owns the selected value, which a static frame cannot express — Figma's Radio State axis is ignored for exactly this reason. Its label, help, error and orientation are the shell drawn as Checkbox Group; the two groups share it in code as well.",
     "ScrollProgress": "Drawn in Figma as its three parts — Line, Progress, Progress Heading — all of which the component owns internally. There is no whole-component frame to map.",
-    "Table": "Figma draws Table Row and Table Cell; the table itself is the caller assembling them. Density, the one property Table owns, is mapped on Table Cell.",
+    "Table": "Figma draws Table Row and Table Cell; the table itself is the caller assembling them. Density, the one property Table owns that Figma varies, is mapped on Table Cell. `maxHeight` and `stickyFirstColumn` are scroll behaviour, which a component cannot draw: the Table page's \"Example — sticky header (maxHeight)\" frame shows the header held over scrolling rows in a prototype, and the column is held the same way sideways.",
     "TableBody": "As TableHead.",
     "TableHead": "As Table — a code-side grouping element. Figma expresses a header row as a Table Row variant, not a separate component.",
     "ToastProvider": "Figma draws Toast, which is mapped. The provider is placement, queueing and the live region — runtime behaviour with nothing to draw.",

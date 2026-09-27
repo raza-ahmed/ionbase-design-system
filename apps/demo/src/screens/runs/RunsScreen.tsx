@@ -231,7 +231,11 @@ function History({ runs: all }: { runs: RunSummary[] }) {
         </p>
       ) : (
         <SidePanelLayout>
-          <Table aria-label="Run history">
+          {/* Not paged: the rows scroll inside the table with the header
+              held, so the filters stay in reach. Beside the details panel
+              and on a phone it is wider than its space, so each row keeps
+              its task in view as the rest scrolls sideways. */}
+          <Table aria-label="Run history" maxHeight="24rem" stickyFirstColumn>
             <TableHead>
               <TableRow>
                 <TableCell header>Run</TableCell>

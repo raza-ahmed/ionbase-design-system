@@ -22,7 +22,7 @@
   ],
   "composition": {
     "order": ["Table", "TableHead", "TableRow", "TableCell"],
-    "note": "Table > TableHead/TableBody > TableRow > TableCell, matching how Figma layers Table Row > Table Cell > Cell Text. TableHead and TableBody take no props of their own; they place the rows and give TableCell its head-or-body context.",
+    "note": "Table > TableHead/TableBody > TableRow > TableCell, matching how Figma layers Table Row > Table Cell > Cell Text. TableHead and TableBody take no props of their own; they place the rows and give TableCell its head-or-body context. For a long list, `maxHeight` scrolls the rows inside the table with the header held at its top; for a wide one, `stickyFirstColumn` holds the first column — and any toggle and checkbox cells before it — while the rest scrolls sideways. Both hold to the table's own scroll region, never the page.",
     "example": "<Table aria-label=\"Users\"><TableHead><TableRow><TableCell scope=\"col\">Name</TableCell></TableRow></TableHead><TableBody><TableRow><TableCell>Ada</TableCell></TableRow></TableBody></Table>"
   },
   "variants": {
@@ -30,13 +30,22 @@
       "compact": {
         "use": "dense operational tables where row count matters more than comfort"
       },
-      "default": { "use": "the default" },
-      "relaxed": { "use": "short tables where each row deserves attention" }
+      "default": {
+        "use": "the default"
+      },
+      "relaxed": {
+        "use": "short tables where each row deserves attention"
+      }
     }
   },
   "a11y": {
     "guarantees": [
-      "the scroll container is keyboard reachable, which overflow alone does not provide (WCAG 2.1.1)"
+      "the scroll container is keyboard reachable, which overflow alone does not provide (WCAG 2.1.1)",
+      "`maxHeight` holds the header at the top of the table's scroll region; its bottom rule is drawn by the cells, so it moves with them",
+      "`stickyFirstColumn` holds the first column, and the toggle and checkbox cells before it, each placed after the one before; a held cell takes its row's background, so nothing shows through",
+      "nothing focused is left under a held header or column (WCAG 2.4.11): the region's scroll padding is their measured size, and a control half under them is scrolled clear on focus",
+      "the held column's edge shows a shadow only once something has scrolled under it",
+      "rows that arrive later — a page change, a row opening — are measured and held too; an open row's detail spans everything and is not held"
     ],
     "requires": [
       "`aria-label` or `aria-labelledby` on Table — it names the scroll region, and the container takes no props of its own, so this is the only place the name can live",
@@ -44,7 +53,8 @@
       "an accessible name on every row-selection Checkbox — those have no visible label by design"
     ],
     "notes": [
-      "Prefer a visible <caption> referenced by aria-labelledby when the table's name should also be seen."
+      "Prefer a visible <caption> referenced by aria-labelledby when the table's name should also be seen.",
+      "The header cannot hold to the page: the table's region scrolls sideways, and a sticky cell sticks to its nearest scroller. Give it `maxHeight` instead."
     ]
   },
   "antiPatterns": [
@@ -63,6 +73,15 @@
     {
       "dont": "row-selection checkboxes with no aria-label",
       "why": "every row announces an unnamed checkbox"
+    },
+    {
+      "dont": "position: sticky on your own <thead> cells",
+      "do": "`maxHeight` on Table",
+      "why": "the header sticks to the table's scroll region, which does not scroll up and down without a height, and its rule stays behind with border-collapse; focus can also land under it"
+    },
+    {
+      "dont": "stickyFirstColumn on a table that fits its space",
+      "why": "nothing scrolls under the column; it only adds layers. Hold the column where the table is wider than its space — a phone, a panel beside it"
     }
   ],
   "missingStates": {
