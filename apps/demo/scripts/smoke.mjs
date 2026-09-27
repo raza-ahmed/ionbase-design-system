@@ -3106,7 +3106,17 @@ try {
             kids[i].top < kids[i - 1].bottom &&
             kids[i - 1].top < kids[i].bottom
           )
-            gaps.push(Math.round(kids[i].left - kids[i - 1].right));
+            // Less the next child's own margin: the Columns menu is pushed
+            // to the row's end with an auto margin, which is not the gap.
+            gaps.push(
+              Math.round(
+                kids[i].left -
+                  kids[i - 1].right -
+                  parseFloat(
+                    window.getComputedStyle(el.children[i]).marginLeft,
+                  ),
+              ),
+            );
         return {
           stack: el.classList.contains('ion-stack'),
           token,
