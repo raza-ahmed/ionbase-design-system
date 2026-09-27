@@ -143,12 +143,12 @@ IonBase column names the component that covers it.
 
 ### Layout and utilities
 
-| Component                 | Carbon | M3  | SLDS | IonBase |
-| ------------------------- | :----: | :-: | :--: | ------- |
-| Grid                      |   ●    |     |  ●   | —       |
-| Stack                     |   ●    |     |      | —       |
-| Theme zone (scoped theme) |   ●    |     |      | —       |
-| Resizable split pane      |   ●    |     |  ●   | —       |
+| Component                 | Carbon | M3  | SLDS | IonBase   |
+| ------------------------- | :----: | :-: | :--: | --------- |
+| Grid                      |   ●    |     |  ●   | —         |
+| Stack                     |   ●    |     |      | ● `Stack` |
+| Theme zone (scoped theme) |   ●    |     |      | —         |
+| Resizable split pane      |   ●    |     |  ●   | —         |
 
 ### AI and agentic
 

@@ -3065,6 +3065,144 @@ try {
   }
 
   /*
+   * Stack, in the demo's rows. The Agents toolbar and its active filters,
+   * and the Assistant's suggestions, are Stacks: each gap between siblings is
+   * the spacing token the Stack names — 8 — measured, not read from a class.
+   * On a phone the rows wrap instead of scrolling sideways, and the empty
+   * state's suggestions stay centred.
+   */
+  for (const [device, width, height] of [
+    ['desktop', 1280, 900],
+    ['mobile', 390, 844],
+  ]) {
+    const where = `stack (light, ${device})`;
+    if (skip(where)) continue;
+    const context = await browser.newContext({ viewport: { width, height } });
+    await context.addInitScript(() => {
+      localStorage.setItem(
+        'ionbase-ops:demo-settings',
+        JSON.stringify({ theme: 'light', latency: 0 }),
+      );
+    });
+    const page = await context.newPage();
+    page.on('pageerror', (e) => fail(where, `exception: ${e.message}`));
+    // Siblings on the same line, and the space between each pair, against
+    // the token.
+    const measure = (sel) =>
+      page.evaluate((sel) => {
+        const el = document.querySelector(sel);
+        if (!el) return null;
+        const probe = document.createElement('div');
+        probe.style.width = 'var(--spacing-8)';
+        document.body.append(probe);
+        const token = probe.getBoundingClientRect().width;
+        probe.remove();
+        const kids = [...el.children].map((c) => c.getBoundingClientRect());
+        const gaps = [];
+        // On the same line when they overlap vertically — a row aligned to
+        // the end has children whose tops differ.
+        for (let i = 1; i < kids.length; i++)
+          if (
+            kids[i].top < kids[i - 1].bottom &&
+            kids[i - 1].top < kids[i].bottom
+          )
+            // Less the next child's own margin: the Columns menu is pushed
+            // to the row's end with an auto margin, which is not the gap.
+            gaps.push(
+              Math.round(
+                kids[i].left -
+                  kids[i - 1].right -
+                  parseFloat(
+                    window.getComputedStyle(el.children[i]).marginLeft,
+                  ),
+              ),
+            );
+        return {
+          stack: el.classList.contains('ion-stack'),
+          token,
+          gaps,
+          lines: new Set(kids.map((k) => Math.round(k.top))).size,
+          inline: el.getAttribute('style'),
+        };
+      }, sel);
+    try {
+      await page.goto(`${BASE}/#/agents`);
+      await page
+        .getByRole('searchbox', { name: 'Search agents' })
+        .waitFor({ timeout: 10_000 });
+      const toolbar = await measure('.demo-toolbar');
+      if (!toolbar?.stack) fail(where, 'the Agents toolbar is not a Stack');
+      else {
+        if (toolbar.inline)
+          fail(where, `the toolbar has a style: ${toolbar.inline}`);
+        if (
+          !toolbar.gaps.length ||
+          toolbar.gaps.some((g) => g !== toolbar.token)
+        )
+          fail(
+            where,
+            `the toolbar's gaps are ${toolbar.gaps}, not ${toolbar.token}`,
+          );
+        if (device === 'mobile' && toolbar.lines < 2)
+          fail(where, 'the toolbar did not wrap on a phone');
+      }
+      await page
+        .getByRole('searchbox', { name: 'Search agents' })
+        .fill('contract');
+      await page
+        .getByRole('button', { name: 'Clear all' })
+        .waitFor({ timeout: 5_000 });
+      const filters = await measure('.demo-toolbar ~ .ion-stack');
+      if (!filters?.stack) fail(where, 'the active filters row is not a Stack');
+      else if (
+        !filters.gaps.length ||
+        filters.gaps.some((g) => g !== filters.token)
+      )
+        fail(where, `the active filters' gaps are ${filters.gaps}`);
+
+      await page.goto(`${BASE}/#/assistant`);
+      await page
+        .locator('.demo-suggestions button')
+        .first()
+        .waitFor({ timeout: 10_000 });
+      const suggestions = await measure('.demo-suggestions');
+      if (!suggestions?.stack) fail(where, 'the suggestions are not a Stack');
+      else if (suggestions.gaps.some((g) => g !== suggestions.token))
+        fail(where, `the suggestions' gaps are ${suggestions.gaps}`);
+      // Every line centred in the row — the wrapped, part-filled line is
+      // where it shows; a single line may already be centred by its parent.
+      const centred = await page.evaluate(() => {
+        const el = document.querySelector('.demo-suggestions');
+        const box = el.getBoundingClientRect();
+        const kids = [...el.children].map((c) => c.getBoundingClientRect());
+        const tops = [...new Set(kids.map((k) => Math.round(k.top)))];
+        return tops.every((t) => {
+          const row = kids.filter((k) => Math.round(k.top) === t);
+          const left = row[0].left - box.left;
+          const right = box.right - row[row.length - 1].right;
+          return Math.abs(left - right) <= 1;
+        });
+      });
+      if (!centred)
+        fail(where, "the empty state's suggestions are not centred");
+
+      if (
+        await page.evaluate(
+          () => document.documentElement.scrollWidth > window.innerWidth,
+        )
+      )
+        fail(where, 'the page scrolls sideways');
+    } catch (e) {
+      fail(
+        where,
+        `did not run: ${e.message.split('\n').slice(0, 3).join(' | ')}`,
+      );
+    }
+    groupsChecked++;
+    await context.close();
+  }
+
+  /*
    * Timeline, as an agent's History on its Overview. An ordered list named
    * History, newest first; each event says what happened, who, and when in
    * a <time> with the exact instant; the markers are hidden. A purpose saved

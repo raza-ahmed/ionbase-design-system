@@ -201,20 +201,6 @@ body {
   margin: 0;
 }
 
-.demo-toolbar {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: var(--spacing-8);
-}
-
-.demo-active-filters {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: flex-end;
-  gap: var(--spacing-8) var(--spacing-12);
-}
-
 .demo-toolbar__search {
   flex: 1 1 16rem;
 }
@@ -437,17 +423,6 @@ body {
   grid-column: 2;
   z-index: 5;
   top: var(--spacing-80);
-}
-
-.demo-suggestions {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: var(--spacing-8);
-}
-
-.demo-composer .demo-suggestions {
-  justify-content: flex-start;
 }
 
 .demo-composer {
