@@ -3865,6 +3865,69 @@ try {
   }
 
   /*
+   * Density is a property of a view, not of the app. The Agents table, up
+   * to 50 a page scanned for the one to act on, is compact — 8px cell
+   * padding — and the Run history, six runs read one at a time, keeps the
+   * default 16px. Padding, not row height: a row is as tall as its tallest
+   * cell's content. A system-wide density leaking into either shows here.
+   */
+  check: {
+    const where = 'density (light, desktop)';
+    if (skip(where)) break check;
+    const context = await browser.newContext({
+      viewport: { width: 1280, height: 900 },
+    });
+    await context.addInitScript(() => {
+      localStorage.setItem(
+        'ionbase-ops:demo-settings',
+        JSON.stringify({ theme: 'light', latency: 0 }),
+      );
+    });
+    const page = await context.newPage();
+    page.on('pageerror', (e) => fail(where, `exception: ${e.message}`));
+    // The table's name is on its scroll region, not on the <table>.
+    const measure = (name) =>
+      page.evaluate((label) => {
+        const table = document
+          .querySelector(`[aria-label="${label}"]`)
+          ?.querySelector('table');
+        const cell = table?.querySelector('tbody td');
+        return table && cell
+          ? {
+              compact: table.classList.contains('ion-table--compact'),
+              padding: window.getComputedStyle(cell).paddingTop,
+            }
+          : null;
+      }, name);
+    try {
+      await page.goto(`${BASE}/#/agents`);
+      await page
+        .getByRole('region', { name: 'Agents' })
+        .waitFor({ timeout: 10_000 });
+      const agents = await measure('Agents');
+      if (!agents) fail(where, 'no Agents rows to measure');
+      else if (!agents.compact || agents.padding !== '8px')
+        fail(
+          where,
+          `the Agents table is not compact: ${JSON.stringify(agents)}`,
+        );
+
+      await page.goto(`${BASE}/#/runs`);
+      await page
+        .getByRole('region', { name: 'Run history' })
+        .waitFor({ timeout: 10_000 });
+      const runs = await measure('Run history');
+      if (!runs) fail(where, 'no Run history rows to measure');
+      else if (runs.compact || runs.padding !== '16px')
+        fail(where, `Run history is not default: ${JSON.stringify(runs)}`);
+    } catch (e) {
+      fail(where, `did not run: ${e.message.split('\n')[0]}`);
+    }
+    groupsChecked++;
+    await context.close();
+  }
+
+  /*
    * Timeline, as an agent's History on its Overview. An ordered list named
    * History, newest first; each event says what happened, who, and when in
    * a <time> with the exact instant; the markers are hidden. A purpose saved

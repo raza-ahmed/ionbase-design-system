@@ -1,5 +1,59 @@
 # Changelog
 
+## 0.122.0 — 2026-09-28
+
+### Density — the fourth cross-cutting audit
+
+**Decided: per component, on collections of rows only.** Controls keep
+`size`. There is no system-wide density: no provider, no `data-density`, no
+Compact mode on the spacing variables. Density belongs to a view (a long
+table scanned for one row is compact, a short one read row by row is not),
+Figma varies it only on rows, and a
+global mode would push small controls under WCAG 2.2's 24px target minimum.
+AGENTS.md, "Density", has the reasoning.
+
+**Found:**
+
+- Table was the only component with density (compact, default, relaxed).
+- The union table said Sidebar had it too. It never did, and the record is
+  corrected.
+
+**Added:**
+
+- **List `density`:** `compact` or `default`, in Table's words, with the new
+  `ListDensity` type exported.
+  - Compact rows are 32px, a TreeView row, when they hold a label and an Icon.
+    A `mini` Avatar makes them 36px.
+  - Block padding changes and inline padding does not, so text lines up across
+    densities.
+  - List's meta says when to use each.
+- **Figma:** a Density axis on List and List Item, with 10 compact rows and 3
+  compact lists. It is mapped as List's `density`, and the List description
+  is re-applied. All 104 blocks were verified in the file.
+- **`verify-meta` holds the rule:**
+  - a `density` prop must take values from `compact`, `default` and
+    `relaxed`, and include `default`;
+  - a component with both `size` and `density` fails.
+
+  A mutation of each rule is caught.
+
+**Tests:**
+
+- **Storybook:** four List stories.
+  - Compact rows are 32px and default rows 48px.
+  - The label starts in the same place at both densities.
+  - Compact rows grow for a description and keep their 6px padding, and the
+    keyboard still works.
+  - The row's height follows the avatar.
+
+  Mutations: 4 of 4 caught.
+
+- **Demo:** the Agents table is compact: up to 50 a page, scanned for the one
+  to act on. The Run history stays default. It had been made compact first,
+  which fitted all six runs into its 24rem and left the sticky header nothing
+  to scroll under; the sticky-table smoke check caught it. A smoke check
+  covers both tables: 2 of 2 mutations caught.
+
 ## 0.121.0 — 2026-09-27
 
 ### Localised strings — the third cross-cutting audit

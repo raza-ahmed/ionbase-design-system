@@ -390,3 +390,96 @@ export const LongLabelsWrapAndMetaStays: Story = {
     await expect(label.getBoundingClientRect().height).toBeGreaterThan(24);
   },
 };
+
+/** A log, scanned by label: compact rows, an Icon-sized leading element. */
+const LOG: ListItem[] = [
+  { id: 'l1', label: 'Invoice reconciler finished', meta: '09:41' },
+  { id: 'l2', label: 'Support triage asked for approval', meta: '09:38' },
+  { id: 'l3', label: 'Research digest started', meta: '09:30' },
+  { id: 'l4', label: 'Refund bot paused by Priya', meta: '09:12' },
+];
+
+export const Compact: Story = {
+  render: () => <Harness items={LOG} density="compact" />,
+};
+
+/**
+ * Density moves rows, never columns — Table's rule. Compact is 32px, a
+ * TreeView row; default 48. The inline padding is the same in both, so a
+ * compact list's text lines up with a default one beside it.
+ */
+export const CompactRowsAre32AndKeepTheirColumns: Story = {
+  render: () => (
+    <div>
+      <Harness items={LOG} density="compact" />
+      <Harness items={LOG} />
+    </div>
+  ),
+  play: async ({ canvasElement }) => {
+    const [compact, standard] = canvasElement.querySelectorAll('.ion-list');
+    await expect(compact).toHaveClass('ion-list--compact');
+    await expect(standard).not.toHaveClass('ion-list--compact');
+    const rows = (list: Element) => [
+      ...list.querySelectorAll('.ion-list__row'),
+    ];
+    // Default rows are 48 with their rule, which min-height sets. Compact
+    // rows are their content, 6 + 20 + 6, and the 1px rule is on top.
+    for (const r of rows(compact))
+      await expect(
+        r.getBoundingClientRect().height -
+          parseFloat(getComputedStyle(r).borderTopWidth),
+      ).toBe(32);
+    for (const r of rows(standard))
+      await expect(r.getBoundingClientRect().height).toBe(48);
+    const labelLeft = (list: Element) =>
+      list.querySelector('.ion-list__label')!.getBoundingClientRect().left;
+    await expect(labelLeft(compact)).toBe(labelLeft(standard));
+  },
+};
+
+/** A second line still fits: the row grows, and keeps its 6px either side. */
+export const CompactRowsGrowForADescription: Story = {
+  render: () => <Harness density="compact" />,
+  play: async ({ canvasElement }) => {
+    const row = canvasElement.querySelector('.ion-list__row')!;
+    const style = getComputedStyle(row);
+    await expect(style.paddingTop).toBe('6px');
+    await expect(style.paddingBottom).toBe('6px');
+    await expect(row.getBoundingClientRect().height).toBeGreaterThan(32);
+    // Still one tab stop, arrows between rows: density is only looks.
+    await userEvent.tab();
+    await userEvent.keyboard('{ArrowDown}');
+    await expect(document.activeElement).toBe(
+      canvasElement.querySelectorAll('.ion-list__row')[1],
+    );
+  },
+};
+
+/** A `mini` Avatar is 24, so a compact row holding one is 36; `sm` is 44. */
+export const CompactRowHeightFollowsTheAvatar: Story = {
+  render: () => (
+    <Harness
+      density="compact"
+      items={[
+        {
+          id: 'a',
+          label: 'Mini',
+          leading: <Avatar size="mini" initials="MI" />,
+        },
+        {
+          id: 'b',
+          label: 'Small',
+          leading: <Avatar size="sm" initials="SM" />,
+        },
+      ]}
+    />
+  ),
+  play: async ({ canvasElement }) => {
+    const [mini, sm] = canvasElement.querySelectorAll('.ion-list__row');
+    await expect(mini.getBoundingClientRect().height).toBe(36);
+    await expect(
+      sm.getBoundingClientRect().height -
+        parseFloat(getComputedStyle(sm).borderTopWidth),
+    ).toBe(44);
+  },
+};
