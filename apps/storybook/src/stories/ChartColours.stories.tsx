@@ -48,6 +48,8 @@ const swatch = (color: string): React.CSSProperties => ({
   height: 40,
   borderRadius: 'var(--radius-sm)',
   background: color,
+  // A palette is its colours: keep them in forced colours, as the chart does.
+  forcedColorAdjust: 'none',
 });
 
 export const Palette: Story = {

@@ -259,3 +259,15 @@
   --ion-avatar-gradient-to: var(--surface-palette-7-subtle);
   --ion-avatar-gradient-text: var(--text-palette-7);
 }
+
+/*
+ * The disc is a gradient, and forced colours paint no background images: the
+ * initials floated with nothing round them. A ring in the text colour draws
+ * the circle, inside its edge so the size does not change.
+ */
+@media (forced-colors: active) {
+  .ion-avatar-gradient {
+    outline: var(--border-width-default) solid CanvasText;
+    outline-offset: calc(-1 * var(--border-width-default));
+  }
+}

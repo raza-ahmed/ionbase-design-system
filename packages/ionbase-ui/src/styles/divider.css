@@ -29,3 +29,14 @@
   height: 100%;
   align-self: stretch;
 }
+
+/*
+ * The line is a background, and forced colours paint every background as the
+ * page — the divider vanished. Kept, in the system text colour.
+ */
+@media (forced-colors: active) {
+  .ion-divider {
+    forced-color-adjust: none;
+    background-color: CanvasText;
+  }
+}

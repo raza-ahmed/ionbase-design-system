@@ -4,6 +4,7 @@ import { commands } from 'vitest/browser';
 declare module 'vitest/browser' {
   interface BrowserCommands {
     parkMouse: () => Promise<void>;
+    forcedColors: (on: boolean) => Promise<void>;
   }
 }
 
@@ -11,4 +12,5 @@ declare module 'vitest/browser' {
 // vitest.config.ts for why a resting cursor breaks hover tests.
 beforeEach(async () => {
   await commands.parkMouse();
+  await commands.forcedColors(false);
 });

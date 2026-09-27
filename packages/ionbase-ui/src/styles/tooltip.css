@@ -124,3 +124,14 @@
   border-left-width: 0;
 }
 /* stylelint-enable property-disallowed-list */
+
+/*
+ * The bubble is a filled box with no border, and forced colours paint the fill
+ * as the page: the text floated over whatever was behind it. A border draws
+ * its edge.
+ */
+@media (forced-colors: active) {
+  .ion-tooltip__bubble {
+    border: var(--border-width-default) solid CanvasText;
+  }
+}

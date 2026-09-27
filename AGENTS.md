@@ -1805,6 +1805,50 @@ any ancestor counts.
 **`scrollLeft` is negative in right-to-left.** Test with `Math.abs`, and read
 the sticky column's edge from the right.
 
+### Forced colours: what the mode does, and the four traps — 27 Sep 2026
+
+Windows High Contrast, `@media (forced-colors: active)`, throws the token
+palette away:
+
+- Backgrounds become the page (`Canvas`).
+- Text and borders become `CanvasText`, links `LinkText`.
+- Shadows are deleted.
+- Author system colours survive as written: `Highlight`, `GrayText`,
+  `Canvas`. That is how a rule re-draws a state.
+
+Anything shown only by a fill needs a rule. The shared rules (focus, checked,
+selected, disabled) live in the block at the end of `index.css`. A component's
+own rule lives in its stylesheet.
+
+**The four traps, each of which shipped:**
+
+1. **A transparent border is drawn.** Forced colours paint it `CanvasText`,
+   so every underline tab wore the selected tab's line. Set unselected
+   borders to `Canvas`.
+2. **Colour inside an SVG is not remapped.** A `color` set on the `<svg>`
+   itself keeps its token. In a dark ThemeZone the logo stayed near-white on
+   a page forced to white. Use `color: inherit` so the SVG takes its parent's
+   forced colour.
+3. **Disabled and on is still on.** A shared "disabled is Canvas" rule
+   erased the checked state. Checked and disabled is a `GrayText` fill.
+4. **A rule weaker than the one it overrides does nothing.** The selected
+   row's forced rule was outweighed by table.css's own selected rule, so the
+   light theme's tint stayed. Name the element the way the normal rule does.
+
+**Testing it.** Storybook's `commands.forcedColors(true)` emulates the mode,
+and computed styles then report the forced values, so a story asserts
+`Highlight`, not pixels. Turning the mode on mid-story animates every
+transitioning property, so wait for CSS transitions to finish before reading
+anything (`Foundations/Forced colours` shows how). The emulated palette has
+`Canvas` and `HighlightText` both white, so a rule that swaps one for the
+other cannot be told apart there. Such a rule still matters in themes where
+the two differ.
+
+**The demo's smoke test sweeps every route in forced colours.** Each Tab stop
+must look different focused and blurred. Every visible SVG must reach 3:1
+against what it sits on. Neither check knows about any one component, so a
+new component is covered the day it ships.
+
 ## Conventions
 
 - Reference files as clickable markdown links, not backticks.

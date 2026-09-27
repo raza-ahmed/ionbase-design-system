@@ -174,3 +174,15 @@
     transition: none;
   }
 }
+
+/*
+ * The current page is a background tint, which forced colours paint as the
+ * page: nothing said which page this is. Highlight, as the selected pill tab.
+ */
+@media (forced-colors: active) {
+  .ion-pagination__item[data-selected] {
+    forced-color-adjust: none;
+    background-color: Highlight;
+    color: HighlightText;
+  }
+}

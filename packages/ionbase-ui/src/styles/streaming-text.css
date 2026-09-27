@@ -57,3 +57,14 @@
     opacity: 1;
   }
 }
+
+/*
+ * The cursor says the answer is still being written. It is a background, so
+ * forced colours would paint it away mid-sentence.
+ */
+@media (forced-colors: active) {
+  .ion-streaming-text__cursor {
+    forced-color-adjust: none;
+    background-color: CanvasText;
+  }
+}
