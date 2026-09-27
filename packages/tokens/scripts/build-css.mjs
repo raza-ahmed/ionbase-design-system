@@ -216,6 +216,27 @@ async function main() {
     onlyFrom: '_dark.diff.json',
   });
 
+  // Light theme, as a selector too — the same tokens Dark overrides, at their
+  // Light values. `:root` carries Light for the page, but a Light subtree
+  // inside a Dark one (a ThemeZone) inherits Dark from its ancestor unless
+  // something re-declares them on it. Same key set as Dark by construction,
+  // so the two can only differ in values.
+  const lightCount = writeDiffFile(
+    'interface.dark.json',
+    'interface.light.json',
+    '_light.diff.json',
+  );
+  if (lightCount !== darkCount)
+    throw new Error(
+      `theme-light.css would declare ${lightCount} tokens, theme-dark.css ${darkCount}`,
+    );
+  await buildCss({
+    source: ['primitives.json', 'semantics.json', '_light.diff.json'],
+    output: 'theme-light.css',
+    selector: '[data-theme="light"]',
+    onlyFrom: '_light.diff.json',
+  });
+
   // Breakpoints — geometry and type only, no colour.
   const tabletCount = writeDiffFile(
     'breakpoint.desktop.json',
@@ -248,6 +269,7 @@ async function main() {
     [
       '@import "./base.css";',
       '@import "./theme-dark.css";',
+      '@import "./theme-light.css";',
       '@import "./breakpoint-tablet.css";',
       '@import "./breakpoint-mobile.css";',
       '@import "./typography.css";',

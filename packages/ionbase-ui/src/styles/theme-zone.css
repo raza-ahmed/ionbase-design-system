@@ -1,0 +1,36 @@
+/*
+ * ThemeZone
+ *
+ * `data-theme` re-declares the themed tokens on whatever carries it —
+ * `theme-dark.css` and `theme-light.css`, both generated. Custom properties
+ * inherit, so every component inside draws in the zone's theme with nothing
+ * of its own. What does not follow on its own:
+ *
+ * - `color`, which a child inherits as the parent's already-resolved value:
+ *   the body's text colour, in the page's theme. The zone sets it again.
+ * - `color-scheme`, which decides native controls, scrollbars and the
+ *   default canvas. Set for every `data-theme`, the page's root included.
+ *
+ * A zone that is a box paints the theme's page surface; one with `contents`
+ * draws nothing and leaves that to what it wraps.
+ */
+[data-theme='dark'] {
+  color-scheme: dark;
+}
+
+[data-theme='light'] {
+  color-scheme: light;
+}
+
+.ion-theme-zone,
+[data-ion-theme-portal] {
+  color: var(--text-default);
+}
+
+.ion-theme-zone:not(.ion-theme-zone--contents) {
+  background-color: var(--surface-page);
+}
+
+.ion-theme-zone--contents {
+  display: contents;
+}

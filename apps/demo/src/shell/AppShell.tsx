@@ -14,6 +14,7 @@ import {
   Kbd,
   Link,
   Logo,
+  ThemeZone,
 } from 'ionbase-ui';
 import { Search } from 'ionbase-icons/icons/search';
 
@@ -81,43 +82,50 @@ export function AppShell({
       {/*
        * menuType="dialog": the Header's own toggle opens the navigation Drawer,
        * and the account actions stay in the bar at every width.
+       *
+       * The Header is dark in both themes: a ThemeZone with `contents`, so
+       * the Header stays the shell's sticky grid row. Notifications, opened
+       * from inside it, open dark too; the Drawer and the command palette are
+       * the shell's, and follow the page.
        */}
-      <Header
-        className="demo-header"
-        menuType="dialog"
-        menuLabel="Open navigation"
-        open={navOpen}
-        onOpenChange={setNavOpen}
-        brand={
-          <a href={href('overview')} className="demo-brand">
-            <Logo size="sm" wordmark="vector" />
-            <span className="demo-brand__product">Ops</span>
-          </a>
-        }
-        end={
-          <>
-            {/*
+      <ThemeZone theme="dark" contents>
+        <Header
+          className="demo-header"
+          menuType="dialog"
+          menuLabel="Open navigation"
+          open={navOpen}
+          onOpenChange={setNavOpen}
+          brand={
+            <a href={href('overview')} className="demo-brand">
+              <Logo size="sm" wordmark="vector" />
+              <span className="demo-brand__product">Ops</span>
+            </a>
+          }
+          end={
+            <>
+              {/*
               The palette's visible door. ⌘K is invisible to anyone who has
               not been told it exists, so the button says so — and on a
               phone, which has no ⌘K, it is the only way in. Named "Search"
               outright: on a phone the word is hidden and only the icon shows.
             */}
-            <Button
-              aria-label="Search"
-              variant="secondary"
-              size="sm"
-              className="demo-search"
-              startIcon={<Icon as={Search} size="sm" />}
-              endIcon={<Kbd shortcut="mod+k" />}
-              onPress={() => setCommandsOpen(true)}
-            >
-              <span className="demo-search__label">Search</span>
-            </Button>
-            <NotificationsBell />
-            <Avatar size="sm" initials="AR" alt="Ada Reyes" />
-          </>
-        }
-      />
+              <Button
+                aria-label="Search"
+                variant="secondary"
+                size="sm"
+                className="demo-search"
+                startIcon={<Icon as={Search} size="sm" />}
+                endIcon={<Kbd shortcut="mod+k" />}
+                onPress={() => setCommandsOpen(true)}
+              >
+                <span className="demo-search__label">Search</span>
+              </Button>
+              <NotificationsBell />
+              <Avatar size="sm" initials="AR" alt="Ada Reyes" />
+            </>
+          }
+        />
+      </ThemeZone>
 
       <div className="demo-sidebar">
         <NavSidebar route={route} />

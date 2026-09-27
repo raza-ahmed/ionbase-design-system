@@ -3313,6 +3313,117 @@ try {
   }
 
   /*
+   * ThemeZone, as the shell's Header: dark on the light page, still the
+   * sticky row it was. Notifications, opened from inside it, opens dark —
+   * portalled out of the Header but into the zone's theme — while the
+   * command palette, the shell's, stays the page's light.
+   */
+  for (const [device, width, height] of [
+    ['desktop', 1280, 900],
+    ['mobile', 390, 844],
+  ]) {
+    const where = `theme zone (light, ${device})`;
+    if (skip(where)) continue;
+    const context = await browser.newContext({ viewport: { width, height } });
+    await context.addInitScript(() => {
+      localStorage.setItem(
+        'ionbase-ops:demo-settings',
+        JSON.stringify({ theme: 'light', latency: 0 }),
+      );
+    });
+    const page = await context.newPage();
+    page.on('pageerror', (e) => fail(where, `exception: ${e.message}`));
+    // A token as a theme resolves it, and an element's own paint.
+    const resolve = (token, theme) =>
+      page.evaluate(
+        ([token, theme]) => {
+          const el = document.createElement('div');
+          el.setAttribute('data-theme', theme);
+          el.style.backgroundColor = `var(${token})`;
+          document.body.append(el);
+          const c = window.getComputedStyle(el).backgroundColor;
+          el.remove();
+          return c;
+        },
+        [token, theme],
+      );
+    const paint = (locator) =>
+      locator.evaluate((el) => ({
+        bg: window.getComputedStyle(el).backgroundColor,
+        theme: el.closest('[data-theme]')?.getAttribute('data-theme'),
+      }));
+    try {
+      await page.goto(`${BASE}/#/overview`);
+      await page
+        .getByRole('heading', { name: 'Token budget by agent' })
+        .waitFor({ timeout: 10_000 });
+      const header = page.locator('header.ion-header');
+      const h = await paint(header);
+      if (h.theme !== 'dark') fail(where, `the Header is in ${h.theme}`);
+      else if (h.bg !== (await resolve('--surface-default', 'dark')))
+        fail(where, `the Header's surface is ${h.bg}, not the dark theme's`);
+      const main = await paint(page.locator('main'));
+      if (main.theme !== 'light')
+        fail(where, `the page around it is ${main.theme}`);
+
+      // Still the sticky row: scrolled, it stays at the top.
+      await page.mouse.wheel(0, 600);
+      await page.waitForFunction(() => window.scrollY > 100);
+      const top = await header.evaluate((el) =>
+        Math.round(el.getBoundingClientRect().top),
+      );
+      if (top !== 0) fail(where, `the Header scrolled away (top ${top})`);
+      await page.evaluate(() => window.scrollTo(0, 0));
+
+      await page.getByRole('button', { name: /^Notifications, / }).click();
+      const panel = page.getByRole('dialog', { name: 'Notifications' });
+      await panel.waitFor({ timeout: 5_000 });
+      const pop = await paint(
+        panel.locator(
+          'xpath=ancestor-or-self::*[contains(@class, "ion-popover")][1]',
+        ),
+      );
+      if (pop.theme !== 'dark')
+        fail(where, `Notifications opened in ${pop.theme}`);
+      else if (pop.bg !== (await resolve('--surface-raised', 'dark')))
+        fail(
+          where,
+          `Notifications' surface is ${pop.bg}, not the dark theme's`,
+        );
+      if (
+        await panel.evaluate(
+          (el) => !!el.closest('[inert], [aria-hidden="true"]'),
+        )
+      )
+        fail(where, 'Notifications opened into a hidden node');
+      await page.keyboard.press('Escape');
+      await panel.waitFor({ state: 'hidden', timeout: 5_000 });
+
+      await page.getByRole('button', { name: /^Search/ }).click();
+      const palette = page.getByRole('dialog', { name: 'Search and commands' });
+      await palette.waitFor({ timeout: 5_000 });
+      const pal = await paint(palette);
+      if (pal.theme !== 'light')
+        fail(where, `the command palette opened in ${pal.theme}`);
+      await page.keyboard.press('Escape');
+
+      if (
+        await page.evaluate(
+          () => document.documentElement.scrollWidth > window.innerWidth,
+        )
+      )
+        fail(where, 'the page scrolls sideways');
+    } catch (e) {
+      fail(
+        where,
+        `did not run: ${e.message.split('\n').slice(0, 3).join(' | ')}`,
+      );
+    }
+    groupsChecked++;
+    await context.close();
+  }
+
+  /*
    * Timeline, as an agent's History on its Overview. An ordered list named
    * History, newest first; each event says what happened, who, and when in
    * a <time> with the exact instant; the markers are hidden. A purpose saved

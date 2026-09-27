@@ -1,0 +1,70 @@
+{
+  "status": "stable",
+  "summary": "A part of the page in the other theme: a dark header on a light page, a light document preview in a dark app. Everything inside takes the zone's theme, including the menus, popovers, tooltips and dialogs opened from it.",
+  "useWhen": [
+    "one region should stay in one theme whatever the page's — a header that is always dark, a console or log that reads as a terminal",
+    "previewing content in the theme it will be seen in — an email or a document that is light even in a dark app"
+  ],
+  "useInstead": [
+    {
+      "when": "the whole page should switch theme",
+      "use": "`data-theme` on the root element",
+      "why": "the root carries the page's theme; a zone is the exception inside it, not the switch"
+    },
+    {
+      "when": "one element should stand out from the page — a callout, a highlighted row",
+      "use": "Card",
+      "why": "a surface token from the same theme does that; a zone in the other theme is for a region that belongs to it, not for emphasis"
+    }
+  ],
+  "composition": {
+    "order": ["ThemeZone"],
+    "note": "`theme` is required: `dark` or `light`. Without `contents` the zone is a block that paints the theme's page surface (`surface/page`) and text colour; with `contents` it draws no box, for wrapping a component that paints its own surface, like a Header, which stays the grid row or sticky element it was. Every themed token is re-declared on the zone, so the components inside need nothing of their own. Menus, popovers, tooltips and dialogs opened from inside it are portalled out of it, so its `overflow` cannot clip them, into a container in the zone's theme. Overlays the zone does not render, such as a navigation Drawer or command palette mounted by the shell, keep the page's theme. Zones nest. `as` picks the element when the zone is a box.",
+    "example": "<ThemeZone theme=\"dark\" contents>\n  <Header brand={…} end={<NotificationsBell />} />\n</ThemeZone>\n\n<ThemeZone theme=\"light\" as=\"section\" aria-label=\"Email preview\">\n  <EmailPreview />\n</ThemeZone>"
+  },
+  "variants": {
+    "theme": {
+      "dark": {
+        "use": "a region that is dark whatever the page is — a header, a terminal or log"
+      },
+      "light": {
+        "use": "a region that stays light in a dark app — a preview of a document or email as it will be printed or sent"
+      }
+    }
+  },
+  "slots": {
+    "children": {
+      "accepts": "any",
+      "note": "drawn in the zone's theme; overlays they open are too"
+    }
+  },
+  "a11y": {
+    "guarantees": [
+      "every themed token is the zone's, so contrast inside it is the zone theme's: the pairs the contrast gate checks in each theme",
+      "text, native controls and scrollbars follow the zone: its text colour and `color-scheme` are set on it",
+      "an overlay opened inside it stays reachable when a dialog elsewhere hides the rest of the page"
+    ],
+    "requires": [
+      "a name for the landmark — a heading inside it, or a label on it — when `as` makes the zone a `section` or `aside`; as a `div`, the default, it needs none"
+    ],
+    "notes": [
+      "A zone changes colours, not meaning: it adds no role. The zone itself renders on a server, with its theme in the markup."
+    ]
+  },
+  "antiPatterns": [
+    {
+      "dont": "`data-theme` on an element by hand",
+      "do": "ThemeZone",
+      "why": "the attribute alone leaves plain text in the page's colour, native controls in the page's scheme, and every menu or tooltip opened inside it in the page's theme"
+    },
+    {
+      "dont": "a zone around a component that sits in a grid or is sticky, without `contents`",
+      "do": "`contents`",
+      "why": "the zone's box becomes the grid cell, and a sticky child can only stick inside it — the Header scrolls away with the page"
+    },
+    {
+      "dont": "zones for emphasis, scattered through a page",
+      "why": "a page switching theme region by region reads as broken; one zone is a region with its own job"
+    }
+  ]
+}

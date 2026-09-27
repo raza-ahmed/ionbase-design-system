@@ -24,10 +24,12 @@
     "Tooltip",
     "NotificationsPanel",
     "Stack",
-    "Grid"
+    "Grid",
+    "ThemeZone"
   ],
   "structure": [
     "Header at the top with the brand in `brand`, primary navigation in `center` and account actions in `end`.",
+    "A Header that is dark whatever the page's theme is wrapped in `<ThemeZone theme=\"dark\" contents>`: `contents` keeps the Header the shell's sticky row, and what it opens — Notifications, an account menu — opens dark with it. What the shell mounts outside the Header, the navigation Drawer and the CommandPalette, follows the page. The page's own theme is `data-theme` on the root, never a zone around <main>.",
     "A Banner, for a notice about the whole product — maintenance, read-only mode, a scheduled deletion — goes above the Header, outside <main>, mounted by the shell so it persists across routes and is announced once. Several stack, the most severe first; one that must stay has no `dismissKey`.",
     "One <main> content region, named by the page's PageHeader: pass PageHeader a `titleId` and point <main aria-labelledby> at it. The PageHeader's title is the page's h1.",
     "ToastProvider mounted once around the whole shell, not per route.",
@@ -105,7 +107,8 @@
       "rowGap",
       "align",
       "as"
-    ]
+    ],
+    "ThemeZone": ["theme", "contents"]
   },
   "variantsUsed": {
     "ToastProvider": {
@@ -152,6 +155,11 @@
       "dont": "a page laid out with hand-written flex or grid CSS, pixel gaps and its own breakpoints",
       "do": "Stack for things one after another, Grid for columns, each with a gap from the spacing scale",
       "why": "every screen then has its own spacing, and nothing checks it against the tokens"
+    },
+    {
+      "dont": "`data-theme=\"dark\"` by hand on the Header or a wrapper around it",
+      "do": "ThemeZone with `contents`",
+      "why": "the attribute alone leaves the Header's menus and popovers in the page's theme, since they are portalled out of it, and a wrapper with a box of its own unsticks the Header"
     }
   ]
 }
