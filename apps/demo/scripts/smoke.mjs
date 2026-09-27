@@ -3616,6 +3616,151 @@ try {
   }
 
   /*
+   * Forced colours — Windows High Contrast — on every route. Two checks that
+   * need no knowledge of any one component, so a new one is covered the day
+   * it ships:
+   *
+   * - Focus shows. Tab through the page; at each stop, the focused control
+   *   and the same control blurred must not be the same pixels. A focus ring
+   *   drawn as a box-shadow is exactly what forced colours delete.
+   * - Icons are seen. Chromium does not remap colour inside an SVG, so an
+   *   icon whose own `color` is a token keeps it on a page forced to the
+   *   system palette — the logo in the dark header was near-white on white.
+   *   Every visible SVG's colour must reach 3:1 against the page.
+   */
+  {
+    const where = 'forced colours (desktop)';
+    if (!skip(where)) {
+      const context = await browser.newContext({
+        viewport: { width: 1280, height: 900 },
+        forcedColors: 'active',
+      });
+      await context.addInitScript(() => {
+        localStorage.setItem(
+          'ionbase-ops:demo-settings',
+          JSON.stringify({ theme: 'light', latency: 0 }),
+        );
+      });
+      try {
+        for (const route of ROUTES) {
+          const at = `${where} #/${route}`;
+          const page = await context.newPage();
+          page.on('pageerror', (e) => fail(at, `exception: ${e.message}`));
+          await page.goto(`${BASE}/#/${route}`);
+          await page.locator('#page-title').waitFor({ timeout: 10_000 });
+          await page.waitForFunction(
+            () => !document.querySelector('[aria-busy="true"]'),
+            null,
+            { timeout: 10_000 },
+          );
+          await page.waitForTimeout(400);
+
+          const faint = await page.evaluate(() => {
+            const rgb = (c) =>
+              (c.match(/[\d.]+/g) || []).slice(0, 3).map(Number);
+            const lum = ([r, g, b]) => {
+              const f = (v) => {
+                v /= 255;
+                return v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4;
+              };
+              return 0.2126 * f(r) + 0.7152 * f(g) + 0.0722 * f(b);
+            };
+            // What an icon sits on: the nearest painted background, which is
+            // the page unless something kept a fill — a checked box's
+            // Highlight, under a white tick.
+            const under = (el) => {
+              for (let e = el; e; e = e.parentElement) {
+                const bg = window.getComputedStyle(e).backgroundColor;
+                if (!/rgba\(.*,\s*0\)$|transparent/.test(bg)) return bg;
+              }
+              return 'rgb(255, 255, 255)';
+            };
+            const out = [];
+            for (const svg of document.querySelectorAll('svg')) {
+              const r = svg.getBoundingClientRect();
+              if (r.width < 4 || r.height < 4) continue;
+              // Charts keep their data colours on purpose, as marks.
+              if (svg.closest('[class*="chart"], [class*="heatmap"]')) continue;
+              const style = window.getComputedStyle(svg);
+              if (style.visibility === 'hidden' || Number(style.opacity) === 0)
+                continue;
+              const canvas = lum(rgb(under(svg)));
+              const l = lum(rgb(style.color));
+              const ratio =
+                (Math.max(l, canvas) + 0.05) / (Math.min(l, canvas) + 0.05);
+              if (ratio < 3)
+                out.push(
+                  `${svg.getAttribute('class') || svg.parentElement?.className} ${ratio.toFixed(2)}:1`,
+                );
+            }
+            return [...new Set(out)];
+          });
+          for (const f of faint) fail(at, `an icon is faint on the page: ${f}`);
+
+          const seen = new Set();
+          for (let i = 0; i < 30; i++) {
+            await page.keyboard.press('Tab');
+            const box = await page.evaluate(() => {
+              const a = document.activeElement;
+              if (!a || a === document.body) return null;
+              a.scrollIntoView({ block: 'center', inline: 'nearest' });
+              // A visually hidden input draws its focus on the control round it.
+              let t = a;
+              if (a.getBoundingClientRect().width < 4) t = a.parentElement;
+              const r = t.getBoundingClientRect();
+              const kind = `${a.tagName}.${String(a.className).split(' ')[0]}`;
+              a.setAttribute('data-smoke-focus', '');
+              // 10px round it: an outline offset from a wrapper that is itself
+              // outside the control, as Select's is, lands 6px out.
+              return {
+                kind,
+                x: r.left - 10,
+                y: r.top - 10,
+                w: r.width + 20,
+                h: r.height + 20,
+              };
+            });
+            if (!box) continue;
+            if (seen.has(box.kind) || box.y < 0 || box.y + box.h > 900) {
+              await page.evaluate(() =>
+                document
+                  .querySelector('[data-smoke-focus]')
+                  ?.removeAttribute('data-smoke-focus'),
+              );
+              continue;
+            }
+            seen.add(box.kind);
+            const clip = {
+              x: Math.max(0, box.x),
+              y: box.y,
+              width: Math.min(box.w, 1280 - Math.max(0, box.x)),
+              height: box.h,
+            };
+            const focused = await page.screenshot({ clip });
+            await page.evaluate(() => document.activeElement.blur());
+            const plain = await page.screenshot({ clip });
+            if (focused.equals(plain))
+              fail(at, `focus does not show on ${box.kind}`);
+            await page.evaluate(() => {
+              const e = document.querySelector('[data-smoke-focus]');
+              e.removeAttribute('data-smoke-focus');
+              e.focus();
+            });
+          }
+          await page.close();
+        }
+      } catch (e) {
+        fail(
+          where,
+          `did not run: ${e.message.split('\n').slice(0, 3).join(' | ')}`,
+        );
+      }
+      groupsChecked++;
+      await context.close();
+    }
+  }
+
+  /*
    * Timeline, as an agent's History on its Overview. An ordered list named
    * History, newest first; each event says what happened, who, and when in
    * a <time> with the exact instant; the markers are hidden. A purpose saved

@@ -263,7 +263,8 @@ body {
     background-color: HighlightText;
   }
 
-  .ion-table tbody tr[data-selected='true'] {
+  /* Named as table.css names it, so it outweighs the selected tint there. */
+  .ion-table tbody tr.ion-table__row[data-selected='true'] {
     forced-color-adjust: none;
     background-color: Highlight;
     color: HighlightText;
@@ -299,13 +300,45 @@ body {
   }
 
   .ion-checkbox__input:disabled + .ion-checkbox__indicator,
-  .ion-checkbox__input:checked:disabled + .ion-checkbox__indicator,
-  .ion-checkbox__input:indeterminate:disabled + .ion-checkbox__indicator,
   .ion-radio__input:disabled + .ion-radio__indicator,
-  .ion-radio__input:checked:disabled + .ion-radio__indicator,
-  .ion-toggle__input:disabled + .ion-toggle__track,
-  .ion-toggle__input:checked:disabled + .ion-toggle__track {
+  .ion-toggle__input:disabled + .ion-toggle__track {
     border-color: GrayText;
     background-color: Canvas;
+  }
+
+  /*
+   * Disabled AND on is still on. These were in the group above, painted as
+   * the page, so a checked disabled box looked exactly like an unchecked one.
+   * Filled in GrayText instead: on, and not available.
+   */
+  .ion-checkbox__input:checked:disabled + .ion-checkbox__indicator,
+  .ion-checkbox__input:indeterminate:disabled + .ion-checkbox__indicator,
+  .ion-toggle__input:checked:disabled + .ion-toggle__track {
+    forced-color-adjust: none;
+    border-color: GrayText;
+    background-color: GrayText;
+  }
+
+  .ion-checkbox__input:checked:disabled
+    + .ion-checkbox__indicator
+    .ion-checkbox__mark,
+  .ion-checkbox__input:indeterminate:disabled
+    + .ion-checkbox__indicator
+    .ion-checkbox__mark {
+    color: Canvas;
+  }
+
+  .ion-toggle__input:checked:disabled + .ion-toggle__track .ion-toggle__thumb {
+    background-color: Canvas;
+  }
+
+  .ion-radio__input:checked:disabled + .ion-radio__indicator {
+    border-color: GrayText;
+    background-color: Canvas;
+  }
+
+  .ion-radio__input:checked:disabled + .ion-radio__indicator .ion-radio__dot {
+    forced-color-adjust: none;
+    background-color: GrayText;
   }
 }

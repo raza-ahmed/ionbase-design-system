@@ -61,3 +61,16 @@
   font-size: calc(var(--type-body) * 4 / 3);
   line-height: calc(var(--type-body-line-height) * 4 / 3);
 }
+
+/*
+ * Chromium does not remap colour inside an SVG: a `color` set on the <svg>
+ * itself survives forced colours, so the mark kept its token — and in a dark
+ * ThemeZone that is near-white, on a page forced to white. Inherited, it takes
+ * its parent's forced colour instead, as every other icon does.
+ */
+@media (forced-colors: active) {
+  .ion-logo__mark,
+  .ion-logo__wordmark--vector {
+    color: inherit;
+  }
+}

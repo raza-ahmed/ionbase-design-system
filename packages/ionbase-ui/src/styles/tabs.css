@@ -226,3 +226,15 @@
   outline: var(--border-width-thick) solid var(--ring-focus);
   outline-offset: var(--border-width-thick);
 }
+
+/*
+ * Forced colours draw a transparent border in the system text colour, so every
+ * underline tab would wear the selected tab's line and nothing would say which
+ * is chosen. Unselected, the line is the page's own colour; the selected one
+ * is Highlight, set in the shared block in index.css.
+ */
+@media (forced-colors: active) {
+  .ion-tabs__item--underline {
+    border-bottom-color: Canvas;
+  }
+}

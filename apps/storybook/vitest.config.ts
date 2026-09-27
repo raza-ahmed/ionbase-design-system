@@ -30,6 +30,17 @@ const parkMouse: BrowserCommand<[]> = async ({ page }) => {
   await page.mouse.move(viewport.width - 1, viewport.height - 1);
 };
 
+/*
+ * Windows High Contrast, emulated: Chromium remaps every colour to the system
+ * palette exactly as the real mode does, and computed styles then report the
+ * remapped values — so a story can assert what a forced-colours user sees.
+ * Reset before every story in vitest.setup.ts, so one that fails cannot leave
+ * the next rendering in high contrast.
+ */
+const forcedColors: BrowserCommand<[on: boolean]> = async ({ page }, on) => {
+  await page.emulateMedia({ forcedColors: on ? 'active' : 'none' });
+};
+
 // More info at: https://storybook.js.org/docs/next/writing-tests/integrations/vitest-addon
 export default defineConfig({
   test: {
@@ -51,7 +62,7 @@ export default defineConfig({
             headless: true,
             provider: playwright({}),
             instances: [{ browser: 'chromium' }],
-            commands: { parkMouse },
+            commands: { parkMouse, forcedColors },
           },
           setupFiles: ['./.storybook/vitest.setup.ts'],
         },

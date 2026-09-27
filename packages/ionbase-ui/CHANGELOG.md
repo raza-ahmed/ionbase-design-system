@@ -1,5 +1,47 @@
 # Changelog
 
+## 0.120.0 — 2026-09-27
+
+### Forced colours — the second cross-cutting audit
+
+Windows High Contrast, audited with the mode emulated in Chromium: every demo
+route, and 172 Storybook stories rendered into contact sheets and looked at.
+
+**What already held.** The shared block in `index.css` already covered:
+
+- focus rings on every control the sweep reached (28 kinds);
+- checked, selected and current states;
+- borders on cards, alerts, badges, buttons and toasts;
+- charts, which keep their data colours.
+
+**Fixed:**
+
+| Component               | What was lost                                                                                      | Now                                                |
+| ----------------------- | -------------------------------------------------------------------------------------------------- | -------------------------------------------------- |
+| Tabs (underline)        | Every tab showed the selected tab's line, because a transparent border is drawn in forced colours  | Unselected `Canvas`, selected `Highlight`          |
+| Divider                 | Invisible: the line is a background                                                                | `CanvasText`                                       |
+| ChartLegend             | The swatches, the key to colours the chart itself kept                                             | Swatches keep their series colour                  |
+| AvatarGradient          | The disc: a gradient, which forced colours drop                                                    | A `CanvasText` ring inside its edge                |
+| Checkbox, Radio, Toggle | Checked and disabled looked unchecked                                                              | A `GrayText` fill                                  |
+| Pagination              | Which page is current                                                                              | `Highlight`, as a selected pill tab                |
+| ScrollProgress          | The whole rail, leaving only the percentage                                                        | Ticks in `CanvasText`, the current one `Highlight` |
+| StreamingText           | The cursor that says an answer is still being written                                              | `CanvasText`                                       |
+| Tooltip                 | The bubble's edge: text floated over the page                                                      | A `CanvasText` border                              |
+| Logo, Badge icons       | Colour: a `color` on the `<svg>` survives, and in the dark header the logo was near-white on white | `color: inherit`, the parent's forced colour       |
+| Table                   | A selected row kept the light theme's tint, because the forced rule was outweighed                 | `Highlight` and `HighlightText`                    |
+
+**Tests:**
+
+- **Storybook:** a `forcedColors` browser command and 12 stories under
+  Foundations/Forced colours. Each asserts the system colour a component
+  paints with the mode on, after its transitions finish.
+- **Mutations:** 15 of 17 are caught. The other two swap `HighlightText` for
+  `Canvas`, which are both white in the emulated palette.
+- **Demo smoke:** a new sweep of every route in forced colours. Each Tab stop
+  must look different focused and blurred, and every visible SVG must reach
+  3:1 against what it sits on. It caught the logo, and a hidden focus ring on
+  Button, when each fix was undone.
+
 ## 0.119.0 — 2026-09-27
 
 ### Right to left — the first cross-cutting audit

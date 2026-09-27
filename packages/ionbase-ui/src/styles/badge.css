@@ -209,3 +209,13 @@
 .ion-badge--information svg {
   color: var(--icon-information);
 }
+
+/*
+ * As Logo: a `color` on the <svg> survives forced colours, so the icon kept
+ * its intent colour on a remapped background. Inherited, it matches the text.
+ */
+@media (forced-colors: active) {
+  .ion-badge svg {
+    color: inherit;
+  }
+}

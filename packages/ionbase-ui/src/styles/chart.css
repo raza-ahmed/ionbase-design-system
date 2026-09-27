@@ -273,3 +273,15 @@
   font-weight: var(--font-weight-medium);
   font-variant-numeric: tabular-nums;
 }
+
+/*
+ * The chart keeps its colours in forced colours — its SVG marks are not
+ * remapped — so the legend has to keep them too, or the key to those colours
+ * is the one thing that disappears. A swatch is a background, and forced
+ * colours would paint it as the page.
+ */
+@media (forced-colors: active) {
+  .ion-chart-swatch {
+    forced-color-adjust: none;
+  }
+}

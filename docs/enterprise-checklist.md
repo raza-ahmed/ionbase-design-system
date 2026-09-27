@@ -86,7 +86,7 @@
 
 - [x] **RTL** — logical properties everywhere, enforced by stylelint in the shipped config; a Storybook Direction toggle and RTL stories; the demo's Right to left setting and an RTL smoke sweep of every route — 0.119.0
 - [ ] **Localised strings** — inventory every built-in string; make each overridable
-- [ ] **Forced colours** — every stylesheet that needs a rule has one
+- [x] **Forced colours** — audited in the demo and 172 Storybook stories with the mode emulated; 11 components fixed, 12 stories and a smoke sweep of every route that checks focus and icons with no per-component knowledge — 0.120.0
 - [ ] **Density** — decide system-wide or per-component, then apply
 
 ## Close-out

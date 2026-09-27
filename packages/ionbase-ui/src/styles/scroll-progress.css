@@ -296,3 +296,19 @@
   outline: var(--border-width-thick) solid var(--border-focus);
   outline-offset: -1px;
 }
+
+/*
+ * Each tick is a background, so forced colours erased the whole rail and left
+ * the percentage alone. The ticks are drawn in the text colour, and the one
+ * for where you are in Highlight.
+ */
+@media (forced-colors: active) {
+  .ion-scroll-progress__tick {
+    forced-color-adjust: none;
+    background-color: CanvasText;
+  }
+
+  .ion-scroll-progress__tick--active {
+    background-color: Highlight;
+  }
+}
