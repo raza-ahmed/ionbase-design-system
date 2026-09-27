@@ -75,6 +75,8 @@ const REQUIRED = [
   'InlineEdit',
   'SelectableTile',
   'TruncatedText',
+  'Timeline',
+  'TimelineItem',
   'MenuItem',
   'MenuSection',
   'MenuTrigger',

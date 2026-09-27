@@ -1,0 +1,63 @@
+{
+  "status": "stable",
+  "summary": "What happened to a record, in order — an audit log, a record's history, a ticket's activity. An ordered list of TimelineItems, each one sentence: what happened, who did it, and when, in a real `<time>`. History only: every event is done, so there is no status and nothing is announced.",
+  "useWhen": [
+    "a record's history — who changed what, and when",
+    "an audit log a person reads to find out what happened, newest first"
+  ],
+  "useInstead": [
+    {
+      "when": "the steps of an agent run",
+      "use": "AgentActivity",
+      "why": "it has a status per step and announces the one in progress; a Timeline is history and says nothing on its own"
+    },
+    {
+      "when": "things the user has to read or act on — mentions, approvals, alerts",
+      "use": "NotificationsPanel",
+      "why": "it tracks read and unread and marks them; a Timeline is a record, not an inbox"
+    },
+    {
+      "when": "events the user sorts, filters or selects",
+      "use": "Table",
+      "why": "a log searched by column, exported or acted on in bulk is a table of events, not a story"
+    }
+  ],
+  "composition": {
+    "order": ["Timeline", "TimelineItem"],
+    "note": "Name the list with `aria-label` — or `aria-labelledby` pointing at the card or section heading above it. Order the items as they are read, usually newest first. Each item's `title` is what happened, as a sentence; `actor` is who; `timestamp` is when; children are the detail — what it changed from and to. For a long history, show the latest and put a \"Show older\" Button below the list.",
+    "example": "<Timeline aria-label=\"History\"><TimelineItem title=\"Paused the agent\" actor=\"Ada Reyes\" timestamp={event.at} /></Timeline>"
+  },
+  "a11y": {
+    "requires": [
+      "`aria-label` or `aria-labelledby` — the list's name, the history of what",
+      "a `title` that says what happened in words — the icon and the line are not read"
+    ],
+    "guarantees": [
+      "it is an `<ol>`: a screen reader says how many events there are and which one it is on",
+      "each event reads in one order — what happened, who, when — then its detail",
+      "the time is a `<time>` with the exact instant in `dateTime`, whatever its label says",
+      "the line, the markers and any icon are hidden from assistive tech",
+      "it renders on a server: no hooks, no effects"
+    ],
+    "notes": [
+      "pass `locale` and `timeZone` to each item when rendering on a server, or its default label can differ from the browser's"
+    ]
+  },
+  "antiPatterns": [
+    {
+      "dont": "<div className=\"timeline\">{events.map((e) => <div>…</div>)}</div>",
+      "do": "<Timeline aria-label=\"History\">{events.map((e) => <TimelineItem … />)}</Timeline>",
+      "why": "a column of divs is not a list: a screen reader cannot say how many events there are or skip past them"
+    },
+    {
+      "dont": "a green dot for \"Approved\" and a red one for \"Rejected\", with the title \"Status changed\"",
+      "do": "the title \"Approved the refund\" or \"Rejected the refund\"",
+      "why": "the dots are hidden from assistive tech and fail WCAG 1.4.1 for everyone else; what happened belongs in the words"
+    },
+    {
+      "dont": "<span>2 hours ago</span>",
+      "do": "<TimelineItem timestamp={at} timestampLabel=\"2 hours ago\" … />",
+      "why": "the relative label keeps the exact instant in `dateTime`, which a bare span throws away"
+    }
+  ]
+}

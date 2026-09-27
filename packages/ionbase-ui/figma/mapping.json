@@ -1987,6 +1987,23 @@
         }
       }
     },
+    "Timeline": {
+      "code": "Timeline",
+      "note": "An ordered list of Timeline Items, newest first. Name it with `aria-label` in code — the history of what.",
+      "props": {}
+    },
+    "Timeline Item": {
+      "code": "TimelineItem",
+      "note": "Title is `title` — what happened, as a sentence; Actor is `actor`; Time is `timestamp`, shown as its label or `timestampLabel`; Detail is `children`. The text layers are edited directly, and the Separator is drawn only with an actor.",
+      "props": {
+        "Marker": {
+          "ignore": "Not a prop: Icon is an item given `icon`, Dot is one without. The icon is decoration, hidden from assistive tech; what happened is in the title."
+        },
+        "Line": {
+          "ignore": "Not a prop: the line joins each event to the next and stops at the last one on its own. No is the last item in a Timeline."
+        }
+      }
+    },
     "Toast": {
       "code": "Toast",
       "props": {

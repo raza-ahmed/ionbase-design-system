@@ -111,7 +111,7 @@ IonBase column names the component that covers it.
 | Avatar / avatar group            |   ●    |     |  ●   | `Avatar`, `AvatarGroup`                                                   |
 | Big number / stat                |   ●    |     |      | `StatTile`, `StatGroup`                                                   |
 | Code snippet                     |   ●    |     |      | `CodeSnippet`                                                             |
-| Activity timeline / feed         |        |     |  ●   | ◐ `AgentActivity`, agent-only                                             |
+| Activity timeline / feed         |        |     |  ●   | `Timeline`; `AgentActivity` for agent steps                               |
 | Truncated text                   |   ●    |     |      | `TruncatedText`                                                           |
 | Keyboard key                     |        |     |      | `Kbd`                                                                     |
 | Divider                          |        |  ●  |      | `Divider`                                                                 |

@@ -2632,6 +2632,132 @@ try {
   }
 
   /*
+   * Timeline, as an agent's History on its Overview. An ordered list named
+   * History, newest first; each event says what happened, who, and when in
+   * a <time> with the exact instant; the markers are hidden. A purpose saved
+   * in place is the newest event at once, with what it changed from and to;
+   * pausing the agent is the next. Nothing sideways on a phone; axe.
+   */
+  for (const [device, width, height] of [
+    ['desktop', 1280, 900],
+    ['mobile', 390, 844],
+  ]) {
+    const where = `timeline (light, ${device})`;
+    const context = await browser.newContext({ viewport: { width, height } });
+    await context.addInitScript(() => {
+      localStorage.setItem(
+        'ionbase-ops:demo-settings',
+        JSON.stringify({ theme: 'light', latency: 0 }),
+      );
+    });
+    const page = await context.newPage();
+    page.on('pageerror', (e) => fail(where, `exception: ${e.message}`));
+    await page.goto(`${BASE}/#/agents/agt_wx`);
+    try {
+      const list = page.getByRole('list', { name: 'History' });
+      await list.waitFor({ timeout: 10_000 });
+      const events = () =>
+        list.evaluate((ol) =>
+          [...ol.children].map((li) => ({
+            title: li.querySelector('.ion-timeline__title')?.textContent,
+            actor: li.querySelector('.ion-timeline__actor')?.textContent,
+            at: li.querySelector('time')?.getAttribute('datetime'),
+            detail: li.querySelector('.ion-timeline__detail')?.textContent,
+            hidden: li
+              .querySelector('.ion-timeline__marker')
+              ?.getAttribute('aria-hidden'),
+          })),
+        );
+      const tag = await list.evaluate((el) => el.tagName);
+      if (tag !== 'OL') fail(where, `History is a <${tag}>, not an <ol>`);
+      const seeded = await events();
+      if (seeded.length < 2) fail(where, `${seeded.length} events, not 2+`);
+      if (seeded.some((e) => !e.at || Number.isNaN(Date.parse(e.at))))
+        fail(where, 'an event has no exact time');
+      const times = seeded.map((e) => Date.parse(e.at));
+      if (times.some((t, i) => i > 0 && t > times[i - 1]))
+        fail(where, 'History is not newest first');
+      if (seeded.some((e) => e.hidden !== 'true'))
+        fail(where, 'a marker is read');
+      if (seeded.at(-1)?.title !== 'Created the agent')
+        fail(where, `the oldest event is "${seeded.at(-1)?.title}"`);
+
+      // A purpose saved in place is the newest event at once.
+      const edit = page.getByRole('button', { name: 'Edit purpose' });
+      await edit.focus();
+      await page.keyboard.press('Enter');
+      await page.waitForFunction(
+        () => document.activeElement?.getAttribute('aria-label') === 'Purpose',
+        null,
+        { timeout: 5_000 },
+      );
+      const next = 'Checks expense claims against the travel policy.';
+      await page.keyboard.press('ControlOrMeta+a');
+      await page.keyboard.type(next);
+      await page.keyboard.press('Enter');
+      await page
+        .waitForFunction(
+          () =>
+            document.querySelector(
+              '[aria-label="History"] .ion-timeline__title',
+            )?.textContent === 'Changed the purpose',
+          null,
+          { timeout: 5_000 },
+        )
+        .catch(() => fail(where, 'the saved purpose is not in History'));
+      const [changed] = await events();
+      if (changed.actor !== 'Ada Reyes')
+        fail(where, `the change is by "${changed.actor}"`);
+      if (!changed.detail?.includes(`to “${next}”`))
+        fail(where, `the change says "${changed.detail}"`);
+      if ((await events()).length !== seeded.length + 1)
+        fail(where, 'the save did not add exactly one event');
+
+      // Pausing the agent is the next.
+      await page.getByRole('button', { name: 'Pause agent' }).click();
+      await page
+        .getByRole('list', { name: 'History' })
+        .locator('.ion-timeline__title')
+        .first()
+        .filter({ hasText: 'Paused the agent' })
+        .waitFor({ timeout: 5_000 })
+        .catch(() => fail(where, 'pausing is not in History'));
+      const after = await events();
+      if (after[1]?.title !== 'Changed the purpose')
+        fail(where, 'the purpose change fell out of History on the refetch');
+
+      if (
+        await page.evaluate(
+          () => document.documentElement.scrollWidth > window.innerWidth,
+        )
+      )
+        fail(where, 'the page scrolls sideways');
+
+      await page.addScriptTag({ content: axeSource });
+      const violations = await page.evaluate(async () => {
+        await Promise.all(
+          document
+            .getAnimations()
+            .filter((a) => a.effect?.getTiming().iterations !== Infinity)
+            .map((a) => a.finished),
+        );
+        const result = await window.axe.run(document, {
+          resultTypes: ['violations'],
+        });
+        return result.violations.map((v) => `${v.impact} ${v.id}`);
+      });
+      for (const v of violations) fail(where, `axe ${v}`);
+    } catch (e) {
+      fail(
+        where,
+        `did not run: ${e.message.split('\n').slice(0, 3).join(' | ')}`,
+      );
+    }
+    groupsChecked++;
+    await context.close();
+  }
+
+  /*
    * The loading states, at phone width. With no latency a skeleton is gone
    * before anything can measure it, and a skeleton is laid out differently
    * from the content it stands in for — the Agents skeleton once pushed the

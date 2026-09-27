@@ -1,0 +1,110 @@
+/*
+ * Timeline
+ *
+ * A column of events, each a marker on a line with its text beside it. The
+ * marker column is a fixed width, so a dot and an icon sit on the same line,
+ * and the line runs from one marker to the next — through the gap, not
+ * through the text.
+ *
+ * DECORATION ONLY. The line and the markers are hidden from assistive tech,
+ * and the kind of event is in its title, so nothing depends on seeing them.
+ */
+.ion-timeline {
+  --ion-timeline-marker: var(--spacing-24);
+
+  display: grid;
+  margin: 0;
+  padding: 0;
+  gap: var(--spacing-16);
+  color: var(--text-default);
+  font-family: var(--font-family-sans);
+  font-size: var(--type-body-sm);
+  line-height: var(--type-body-sm-line-height);
+  list-style: none;
+}
+
+.ion-timeline__item {
+  position: relative;
+  display: grid;
+  grid-template-columns: var(--ion-timeline-marker) minmax(0, 1fr);
+  gap: var(--spacing-12);
+}
+
+/*
+ * The line, from under this marker to the top of the next one: the item's
+ * height plus the list's gap, less the marker. The last event has none — the
+ * history ends there.
+ */
+.ion-timeline__item:not(:last-child)::before {
+  position: absolute;
+  top: var(--ion-timeline-marker);
+  bottom: calc(-1 * var(--spacing-16));
+  left: calc(var(--ion-timeline-marker) / 2);
+  width: var(--border-width-default);
+  background-color: var(--border-subtle);
+  content: '';
+  transform: translateX(-50%);
+}
+
+.ion-timeline__marker {
+  display: grid;
+  width: var(--ion-timeline-marker);
+  height: var(--ion-timeline-marker);
+  place-items: center;
+}
+
+/* A dot: small, centred in the marker's box, on the title's line. */
+.ion-timeline__marker::after {
+  width: var(--spacing-8);
+  height: var(--spacing-8);
+  border: var(--border-width-thick) solid var(--border-strong);
+  border-radius: var(--radius-full);
+  background-color: var(--surface-default);
+  content: '';
+}
+
+/* An icon replaces the dot, in a ring the width of the marker. */
+.ion-timeline__marker--icon {
+  border: var(--border-width-default) solid var(--border-default);
+  border-radius: var(--radius-full);
+  background-color: var(--surface-default);
+  color: var(--icon-secondary);
+}
+
+.ion-timeline__marker--icon::after {
+  content: none;
+}
+
+.ion-timeline__marker--icon svg {
+  width: var(--icon-size-xs);
+  height: var(--icon-size-xs);
+}
+
+.ion-timeline__body {
+  display: grid;
+
+  /* The first line sits level with the marker's centre. */
+  padding-top: calc(
+    (var(--ion-timeline-marker) - var(--type-body-sm-line-height)) / 2
+  );
+  gap: var(--spacing-2);
+  overflow-wrap: anywhere;
+}
+
+.ion-timeline__title {
+  font-weight: var(--font-weight-semibold);
+}
+
+.ion-timeline__meta {
+  display: flex;
+  flex-wrap: wrap;
+  column-gap: var(--spacing-4);
+  color: var(--text-secondary);
+  font-size: var(--type-caption);
+  line-height: var(--type-caption-line-height);
+}
+
+.ion-timeline__detail {
+  margin-top: var(--spacing-4);
+  color: var(--text-secondary);
+}

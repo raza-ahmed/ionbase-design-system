@@ -24,11 +24,17 @@ import {
   TableCell,
   TableHead,
   TableRow,
+  Timeline,
+  TimelineItem,
   useToast,
 } from 'ionbase-ui';
+import { Library } from 'ionbase-icons/icons/library';
 import { Pause } from 'ionbase-icons/icons/pause';
+import { Pencil } from 'ionbase-icons/icons/pencil';
 import { Play } from 'ionbase-icons/icons/play';
+import { Plus } from 'ionbase-icons/icons/plus';
 import { RefreshCw } from 'ionbase-icons/icons/refresh-cw';
+import { UserPen } from 'ionbase-icons/icons/user-pen';
 
 import {
   STATUS_LABEL,
@@ -37,6 +43,8 @@ import {
   setPurpose,
   setPaused,
   type AgentDetail as Detail,
+  type AgentEvent,
+  type AgentEventKind,
   type AgentRunRow,
   type AgentStatus,
 } from '../../data/agents';
@@ -83,9 +91,11 @@ export function AgentDetail({ id, tab }: { id: string; tab: AgentTab }) {
   const [busy, setBusy] = useState(false);
   // The purpose as saved in place, for this agent — kept rather than
   // refetched, so a save does not drop the page back to its skeleton.
-  const [edited, setEdited] = useState<{ id: string; purpose: string } | null>(
-    null,
-  );
+  const [edited, setEdited] = useState<{
+    id: string;
+    purpose: string;
+    history: AgentEvent[];
+  } | null>(null);
   const detail = useResource(
     (signal) => getAgent(id, settings, signal),
     `${id}|${settings.state}|${settings.latency}|${version}`,
@@ -151,6 +161,9 @@ export function AgentDetail({ id, tab }: { id: string; tab: AgentTab }) {
     try {
       await setPaused([agent.id], !paused, settings);
       setVersion((v) => v + 1);
+      // The refetch carries the purpose and the history now; the overlay
+      // would hide the pause from the history.
+      setEdited(null);
       toast.toast({
         intent: 'success',
         title: `${paused ? 'Resumed' : 'Paused'} ${agent.name}`,
@@ -189,8 +202,8 @@ export function AgentDetail({ id, tab }: { id: string; tab: AgentTab }) {
                   : undefined
             }
             onSave={async (v) => {
-              await setPurpose(agent.id, v, settings);
-              setEdited({ id: agent.id, purpose: v });
+              const history = await setPurpose(agent.id, v, settings);
+              setEdited({ id: agent.id, purpose: v, history });
             }}
           />
         }
@@ -215,6 +228,9 @@ export function AgentDetail({ id, tab }: { id: string; tab: AgentTab }) {
       {tab === 'overview' ? (
         <Overview
           data={detail.data}
+          history={
+            edited?.id === agent.id ? edited.history : detail.data.history
+          }
           busy={busy}
           canToggle={canToggle}
           paused={paused}
@@ -238,12 +254,14 @@ function AgentBreadcrumb({ name }: { name: string }) {
 
 function Overview({
   data,
+  history,
   busy,
   canToggle,
   paused,
   onToggle,
 }: {
   data: Detail;
+  history: AgentEvent[];
   busy: boolean;
   canToggle: boolean;
   paused: boolean;
@@ -370,10 +388,39 @@ function Overview({
         />
       </StatGroup>
 
+      <Card title="History" isRegion={false}>
+        {/* Newest first: what happened, who, when. The icon is only a mark;
+            the title says what kind of change it was. */}
+        <Timeline aria-label="History">
+          {history.map((e) => (
+            <TimelineItem
+              key={e.id}
+              title={e.title}
+              actor={e.actor}
+              timestamp={e.at}
+              locale="en"
+              timeZone="UTC"
+              icon={<Icon as={EVENT_ICON[e.kind]} size="sm" />}
+            >
+              {e.detail}
+            </TimelineItem>
+          ))}
+        </Timeline>
+      </Card>
+
       <KnowledgeSources agentName={agent.name} />
     </>
   );
 }
+
+const EVENT_ICON: Record<AgentEventKind, typeof Pencil> = {
+  created: Plus,
+  purpose: Pencil,
+  paused: Pause,
+  resumed: Play,
+  knowledge: Library,
+  owner: UserPen,
+};
 
 function Runs({ data }: { data: Detail }) {
   const { agent, recentRuns } = data;

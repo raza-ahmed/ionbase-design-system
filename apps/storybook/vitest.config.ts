@@ -41,6 +41,9 @@ export default defineConfig({
           // See options at: https://storybook.js.org/docs/next/writing-tests/integrations/vitest-addon#storybooktest
           storybookTest({ configDir: path.join(dirname, '.storybook') }),
         ],
+        // Found only by Timeline's server-render test. Discovered mid-run, it
+        // made Vite reload the page and fail every test in the file with it.
+        optimizeDeps: { include: ['react-dom/server'] },
         test: {
           name: 'storybook',
           browser: {
