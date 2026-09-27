@@ -98,6 +98,7 @@ const REQUIRED = [
   'Stack',
   'Grid',
   'ThemeZone',
+  'SkipLink',
   'Accordion',
   'AccordionItem',
   // Phase 3 — Runs and Assistant

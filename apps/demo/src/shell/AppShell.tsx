@@ -14,6 +14,7 @@ import {
   Kbd,
   Link,
   Logo,
+  SkipLink,
   ThemeZone,
 } from 'ionbase-ui';
 import { Search } from 'ionbase-icons/icons/search';
@@ -53,6 +54,12 @@ export function AppShell({
 
   return (
     <div className="demo-app">
+      {/*
+       * First, before the banners' buttons and the Header's controls: Tab
+       * once on any page and it is there, and Enter lands in <main>. Fixed,
+       * so the shell's grid does not place it.
+       */}
+      <SkipLink target="main" />
       {/*
        * The PageShell's banners: above the Header, outside <main>, mounted
        * once by the shell so they persist across routes and are announced
@@ -143,7 +150,7 @@ export function AppShell({
         <NavSidebar route={route} />
       </Drawer>
 
-      <main className="demo-main" aria-labelledby="page-title">
+      <main id="main" className="demo-main" aria-labelledby="page-title">
         {children}
       </main>
 

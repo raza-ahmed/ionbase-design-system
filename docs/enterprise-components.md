@@ -93,7 +93,7 @@ IonBase column names the component that covers it.
 | Tree view                    |   ●    |     |  ●   | `TreeView`           |
 | Toolbar                      |   ◐    |  ●  |  ◐   | `Toolbar`            |
 | Command palette              |        |     |      | `CommandPalette`     |
-| Skip link                    |   ●    |     |      | —                    |
+| Skip link                    |   ●    |     |      | ● `SkipLink`         |
 | Navigation rail / bottom bar |        |  ●  |      | — _non-goal, §4_     |
 
 ### Data display

@@ -1,5 +1,42 @@
 # Changelog
 
+## 0.118.0 — 2026-09-27
+
+### Added — SkipLink
+
+The first focusable thing on the page, so a keyboard user can skip past the
+header and navigation straight to the content (WCAG 2.4.1). It is the last P1
+item on the enterprise checklist.
+
+- **Hidden until focused.** It is clipped rather than hidden with
+  `display: none`, so it stays in the tab order. Focused, it is fixed at the
+  window's top-left at z-index 1300, above the toast layer, so nothing on the
+  page can cover it. It shows its ring on any focus, since the keyboard is
+  the only way to reach it.
+- **It moves focus to `target` itself** instead of following `#id`. Under a
+  hash router, `#main` would be a route. A target that isn't focusable gets
+  `tabindex="-1"` while it has focus, with no ring around the whole content,
+  and the next Tab goes to the content's first control. If the target is
+  missing, the link is followed as normal. A caller's `onClick` runs first
+  and can stop the skip.
+- **Children** set the words; the default is "Skip to main content".
+- **Figma:** drawn as `Skip Link` on the Link page in its one visible state,
+  focused. `Label` maps to `children`. The description is applied and
+  countersigned.
+- **Pattern:** PageShell starts with a SkipLink, before any Banner and the
+  Header, and `<main>` carries its id on every route.
+- **Gate:** `verify-client-boundaries` now also requires `'use client'`
+  when a module writes an inline event handler into its own JSX. React
+  can't send such a function from a server component. SkipLink's only
+  client-side need is its `onClick`, and the gate called it server-safe.
+  Forwarding a caller's handler (`onClick={onDismiss}`) still forces
+  nothing.
+- **Demo:** the shell renders it first and `<main id="main">`. On a fresh
+  load of two routes, on a desktop and a phone, the smoke check presses Tab
+  once and checks the link is shown and on top. It then presses Enter and
+  checks focus lands in `<main>` with the hash route unchanged, and that the
+  next Tab stays inside the content.
+
 ## 0.117.0 — 2026-09-27
 
 ### Added — ThemeZone

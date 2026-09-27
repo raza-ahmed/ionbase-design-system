@@ -19,8 +19,13 @@
   ],
   "file": "gaLbGd0QNb1fUl6BjSpfBA",
   "appliedOn": "2026-09-27",
-  "verifiedInFigma": 103,
+  "verifiedInFigma": 104,
   "applied": {
+    "1661:272": {
+      "figmaComponent": "AI Label",
+      "component": "AILabel",
+      "hash": "9ee3e5fe135b8d12"
+    },
     "1360:267": {
       "figmaComponent": "Accordion",
       "component": "Accordion",
@@ -96,6 +101,31 @@
       "component": "Button",
       "hash": "0fe348a72167194c"
     },
+    "1564:513": {
+      "figmaComponent": "Button Group",
+      "component": "ButtonGroup",
+      "hash": "60050d5625126f1c"
+    },
+    "1441:294": {
+      "figmaComponent": "Card",
+      "component": "Card",
+      "hash": "f64bc008242965dd"
+    },
+    "1432:369": {
+      "figmaComponent": "Chart Legend",
+      "component": "ChartLegend",
+      "hash": "64683cc4fc5d57df"
+    },
+    "1432:282": {
+      "figmaComponent": "Chart Tooltip",
+      "component": "ChartTooltip",
+      "hash": "d35bbac5de722a83"
+    },
+    "1664:292": {
+      "figmaComponent": "Chat Message",
+      "component": "ChatMessage",
+      "hash": "be40bf735e851710"
+    },
     "87:350": {
       "figmaComponent": "Checkbox",
       "component": "Checkbox",
@@ -121,25 +151,45 @@
       "component": "CitationListItem",
       "hash": "7f3c4e189cbca699"
     },
+    "1585:273": {
+      "figmaComponent": "Code Snippet",
+      "component": "CodeSnippet",
+      "hash": "06bf9dd909d416fd"
+    },
     "1370:2359": {
       "figmaComponent": "Combobox",
       "component": "Combobox",
       "hash": "5c1069c627a01021"
+    },
+    "1458:368": {
+      "figmaComponent": "Command Palette",
+      "component": "CommandPalette",
+      "hash": "73e18f172efba928"
     },
     "1166:262": {
       "figmaComponent": "Confidence Indicator",
       "component": "ConfidenceIndicator",
       "hash": "37749d2f3023ab3d"
     },
+    "1578:563": {
+      "figmaComponent": "Copy Button",
+      "component": "CopyButton",
+      "hash": "459394cdef0dbbb0"
+    },
     "1394:536": {
       "figmaComponent": "Date Picker",
       "component": "DatePicker",
       "hash": "04d975589b87b9d3"
     },
-    "1453:805": {
-      "figmaComponent": "Time Field",
-      "component": "TimeField",
-      "hash": "91ec73641678b019"
+    "1549:294": {
+      "figmaComponent": "Description List",
+      "component": "DescriptionList",
+      "hash": "6a81009379f8fbb1"
+    },
+    "1549:254": {
+      "figmaComponent": "Description List Item",
+      "component": "DescriptionListItem",
+      "hash": "92e426c1504d4b15"
     },
     "1365:2404": {
       "figmaComponent": "Drawer",
@@ -155,11 +205,6 @@
       "figmaComponent": "File Upload",
       "component": "FileUpload",
       "hash": "a01c7ee7eacae214"
-    },
-    "1441:294": {
-      "figmaComponent": "Card",
-      "component": "Card",
-      "hash": "f64bc008242965dd"
     },
     "592:857": {
       "figmaComponent": "Full Card",
@@ -191,10 +236,20 @@
       "component": "PhoneInput",
       "hash": "ba9f22f8a25af702"
     },
+    "1457:242": {
+      "figmaComponent": "Kbd",
+      "component": "Kbd",
+      "hash": "f1dd95d9a6f3c311"
+    },
     "774:1516": {
       "figmaComponent": "Link",
       "component": "Link",
       "hash": "63495c519ea7e12b"
+    },
+    "1557:794": {
+      "figmaComponent": "List",
+      "component": "List",
+      "hash": "9cdd934b68ca30a5"
     },
     "52:21369": {
       "figmaComponent": "Logo-Ionbase",
@@ -251,6 +306,11 @@
       "component": "Pagination",
       "hash": "caba28b9efcb93ba"
     },
+    "1590:386": {
+      "figmaComponent": "Password Input",
+      "component": "PasswordInput",
+      "hash": "03bd5650c9169ada"
+    },
     "825:1853": {
       "figmaComponent": "Popover",
       "component": "Popover",
@@ -275,11 +335,6 @@
       "figmaComponent": "Search Field",
       "component": "SearchField",
       "hash": "1a5ef4b0c36796c9"
-    },
-    "1590:386": {
-      "figmaComponent": "Password Input",
-      "component": "PasswordInput",
-      "hash": "03bd5650c9169ada"
     },
     "1390:435": {
       "figmaComponent": "Segmented Control",
@@ -306,6 +361,11 @@
       "component": "SettingRow",
       "hash": "4b819b1ff1964b22"
     },
+    "1547:441": {
+      "figmaComponent": "Side Panel",
+      "component": "SidePanel",
+      "hash": "29822533fdee1e8d"
+    },
     "1396:502": {
       "figmaComponent": "Sidebar",
       "component": "Sidebar",
@@ -326,10 +386,25 @@
       "component": "Skeleton",
       "hash": "031ee84eac9501b2"
     },
+    "1668:241": {
+      "figmaComponent": "Skip Link",
+      "component": "SkipLink",
+      "hash": "a4a13eccd0bba839"
+    },
+    "1533:308": {
+      "figmaComponent": "Slider",
+      "component": "Slider",
+      "hash": "0cd190e322e72e2e"
+    },
     "1341:258": {
       "figmaComponent": "Spinner",
       "component": "Spinner",
       "hash": "09d382723b3c47ce"
+    },
+    "1569:410": {
+      "figmaComponent": "Split Button",
+      "component": "SplitButton",
+      "hash": "8a4e8110310de5f7"
     },
     "1412:344": {
       "figmaComponent": "Stat Group",
@@ -386,16 +461,6 @@
       "component": "TableCell",
       "hash": "9710e38ab7d4ec46"
     },
-    "1448:290": {
-      "figmaComponent": "Tag",
-      "component": "Tag",
-      "hash": "f267ea340d3c175c"
-    },
-    "1448:333": {
-      "figmaComponent": "Tag Group",
-      "component": "TagGroup",
-      "hash": "d40a75b2908574c5"
-    },
     "157:126": {
       "figmaComponent": "Tabs",
       "component": "Tabs",
@@ -406,10 +471,25 @@
       "component": "TabItem",
       "hash": "67c9bc17cec7b26c"
     },
+    "1448:290": {
+      "figmaComponent": "Tag",
+      "component": "Tag",
+      "hash": "f267ea340d3c175c"
+    },
+    "1448:333": {
+      "figmaComponent": "Tag Group",
+      "component": "TagGroup",
+      "hash": "d40a75b2908574c5"
+    },
     "1301:334": {
       "figmaComponent": "Textarea",
       "component": "Textarea",
       "hash": "5205671a37f7f91c"
+    },
+    "1453:805": {
+      "figmaComponent": "Time Field",
+      "component": "TimeField",
+      "hash": "91ec73641678b019"
     },
     "1647:291": {
       "figmaComponent": "Timeline",
@@ -451,90 +531,15 @@
       "component": "Tooltip",
       "hash": "7ad87137b8699fb8"
     },
-    "1637:287": {
-      "figmaComponent": "Truncated Text",
-      "component": "TruncatedText",
-      "hash": "749c424a624c63bf"
-    },
-    "1432:282": {
-      "figmaComponent": "Chart Tooltip",
-      "component": "ChartTooltip",
-      "hash": "d35bbac5de722a83"
-    },
-    "1432:369": {
-      "figmaComponent": "Chart Legend",
-      "component": "ChartLegend",
-      "hash": "64683cc4fc5d57df"
-    },
-    "1458:368": {
-      "figmaComponent": "Command Palette",
-      "component": "CommandPalette",
-      "hash": "73e18f172efba928"
-    },
-    "1457:242": {
-      "figmaComponent": "Kbd",
-      "component": "Kbd",
-      "hash": "f1dd95d9a6f3c311"
-    },
-    "1533:308": {
-      "figmaComponent": "Slider",
-      "component": "Slider",
-      "hash": "0cd190e322e72e2e"
-    },
     "1542:4542": {
       "figmaComponent": "Tree View",
       "component": "TreeView",
       "hash": "e2bc1e603a3f5c64"
     },
-    "1547:441": {
-      "figmaComponent": "Side Panel",
-      "component": "SidePanel",
-      "hash": "29822533fdee1e8d"
-    },
-    "1549:294": {
-      "figmaComponent": "Description List",
-      "component": "DescriptionList",
-      "hash": "6a81009379f8fbb1"
-    },
-    "1549:254": {
-      "figmaComponent": "Description List Item",
-      "component": "DescriptionListItem",
-      "hash": "92e426c1504d4b15"
-    },
-    "1557:794": {
-      "figmaComponent": "List",
-      "component": "List",
-      "hash": "9cdd934b68ca30a5"
-    },
-    "1564:513": {
-      "figmaComponent": "Button Group",
-      "component": "ButtonGroup",
-      "hash": "60050d5625126f1c"
-    },
-    "1569:410": {
-      "figmaComponent": "Split Button",
-      "component": "SplitButton",
-      "hash": "8a4e8110310de5f7"
-    },
-    "1578:563": {
-      "figmaComponent": "Copy Button",
-      "component": "CopyButton",
-      "hash": "459394cdef0dbbb0"
-    },
-    "1585:273": {
-      "figmaComponent": "Code Snippet",
-      "component": "CodeSnippet",
-      "hash": "06bf9dd909d416fd"
-    },
-    "1661:272": {
-      "figmaComponent": "AI Label",
-      "component": "AILabel",
-      "hash": "9ee3e5fe135b8d12"
-    },
-    "1664:292": {
-      "figmaComponent": "Chat Message",
-      "component": "ChatMessage",
-      "hash": "be40bf735e851710"
+    "1637:287": {
+      "figmaComponent": "Truncated Text",
+      "component": "TruncatedText",
+      "hash": "749c424a624c63bf"
     }
   }
 }

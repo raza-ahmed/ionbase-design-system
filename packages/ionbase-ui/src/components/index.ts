@@ -130,6 +130,8 @@ export type {
 } from './Grid.js';
 export { ThemeZone } from './ThemeZone.js';
 export type { ThemeZoneProps, ThemeZoneElement, Theme } from './ThemeZone.js';
+export { SkipLink } from './SkipLink.js';
+export type { SkipLinkProps } from './SkipLink.js';
 export type { ChatMessageProps, ChatMessageFrom } from './ChatMessage.js';
 export type { AILabelProps, AILabelLabels } from './AILabel.js';
 export { Toggletip } from './Toggletip.js';
