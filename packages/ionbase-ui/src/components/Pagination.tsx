@@ -1,7 +1,7 @@
 'use client';
 
 import React, { forwardRef, useRef } from 'react';
-import { useHover, useFocusRing, mergeProps } from 'react-aria';
+import { useHover, useFocusRing, useLocale, mergeProps } from 'react-aria';
 import { Select } from './Select.js';
 
 export type PaginationType = 'numbered' | 'simple';
@@ -33,8 +33,38 @@ export interface PaginationProps extends Omit<
   /** Options offered by the rows-per-page control. */
   pageSizeOptions?: number[];
   onPageSizeChange?: (pageSize: number) => void;
+  /**
+   * Every string the pager renders, for translation. English by default. The
+   * landmark's name is `aria-label` — "Pagination" when it is left out.
+   */
+  labels?: PaginationLabels;
   className?: string;
 }
+
+/** Numbers arrive formatted for the locale — "1,024" or "1.024". */
+export interface PaginationLabels {
+  /** "Go to previous page". */
+  previous?: string;
+  /** "Go to next page". */
+  next?: string;
+  /** Each numbered cell's name — "Go to page 3". */
+  page?: (page: string) => string;
+  /** The simple pager's summary, announced on change — "Page 3 of 12". */
+  summary?: (page: string, pageCount: string) => string;
+  /** Names the rows-per-page control — "Rows per page". */
+  pageSize?: string;
+  /** Each rows-per-page option — "25 per page". */
+  perPage?: (pageSize: string) => string;
+}
+
+const DEFAULTS: Required<PaginationLabels> = {
+  previous: 'Go to previous page',
+  next: 'Go to next page',
+  page: (page) => `Go to page ${page}`,
+  summary: (page, pageCount) => `Page ${page} of ${pageCount}`,
+  pageSize: 'Rows per page',
+  perPage: (pageSize) => `${pageSize} per page`,
+};
 
 /**
  * Which page numbers to draw, and where the runs are broken.
@@ -166,11 +196,15 @@ export const Pagination = forwardRef<HTMLElement, PaginationProps>(
       pageSize,
       pageSizeOptions = [10, 25, 50, 100],
       onPageSizeChange,
+      labels,
       className,
       ...rest
     },
     ref,
   ) {
+    const { locale } = useLocale();
+    const l = { ...DEFAULTS, ...labels };
+    const format = new Intl.NumberFormat(locale).format;
     const total = Math.max(1, Math.floor(pageCount));
     const current = Math.min(Math.max(1, Math.floor(page)), total);
     const go = (p: number) => {
@@ -188,7 +222,7 @@ export const Pagination = forwardRef<HTMLElement, PaginationProps>(
 
     const prev = (
       <Cell
-        label="Go to previous page"
+        label={l.previous}
         disabled={current <= 1}
         onPress={() => go(current - 1)}
       >
@@ -197,7 +231,7 @@ export const Pagination = forwardRef<HTMLElement, PaginationProps>(
     );
     const next = (
       <Cell
-        label="Go to next page"
+        label={l.next}
         disabled={current >= total}
         onPress={() => go(current + 1)}
       >
@@ -224,12 +258,12 @@ export const Pagination = forwardRef<HTMLElement, PaginationProps>(
              */}
             <Select
               size={size}
-              aria-label="Rows per page"
+              aria-label={l.pageSize}
               value={pageSize}
               onChange={(e) => onPageSizeChange?.(Number(e.target.value))}
               options={pageSizeOptions.map((n) => ({
                 value: String(n),
-                label: `${n} per page`,
+                label: l.perPage(format(n)),
               }))}
             />
           </div>
@@ -244,7 +278,7 @@ export const Pagination = forwardRef<HTMLElement, PaginationProps>(
              * is the only thing that tells a screen-reader user it happened.
              */}
             <span className="ion-pagination__summary" aria-live="polite">
-              Page {current} of {total}
+              {l.summary(format(current), format(total))}
             </span>
             {next}
           </div>
@@ -265,11 +299,11 @@ export const Pagination = forwardRef<HTMLElement, PaginationProps>(
               ) : (
                 <li key={item}>
                   <Cell
-                    label={`Go to page ${item}`}
+                    label={l.page(format(item))}
                     selected={item === current}
                     onPress={() => go(item)}
                   >
-                    {item}
+                    {format(item)}
                   </Cell>
                 </li>
               ),

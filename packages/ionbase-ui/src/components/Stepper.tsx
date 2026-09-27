@@ -1,6 +1,7 @@
 'use client';
 
 import React, { createContext, forwardRef, useContext } from 'react';
+import { useLocale } from 'react-aria';
 
 export type StepperOrientation = 'horizontal' | 'vertical';
 export type StepperStepStatus = 'incomplete' | 'complete' | 'error';
@@ -8,6 +9,8 @@ export type StepperStepStatus = 'incomplete' | 'complete' | 'error';
 interface StepPosition {
   index: number;
   total: number;
+  labels: Required<StepperLabels>;
+  format: (n: number) => string;
 }
 
 const StepContext = createContext<StepPosition | null>(null);
@@ -26,7 +29,37 @@ export interface StepperProps extends React.HTMLAttributes<HTMLOListElement> {
   orientation?: StepperOrientation;
   /** `StepperStep` elements, first step first. */
   children?: React.ReactNode;
+  /**
+   * Every string the steps read out, for translation. English by default.
+   * Given once here rather than on each step.
+   */
+  labels?: StepperLabels;
 }
+
+/** What each step reads after its label. Numbers arrive formatted for the locale. */
+export interface StepperLabels {
+  /** Read before each label — "Step 2 of 4: ". Keep the separator. */
+  position?: (step: string, total: string) => string;
+  /** "Not started". */
+  incomplete?: string;
+  /** "Completed". */
+  complete?: string;
+  /** "Has errors". */
+  error?: string;
+  /** "Current step". */
+  current?: string;
+  /** The current step when it has errors — "Current step, has errors". */
+  currentError?: string;
+}
+
+const DEFAULTS: Required<StepperLabels> = {
+  position: (step, total) => `Step ${step} of ${total}: `,
+  incomplete: 'Not started',
+  complete: 'Completed',
+  error: 'Has errors',
+  current: 'Current step',
+  currentError: 'Current step, has errors',
+};
 
 export interface StepperStepProps extends Omit<
   React.LiHTMLAttributes<HTMLLIElement>,
@@ -52,12 +85,6 @@ export interface StepperStepProps extends Omit<
   /** As `href`, for a wizard that changes step without a route. */
   onPress?: () => void;
 }
-
-const STATUS_TEXT: Record<StepperStepStatus, string> = {
-  incomplete: 'Not started',
-  complete: 'Completed',
-  error: 'Has errors',
-};
 
 const Check = () => (
   <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false">
@@ -120,11 +147,15 @@ export const Stepper = forwardRef<HTMLOListElement, StepperProps>(
       label = 'Progress',
       orientation = 'horizontal',
       children,
+      labels,
       className,
       ...rest
     },
     ref,
   ) => {
+    const { locale } = useLocale();
+    const l = { ...DEFAULTS, ...labels };
+    const format = new Intl.NumberFormat(locale).format;
     /*
      * Position comes from the children rather than from props on each step.
      * Asking the caller to pass `index` and `total` five times is five chances
@@ -148,7 +179,7 @@ export const Stepper = forwardRef<HTMLOListElement, StepperProps>(
         {steps.map((step, index) => (
           <StepContext.Provider
             key={step.key ?? index}
-            value={{ index, total: steps.length }}
+            value={{ index, total: steps.length, labels: l, format }}
           >
             {step}
           </StepContext.Provider>
@@ -182,11 +213,12 @@ export const StepperStep = forwardRef<HTMLLIElement, StepperStepProps>(
     const isInteractive =
       !isCurrent && status !== 'incomplete' && (!!href || !!onPress);
 
+    const { labels } = position;
     const statusText = isCurrent
       ? status === 'error'
-        ? 'Current step, has errors'
-        : 'Current step'
-      : STATUS_TEXT[status];
+        ? labels.currentError
+        : labels.current
+      : labels[status];
 
     const content = (
       <>
@@ -196,12 +228,15 @@ export const StepperStep = forwardRef<HTMLLIElement, StepperStepProps>(
           ) : status === 'error' ? (
             <Exclamation />
           ) : (
-            number
+            position.format(number)
           )}
         </span>
         <span className="ion-stepper__text">
           <span className="ion-visually-hidden">
-            {`Step ${number} of ${position.total}: `}
+            {labels.position(
+              position.format(number),
+              position.format(position.total),
+            )}
           </span>
           <span className="ion-stepper__label">{children}</span>
           {description && (

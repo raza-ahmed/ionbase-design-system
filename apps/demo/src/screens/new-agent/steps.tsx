@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import {
   Button,
   Checkbox,
@@ -18,6 +19,7 @@ import {
   SelectableTile,
   Textarea,
   TimeField,
+  type FileUploadLabels,
 } from 'ionbase-ui';
 
 import { TEAMS, type AgentDraft } from '../../data/agents';
@@ -243,6 +245,19 @@ export function TriggerStep({ values, errors, onChange, onBlur }: StepProps) {
   );
 }
 
+/**
+ * The refusals, in the product's words rather than FileUpload's defaults:
+ * each says what to do instead. Sizes arrive formatted for the locale.
+ */
+const KNOWLEDGE_LABELS: FileUploadLabels = {
+  notAccepted: (name) =>
+    `${name} can’t be used as knowledge. Add a PDF, Markdown, text or CSV file.`,
+  tooLarge: (name, size, limit) =>
+    `${name} is ${size}. Knowledge files can be up to ${limit} each.`,
+  tooMany: (name, max) =>
+    `${name} wasn’t added. An agent can have up to ${max} knowledge files.`,
+};
+
 export function GuardrailsStep({
   values,
   errors,
@@ -254,6 +269,8 @@ export function GuardrailsStep({
   const earlier = values.knowledgeFiles.filter(
     (name) => !files.some((f) => f.name === name),
   );
+  // What the last add refused. Cleared by the next change to the list.
+  const [refused, setRefused] = useState<string[]>([]);
   return (
     <div className="demo-form__fields">
       <FileUpload
@@ -261,10 +278,18 @@ export function GuardrailsStep({
         label="Knowledge files (optional)"
         multiple
         accept=".pdf,.md,.txt,.csv"
-        maxSize={10 * 1024 * 1024}
+        // Decimal, as FileUpload counts and as the hint says: 10 MB.
+        maxSize={10_000_000}
         maxFiles={5}
         files={files}
-        onChange={onFilesChange}
+        onChange={(next) => {
+          setRefused([]);
+          onFilesChange(next);
+        }}
+        onReject={(rejected) => setRefused(rejected.map((r) => r.message))}
+        isInvalid={refused.length > 0}
+        errorMessage={refused.join(' ')}
+        labels={KNOWLEDGE_LABELS}
         hint="PDF, Markdown, text or CSV. Up to 5 files, 10 MB each."
       />
       {earlier.length > 0 && (

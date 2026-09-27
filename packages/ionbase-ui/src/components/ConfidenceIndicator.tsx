@@ -18,7 +18,8 @@ export interface ConfidenceIndicatorProps extends Omit<
   label?: string;
 }
 
-const LEVEL_TEXT: Record<ConfidenceLevel, string> = {
+/** @replace label */
+const DEFAULT_LEVEL_LABELS: Record<ConfidenceLevel, string> = {
   low: 'Low confidence',
   medium: 'Medium confidence',
   high: 'High confidence',
@@ -73,7 +74,7 @@ export const ConfidenceIndicator = forwardRef<
         ))}
       </span>
       <span className="ion-confidence__label">
-        {label ?? LEVEL_TEXT[level]}
+        {label ?? DEFAULT_LEVEL_LABELS[level]}
       </span>
       <span className="ion-confidence__basis">{basis}</span>
     </span>

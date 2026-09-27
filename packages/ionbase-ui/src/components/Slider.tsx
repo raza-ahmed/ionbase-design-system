@@ -67,6 +67,7 @@ export interface SliderProps<V extends SliderValue = number> {
   className?: string;
 }
 
+/** @replace thumbLabels */
 const DEFAULT_THUMB_LABELS = ['Minimum', 'Maximum'] as const;
 
 function Thumb({

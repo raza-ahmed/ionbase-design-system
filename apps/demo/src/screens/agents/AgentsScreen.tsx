@@ -460,6 +460,7 @@ export function AgentsScreen() {
               pageSize={pageSize}
               pageSizeOptions={[10, 20, 50]}
               onPageSizeChange={(size) => requery(() => setPageSize(size))}
+              labels={{ pageSize: 'Agents per page' }}
             />
           </div>
         </>

@@ -3,6 +3,7 @@ export type { ButtonProps } from './Button.js';
 export { Pagination } from './Pagination.js';
 export type {
   PaginationProps,
+  PaginationLabels,
   PaginationType,
   PaginationSize,
 } from './Pagination.js';
@@ -339,7 +340,7 @@ export { SearchField } from './SearchField.js';
 export type { SearchFieldProps, SearchFieldSize } from './SearchField.js';
 
 export { ToolCall } from './ToolCall.js';
-export type { ToolCallProps } from './ToolCall.js';
+export type { ToolCallProps, ToolCallLabels } from './ToolCall.js';
 
 export { PromptInput } from './PromptInput.js';
 export type { PromptInputProps, PromptInputSubmitKey } from './PromptInput.js';
@@ -347,6 +348,7 @@ export type { PromptInputProps, PromptInputSubmitKey } from './PromptInput.js';
 export { Stepper, StepperStep } from './Stepper.js';
 export type {
   StepperProps,
+  StepperLabels,
   StepperStepProps,
   StepperOrientation,
   StepperStepStatus,
@@ -376,6 +378,7 @@ export type {
 export { FileUpload } from './FileUpload.js';
 export type {
   FileUploadProps,
+  FileUploadLabels,
   FileUploadSize,
   RejectedFile,
 } from './FileUpload.js';
@@ -410,6 +413,7 @@ export { StatGroup, StatTile } from './StatTile.js';
 export type {
   StatGroupProps,
   StatTileProps,
+  StatTileLabels,
   StatTileGoodWhen,
   StatTileChangeUnit,
 } from './StatTile.js';
@@ -467,8 +471,10 @@ export { useAgentRun } from './use-agent-run.js';
 export type { UseAgentRunOptions, UseAgentRunResult } from './use-agent-run.js';
 export { Kbd } from './Kbd.js';
 export type { KbdProps, KbdPlatform } from './Kbd.js';
+export type { ShortcutKeyId, ShortcutKeyLabels } from './shortcut.js';
 export { CommandPalette } from './CommandPalette.js';
 export type {
   CommandPaletteProps,
+  CommandPaletteLabels,
   CommandPaletteItem,
 } from './CommandPalette.js';

@@ -28,6 +28,8 @@ export interface CodeSnippetProps {
   copyLabel?: string;
   /** Default "Copied". */
   copiedLabel?: string;
+  /** Read and shown when the clipboard refused the copy — CopyButton's `failedLabel`. */
+  failedLabel?: string;
   /** Leaves out the copy button — for code that is read, not run. */
   hideCopyButton?: boolean;
   /** `multi` only: lines shown before "Show more". Default 12. */
@@ -73,6 +75,7 @@ export const CodeSnippet = forwardRef<HTMLElement, CodeSnippetProps>(
       label = 'Code',
       copyLabel = 'Copy code',
       copiedLabel,
+      failedLabel,
       hideCopyButton = false,
       maxLines = 12,
       showMoreLabel = 'Show more',
@@ -146,6 +149,7 @@ export const CodeSnippet = forwardRef<HTMLElement, CodeSnippetProps>(
             size="sm"
             label={copyLabel}
             copiedLabel={copiedLabel}
+            failedLabel={failedLabel}
             onCopy={onCopy}
             onCopyError={onCopyError}
           />

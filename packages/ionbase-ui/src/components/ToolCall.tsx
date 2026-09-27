@@ -1,7 +1,8 @@
 'use client';
 
 import React, { forwardRef, useId, useState } from 'react';
-import { STATUS_GLYPHS, STATUS_TEXT } from './agent-status.js';
+import { useLocale } from 'react-aria';
+import { DEFAULT_STATUS_LABELS, STATUS_GLYPHS } from './agent-status.js';
 import type { AgentActivityStatus } from './agent-status.js';
 
 export interface ToolCallProps extends Omit<
@@ -37,7 +38,29 @@ export interface ToolCallProps extends Omit<
   /** Controlled: whether the details are open. Pass `onExpandedChange` with it. */
   isExpanded?: boolean;
   onExpandedChange?: (isExpanded: boolean) => void;
+  /** The status in words, as AgentActivityStep's. Pass the translation for `status`. */
+  statusLabel?: string;
+  /** Every other string the call renders, for translation. English by default. */
+  labels?: ToolCallLabels;
 }
+
+export interface ToolCallLabels {
+  /** "Input", above what the agent passed in. */
+  input?: string;
+  /** "Output", above what came back. */
+  output?: string;
+  /** Names the scrollable input — "Input to search_invoices". */
+  inputName?: (tool: string) => string;
+  /** Names the scrollable output — "Output from search_invoices". */
+  outputName?: (tool: string) => string;
+}
+
+const DEFAULTS: Required<ToolCallLabels> = {
+  input: 'Input',
+  output: 'Output',
+  inputName: (tool) => `Input to ${tool}`,
+  outputName: (tool) => `Output from ${tool}`,
+};
 
 const Chevron = () => (
   <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false">
@@ -62,8 +85,22 @@ function formatPayload(value: unknown): string {
   }
 }
 
-function formatDuration(ms: number): string {
-  return ms < 1000 ? `${Math.round(ms)}ms` : `${(ms / 1000).toFixed(1)}s`;
+/** "120ms", "1.4s" — in the locale's digits and units. */
+function formatDuration(ms: number, locale: string): string {
+  return ms < 1000
+    ? new Intl.NumberFormat(locale, {
+        style: 'unit',
+        unit: 'millisecond',
+        unitDisplay: 'narrow',
+        maximumFractionDigits: 0,
+      }).format(ms)
+    : new Intl.NumberFormat(locale, {
+        style: 'unit',
+        unit: 'second',
+        unitDisplay: 'narrow',
+        minimumFractionDigits: 1,
+        maximumFractionDigits: 1,
+      }).format(ms / 1000);
 }
 
 /**
@@ -110,11 +147,15 @@ export const ToolCall = forwardRef<HTMLDivElement, ToolCallProps>(
       defaultExpanded = false,
       isExpanded: isExpandedProp,
       onExpandedChange,
+      statusLabel,
+      labels,
       className,
       ...rest
     },
     ref,
   ) => {
+    const { locale } = useLocale();
+    const l = { ...DEFAULTS, ...labels };
     const [internal, setInternal] = useState(defaultExpanded);
     const isControlled = isExpandedProp !== undefined;
     const isExpanded = isControlled ? isExpandedProp : internal;
@@ -141,10 +182,10 @@ export const ToolCall = forwardRef<HTMLDivElement, ToolCallProps>(
           {name && <code className="ion-tool-call__name">{name}</code>}
         </span>
         {/* Status as text, never only as the glyph's colour. */}
-        <span className="ion-visually-hidden">{`, ${STATUS_TEXT[status]}`}</span>
+        <span className="ion-visually-hidden">{`, ${statusLabel ?? DEFAULT_STATUS_LABELS[status]}`}</span>
         {durationMs !== undefined && (
           <span className="ion-tool-call__duration">
-            {formatDuration(durationMs)}
+            {formatDuration(durationMs, locale)}
           </span>
         )}
         {hasDetails && (
@@ -190,11 +231,11 @@ export const ToolCall = forwardRef<HTMLDivElement, ToolCallProps>(
           <div id={bodyId} className="ion-tool-call__body">
             {hasInput && (
               <div className="ion-tool-call__section">
-                <span className="ion-tool-call__label">Input</span>
+                <span className="ion-tool-call__label">{l.input}</span>
                 <pre
                   className="ion-tool-call__payload"
                   tabIndex={0}
-                  aria-label={`Input to ${name ?? title}`}
+                  aria-label={l.inputName(name ?? title)}
                 >
                   <code>{formatPayload(input)}</code>
                 </pre>
@@ -202,11 +243,11 @@ export const ToolCall = forwardRef<HTMLDivElement, ToolCallProps>(
             )}
             {hasOutput && (
               <div className="ion-tool-call__section">
-                <span className="ion-tool-call__label">Output</span>
+                <span className="ion-tool-call__label">{l.output}</span>
                 <pre
                   className="ion-tool-call__payload"
                   tabIndex={0}
-                  aria-label={`Output from ${name ?? title}`}
+                  aria-label={l.outputName(name ?? title)}
                 >
                   <code>{formatPayload(output)}</code>
                 </pre>

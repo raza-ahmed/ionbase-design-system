@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useCallback, useId, useRef, useState } from 'react';
+import React, { useCallback, useId, useMemo, useRef, useState } from 'react';
+import { useLocale } from 'react-aria';
 
 export type FileUploadSize = 'sm' | 'md';
 
@@ -46,11 +47,40 @@ export interface FileUploadProps {
   hint?: React.ReactNode;
   /** Accessible label for each file's remove button. Receives the file name. */
   removeLabel?: (name: string) => string;
+  /** Every other string the control renders, for translation. English by default. */
+  labels?: FileUploadLabels;
   className?: string;
   wrapperClassName?: string;
   id?: string;
   name?: string;
 }
+
+/**
+ * The refusals are `RejectedFile.message`; the caller shows them. Sizes arrive
+ * already formatted for the locale — "12 MB". Counts arrive as numbers so a
+ * translation can choose its plural form.
+ */
+export interface FileUploadLabels {
+  /** "report.xlsx is not an accepted file type." */
+  notAccepted?: (name: string) => string;
+  /** "scan.pdf is 12 MB, over the 10 MB limit." */
+  tooLarge?: (name: string, size: string, limit: string) => string;
+  /** "notes.txt was not added — at most 3 files." */
+  tooMany?: (name: string, max: number) => string;
+  /** "notes.txt was not added — only one file is allowed." */
+  onlyOne?: (name: string) => string;
+  /** Announced as files are added and removed — "2 files selected". */
+  selected?: (count: number) => string;
+}
+
+const DEFAULTS: Required<FileUploadLabels> = {
+  notAccepted: (name) => `${name} is not an accepted file type.`,
+  tooLarge: (name, size, limit) =>
+    `${name} is ${size}, over the ${limit} limit.`,
+  tooMany: (name, max) => `${name} was not added — at most ${max} files.`,
+  onlyOne: (name) => `${name} was not added — only one file is allowed.`,
+  selected: (count) => `${count} file${count === 1 ? '' : 's'} selected`,
+};
 
 const UploadIcon = () => (
   <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false">
@@ -83,16 +113,37 @@ const RemoveIcon = () => (
  * file size both mean powers of 1000, and showing "476 MiB" for a 500 MB file
  * is correct arithmetic and a confusing answer.
  */
-const formatBytes = (bytes: number): string => {
-  if (bytes < 1000) return `${bytes} B`;
-  const units = ['kB', 'MB', 'GB', 'TB'];
+const formatBytes = (bytes: number, locale: string): string => {
+  /*
+   * Intl's units, so the digits, the separator and the symbol are the
+   * locale's — "1,5 Mo" in French. Bytes are spelled out: the short form in
+   * English is "512 byte", and the long one is plural-correct everywhere.
+   */
+  if (bytes < 1000)
+    return new Intl.NumberFormat(locale, {
+      style: 'unit',
+      unit: 'byte',
+      unitDisplay: 'long',
+    }).format(bytes);
+  const units = ['kilobyte', 'megabyte', 'gigabyte', 'terabyte'];
   let value = bytes / 1000;
   let unit = 0;
   while (value >= 1000 && unit < units.length - 1) {
     value /= 1000;
     unit += 1;
   }
-  return `${value < 10 ? value.toFixed(1) : Math.round(value)} ${units[unit]}`;
+  return new Intl.NumberFormat(locale, {
+    style: 'unit',
+    unit: units[unit],
+    unitDisplay: 'short',
+    /*
+     * One decimal below 100, so a 10.2 MB file refused by a 10 MB limit does
+     * not read "10 MB, over the 10 MB limit". Kept below 10 even when it is
+     * zero — "1.0 kB" — so a list of sizes lines up.
+     */
+    maximumFractionDigits: value < 100 ? 1 : 0,
+    minimumFractionDigits: value < 10 ? 1 : 0,
+  }).format(value);
 };
 
 /**
@@ -160,6 +211,7 @@ export function FileUpload({
   prompt,
   hint,
   removeLabel = (name) => `Remove ${name}`,
+  labels,
   className,
   wrapperClassName,
   id: providedId,
@@ -167,6 +219,8 @@ export function FileUpload({
 }: FileUploadProps) {
   /* No `disabled` alias to resolve: FileUpload is new, so it never had one. */
   const isDisabled = isDisabledProp ?? false;
+  const { locale } = useLocale();
+  const l = useMemo(() => ({ ...DEFAULTS, ...labels }), [labels]);
 
   const generatedId = useId();
   const id = providedId ?? generatedId;
@@ -212,21 +266,25 @@ export function FileUpload({
           rejected.push({
             file,
             reason: 'type',
-            message: `${file.name} is not an accepted file type.`,
+            message: l.notAccepted(file.name),
           });
         } else if (maxSize !== undefined && file.size > maxSize) {
           rejected.push({
             file,
             reason: 'size',
-            message: `${file.name} is ${formatBytes(file.size)}, over the ${formatBytes(maxSize)} limit.`,
+            message: l.tooLarge(
+              file.name,
+              formatBytes(file.size, locale),
+              formatBytes(maxSize, locale),
+            ),
           });
         } else if (room <= 0) {
           rejected.push({
             file,
             reason: 'count',
             message: multiple
-              ? `${file.name} was not added — at most ${maxFiles} files.`
-              : `${file.name} was not added — only one file is allowed.`,
+              ? l.tooMany(file.name, maxFiles ?? Infinity)
+              : l.onlyOne(file.name),
           });
         } else {
           accepted.push(file);
@@ -238,7 +296,18 @@ export function FileUpload({
         commit(multiple ? [...files, ...accepted] : accepted);
       if (rejected.length) onReject?.(rejected);
     },
-    [accept, commit, files, isDisabled, maxFiles, maxSize, multiple, onReject],
+    [
+      accept,
+      commit,
+      files,
+      isDisabled,
+      l,
+      locale,
+      maxFiles,
+      maxSize,
+      multiple,
+      onReject,
+    ],
   );
 
   const remove = (index: number) => {
@@ -355,7 +424,7 @@ export function FileUpload({
         >
           <span className="ion-file-upload__name">{file.name}</span>
           <span className="ion-file-upload__size">
-            {formatBytes(file.size)}
+            {formatBytes(file.size, locale)}
           </span>
           <button
             type="button"
@@ -380,9 +449,7 @@ export function FileUpload({
    */
   const status = (
     <span className="ion-visually-hidden" role="status" aria-live="polite">
-      {files.length === 0
-        ? ''
-        : `${files.length} file${files.length === 1 ? '' : 's'} selected`}
+      {files.length === 0 ? '' : l.selected(files.length)}
     </span>
   );
 

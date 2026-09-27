@@ -13,6 +13,8 @@ export interface CitationProps extends Omit<
   source: string;
   /** Where it goes. Omit for a source with no address — a document, a call. */
   href?: string;
+  /** The accessible name — "Source 1: <source>" in English. */
+  label?: string;
 }
 
 export interface CitationListProps extends React.OlHTMLAttributes<HTMLOListElement> {
@@ -48,8 +50,17 @@ export interface CitationListItemProps extends React.LiHTMLAttributes<HTMLLIElem
  * reference instead.
  */
 export const Citation = forwardRef<HTMLAnchorElement, CitationProps>(
-  ({ index, source, href, className, ...rest }, ref) => {
-    const name = `Source ${index}: ${source}`;
+  (
+    {
+      index,
+      source,
+      href,
+      label: name = `Source ${index}: ${source}`,
+      className,
+      ...rest
+    },
+    ref,
+  ) => {
     const classes = ['ion-citation', className].filter(Boolean).join(' ');
 
     if (!href) {

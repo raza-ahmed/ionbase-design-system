@@ -280,7 +280,9 @@ export function DateRangePicker({
             data-selected={isSelected || undefined}
             onClick={() => {
               state.setValue({
+                // i18n-exempt: names the preset in a developer error.
                 start: toCalendarDate(p.start, `preset "${p.label}"`)!,
+                // i18n-exempt: names the preset in a developer error.
                 end: toCalendarDate(p.end, `preset "${p.label}"`)!,
               });
               /*

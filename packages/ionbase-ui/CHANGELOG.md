@@ -1,5 +1,61 @@
 # Changelog
 
+## 0.121.0 — 2026-09-27
+
+### Localised strings — the third cross-cutting audit
+
+Every string a component shows or announces can now be replaced by its
+caller. The audit found 67 that could not be, in 14 components: 64 written
+in English with no way round them, and 3 that a component drew but did not
+pass on. `dist/meta/strings.json` lists all 151 with how to replace each one,
+and a build gate keeps the count of fixed strings at zero.
+
+**Newly replaceable:**
+
+| Component         | What was fixed in English                                                                                | Now                                             |
+| ----------------- | -------------------------------------------------------------------------------------------------------- | ----------------------------------------------- |
+| Pagination        | "Go to previous page", "Go to next page", "Go to page 3", "Page 3 of 12", "Rows per page", "25 per page" | `labels`; page numbers in the locale's digits   |
+| FileUpload        | The four refusal messages passed to `onReject`, and "2 files selected"                                   | `labels`; sizes via `Intl` — "1,5 КБ"           |
+| Stepper           | "Step 2 of 4", "Current step", "Completed", "Has errors", "Not started"                                  | `labels`, given once on the Stepper             |
+| ToolCall          | "Input", "Output", their scroll areas' names, the status word                                            | `labels`, `statusLabel`; durations via `Intl`   |
+| AgentActivityStep | The status word, and the run's announcement for an active step with no text label                        | `statusLabel`                                   |
+| ApprovalGate      | "Approved", "Rejected", "Expired without a decision", shown and announced                                | `statusLabel`                                   |
+| CommandPalette    | "3 commands", "to move", "to run", "to close", and the key names                                         | `labels`, including `labels.keys`               |
+| Kbd               | Key names read aloud ("Command", "Up arrow") and printed ("Ctrl", "Esc", "Del")                          | `keyLabels`, by physical key                    |
+| PromptInput       | The keyboard hint, and AgentStop's "Stop" / "Stopping…", which it did not pass on                        | `submitHint`, `stopLabel`, `stoppingLabel`      |
+| CodeSnippet       | CopyButton's "Couldn't copy", which it did not pass on                                                   | `failedLabel`                                   |
+| StatTile          | "No change", "pts", ", better", ", worse"                                                                | `labels`, including how the change is formatted |
+| AvatarGroup       | "4 more"                                                                                                 | `overflowLabel`                                 |
+| Citation          | "Source 1: …"                                                                                            | `label`                                         |
+| ScrollProgress    | "Reading progress: 32%. Currently in …"                                                                  | `triggerLabel`                                  |
+
+FileUpload's sizes keep one decimal below 100, so a 10.2 MB file refused by
+a 10 MB limit no longer reads "10 MB, over the 10 MB limit".
+
+Counts reach the new callbacks as numbers, so a translation can choose its
+plural form. New `<Name>Labels` types are exported for each `labels` prop,
+along with `ShortcutKeyId` and `ShortcutKeyLabels`.
+
+**The gate, `scripts/verify-strings.mjs`,** runs in the build and fails on:
+
+- words a caller cannot replace;
+- a table of defaults that does not say, in an `@replace` tag, what replaces
+  it;
+- a string-bearing component rendered by another without its strings passed
+  on. This is how the PromptInput and CodeSnippet gaps were found.
+
+**Tests:**
+
+- **Storybook:** eight stories under Foundations/Localised strings, run in
+  `ru-RU`. Every string is replaced with a marker and the caller's data is
+  marked too. Every text node, name, placeholder and title is then read back:
+  any Latin word left over fails.
+- **Demo:** the new-agent wizard's knowledge upload used to drop refused files
+  without a word. It now shows each refusal as the field's error, in the
+  product's own wording. The Agents pager names its control "Agents per page".
+  A smoke check covers both, and `maxSize` is now 10 MB in decimal, matching
+  the hint, where it was 10 MiB before.
+
 ## 0.120.0 — 2026-09-27
 
 ### Forced colours — the second cross-cutting audit

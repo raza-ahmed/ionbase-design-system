@@ -11,7 +11,11 @@ import {
 import { useOverlayTriggerState } from 'react-stately';
 import type { OverlayTriggerState } from 'react-stately';
 import { Kbd, useIsMac } from './Kbd.js';
-import { matchesShortcut, parseShortcut } from './shortcut.js';
+import {
+  matchesShortcut,
+  parseShortcut,
+  type ShortcutKeyLabels,
+} from './shortcut.js';
 
 export interface CommandPaletteItem {
   /** Passed to `onAction`. Unique within the palette. */
@@ -62,8 +66,32 @@ export interface CommandPaletteProps {
   placeholder?: string;
   /** Shown in place of the list when nothing matches. */
   emptyLabel?: React.ReactNode;
+  /** Every other string the palette renders, for translation. English by default. */
+  labels?: CommandPaletteLabels;
   className?: string;
 }
+
+export interface CommandPaletteLabels {
+  /**
+   * Announced as the query narrows the list — "3 commands". Receives the count
+   * as a number so a translation can choose its plural form.
+   */
+  results?: (count: number) => string;
+  /** The footer hints, each after its key: "to move", "to run", "to close". */
+  move?: string;
+  run?: string;
+  close?: string;
+  /** What the keys in the hints and beside each command are printed and read as. See Kbd's `keyLabels`. */
+  keys?: ShortcutKeyLabels;
+}
+
+const DEFAULTS: Required<CommandPaletteLabels> = {
+  results: (count) => `${count} ${count === 1 ? 'command' : 'commands'}`,
+  move: 'to move',
+  run: 'to run',
+  close: 'to close',
+  keys: {},
+};
 
 const SearchIcon = () => (
   <svg
@@ -110,6 +138,7 @@ interface PanelProps {
   label: string;
   placeholder: string;
   emptyLabel: React.ReactNode;
+  labels: Required<CommandPaletteLabels>;
   className?: string;
 }
 
@@ -126,6 +155,7 @@ function CommandPalettePanel({
   label,
   placeholder,
   emptyLabel,
+  labels,
   className,
 }: PanelProps) {
   const panelRef = useRef<HTMLDivElement>(null);
@@ -308,6 +338,7 @@ function CommandPalettePanel({
                   {c.shortcut && (
                     <Kbd
                       shortcut={c.shortcut}
+                      keyLabels={labels.keys}
                       className="ion-command-palette__shortcut"
                     />
                   )}
@@ -349,22 +380,22 @@ function CommandPalettePanel({
           the field, a list that shrinks from forty rows to two is silent.
         */}
         <div className="ion-visually-hidden" role="status" aria-live="polite">
-          {query ? `${count} ${count === 1 ? 'command' : 'commands'}` : ''}
+          {query ? labels.results(count) : ''}
         </div>
 
         <div className="ion-command-palette__footer" aria-hidden="true">
           <span className="ion-command-palette__hint">
-            <Kbd shortcut="up" />
-            <Kbd shortcut="down" />
-            to move
+            <Kbd shortcut="up" keyLabels={labels.keys} />
+            <Kbd shortcut="down" keyLabels={labels.keys} />
+            {labels.move}
           </span>
           <span className="ion-command-palette__hint">
-            <Kbd shortcut="enter" />
-            to run
+            <Kbd shortcut="enter" keyLabels={labels.keys} />
+            {labels.run}
           </span>
           <span className="ion-command-palette__hint">
-            <Kbd shortcut="esc" />
-            to close
+            <Kbd shortcut="esc" keyLabels={labels.keys} />
+            {labels.close}
           </span>
         </div>
       </div>
@@ -404,6 +435,7 @@ export function CommandPalette({
   label = 'Command palette',
   placeholder = 'Type a command or search…',
   emptyLabel = 'No matching commands',
+  labels,
   className,
 }: CommandPaletteProps) {
   const state = useOverlayTriggerState({ isOpen, defaultOpen, onOpenChange });
@@ -460,6 +492,7 @@ export function CommandPalette({
         label={label}
         placeholder={placeholder}
         emptyLabel={emptyLabel}
+        labels={{ ...DEFAULTS, ...labels }}
         className={className}
       />
     </Overlay>

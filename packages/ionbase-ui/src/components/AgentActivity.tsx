@@ -2,7 +2,7 @@
 
 import React, { forwardRef, useEffect, useRef, useState } from 'react';
 
-import { STATUS_GLYPHS, STATUS_TEXT } from './agent-status.js';
+import { DEFAULT_STATUS_LABELS, STATUS_GLYPHS } from './agent-status.js';
 import type { AgentActivityStatus } from './agent-status.js';
 
 export type { AgentActivityStatus } from './agent-status.js';
@@ -25,6 +25,12 @@ export interface AgentActivityStepProps extends React.LiHTMLAttributes<HTMLLIEle
   status?: AgentActivityStatus;
   /** The result, a tool name, a count — whatever makes the step checkable. */
   detail?: React.ReactNode;
+  /**
+   * The status in words, read after the step's label — "Not started", "In
+   * progress", "Done", "Failed", "Skipped" in English. Pass the translation
+   * for `status`.
+   */
+  statusLabel?: string;
 }
 
 /**
@@ -58,7 +64,7 @@ export const AgentActivity = forwardRef<HTMLOListElement, AgentActivityProps>(
         if (child.props.status !== 'active') return found;
         return typeof child.props.children === 'string'
           ? child.props.children
-          : 'In progress';
+          : (child.props.statusLabel ?? DEFAULT_STATUS_LABELS.active);
       },
       '',
     );
@@ -109,37 +115,44 @@ AgentActivity.displayName = 'AgentActivity';
 export const AgentActivityStep = forwardRef<
   HTMLLIElement,
   AgentActivityStepProps
->(({ children, status = 'pending', detail, className, ...rest }, ref) => {
-  const Glyph = STATUS_GLYPHS[status];
-  return (
-    <li
-      {...rest}
-      ref={ref}
-      data-status={status}
-      className={[
-        'ion-agent-activity__step',
-        `ion-agent-activity__step--${status}`,
-        className || '',
-      ]
-        .filter(Boolean)
-        .join(' ')}
-    >
-      <span className="ion-agent-activity__glyph" aria-hidden="true">
-        <Glyph />
-      </span>
-      {/*
-       * Divs, not spans: `detail` takes block content — the ToolCall and
-       * ApprovalGate the AgentRun pattern puts under a step — and a <div> inside
-       * a <span> is invalid HTML that browsers merely tolerate.
-       */}
-      <div className="ion-agent-activity__body">
-        <span className="ion-agent-activity__label">{children}</span>
-        {detail && <div className="ion-agent-activity__detail">{detail}</div>}
-      </div>
-      {/* Status as text, not only as a coloured shape. */}
-      <span className="ion-visually-hidden">{STATUS_TEXT[status]}</span>
-    </li>
-  );
-});
+>(
+  (
+    { children, status = 'pending', detail, statusLabel, className, ...rest },
+    ref,
+  ) => {
+    const Glyph = STATUS_GLYPHS[status];
+    return (
+      <li
+        {...rest}
+        ref={ref}
+        data-status={status}
+        className={[
+          'ion-agent-activity__step',
+          `ion-agent-activity__step--${status}`,
+          className || '',
+        ]
+          .filter(Boolean)
+          .join(' ')}
+      >
+        <span className="ion-agent-activity__glyph" aria-hidden="true">
+          <Glyph />
+        </span>
+        {/*
+         * Divs, not spans: `detail` takes block content — the ToolCall and
+         * ApprovalGate the AgentRun pattern puts under a step — and a <div> inside
+         * a <span> is invalid HTML that browsers merely tolerate.
+         */}
+        <div className="ion-agent-activity__body">
+          <span className="ion-agent-activity__label">{children}</span>
+          {detail && <div className="ion-agent-activity__detail">{detail}</div>}
+        </div>
+        {/* Status as text, not only as a coloured shape. */}
+        <span className="ion-visually-hidden">
+          {statusLabel ?? DEFAULT_STATUS_LABELS[status]}
+        </span>
+      </li>
+    );
+  },
+);
 
 AgentActivityStep.displayName = 'AgentActivityStep';

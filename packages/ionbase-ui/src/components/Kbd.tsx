@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useSyncExternalStore } from 'react';
-import { shortcutKeys } from './shortcut.js';
+import { shortcutKeys, type ShortcutKeyLabels } from './shortcut.js';
 
 export type KbdPlatform = 'mac' | 'other';
 
@@ -40,6 +40,12 @@ export interface KbdProps {
    * specific platform's keys — a docs page comparing the two.
    */
   platform?: KbdPlatform;
+  /**
+   * What `shortcut`'s keys are printed as and read out as, for translation —
+   * `{ control: { symbol: 'Strg', name: 'Steuerung' } }`. English by default.
+   * Keyed by the physical key: `mod` is `command` on a Mac, `control` elsewhere.
+   */
+  keyLabels?: ShortcutKeyLabels;
   className?: string;
 }
 
@@ -56,7 +62,13 @@ export interface KbdProps {
  * shortcut's drawn keys are hidden and a visually hidden copy spells them out
  * — "Command K", "Control Shift P".
  */
-export function Kbd({ shortcut, children, platform, className }: KbdProps) {
+export function Kbd({
+  shortcut,
+  children,
+  platform,
+  keyLabels,
+  className,
+}: KbdProps) {
   const detected = useIsMac();
   const isMac = platform ? platform === 'mac' : detected;
   const classes = (base: string) =>
@@ -64,7 +76,7 @@ export function Kbd({ shortcut, children, platform, className }: KbdProps) {
 
   if (!shortcut) return <kbd className={classes('ion-kbd')}>{children}</kbd>;
 
-  const keys = shortcutKeys(shortcut, isMac);
+  const keys = shortcutKeys(shortcut, isMac, keyLabels);
   return (
     <kbd className={classes('ion-kbd-group')}>
       {keys.map((k, i) => (

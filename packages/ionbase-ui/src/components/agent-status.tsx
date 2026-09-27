@@ -12,7 +12,12 @@ import React from 'react';
 export type AgentActivityStatus =
   'pending' | 'active' | 'done' | 'failed' | 'skipped';
 
-export const STATUS_TEXT: Record<AgentActivityStatus, string> = {
+/**
+ * English defaults. Each consumer takes `statusLabel` to replace the word.
+ *
+ * @replace statusLabel
+ */
+export const DEFAULT_STATUS_LABELS: Record<AgentActivityStatus, string> = {
   pending: 'Not started',
   active: 'In progress',
   done: 'Done',
