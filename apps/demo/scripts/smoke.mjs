@@ -3507,6 +3507,115 @@ try {
   }
 
   /*
+   * Right to left: every route with the demo's Direction set, as a presenter
+   * would flip it. The same bar as the main sweep — no console errors, no
+   * sideways scroll, axe clean on a desktop — and the shell measured
+   * mirrored: the sidebar to the right of <main>, the brand to the right of
+   * the Header's actions, the Agents table's first column at its right edge.
+   */
+  for (const [device, width, height] of [
+    ['desktop', 1280, 900],
+    ['mobile', 390, 844],
+  ]) {
+    const where = `rtl (light, ${device})`;
+    if (skip(where)) continue;
+    const context = await browser.newContext({ viewport: { width, height } });
+    await context.addInitScript(() => {
+      localStorage.setItem(
+        'ionbase-ops:demo-settings',
+        JSON.stringify({ theme: 'light', latency: 0, direction: 'rtl' }),
+      );
+    });
+    try {
+      for (const route of ROUTES) {
+        const at = `${where} #/${route}`;
+        const page = await context.newPage();
+        page.on(
+          'console',
+          (m) => m.type() === 'error' && fail(at, `console: ${m.text()}`),
+        );
+        page.on('pageerror', (e) => fail(at, `exception: ${e.message}`));
+        await page.goto(`${BASE}/#/${route}`);
+        await page.locator('#page-title').waitFor({ timeout: 10_000 });
+        await page.waitForFunction(
+          () => !document.querySelector('[aria-busy="true"]'),
+          null,
+          { timeout: 10_000 },
+        );
+        await page.waitForTimeout(400);
+        const dir = await page.evaluate(() => document.documentElement.dir);
+        if (dir !== 'rtl') fail(at, `dir is "${dir}"`);
+        const overflow = await page.evaluate(
+          () => document.documentElement.scrollWidth - window.innerWidth,
+        );
+        if (overflow > 0) fail(at, `scrolls sideways by ${overflow}px`);
+
+        if (device === 'desktop') {
+          await page.addScriptTag({ content: axeSource });
+          const violations = await page.evaluate(async () => {
+            const result = await window.axe.run(document, {
+              resultTypes: ['violations'],
+            });
+            return result.violations.map(
+              (v) => `${v.impact} ${v.id} — ${v.nodes[0]?.target.join(' ')}`,
+            );
+          });
+          for (const v of violations) fail(at, `axe ${v}`);
+        }
+
+        if (route === 'overview') {
+          const shell = await page.evaluate(() => {
+            const r = (sel) =>
+              document.querySelector(sel)?.getBoundingClientRect();
+            return {
+              sidebar: r('.demo-sidebar'),
+              main: r('main'),
+              brand: r('.demo-brand'),
+              bell: r('.demo-bell'),
+              vw: window.innerWidth,
+            };
+          });
+          if (!shell.brand || !shell.bell)
+            fail(at, 'no brand or bell to measure');
+          else if (shell.brand.left < shell.bell.right)
+            fail(at, 'the brand is not to the right of the Header actions');
+          if (
+            device === 'desktop' &&
+            shell.sidebar?.width &&
+            shell.sidebar.left < shell.main.right - 1
+          )
+            fail(at, 'the sidebar is not to the right of <main>');
+        }
+        if (route === 'agents') {
+          const edge = await page.evaluate(() => {
+            const region = document.querySelector('.ion-table-container');
+            const first = document.querySelector('tbody tr')?.firstElementChild;
+            if (!region || !first) return null;
+            return (
+              region.getBoundingClientRect().right -
+              first.getBoundingClientRect().right
+            );
+          });
+          if (edge === null) fail(at, 'no Agents table to measure');
+          else if (Math.abs(edge) > 2)
+            fail(
+              at,
+              `the table's first column is ${edge}px from its right edge`,
+            );
+        }
+        await page.close();
+      }
+    } catch (e) {
+      fail(
+        where,
+        `did not run: ${e.message.split('\n').slice(0, 3).join(' | ')}`,
+      );
+    }
+    groupsChecked++;
+    await context.close();
+  }
+
+  /*
    * Timeline, as an agent's History on its Overview. An ordered list named
    * History, newest first; each event says what happened, who, and when in
    * a <time> with the exact instant; the markers are hidden. A purpose saved

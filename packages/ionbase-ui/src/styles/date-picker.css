@@ -256,6 +256,12 @@
   height: var(--icon-size-sm);
 }
 
+/* Previous sits at the start and points there; in right-to-left that is the
+   right, so both arrows turn round with the row. */
+.ion-calendar__nav-button:dir(rtl) svg {
+  transform: scaleX(-1);
+}
+
 @media (hover: hover) {
   .ion-calendar__nav-button:hover {
     background-color: var(--surface-hover);
@@ -363,12 +369,15 @@
 .ion-calendar__day[data-today]::after {
   position: absolute;
   bottom: var(--spacing-4);
-  left: 50%;
+
+  /* Centred by auto margins between both inline edges: no transform, and
+     the same in either direction. */
+  inset-inline: 0;
+  margin-inline: auto;
   width: var(--spacing-4);
   height: var(--spacing-4);
   background-color: var(--icon-primary);
   border-radius: var(--radius-full);
-  transform: translateX(-50%);
   content: '';
 }
 

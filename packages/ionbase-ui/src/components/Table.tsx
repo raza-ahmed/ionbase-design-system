@@ -126,7 +126,9 @@ function useStickyLayout(
     // The shadow at the held column's edge shows only once something has
     // scrolled under it.
     const onScroll = () => {
-      container.dataset.scrolledX = container.scrollLeft > 0 ? 'true' : 'false';
+      // Right-to-left, `scrollLeft` runs from 0 down to negative numbers.
+      container.dataset.scrolledX =
+        Math.abs(container.scrollLeft) > 0 ? 'true' : 'false';
     };
 
     /*
@@ -141,9 +143,14 @@ function useStickyLayout(
       const region = container.getBoundingClientRect();
       const padTop =
         parseFloat(getComputedStyle(container).scrollPaddingTop) || 0;
-      const padLeft =
-        parseFloat(getComputedStyle(container).scrollPaddingLeft) || 0;
-      if (box.top < region.top + padTop || box.left < region.left + padLeft)
+      const style = getComputedStyle(container);
+      // The held column is at the inline start: the right, in right-to-left.
+      const padStart = parseFloat(style.scrollPaddingInlineStart) || 0;
+      const underStart =
+        style.direction === 'rtl'
+          ? box.right > region.right - padStart
+          : box.left < region.left + padStart;
+      if (box.top < region.top + padTop || underStart)
         target.scrollIntoView({ block: 'nearest', inline: 'nearest' });
     };
 

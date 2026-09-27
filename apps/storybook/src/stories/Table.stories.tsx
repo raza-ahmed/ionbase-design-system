@@ -1429,3 +1429,29 @@ export const TheCornerSitsAbove: Story = {
     await expect(getComputedStyle(corner).top).toBe('0px');
   },
 };
+
+/**
+ * A header starts where its column's cells do — not centred by the browser.
+ * A <th> is centred unless the table's alignment differs from the initial
+ * value, and `start` is that value: set on the table alone, it centred
+ * every header.
+ */
+export const HeadersAlignToTheStart: Story = {
+  render: () => <RunsTable rows={2} />,
+  play: async ({ canvasElement }) => {
+    const th = [...canvasElement.querySelectorAll('thead th')].find(
+      (c) => c.textContent === 'Agent',
+    ) as HTMLElement;
+    const word = document
+      .createTreeWalker(th, NodeFilter.SHOW_TEXT)
+      .nextNode()!;
+    const range = document.createRange();
+    range.selectNodeContents(word);
+    const text = range.getBoundingClientRect();
+    const cell = th.getBoundingClientRect();
+    await expect(cell.width - text.width).toBeGreaterThan(40);
+    await expect(Math.round(text.left - cell.left)).toBe(
+      Math.round(parseFloat(getComputedStyle(th).paddingInlineStart)),
+    );
+  },
+};

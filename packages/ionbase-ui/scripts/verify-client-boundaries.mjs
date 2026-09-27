@@ -93,6 +93,24 @@ function clientApis(source) {
       }
     }
   }
+  // A re-export from react-aria is a client module by construction — its
+  // components hold context and its hooks are hooks — and a barrel that
+  // passes one on without a directive hands a Server Component an API it
+  // cannot run. I18nProvider was the first.
+  for (const [, typeOnly, names, pkg] of source.matchAll(
+    /export\s+(type\s+)?\{([^}]*)\}\s*from\s*['"]([^'"]+)['"]/g,
+  )) {
+    if (typeOnly || !CLIENT_PACKAGES.test(pkg)) continue;
+    for (const raw of names.split(',')) {
+      const name = raw
+        .trim()
+        .split(/\s+as\s+/)[0]
+        .trim();
+      if (name && !name.startsWith('type '))
+        found.add(`${name} (re-exported from ${pkg})`);
+    }
+  }
+
   // A function this module writes into its own JSX as a handler —
   // `onClick={(e) => …}` — is a function the server would have to send, and
   // React refuses to serialise one to anything, a DOM element included.

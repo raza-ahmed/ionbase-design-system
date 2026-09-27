@@ -206,6 +206,8 @@
  * behaviour; `left` is for a rail against the right edge of the page, where a
  * rightward panel would leave the screen.
  */
+/* stylelint-disable property-disallowed-list -- `side` names the physical
+   side the panel opens toward, away from a rail placed against a page edge. */
 .ion-scroll-progress__panel--right {
   --ion-scroll-progress-slide: -4px;
 
@@ -217,6 +219,7 @@
 
   right: 0;
 }
+/* stylelint-enable property-disallowed-list */
 
 .ion-scroll-progress__panel[data-open='true'] {
   display: flex;
@@ -259,7 +262,7 @@
   font-size: var(--type-body-sm);
   line-height: var(--type-body-sm-line-height);
   font-weight: var(--font-weight-regular);
-  text-align: left;
+  text-align: start;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;

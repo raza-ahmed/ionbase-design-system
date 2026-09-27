@@ -345,14 +345,15 @@ export const RightToLeft: Story = {
         .querySelector('.ion-tree-view__label')!
         .getBoundingClientRect().right;
     await expect(Math.round(right(/^Policies/) - right('Refunds.md'))).toBe(20);
-    // A closed chevron points left, the reading direction.
+    // A closed chevron points left, the reading direction: turned half round,
+    // so it animates to 90° on opening rather than flipping.
     const closed = row(canvas, 'README.md')
       .closest('.ion-tree-view')!
       .querySelector(
         '.ion-tree-view__toggle:not(.ion-tree-view__toggle--expanded) svg',
       )!;
     await expect(getComputedStyle(closed).transform).toBe(
-      'matrix(-1, 0, 0, 1, 0, 0)',
+      'matrix(-1, 0, 0, -1, 0, 0)',
     );
   },
 };

@@ -204,9 +204,13 @@
   outline-offset: calc(-1 * var(--border-width-thick));
 }
 
-/* The chevron points the reading direction when closed. */
-[dir='rtl'] .ion-tree-view__toggle:not(.ion-tree-view__toggle--expanded) svg {
-  transform: scaleX(-1);
+/*
+ * Closed, the chevron points the reading direction. Turned half round rather
+ * than mirrored, so opening animates 180° to 90°, down, instead of flipping
+ * through a squashed glyph.
+ */
+.ion-tree-view__toggle:dir(rtl):not(.ion-tree-view__toggle--expanded) svg {
+  transform: rotate(180deg);
 }
 
 @media (prefers-reduced-motion: reduce) {

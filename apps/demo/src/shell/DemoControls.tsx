@@ -29,7 +29,7 @@ const LATENCIES: { value: string; label: string }[] = [
  * the button itself, so nobody takes a simulated outage for a real one.
  */
 export function DemoControls() {
-  const { theme, state, latency, update } = useDemoSettings();
+  const { theme, state, latency, direction, update } = useDemoSettings();
   const [open, setOpen] = useState(false);
   const forced = STATES.find((s) => s.value === state);
 
@@ -67,6 +67,15 @@ export function DemoControls() {
               }
             >
               Dark mode
+            </Toggle>
+            <Toggle
+              size="sm"
+              isSelected={direction === 'rtl'}
+              onSelectionChange={(on) =>
+                update({ direction: on ? 'rtl' : 'ltr' })
+              }
+            >
+              Right to left
             </Toggle>
           </div>
         }

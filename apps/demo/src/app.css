@@ -153,7 +153,7 @@ body {
 
 .demo-controls {
   position: fixed;
-  right: var(--spacing-16);
+  inset-inline-end: var(--spacing-16);
   bottom: var(--spacing-16);
   z-index: 10;
   display: flex;
@@ -194,7 +194,7 @@ body {
 
 /* The view's controls sit apart from the filters, at the row's end. */
 .demo-toolbar__end {
-  margin-left: auto;
+  margin-inline-start: auto;
 }
 
 /* Wide enough to type a team into; Select's width was its longest option. */
@@ -230,7 +230,7 @@ body {
   display: grid;
   gap: var(--spacing-4);
   margin: 0;
-  padding-left: var(--spacing-20);
+  padding-inline-start: var(--spacing-20);
 }
 
 .demo-modal-body {
@@ -304,7 +304,7 @@ body {
   content: '';
   position: absolute;
   top: var(--spacing-4);
-  right: var(--spacing-4);
+  inset-inline-end: var(--spacing-4);
   width: var(--spacing-8);
   height: var(--spacing-8);
   border-radius: var(--radius-full);

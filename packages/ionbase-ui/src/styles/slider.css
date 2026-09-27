@@ -68,12 +68,14 @@
 }
 
 .ion-slider__rail {
-  left: 0;
-  right: 0;
+  inset-inline: 0;
   background-color: var(--surface-muted);
 }
 
 .ion-slider__fill {
+  /* stylelint-disable-next-line property-disallowed-list -- Slider.tsx has
+     already mirrored `from` and `to` for right-to-left, so these are
+     fractions from the physical left. */
   left: var(--ion-slider-from);
   width: calc(var(--ion-slider-to) - var(--ion-slider-from));
   background-color: var(--ion-slider-fill);
