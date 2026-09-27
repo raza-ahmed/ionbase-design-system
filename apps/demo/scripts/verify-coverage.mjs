@@ -99,6 +99,7 @@ const REQUIRED = [
   'AccordionItem',
   // Phase 3 — Runs and Assistant
   'AILabel',
+  'ChatMessage',
   'AgentActivity',
   'AgentActivityStep',
   'AgentStop',

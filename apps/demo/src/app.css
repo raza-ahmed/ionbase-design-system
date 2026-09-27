@@ -461,14 +461,18 @@ body {
   scroll-margin-top: var(--spacing-80);
 }
 
+/* The question's h2 sits in its bubble as the message's text. */
 .demo-turn__question {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-12);
+  margin: 0;
 }
 
-.demo-turn__question h2:focus {
+.demo-turn__question:focus {
   outline: none;
+}
+
+.demo-turn__answer {
+  display: grid;
+  gap: var(--spacing-12);
 }
 
 .demo-turn__meta {

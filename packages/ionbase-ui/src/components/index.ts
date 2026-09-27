@@ -108,6 +108,8 @@ export type {
 export { Tooltip } from './Tooltip.js';
 export type { TooltipProps, TooltipPlacement } from './Tooltip.js';
 export { AILabel } from './AILabel.js';
+export { ChatMessage } from './ChatMessage.js';
+export type { ChatMessageProps, ChatMessageFrom } from './ChatMessage.js';
 export type { AILabelProps, AILabelLabels } from './AILabel.js';
 export { Toggletip } from './Toggletip.js';
 export type {

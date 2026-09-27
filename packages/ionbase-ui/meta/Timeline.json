@@ -20,6 +20,11 @@
       "when": "events the user sorts, filters or selects",
       "use": "Table",
       "why": "a log searched by column, exported or acted on in bulk is a table of events, not a story"
+    },
+    {
+      "when": "the entries are turns in a conversation — what a person asked and what an assistant answered",
+      "use": "ChatMessage",
+      "why": "a transcript is turns people took, each named by who and when; a Timeline is changes to a record"
     }
   ],
   "composition": {

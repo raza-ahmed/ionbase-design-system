@@ -1,4 +1,5 @@
 import React, { forwardRef } from 'react';
+import { Timestamp } from './timestamp.js';
 
 export interface TimelineProps extends React.OlHTMLAttributes<HTMLOListElement> {
   /** TimelineItems, in the order they are read — usually newest first. */
@@ -67,8 +68,6 @@ export const Timeline = forwardRef<HTMLOListElement, TimelineProps>(
 
 Timeline.displayName = 'Timeline';
 
-const toDate = (t: Date | string) => (t instanceof Date ? t : new Date(t));
-
 export const TimelineItem = forwardRef<HTMLLIElement, TimelineItemProps>(
   (
     {
@@ -85,18 +84,6 @@ export const TimelineItem = forwardRef<HTMLLIElement, TimelineItemProps>(
     },
     ref,
   ) => {
-    const when = toDate(timestamp);
-    const valid = !Number.isNaN(when.getTime());
-    const label =
-      timestampLabel ??
-      (valid
-        ? new Intl.DateTimeFormat(locale, {
-            dateStyle: 'medium',
-            timeStyle: 'short',
-            timeZone,
-          }).format(when)
-        : String(timestamp));
-
     return (
       <li
         ref={ref}
@@ -125,9 +112,12 @@ export const TimelineItem = forwardRef<HTMLLIElement, TimelineItemProps>(
                 </span>
               </>
             )}
-            <time dateTime={valid ? when.toISOString() : undefined}>
-              {label}
-            </time>
+            <Timestamp
+              value={timestamp}
+              label={timestampLabel}
+              locale={locale}
+              timeZone={timeZone}
+            />
           </div>
           {children != null && (
             <div className="ion-timeline__detail">{children}</div>

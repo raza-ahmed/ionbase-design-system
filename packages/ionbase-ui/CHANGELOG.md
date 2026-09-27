@@ -1,5 +1,50 @@
 # Changelog
 
+## 0.114.0 — 2026-09-27
+
+### Added — ChatMessage
+
+One turn in a transcript: who, when, what, and what can be done with it. It
+is the nineteenth P1 item on the enterprise checklist, and it gives the
+AssistantAnswer pattern its thread.
+
+- **An `<article>` named by its header.** The author, then the time, so a
+  screen reader moves message to message and hears "Ada Reyes 10:42" first.
+  The time is a real `<time>` with the exact instant, whatever its label
+  says.
+- **`from`.** `person` sits on the trailing side in a muted bubble, at most
+  80% across. `assistant` spans the column, since answers carry lists,
+  sources and tables. The person's bubble is `surface/muted`, never the
+  primary tint: that tint is AILabel's, and a person's words must never read
+  as generated.
+- **Not a live region.** A thread that announced every message would read a
+  streaming answer out token by token. The pattern says when an answer is
+  ready once, from outside the messages.
+- **`actions`** follow the content in the DOM, so Tab reaches a source in
+  the answer before Copy. The avatar is hidden from assistive tech.
+- **Server-rendered.** It renders on a server, and logical properties mean
+  right to left mirrors it.
+- **Timeline and ChatMessage share one internal `<time>` helper**, so the
+  two never format a time differently.
+- **Figma:** a new "Chat Message" page, with From, Show Actions and Show
+  Avatar; the author, time and message are text layers, edited directly. It
+  is mapped, its description is applied, and the page has an example thread.
+- **Demo:** each Assistant turn is two ChatMessages. The question keeps its
+  h2 for the thread rail, and the answer gets Copy answer once it is whole.
+  The smoke check covers:
+  - both articles named by author and time, each with an exact instant;
+  - the question's heading, on the trailing side in a muted bubble;
+  - the answer spanning the column, with Copy after it;
+  - no live thread;
+  - nothing sideways, and axe.
+
+  Each of six mutations fails it.
+
+- **Stories:** 13. All 12 mutations fail a story. One first survived, a
+  bubble with no width cap, until a story with a long question was added.
+- **Pattern:** AssistantAnswer is a thread of ChatMessages, and warns
+  against a live thread.
+
 ## 0.113.0 — 2026-09-27
 
 ### Added — AILabel

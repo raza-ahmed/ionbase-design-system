@@ -155,7 +155,7 @@ IonBase column names the component that covers it.
 | Component                         | Carbon | M3  | SLDS | IonBase                                       |
 | --------------------------------- | :----: | :-: | :--: | --------------------------------------------- |
 | AI label (provenance marker)      |   ●    |     |  ◐   | ● `AILabel`                                   |
-| Chat message / transcript         |   ◐    |     |  ●   | ◐ `AssistantAnswer` pattern                   |
+| Chat message / transcript         |   ◐    |     |  ●   | ● `ChatMessage`, `AssistantAnswer` pattern    |
 | Prompt input                      |        |     |  ●   | `PromptInput`                                 |
 | Streaming text                    |        |     |      | `StreamingText`                               |
 | Agent stop / approval / activity  |        |     |      | `AgentStop`, `ApprovalGate`, `AgentActivity`  |

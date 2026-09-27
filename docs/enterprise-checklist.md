@@ -58,7 +58,7 @@
 - [x] **Table: sticky header and first column** — Runs history: rows scroll under a held header, and the Run column stays on a phone — 0.111.0
 - [x] **Table: column resize and visibility** — Agents: a Columns menu, and an Agent column that widens to show more of each purpose, kept across visits — 0.112.0
 - [x] **AILabel** — agentic tier: a finished run's Result says a model wrote it, from what, and what to check — 0.113.0
-- [ ] **ChatMessage** — agentic tier; update the `AssistantAnswer` pattern
+- [x] **ChatMessage** — agentic tier; update the `AssistantAnswer` pattern: each Assistant turn is a question and an answer, named by who and when — 0.114.0
 - [ ] **Stack**
 - [ ] **Grid**
 - [ ] **ThemeZone** — audit `data-theme` first; may need no component
