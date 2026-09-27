@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import {
+  AILabel,
   AgentActivity,
   AgentActivityStep,
   AgentStop,
@@ -274,7 +275,21 @@ export function RunDetail({ runId }: { runId: string }) {
       )}
 
       {showOutput && (
-        <Card title="Result">
+        <Card
+          title="Result"
+          // Written by the model, so it says so — with what it was written
+          // from and what to check, beside the heading rather than in it.
+          action={
+            <AILabel
+              aria-label="About this result"
+              size="sm"
+              placement="bottom"
+            >
+              Written by {script.model} from this run's tool calls, above. Check
+              the figures against those calls before acting on them.
+            </AILabel>
+          }
+        >
           <StreamingText isStreaming={state.streaming} minLines={4}>
             {state.output}
           </StreamingText>

@@ -57,7 +57,7 @@
 - [x] **Table: expandable rows** — an agent's recent runs: why a run failed opens under it, the newest failure open — 0.110.0
 - [x] **Table: sticky header and first column** — Runs history: rows scroll under a held header, and the Run column stays on a phone — 0.111.0
 - [x] **Table: column resize and visibility** — Agents: a Columns menu, and an Agent column that widens to show more of each purpose, kept across visits — 0.112.0
-- [ ] **AILabel** — agentic tier
+- [x] **AILabel** — agentic tier: a finished run's Result says a model wrote it, from what, and what to check — 0.113.0
 - [ ] **ChatMessage** — agentic tier; update the `AssistantAnswer` pattern
 - [ ] **Stack**
 - [ ] **Grid**

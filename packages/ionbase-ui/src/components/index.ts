@@ -107,6 +107,8 @@ export type {
 } from './Toast.js';
 export { Tooltip } from './Tooltip.js';
 export type { TooltipProps, TooltipPlacement } from './Tooltip.js';
+export { AILabel } from './AILabel.js';
+export type { AILabelProps, AILabelLabels } from './AILabel.js';
 export { Toggletip } from './Toggletip.js';
 export type {
   ToggletipProps,

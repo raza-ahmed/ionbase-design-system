@@ -12,13 +12,15 @@
     "CitationListItem",
     "ConfidenceIndicator",
     "Alert",
-    "Link"
+    "Link",
+    "AILabel"
   ],
   "structure": [
     "The answer in a StreamingText, with inline Citation markers at the claims they support — not gathered at the end.",
     "A CitationList below the answer, one CitationListItem per source, numbered to match the inline markers.",
     "A ConfidenceIndicator beside the answer, with `basis` saying what the level is derived from.",
-    "An Alert only when the answer is degraded — sources unavailable, knowledge stale, question outside scope."
+    "An Alert only when the answer is degraded — sources unavailable, knowledge stale, question outside scope.",
+    "Wherever the answer, or anything else a model wrote, is shown outside the conversation — a run's result, a summary on a record, a drafted reply — an AILabel beside its heading, not in it: named for the content (\"About this result\"), saying what wrote it, from what, and what to check. Set `isEdited` once a person changes the text."
   ],
   "states": {
     "loading": {
@@ -45,12 +47,19 @@
     "CitationListItem": ["index", "source", "href"],
     "ConfidenceIndicator": ["level", "basis", "label"],
     "Alert": ["intent", "title"],
-    "Link": ["variant", "href"]
+    "Link": ["variant", "href"],
+    "AILabel": ["aria-label", "isEdited", "size"]
   },
   "variantsUsed": {
-    "ConfidenceIndicator": { "level": ["low", "medium", "high"] },
-    "Alert": { "intent": ["warning", "information"] },
-    "Link": { "variant": ["standalone"] }
+    "ConfidenceIndicator": {
+      "level": ["low", "medium", "high"]
+    },
+    "Alert": {
+      "intent": ["warning", "information"]
+    },
+    "Link": {
+      "variant": ["standalone"]
+    }
   },
   "a11y": {
     "requires": [
@@ -85,6 +94,11 @@
     {
       "dont": "hiding the sources behind a disclosure that defaults closed",
       "why": "evidence that takes a click to reach is evidence nobody checks"
+    },
+    {
+      "dont": "generated text shown on a record or a card with nothing saying a model wrote it",
+      "do": "an AILabel beside its heading, with what it was written from",
+      "why": "out of the conversation, nothing else tells the reader it was generated, or what to check before relying on it"
     }
   ]
 }

@@ -19,7 +19,7 @@
   ],
   "file": "gaLbGd0QNb1fUl6BjSpfBA",
   "appliedOn": "2026-09-27",
-  "verifiedInFigma": 101,
+  "verifiedInFigma": 102,
   "applied": {
     "1360:267": {
       "figmaComponent": "Accordion",
@@ -525,6 +525,11 @@
       "figmaComponent": "Code Snippet",
       "component": "CodeSnippet",
       "hash": "06bf9dd909d416fd"
+    },
+    "1661:272": {
+      "figmaComponent": "AI Label",
+      "component": "AILabel",
+      "hash": "9ee3e5fe135b8d12"
     }
   }
 }
