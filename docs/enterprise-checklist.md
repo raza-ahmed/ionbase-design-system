@@ -60,7 +60,7 @@
 - [x] **AILabel** — agentic tier: a finished run's Result says a model wrote it, from what, and what to check — 0.113.0
 - [x] **ChatMessage** — agentic tier; update the `AssistantAnswer` pattern: each Assistant turn is a question and an answer, named by who and when — 0.114.0
 - [x] **Stack** — the Agents toolbar, its filters and the Assistant's suggestions, with their flex CSS deleted — 0.115.0
-- [ ] **Grid**
+- [x] **Grid** — the Overview's main column and its aside, and the new-agent form's paired fields, with their grid CSS and media queries deleted — 0.116.0
 - [ ] **ThemeZone** — audit `data-theme` first; may need no component
 - [ ] **SkipLink** — and add it to the `PageShell` pattern
 

@@ -1,0 +1,85 @@
+{
+  "status": "stable",
+  "summary": "Columns that line up across rows, with gaps from the spacing scale. Reach for it before writing grid CSS: cards and tiles, a main column beside its aside, a form in two columns.",
+  "useWhen": [
+    "things that should line up in columns across rows — cards, tiles, a set of settings",
+    "a main column beside a narrower aside that falls under it on a smaller screen",
+    "a form's short fields side by side, one above the other on a phone"
+  ],
+  "useInstead": [
+    {
+      "when": "things one after another in a single column or along a single line",
+      "use": "Stack",
+      "why": "a Stack has no columns to keep in line, and a row of controls sizes each to its content"
+    },
+    {
+      "when": "a set of numbers with their labels at the top of a dashboard",
+      "use": "StatGroup",
+      "why": "it lays its tiles out and names the group for a screen reader"
+    },
+    {
+      "when": "a label beside its value, row after row",
+      "use": "DescriptionList",
+      "why": "it is a `dl`: a screen reader hears each term with its value"
+    }
+  ],
+  "composition": {
+    "order": ["Grid"],
+    "note": "`columns` is a count of equal columns (`3`) or each column's share of the row (`[2, 1]`: a main column twice its aside); it defaults to 2. Fixed columns fall to one at `collapse`: `mobile` (767px and below, the default), `tablet` (1023px and below — for a main column and its aside), or `never` (a pair that fits a phone, like two short numbers). `minColumnWidth` (160–360) instead fills each row with as many equal columns as fit, so a set of cards needs no breakpoint at all. `gap` is a step of the spacing scale, 16 by default; `rowGap` sets the rows apart when they need more. Cells in a row stretch to the tallest by default, so cards line up at the bottom too; `align=\"start\"` lets each keep its height. Pass `as=\"ul\"` for a list of cards and give each an `li`. Every column is `minmax(0, …)`, so a wide child — a table, a long ID — scrolls inside its cell rather than widening the page.",
+    "example": "<Grid columns={[2, 1]} collapse=\"tablet\" gap={12} align=\"start\">\n  <Card title=\"Activity\">…</Card>\n  <Card title=\"Budgets\">…</Card>\n</Grid>\n\n<Grid as=\"ul\" minColumnWidth={280} aria-label=\"Agents\">\n  {agents.map((a) => <li key={a.id}><Card title={a.name}>…</Card></li>)}\n</Grid>"
+  },
+  "variants": {
+    "collapse": {
+      "mobile": {
+        "use": "the default — columns that read fine on a tablet: a form's fields in two columns, three small cards"
+      },
+      "tablet": {
+        "use": "a main column and its aside, or columns that need a desktop's width to hold what is in them"
+      },
+      "never": {
+        "use": "columns narrow enough for a phone — two short numbers, a pair of small toggles"
+      }
+    }
+  },
+  "slots": {
+    "children": {
+      "accepts": "any",
+      "note": "one cell each, in reading order across then down; `li` children when `as` is `ul` or `ol`"
+    }
+  },
+  "a11y": {
+    "guarantees": [
+      "layout only: it adds no role, so the element given by `as` — or the children — carry the meaning",
+      "the visual order is the DOM order: cells are placed across then down, never moved by `order` or explicit placement",
+      "no column can push the page sideways: every track is `minmax(0, …)`, and a filling grid's minimum gives way to a screen narrower than it",
+      "`as=\"ul\"` stays a list to a screen reader while losing its bullets"
+    ],
+    "requires": [
+      "`as` for a group that means something — a list of cards is a `ul` — rather than a div"
+    ],
+    "notes": [
+      "It renders on a server. A gap off the spacing scale, a column count it does not offer and a minimum width off its steps are type errors, not styles."
+    ]
+  },
+  "antiPatterns": [
+    {
+      "dont": "a hand-written `display: grid` with a pixel gap and its own media query",
+      "do": "Grid with `columns`, `collapse` and a `gap` step",
+      "why": "the gap drifts off the scale and the breakpoint off the tokens', and nothing catches either"
+    },
+    {
+      "dont": "fixed columns for a set of cards whose count varies",
+      "do": "`minColumnWidth`",
+      "why": "the columns then follow the space: three on a desktop, one on a phone, with no breakpoint to choose"
+    },
+    {
+      "dont": "`collapse=\"never\"` on columns that hold text or tables",
+      "why": "on a phone each column is a sliver; the words wrap one to a line and a table scrolls in a strip"
+    },
+    {
+      "dont": "a Grid with one column",
+      "do": "Stack",
+      "why": "a single column is a Stack; the Grid only adds a template nothing uses"
+    }
+  ]
+}

@@ -118,6 +118,16 @@ export type {
   StackJustify,
   StackElement,
 } from './Stack.js';
+export { Grid } from './Grid.js';
+export type {
+  GridProps,
+  GridGap,
+  GridColumnCount,
+  GridFraction,
+  GridMinColumnWidth,
+  GridCollapse,
+  GridAlign,
+} from './Grid.js';
 export type { ChatMessageProps, ChatMessageFrom } from './ChatMessage.js';
 export type { AILabelProps, AILabelLabels } from './AILabel.js';
 export { Toggletip } from './Toggletip.js';

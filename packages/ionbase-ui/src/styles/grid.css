@@ -1,0 +1,166 @@
+/*
+ * Grid
+ *
+ * Columns that line up across rows. The template comes in as a custom
+ * property from the component — a count or a set of fractions, every track
+ * `minmax(0, …)` so no child can widen the page — and the gaps are one class
+ * per step of the spacing scale, as in Stack.
+ *
+ * Fixed columns fall to one at the layout breakpoints the tokens switch at
+ * (1023px and 767px). A filling grid needs no breakpoint: `auto-fill` drops
+ * a column whenever one would be narrower than its minimum, and
+ * `min(…, 100%)` keeps a single column from overflowing a narrow screen.
+ */
+.ion-grid {
+  display: grid;
+  grid-template-columns: var(--ion-grid-columns, repeat(2, minmax(0, 1fr)));
+  gap: var(--ion-grid-row-gap, var(--spacing-16))
+    var(--ion-grid-gap, var(--spacing-16));
+}
+
+.ion-grid--fill {
+  grid-template-columns: repeat(
+    auto-fill,
+    minmax(min(var(--ion-grid-min), 100%), 1fr)
+  );
+}
+
+@media (width <= 1023px) {
+  .ion-grid--collapse-tablet {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (width <= 767px) {
+  .ion-grid--collapse-mobile {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* Lists lose their bullets and indent: the Grid is the layout. */
+ul.ion-grid,
+ol.ion-grid {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ion-grid--gap-0 {
+  --ion-grid-gap: var(--spacing-0);
+}
+
+.ion-grid--gap-2 {
+  --ion-grid-gap: var(--spacing-2);
+}
+
+.ion-grid--gap-4 {
+  --ion-grid-gap: var(--spacing-4);
+}
+
+.ion-grid--gap-6 {
+  --ion-grid-gap: var(--spacing-6);
+}
+
+.ion-grid--gap-8 {
+  --ion-grid-gap: var(--spacing-8);
+}
+
+.ion-grid--gap-12 {
+  --ion-grid-gap: var(--spacing-12);
+}
+
+.ion-grid--gap-16 {
+  --ion-grid-gap: var(--spacing-16);
+}
+
+.ion-grid--gap-20 {
+  --ion-grid-gap: var(--spacing-20);
+}
+
+.ion-grid--gap-24 {
+  --ion-grid-gap: var(--spacing-24);
+}
+
+.ion-grid--gap-32 {
+  --ion-grid-gap: var(--spacing-32);
+}
+
+.ion-grid--gap-40 {
+  --ion-grid-gap: var(--spacing-40);
+}
+
+.ion-grid--gap-48 {
+  --ion-grid-gap: var(--spacing-48);
+}
+
+.ion-grid--gap-64 {
+  --ion-grid-gap: var(--spacing-64);
+}
+
+.ion-grid--row-gap-0 {
+  --ion-grid-row-gap: var(--spacing-0);
+}
+
+.ion-grid--row-gap-2 {
+  --ion-grid-row-gap: var(--spacing-2);
+}
+
+.ion-grid--row-gap-4 {
+  --ion-grid-row-gap: var(--spacing-4);
+}
+
+.ion-grid--row-gap-6 {
+  --ion-grid-row-gap: var(--spacing-6);
+}
+
+.ion-grid--row-gap-8 {
+  --ion-grid-row-gap: var(--spacing-8);
+}
+
+.ion-grid--row-gap-12 {
+  --ion-grid-row-gap: var(--spacing-12);
+}
+
+.ion-grid--row-gap-16 {
+  --ion-grid-row-gap: var(--spacing-16);
+}
+
+.ion-grid--row-gap-20 {
+  --ion-grid-row-gap: var(--spacing-20);
+}
+
+.ion-grid--row-gap-24 {
+  --ion-grid-row-gap: var(--spacing-24);
+}
+
+.ion-grid--row-gap-32 {
+  --ion-grid-row-gap: var(--spacing-32);
+}
+
+.ion-grid--row-gap-40 {
+  --ion-grid-row-gap: var(--spacing-40);
+}
+
+.ion-grid--row-gap-48 {
+  --ion-grid-row-gap: var(--spacing-48);
+}
+
+.ion-grid--row-gap-64 {
+  --ion-grid-row-gap: var(--spacing-64);
+}
+
+.ion-grid--align-start {
+  align-items: start;
+}
+
+.ion-grid--align-center {
+  align-items: center;
+}
+
+.ion-grid--align-end {
+  align-items: end;
+}
+
+.ion-grid--align-stretch {
+  align-items: stretch;
+}

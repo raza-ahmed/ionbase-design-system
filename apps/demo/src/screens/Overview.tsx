@@ -5,6 +5,7 @@ import {
   Card,
   DateRangePicker,
   EmptyState,
+  Grid,
   Icon,
   Link,
   PageHeader,
@@ -197,7 +198,7 @@ function OverviewReady({
         />
       </StatGroup>
 
-      <div className="demo-grid">
+      <Grid columns={[2, 1]} collapse="tablet" gap={12} align="start">
         <Card title="Activity">
           <Tabs aria-label="Activity charts" type="underline" size="sm">
             <TabItem key="volume" title="Run volume">
@@ -250,7 +251,7 @@ function OverviewReady({
             })}
           </ul>
         </Card>
-      </div>
+      </Grid>
 
       <Card
         title="Recent runs"
@@ -313,7 +314,7 @@ function OverviewLoading() {
           <StatTile key={label} label={label} value={null} isLoading />
         ))}
       </StatGroup>
-      <div className="demo-grid">
+      <Grid columns={[2, 1]} collapse="tablet" gap={12} align="start">
         <Card>
           <Skeleton variant="text" width="30%" />
           <Skeleton variant="rect" height="var(--spacing-128)" />
@@ -321,7 +322,7 @@ function OverviewLoading() {
         <Card>
           <Skeleton variant="text" lines={4} />
         </Card>
-      </div>
+      </Grid>
     </div>
   );
 }

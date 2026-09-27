@@ -3203,6 +3203,116 @@ try {
   }
 
   /*
+   * Grid, as the Overview's main column and its aside and as the new-agent
+   * form's two short fields. On a desktop each pair sits on one row — the
+   * main column twice its aside, the fields equal — the gap between them
+   * the token the Grid names, measured. On a phone each falls to one column
+   * at full width, the gap now between the rows.
+   */
+  for (const [device, width, height] of [
+    ['desktop', 1280, 900],
+    ['mobile', 390, 844],
+  ]) {
+    const where = `grid (light, ${device})`;
+    if (skip(where)) continue;
+    const context = await browser.newContext({ viewport: { width, height } });
+    await context.addInitScript(() => {
+      localStorage.setItem(
+        'ionbase-ops:demo-settings',
+        JSON.stringify({ theme: 'light', latency: 0 }),
+      );
+    });
+    const page = await context.newPage();
+    page.on('pageerror', (e) => fail(where, `exception: ${e.message}`));
+    // The Grid around the element with this text, its cells, and the token.
+    const measure = (text, token) =>
+      page.evaluate(
+        ([text, token]) => {
+          const hit = [...document.querySelectorAll('h2, h3, label')].find(
+            (e) => e.textContent.trim() === text,
+          );
+          const el = hit?.closest('.ion-grid');
+          if (!el) return null;
+          const probe = document.createElement('div');
+          probe.style.width = `var(${token})`;
+          document.body.append(probe);
+          const want = probe.getBoundingClientRect().width;
+          probe.remove();
+          const [a, b] = [...el.children].map((c) => c.getBoundingClientRect());
+          return {
+            want,
+            width: el.getBoundingClientRect().width,
+            a: {
+              top: a.top,
+              left: a.left,
+              right: a.right,
+              bottom: a.bottom,
+              w: a.width,
+            },
+            b: { top: b.top, left: b.left, w: b.width },
+          };
+        },
+        [text, token],
+      );
+    const check = (name, m, ratio) => {
+      if (!m) return fail(where, `${name} is not in a Grid`);
+      if (device === 'desktop') {
+        if (Math.round(m.a.top) !== Math.round(m.b.top))
+          fail(where, `${name}: the two are not on one row`);
+        else if (Math.abs(m.a.w / m.b.w - ratio) > 0.02)
+          fail(
+            where,
+            `${name}: the columns are ${m.a.w}:${m.b.w}, not ${ratio}:1`,
+          );
+        else if (Math.round(m.b.left - m.a.right) !== Math.round(m.want))
+          fail(
+            where,
+            `${name}: the gap is ${m.b.left - m.a.right}, not ${m.want}`,
+          );
+      } else if (m.b.top < m.a.bottom)
+        fail(where, `${name}: the two are side by side on a phone`);
+      else if (
+        Math.abs(m.a.w - m.width) > 0.5 ||
+        Math.abs(m.b.w - m.width) > 0.5
+      )
+        fail(where, `${name}: a cell is not the full width on a phone`);
+      else if (Math.round(m.b.top - m.a.bottom) !== Math.round(m.want))
+        fail(
+          where,
+          `${name}: the rows are ${m.b.top - m.a.bottom} apart, not ${m.want}`,
+        );
+    };
+    const sideways = async () => {
+      if (
+        await page.evaluate(
+          () => document.documentElement.scrollWidth > window.innerWidth,
+        )
+      )
+        fail(where, 'the page scrolls sideways');
+    };
+    try {
+      await page.goto(`${BASE}/#/overview`);
+      await page
+        .getByRole('heading', { name: 'Token budget by agent' })
+        .waitFor({ timeout: 10_000 });
+      check('Overview', await measure('Activity', '--spacing-12'), 2);
+      await sideways();
+
+      await page.goto(`${BASE}/#/agents/new`);
+      await page.getByText('Owning team').first().waitFor({ timeout: 10_000 });
+      check('New agent', await measure('Owning team', '--spacing-16'), 1);
+      await sideways();
+    } catch (e) {
+      fail(
+        where,
+        `did not run: ${e.message.split('\n').slice(0, 3).join(' | ')}`,
+      );
+    }
+    groupsChecked++;
+    await context.close();
+  }
+
+  /*
    * Timeline, as an agent's History on its Overview. An ordered list named
    * History, newest first; each event says what happened, who, and when in
    * a <time> with the exact instant; the markers are hidden. A purpose saved

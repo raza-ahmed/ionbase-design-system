@@ -23,7 +23,8 @@
     "Popover",
     "Tooltip",
     "NotificationsPanel",
-    "Stack"
+    "Stack",
+    "Grid"
   ],
   "structure": [
     "Header at the top with the brand in `brand`, primary navigation in `center` and account actions in `end`.",
@@ -34,7 +35,8 @@
     "When navigation is hierarchical or longer than a header row holds, a Sidebar replaces the NavItems in Header's `center`: Header keeps the brand and account actions, and the Sidebar sits beside <main> as the primary navigation. Below the tablet breakpoint the same Sidebar moves into a Drawer opened by Header's own toggle with `menuType=\"dialog\"` — one copy, not two, and one menu button.",
     "A CommandPalette, when the product has one, is mounted once inside the shell beside ToastProvider, not per route. Header's `end` carries a Search button showing <Kbd shortcut=\"mod+k\" /> — the visible door for anyone who does not know the shortcut, and the only one on a phone. Everything in the palette is also reachable from the navigation.",
     "Notifications, when the product has them, are a bell in Header's `end`: a Tooltip inside a Popover titled Notifications, size `lg`, whose content is a NotificationsPanel. The bell's name carries the count — \"Notifications, 2 unread\" — because a dot on it is not read. The shell loads them once, so the count is right on every page before the panel is opened, and opening a notification closes the panel.",
-    "Inside <main>, the page is a Stack: its sections one after another — PageHeader, a filter row, the content — with a gap from the scale (20 to 32 between sections). A row of filters or suggestions inside it is a `direction=\"row\" wrap` Stack with gap 8, never hand-written flex CSS."
+    "Inside <main>, the page is a Stack: its sections one after another — PageHeader, a filter row, the content — with a gap from the scale (20 to 32 between sections). A row of filters or suggestions inside it is a `direction=\"row\" wrap` Stack with gap 8, never hand-written flex CSS.",
+    "Content that lines up in columns is a Grid, not a Stack: a main column beside its aside is `columns={[2, 1]} collapse=\"tablet\"`, falling under it at 1023px; a set of cards is `minColumnWidth`, which follows the space with no breakpoint. Never a hand-written `display: grid` with its own media query."
   ],
   "states": {
     "loading": {
@@ -94,7 +96,16 @@
       "status",
       "actions"
     ],
-    "Stack": ["direction", "gap", "align", "justify", "wrap", "as"]
+    "Stack": ["direction", "gap", "align", "justify", "wrap", "as"],
+    "Grid": [
+      "columns",
+      "minColumnWidth",
+      "collapse",
+      "gap",
+      "rowGap",
+      "align",
+      "as"
+    ]
   },
   "variantsUsed": {
     "ToastProvider": {
@@ -138,8 +149,8 @@
       "why": "the demo had five, in three shapes, with actions aligned three ways; PageHeader is the one shape, and the one place its gaps and alignment are decided"
     },
     {
-      "dont": "a page laid out with hand-written flex CSS and pixel gaps",
-      "do": "Stack, with a gap from the spacing scale",
+      "dont": "a page laid out with hand-written flex or grid CSS, pixel gaps and its own breakpoints",
+      "do": "Stack for things one after another, Grid for columns, each with a gap from the spacing scale",
       "why": "every screen then has its own spacing, and nothing checks it against the tokens"
     }
   ]
