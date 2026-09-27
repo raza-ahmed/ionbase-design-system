@@ -191,6 +191,8 @@ export type {
   TableDensity,
   TableRowProps,
   TableRowSelection,
+  TableRowExpansion,
+  TableHeadExpansion,
   TableCellProps,
   TableCellAlign,
   TableCellScope,

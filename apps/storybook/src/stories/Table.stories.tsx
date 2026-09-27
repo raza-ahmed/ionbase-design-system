@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useRef, useState } from 'react';
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { expect } from 'storybook/test';
+import { expect, fn } from 'storybook/test';
 import {
   Table,
   TableHead,
@@ -611,5 +611,418 @@ export const HeaderWithoutSortDirectionIsPlainText: Story = {
     await expect(
       canvasElement.querySelector('th')?.hasAttribute('aria-sort'),
     ).toBe(false);
+  },
+};
+
+// ------------------------------------------------------ expandable rows
+
+const detailOf = (name: string) =>
+  `${name}: paid by card on 12 Sept, receipt sent.`;
+
+function ExpandableInvoices(props: {
+  isStriped?: boolean;
+  selected?: string;
+  defaultOpen?: string;
+}) {
+  return (
+    <Table aria-label="Invoices" isStriped={props.isStriped}>
+      <TableHead>
+        <TableRow
+          expansion={{ label: 'Details' }}
+          selection={{ 'aria-label': 'Select all' }}
+        >
+          <TableCell header>Invoice</TableCell>
+          <TableCell header>Status</TableCell>
+          <TableCell header align="trailing">
+            Amount
+          </TableCell>
+        </TableRow>
+      </TableHead>
+      <TableBody>
+        {ROWS.map((r) => (
+          <TableRow
+            key={r.name}
+            isSelected={props.selected === r.name}
+            selection={{
+              'aria-label': `Select ${r.name}`,
+              isSelected: props.selected === r.name,
+            }}
+            expansion={{
+              'aria-label': `Details for ${r.name}`,
+              content: detailOf(r.name),
+              defaultExpanded: props.defaultOpen === r.name,
+            }}
+          >
+            <TableCell>{r.name}</TableCell>
+            <TableCell>{r.status}</TableCell>
+            <TableCell align="trailing">{r.amount}</TableCell>
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
+  );
+}
+
+export const ExpandableRows: Story = {
+  render: () => <ExpandableInvoices />,
+};
+
+const toggle = (
+  canvas: { getByRole: (r: string, o: object) => HTMLElement },
+  name: string,
+) => canvas.getByRole('button', { name: `Details for ${name}` });
+const detailRows = (el: HTMLElement) => [
+  ...el.querySelectorAll<HTMLTableRowElement>('tr.ion-table__detail'),
+];
+
+/**
+ * The toggle is a disclosure: a button named for its row, saying open or
+ * closed, controlling the detail row while it is open.
+ */
+export const TheToggleIsADisclosure: Story = {
+  render: () => <ExpandableInvoices />,
+  play: async ({ canvas, canvasElement, userEvent }) => {
+    const button = toggle(canvas, 'Invoice #1025');
+    await expect(button.tagName).toBe('BUTTON');
+    await expect(button).toHaveAttribute('aria-expanded', 'false');
+    await expect(button).not.toHaveAttribute('aria-controls');
+    await expect(detailRows(canvasElement)).toHaveLength(0);
+
+    await userEvent.click(button);
+    await expect(button).toHaveAttribute('aria-expanded', 'true');
+    const [detail] = detailRows(canvasElement);
+    await expect(detail).toHaveTextContent(detailOf('Invoice #1025'));
+    await expect(button.getAttribute('aria-controls')).toBe(detail.id);
+    // Directly under its own row.
+    await expect(detail.previousElementSibling?.textContent).toContain(
+      'Invoice #1025',
+    );
+
+    await userEvent.click(button);
+    await expect(button).toHaveAttribute('aria-expanded', 'false');
+    await expect(detailRows(canvasElement)).toHaveLength(0);
+  },
+};
+
+/** Enter and Space open and close it, and focus stays on the toggle. */
+export const TheKeyboardOpensIt: Story = {
+  render: () => <ExpandableInvoices />,
+  play: async ({ canvas, canvasElement, userEvent }) => {
+    const button = toggle(canvas, 'Invoice #1024');
+    button.focus();
+    await userEvent.keyboard('{Enter}');
+    await expect(button).toHaveAttribute('aria-expanded', 'true');
+    await expect(button).toHaveFocus();
+    await userEvent.keyboard(' ');
+    await expect(button).toHaveAttribute('aria-expanded', 'false');
+    await expect(detailRows(canvasElement)).toHaveLength(0);
+  },
+};
+
+/**
+ * The detail spans every column — toggle, checkbox and all — and the head
+ * has a named cell over the toggles, so the columns line up.
+ */
+export const TheDetailSpansEveryColumn: Story = {
+  render: () => <ExpandableInvoices defaultOpen="Invoice #1024" />,
+  play: async ({ canvas, canvasElement }) => {
+    const head = canvasElement.querySelector('thead tr') as HTMLTableRowElement;
+    const firstBody = canvasElement.querySelector(
+      'tbody tr',
+    ) as HTMLTableRowElement;
+    await expect(head.cells).toHaveLength(5);
+    await expect(firstBody.cells).toHaveLength(5);
+    const detailCell = detailRows(canvasElement)[0].cells[0];
+    await expect(detailCell.colSpan).toBe(5);
+    await expect(Math.round(detailCell.getBoundingClientRect().width)).toBe(
+      Math.round(head.getBoundingClientRect().width),
+    );
+    const expanderHeader = canvas.getByRole('columnheader', {
+      name: 'Details',
+    });
+    await expect(expanderHeader).toHaveAttribute('scope', 'col');
+    await expect(
+      expanderHeader.querySelector('.ion-visually-hidden'),
+    ).toHaveTextContent('Details');
+  },
+};
+
+/** `defaultExpanded` starts it open; the rest stay closed. */
+export const ItCanStartOpen: Story = {
+  render: () => <ExpandableInvoices defaultOpen="Invoice #1026" />,
+  play: async ({ canvas, canvasElement }) => {
+    await expect(toggle(canvas, 'Invoice #1026')).toHaveAttribute(
+      'aria-expanded',
+      'true',
+    );
+    await expect(toggle(canvas, 'Invoice #1024')).toHaveAttribute(
+      'aria-expanded',
+      'false',
+    );
+    await expect(detailRows(canvasElement)).toHaveLength(1);
+  },
+};
+
+const changed = fn();
+
+/**
+ * Controlled: `isExpanded` decides, and a press only asks through
+ * `onExpandedChange` — here, one row open at a time.
+ */
+export const OneOpenAtATime: Story = {
+  render: () => {
+    function OneAtATime() {
+      const [open, setOpen] = useState<string | null>(null);
+      return (
+        <Table aria-label="Invoices">
+          <TableBody>
+            {ROWS.map((r) => (
+              <TableRow
+                key={r.name}
+                expansion={{
+                  'aria-label': `Details for ${r.name}`,
+                  content: detailOf(r.name),
+                  isExpanded: open === r.name,
+                  onExpandedChange: (next) => {
+                    changed(r.name, next);
+                    setOpen(next ? r.name : null);
+                  },
+                }}
+              >
+                <TableCell>{r.name}</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      );
+    }
+    return <OneAtATime />;
+  },
+  play: async ({ canvas, canvasElement, userEvent }) => {
+    changed.mockClear();
+    await userEvent.click(toggle(canvas, 'Invoice #1024'));
+    await userEvent.click(toggle(canvas, 'Invoice #1025'));
+    await expect(changed).toHaveBeenLastCalledWith('Invoice #1025', true);
+    await expect(detailRows(canvasElement)).toHaveLength(1);
+    await expect(toggle(canvas, 'Invoice #1024')).toHaveAttribute(
+      'aria-expanded',
+      'false',
+    );
+  },
+};
+
+/** Controlled and never changed, a press does not open it on its own. */
+export const ControlledStaysWhereItIsPut: Story = {
+  render: () => (
+    <Table aria-label="Invoices">
+      <TableBody>
+        <TableRow
+          expansion={{
+            'aria-label': 'Details for Invoice #1024',
+            content: 'Paid',
+            isExpanded: false,
+            onExpandedChange: changed,
+          }}
+        >
+          <TableCell>Invoice #1024</TableCell>
+        </TableRow>
+      </TableBody>
+    </Table>
+  ),
+  play: async ({ canvas, canvasElement, userEvent }) => {
+    changed.mockClear();
+    await userEvent.click(toggle(canvas, 'Invoice #1024'));
+    await expect(changed).toHaveBeenCalledWith(true);
+    await expect(detailRows(canvasElement)).toHaveLength(0);
+  },
+};
+
+/** Closed points right, open points down: the shape says it too. */
+export const TheChevronTurns: Story = {
+  render: () => <ExpandableInvoices defaultOpen="Invoice #1024" />,
+  play: async ({ canvas }) => {
+    const turn = (name: string) =>
+      getComputedStyle(toggle(canvas, name).querySelector('svg')!).transform;
+    await expect(turn('Invoice #1025')).toBe('none');
+    // rotate(90deg) as a matrix: cos 90 = 0, sin 90 = 1.
+    await expect(turn('Invoice #1024')).toMatch(/^matrix\(0, 1, -1, 0/);
+    const box = toggle(canvas, 'Invoice #1024').getBoundingClientRect();
+    await expect(box.width).toBeGreaterThanOrEqual(24);
+    await expect(box.height).toBeGreaterThanOrEqual(24);
+  },
+};
+
+/** A token as the browser computes it — rgb, not the hex it is written in. */
+const token = (name: string) => {
+  const probe = document.createElement('div');
+  probe.style.backgroundColor = `var(${name})`;
+  document.body.append(probe);
+  const value = getComputedStyle(probe).backgroundColor;
+  probe.remove();
+  return value;
+};
+
+/**
+ * Stripes count real rows: an open detail shifts nothing below it, and takes
+ * its own row's stripe.
+ */
+export const StripesSkipTheDetail: Story = {
+  render: () => <ExpandableInvoices isStriped defaultOpen="Invoice #1025" />,
+  play: async ({ canvasElement }) => {
+    const bg = (el: Element) => getComputedStyle(el).backgroundColor;
+    const rows = [
+      ...canvasElement.querySelectorAll<HTMLElement>('tbody tr.ion-table__row'),
+    ];
+    const stripe = token('--surface-page');
+    await expect(bg(rows[0])).not.toBe(stripe);
+    await expect(bg(rows[1])).toBe(stripe);
+    await expect(bg(rows[2])).not.toBe(stripe);
+    await expect(bg(detailRows(canvasElement)[0])).toBe(stripe);
+  },
+};
+
+/**
+ * A selected row's tint reaches its detail, and beats the stripe on an even
+ * row — the stripe rule's `:nth-child(… of …)` must not outrank it.
+ */
+export const SelectionBeatsTheStripe: Story = {
+  render: () => (
+    <ExpandableInvoices
+      isStriped
+      selected="Invoice #1025"
+      defaultOpen="Invoice #1025"
+    />
+  ),
+  play: async ({ canvasElement }) => {
+    const tint = token('--surface-primary-subtle');
+    const even = canvasElement.querySelectorAll('tbody tr.ion-table__row')[1];
+    await expect(getComputedStyle(even).backgroundColor).toBe(tint);
+    await expect(
+      getComputedStyle(detailRows(canvasElement)[0]).backgroundColor,
+    ).toBe(tint);
+  },
+};
+
+/** No rule between a row and its open detail; the rule comes after the pair. */
+export const TheRowAndItsDetailReadAsOne: Story = {
+  render: () => <ExpandableInvoices defaultOpen="Invoice #1024" />,
+  play: async ({ canvasElement }) => {
+    const open = canvasElement.querySelector(
+      'tbody tr[data-expanded]',
+    ) as HTMLElement;
+    await expect(getComputedStyle(open).borderBottomColor).toBe(
+      'rgba(0, 0, 0, 0)',
+    );
+    const detail = detailRows(canvasElement)[0];
+    await expect(getComputedStyle(detail).borderBottomColor).not.toBe(
+      'rgba(0, 0, 0, 0)',
+    );
+    // Its text starts under the row's first column of content, past the toggle.
+    const detailText =
+      detail.cells[0].getBoundingClientRect().left +
+      parseFloat(getComputedStyle(detail.cells[0]).paddingLeft);
+    const checkboxCell = (open as HTMLTableRowElement).cells[1];
+    await expect(Math.round(detailText)).toBe(
+      Math.round(checkboxCell.getBoundingClientRect().left),
+    );
+  },
+};
+
+/**
+ * The detail is not a row to point at: the hover tint's selector matches a
+ * row but not its detail. Read from the stylesheet, since a headless browser
+ * does not match `(hover: hover)` and would never apply the rule at all.
+ */
+export const HoveringTheDetailTintsNothing: Story = {
+  render: () => <ExpandableInvoices defaultOpen="Invoice #1024" />,
+  play: async ({ canvasElement }) => {
+    const detail = detailRows(canvasElement)[0];
+    const row = detail.previousElementSibling as HTMLElement;
+    const hoverSelectors: string[] = [];
+    const walk = (rules: CSSRuleList) => {
+      for (const rule of rules) {
+        if (rule instanceof CSSStyleRule) {
+          for (const sel of rule.selectorText.split(','))
+            if (/tbody tr[^,]*:hover/.test(sel) && sel.includes('.ion-table'))
+              hoverSelectors.push(sel.trim().replace(':hover', ''));
+        } else if ('cssRules' in rule) walk((rule as CSSGroupingRule).cssRules);
+      }
+    };
+    for (const sheet of document.styleSheets) {
+      try {
+        walk(sheet.cssRules);
+      } catch {
+        // A cross-origin sheet: not ours.
+      }
+    }
+    await expect(hoverSelectors.length).toBeGreaterThan(0);
+    await expect(hoverSelectors.some((sel) => row.matches(sel))).toBe(true);
+    await expect(hoverSelectors.some((sel) => detail.matches(sel))).toBe(false);
+  },
+};
+
+/** A cell spanning two columns counts as two: the detail still spans them all. */
+export const AWideCellCountsAsTwo: Story = {
+  render: () => (
+    <Table aria-label="Invoices">
+      <TableHead>
+        <TableRow expansion={{ label: 'Details' }}>
+          <TableCell header>Invoice</TableCell>
+          <TableCell header>Status</TableCell>
+          <TableCell header>Amount</TableCell>
+        </TableRow>
+      </TableHead>
+      <TableBody>
+        <TableRow
+          expansion={{
+            'aria-label': 'Details for Invoice #1024',
+            content: 'Paid',
+            defaultExpanded: true,
+          }}
+        >
+          <TableCell colSpan={2}>Invoice #1024, paid</TableCell>
+          <TableCell>$240.00</TableCell>
+        </TableRow>
+      </TableBody>
+    </Table>
+  ),
+  play: async ({ canvasElement }) => {
+    await expect(detailRows(canvasElement)[0].cells[0].colSpan).toBe(4);
+  },
+};
+
+/** The row's own ref still reaches its `<tr>`. */
+export const TheRowKeepsItsRef: Story = {
+  render: () => {
+    function WithRef() {
+      const ref = useRef<HTMLTableRowElement>(null);
+      const [tag, setTag] = useState('');
+      return (
+        <>
+          <Table aria-label="Invoices">
+            <TableBody>
+              <TableRow
+                ref={ref}
+                expansion={{ 'aria-label': 'Details for A', content: 'A' }}
+              >
+                <TableCell>A</TableCell>
+              </TableRow>
+            </TableBody>
+          </Table>
+          <button
+            type="button"
+            onClick={() => setTag(ref.current?.tagName ?? '')}
+          >
+            Read
+          </button>
+          <output data-testid="tag">{tag}</output>
+        </>
+      );
+    }
+    return <WithRef />;
+  },
+  play: async ({ canvas, userEvent }) => {
+    await userEvent.click(canvas.getByRole('button', { name: 'Read' }));
+    await expect(canvas.getByTestId('tag')).toHaveTextContent('TR');
   },
 };

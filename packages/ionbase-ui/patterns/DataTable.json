@@ -36,6 +36,7 @@
     "Sortable columns: every header that sorts gets `sortDirection` — the current direction on the sorted column, `none` on the others — so each shows it can be sorted before anyone tries.",
     "A status column is a StatusIndicator in each cell — a shape, a colour and a word — not a Badge with a dot: a dot is the same shape for every status, and a column of chips competes with the data.",
     "Text of any length in a cell — a description under a row's name, anything users or agents write — is a TruncatedText on one line, not a `title` or a sliced string: cut, it is a tab stop with the whole text in a tooltip, and a screen reader reads all of it. The column shrinks to its share and the line is cut there, rather than widening the table.",
+    "A row's detail, when it is short and read in place — a failed run's reason, a line item's breakdown — opens under the row: `expansion` on TableRow, with `{ label }` on the head row so the columns line up. Name each toggle for its row (\"Details for run 4821\"), not \"Expand\". Anything longer, or with its own actions, goes in a SidePanel instead.",
     "A row's detail, when it is read beside the list rather than on its own page, goes in a SidePanel: Table and SidePanel inside a SidePanelLayout, opened from a per-row Button with `aria-expanded`, and closed when its row is filtered out. The table stays usable, so the next row can be opened without closing anything; below 768px it opens as a Drawer. An ID in the detail is shown whole, with an icon-only CopyButton named for what it copies — \"Copy run ID\".",
     "A record's history — in its detail or on its own page — is a Timeline named \"History\", newest first: each change a TimelineItem saying what happened as a sentence (\"Paused the agent\"), who did it and when, with what it changed from and to as the detail. It is history, not a feed of the record's runs: an agent run's steps are AgentActivity.",
     "A row's actions, when it has more than one, in a ⋯ MenuTrigger in its last cell, named for the row — \"Actions for Invoice reconciler\". For a table people work in all day, wrap each row in a ContextMenu given the same Menu element, so a right-click or Shift+F10 opens those actions too — a shortcut, never the only way to them.",
@@ -69,7 +70,7 @@
   },
   "propsUsed": {
     "Table": ["density", "isStriped"],
-    "TableRow": ["selection", "isSelected"],
+    "TableRow": ["selection", "isSelected", "expansion"],
     "TableCell": ["scope", "align", "variant", "sortDirection", "onSort"],
     "Checkbox": ["isIndeterminate", "isDisabled"],
     "TableBatchBar": [
@@ -219,6 +220,11 @@
       "dont": "a record's history as a column of divs with coloured dots",
       "do": "<Timeline aria-label=\"History\"><TimelineItem title=\"Paused the agent\" actor={who} timestamp={at} /></Timeline>",
       "why": "a screen reader cannot count or skip a column of divs, and a dot's colour is not a sign of what happened — the title is"
+    },
+    {
+      "dont": "a detail row added by hand under the row, with a counted colSpan",
+      "do": "`expansion={{ 'aria-label': `Details for ${row.name}`, content }}` on the TableRow",
+      "why": "a hand-built pair has no disclosure button a keyboard can reach or a screen reader can hear open, and its colSpan goes stale when a column is added"
     }
   ]
 }

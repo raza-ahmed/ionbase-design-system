@@ -1,28 +1,42 @@
 {
   "status": "stable",
-  "summary": "A plain <tr>. Hover is CSS-only; a row is not itself interactive.",
+  "summary": "A plain <tr>. Hover is CSS-only; a row is not itself interactive. With `expansion`, it opens to show more under it: a disclosure button in its first cell, and a detail row across every column.",
   "useWhen": ["every row, in either TableHead or TableBody"],
   "useInstead": [
     {
       "when": "the whole row should be clickable",
       "use": "Link",
       "why": "put the link or Button in a cell — nesting an interactive role on <tr> is not valid HTML"
+    },
+    {
+      "when": "the extra detail is long, has its own actions, or is read beside the list",
+      "use": "SidePanel",
+      "why": "an expanded row pushes every row below it down; a panel beside the table keeps the list in place and can hold a form"
     }
   ],
   "slots": {
     "selection": {
       "accepts": "Checkbox props",
       "note": "renders a leading Checkbox cell — a <th scope=\"col\"> select-all inside TableHead, a <td> inside TableBody. Takes the checkbox's own props rather than a boolean, since a selectable row needs `checked`/`onChange` wiring. `useTableSelection`'s `headSelection` and `rowSelection` return exactly these props, tri-state header included"
+    },
+    "expansion": {
+      "accepts": "TableRowExpansion in TableBody, TableHeadExpansion in TableHead",
+      "note": "in TableBody, `{ 'aria-label', content, isExpanded?, defaultExpanded?, onExpandedChange? }`: a leading cell with a disclosure button, and when open a second <tr> under the row whose one cell spans every column, counted from the row's own cells. In TableHead, `{ label }`: the header cell over the toggles, its name visually hidden, so the columns line up. Controlled with `isExpanded`, uncontrolled with `defaultExpanded`"
     }
   },
   "a11y": {
     "guarantees": [
       "hover comes from CSS `:hover` plus a `data-hovered` escape hatch, not React Aria — a row takes no focus and fires no click, so there is no keyboard-versus-pointer distinction to track",
-      "the selection cell's element follows the section it sits in"
+      "the selection cell's element follows the section it sits in",
+      "an expandable row's toggle is a real <button> with `aria-expanded`, and `aria-controls` pointing at the detail row while it is open",
+      "closed points right and open points down — the shape carries the state as well as `aria-expanded`",
+      "the detail row spans every column, so it is read as one cell after its row",
+      "stripes count real rows only: an open detail takes its row's stripe and selection, and shifts nothing below it"
     ],
     "requires": [
       "every row-selection Checkbox to be labelled — those boxes have no visible label by design, so see Checkbox's own contract",
-      "`isSelected` alongside a checked selection checkbox, so the row's state is not carried by colour alone"
+      "`isSelected` alongside a checked selection checkbox, so the row's state is not carried by colour alone",
+      "an `aria-label` on each expansion that names the row — \"Details for run 4821\" — not the action"
     ],
     "notes": [
       "TableRow itself is never named — a <tr> is not an interactive element and takes no accessible name. The naming requirement above belongs to the Checkbox inside it."
@@ -45,6 +59,21 @@
     {
       "dont": "`isSelected` without a selection checkbox",
       "why": "the row is tinted with nothing announcing why"
+    },
+    {
+      "dont": "expansion={{ 'aria-label': 'Expand', content }} on every row",
+      "do": "expansion={{ 'aria-label': `Details for ${run.id}`, content }}",
+      "why": "a column of buttons all named \"Expand\" gives a screen reader no way to tell which row it opens"
+    },
+    {
+      "dont": "a detail row you add yourself, with a colSpan you count by hand",
+      "do": "`expansion.content`",
+      "why": "the hand count goes stale the day a column is added, and the detail then stops short or pushes the table wider"
+    },
+    {
+      "dont": "onClick on the row to expand it",
+      "do": "the toggle `expansion` renders",
+      "why": "a row takes no focus, so a keyboard user can never open it; the toggle is a button with its state announced"
     }
   ]
 }
