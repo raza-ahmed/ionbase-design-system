@@ -2762,10 +2762,14 @@ try {
           where,
           `the handle says ${valueBefore}, the column is ${headerBefore}`,
         );
-      // A purpose that is cut: the widest one on the page.
-      const purpose = table
-        .locator('tbody .ion-truncated__text[tabindex="0"]')
-        .first();
+      // The most cut purpose, held by its place among all of them: a filter
+      // on "is cut" would pick another row once widening uncuts this one.
+      const lines = table.locator('tbody .ion-truncated__text');
+      const most = await lines.evaluateAll((els) => {
+        const cut = els.map((el) => el.scrollWidth - el.clientWidth);
+        return cut.indexOf(Math.max(...cut));
+      });
+      const purpose = lines.nth(most);
       const hidden = () =>
         purpose.evaluate((el) => el.scrollWidth - el.clientWidth);
       const hiddenBefore = await hidden();
