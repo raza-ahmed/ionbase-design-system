@@ -1,5 +1,45 @@
 # Changelog
 
+## 0.117.0 — 2026-09-27
+
+### Added — ThemeZone
+
+A part of the page in the other theme: a dark header on a light page, or a
+light document preview in a dark app. It is the twenty-second P1 item on the
+enterprise checklist. The checklist said to audit `data-theme` first, as it
+might need no component. It needs one. `data-theme="dark"` on any element
+already gave the tokens beneath it their dark values, but it left four
+things behind:
+
+| Left behind                        | Before                                                                      | Now                                                                                                                         |
+| ---------------------------------- | --------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| Light inside dark                  | Light values lived only on `:root`, so a light subtree kept inheriting dark | `theme-light.css`, generated like `theme-dark.css`: the same 125 tokens at their Light values, under `[data-theme="light"]` |
+| Plain text                         | `color` inherits as the body's already-resolved value, in the page's theme  | the zone sets its theme's `text/default`                                                                                    |
+| Native controls, scrollbars        | no `color-scheme` anywhere                                                  | `color-scheme` follows every `data-theme`, the page's root included                                                         |
+| Menus, popovers, tooltips, dialogs | portalled to `<body>`, in the page's theme                                  | portalled to a container in the zone's theme                                                                                |
+
+- **`theme`** is required: `light` or `dark`. Without `contents`, the zone
+  is a block that paints `surface/page`. **`contents`** draws no box, for
+  wrapping a component that paints its own surface: a Header stays the
+  sticky grid row it was.
+- **Overlays** still leave the zone's DOM, so its `overflow` cannot clip
+  them. They render into one container per theme at the end of `<body>`.
+  That container is marked as a top layer, so a dialog opened elsewhere
+  does not hide it: a popover from a zone inside a dialog stays reachable.
+- **Zones nest**, and `as` picks the element for a box. The zone renders on
+  a server with its theme in the markup.
+- **Figma:** code-only. A frame's variable mode is ThemeZone.
+- **Pattern:** PageShell says an always-dark Header is
+  `<ThemeZone theme="dark" contents>`, and that the page's own theme is
+  `data-theme` on the root.
+- **Demo:** the shell's Header is dark in both themes, and Notifications
+  opens dark with it. The navigation Drawer and command palette follow the
+  page. The smoke check measures the Header's surface against the dark
+  token, checks that it still sticks when scrolled, and checks that
+  Notifications opens dark and reachable while the palette opens light.
+  Every route's axe run now covers the dark Header's contrast in the light
+  theme.
+
 ## 0.116.0 — 2026-09-27
 
 ### Added — Grid

@@ -128,6 +128,8 @@ export type {
   GridCollapse,
   GridAlign,
 } from './Grid.js';
+export { ThemeZone } from './ThemeZone.js';
+export type { ThemeZoneProps, ThemeZoneElement, Theme } from './ThemeZone.js';
 export type { ChatMessageProps, ChatMessageFrom } from './ChatMessage.js';
 export type { AILabelProps, AILabelLabels } from './AILabel.js';
 export { Toggletip } from './Toggletip.js';
