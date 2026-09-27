@@ -38,7 +38,19 @@ export interface ScrollProgressProps extends Omit<
    *  content; a rail against the right edge of the page needs `left`, or the
    *  open list runs off the screen. */
   placement?: ScrollProgressPlacement;
+  /**
+   * The rail button's name — "Reading progress: 32%. Currently in Usage.
+   * Activate to jump to a section." in English. Receives the rounded
+   * percentage and the active section's label, when there is one.
+   */
+  triggerLabel?: (progress: number, section?: string) => string;
 }
+
+/** @replace triggerLabel */
+const defaultTriggerLabel = (progress: number, section?: string) =>
+  `Reading progress: ${progress}%` +
+  (section ? `. Currently in ${section}.` : '') +
+  ' Activate to jump to a section.';
 
 /**
  * The compact rail is the disclosure trigger. It is a real `<button>`, so a
@@ -60,6 +72,7 @@ export const ScrollProgress = forwardRef<HTMLDivElement, ScrollProgressProps>(
       activeId,
       onSelect,
       placement = 'right',
+      triggerLabel = defaultTriggerLabel,
       className,
       ...rest
     },
@@ -162,11 +175,7 @@ export const ScrollProgress = forwardRef<HTMLDivElement, ScrollProgressProps>(
           data-hovered={isHovered || undefined}
           aria-expanded={isOpen}
           aria-controls={panelId}
-          aria-label={
-            `Reading progress: ${roundedProgress}%` +
-            (activeSection ? `. Currently in ${activeSection.label}.` : '') +
-            ' Activate to jump to a section.'
-          }
+          aria-label={triggerLabel(roundedProgress, activeSection?.label)}
           onClick={() => setIsOpen((v) => !v)}
         >
           {/* The number and the sign are separate spans because Figma binds

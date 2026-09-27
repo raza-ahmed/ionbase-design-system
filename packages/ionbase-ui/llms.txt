@@ -2,7 +2,7 @@
 
 > IonBase is a React design system for enterprise SaaS, built to be consumed by an agent rather than read by a developer. Every component ships a machine-readable contract carrying the judgement a type signature cannot: when to use it, what to use instead, the anti-patterns, and what it guarantees for accessibility versus what it requires of you.
 
-Version 0.120.0. 121 components.
+Version 0.121.0. 121 components.
 
 ## Read these, in this order
 
@@ -37,6 +37,10 @@ Draw it with visx — IonBase does not draw charts and does not depend on visx �
 ## Driving an agent run?
 
 Do not hand-build the state behind AgentActivity, ApprovalGate, StreamingText and AgentStop. `useAgentRun()` takes the events a run reports — `step-started`, `approval-requested`, `output`, `run-stopped` and the rest — and returns `log`, `stopProps`, `outputProps` and `approvalProps` to spread. It applies the AgentRun and HumanApproval patterns: one active step, a stop keeps what was done, an unanswered approval is never a yes. `replay(recording)` plays a stored run; `agentRunFrom(events)` rebuilds a finished one. The full event list is in `dist/meta/patterns/AgentRun.json` under `drivenBy`.
+
+## Shipping in another language?
+
+Every string a component shows or announces can be replaced — by a prop (`closeLabel`) or a key in its `labels`. `dist/meta/strings.json` (`ionbase-ui/meta/strings.json`) lists every one: the English default and what to pass. Wrap the app in `I18nProvider` with the locale: react-aria's own strings (calendar, number field, tag remove) are already translated and follow it, and so do the numbers and units the components format.
 
 ## Coming from a Figma design?
 

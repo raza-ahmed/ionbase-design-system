@@ -42,6 +42,7 @@ export interface NotificationsPanelLabels {
   loading: string;
 }
 
+/** @replace labels */
 const DEFAULT_LABELS: NotificationsPanelLabels = {
   today: 'Today',
   yesterday: 'Yesterday',

@@ -223,6 +223,11 @@ export interface AvatarGroupProps extends React.HTMLAttributes<HTMLDivElement> {
   /** Cap on avatars shown; the remainder becomes a `+N` overflow avatar. */
   max?: number;
   shape?: AvatarShape;
+  /**
+   * The overflow avatar's name — "4 more" in English. Receives the count as a
+   * number so a translation can choose its plural form.
+   */
+  overflowLabel?: (count: number) => string;
   children?: React.ReactNode;
 }
 
@@ -240,7 +245,15 @@ export interface AvatarGroupProps extends React.HTMLAttributes<HTMLDivElement> {
  */
 export const AvatarGroup = forwardRef<HTMLDivElement, AvatarGroupProps>(
   (
-    { size = 'md', shape = 'circle', max, className, children, ...rest },
+    {
+      size = 'md',
+      shape = 'circle',
+      max,
+      overflowLabel = (count) => `${count} more`,
+      className,
+      children,
+      ...rest
+    },
     ref,
   ) => {
     const items = React.Children.toArray(children).filter(React.isValidElement);
@@ -269,7 +282,7 @@ export const AvatarGroup = forwardRef<HTMLDivElement, AvatarGroupProps>(
           size={size}
           shape={shape}
           initials={`+${overflow}`}
-          alt={`${overflow} more`}
+          alt={overflowLabel(overflow)}
         />,
       );
     }

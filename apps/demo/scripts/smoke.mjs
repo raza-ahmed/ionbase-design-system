@@ -14,6 +14,7 @@
  * handed to page.evaluate and addInitScript, which run inside Chromium.
  */
 /* global fetch, setTimeout, window, document, localStorage */
+import { Buffer } from 'node:buffer';
 import { spawn } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
@@ -3758,6 +3759,109 @@ try {
       groupsChecked++;
       await context.close();
     }
+  }
+
+  /*
+   * Built-in strings, replaced in the product's words. The knowledge-file
+   * upload on Guardrails refuses a file too large and a file of the wrong
+   * type, and says so in the demo's own sentences — never FileUpload's
+   * English defaults — as the field's error, which clears on the next good
+   * file. The Agents pager's page-size control is "Agents per page", not
+   * "Rows per page".
+   */
+  check: {
+    const where = 'built-in strings (light, desktop)';
+    if (skip(where)) break check;
+    const context = await browser.newContext({
+      viewport: { width: 1280, height: 900 },
+    });
+    await context.addInitScript(() => {
+      localStorage.setItem(
+        'ionbase-ops:demo-settings',
+        JSON.stringify({ theme: 'light', latency: 0 }),
+      );
+      localStorage.setItem(
+        'ionbase-ops:new-agent-draft',
+        JSON.stringify({
+          values: { name: 'Smoke test agent', notifyOn: [] },
+          completed: 1,
+          model: 'atlas-m',
+        }),
+      );
+    });
+    const page = await context.newPage();
+    page.on('pageerror', (e) => fail(where, `exception: ${e.message}`));
+    try {
+      await page.goto(`${BASE}/#/agents/new`);
+      const input = page.locator('#field-knowledge');
+      await input.waitFor({ state: 'attached', timeout: 10_000 });
+      await input.setInputFiles([
+        {
+          name: 'notes.md',
+          mimeType: 'text/markdown',
+          buffer: Buffer.from('x'),
+        },
+        {
+          name: 'handbook.pdf',
+          mimeType: 'application/pdf',
+          buffer: Buffer.alloc(12_000_000),
+        },
+        // Over by less than the rounding: refused, and the size says so.
+        {
+          name: 'slides.pdf',
+          mimeType: 'application/pdf',
+          buffer: Buffer.alloc(10_200_000),
+        },
+        {
+          name: 'setup.exe',
+          mimeType: 'application/octet-stream',
+          buffer: Buffer.from('x'),
+        },
+      ]);
+      await page
+        .getByText('notes.md', { exact: true })
+        .waitFor({ timeout: 5_000 });
+
+      const invalid = await input.getAttribute('aria-invalid');
+      if (invalid !== 'true')
+        fail(where, `a refused file left the field valid (${invalid})`);
+      const said = await input.evaluate((el) =>
+        (el.getAttribute('aria-describedby') ?? '')
+          .split(' ')
+          .map((id) => document.getElementById(id)?.textContent ?? '')
+          .join(' '),
+      );
+      for (const sentence of [
+        'handbook.pdf is 12 MB. Knowledge files can be up to 10 MB each.',
+        'slides.pdf is 10.2 MB. Knowledge files can be up to 10 MB each.',
+        'setup.exe can’t be used as knowledge.',
+      ])
+        if (!said.includes(sentence))
+          fail(where, `the field does not say "${sentence}": "${said}"`);
+      const text = (await page.locator('main').textContent()) ?? '';
+      for (const english of ['not an accepted file type', 'over the'])
+        if (text.includes(english))
+          fail(where, `FileUpload's default English is showing: "${english}"`);
+
+      await input.setInputFiles([
+        { name: 'faq.txt', mimeType: 'text/plain', buffer: Buffer.from('x') },
+      ]);
+      await page
+        .getByText('faq.txt', { exact: true })
+        .waitFor({ timeout: 5_000 });
+      if ((await input.getAttribute('aria-invalid')) === 'true')
+        fail(where, 'the error stayed after a file that was accepted');
+
+      await page.goto(`${BASE}/#/agents`);
+      const size = page.getByRole('combobox', { name: 'Agents per page' });
+      await size.waitFor({ timeout: 10_000 });
+      if (await page.getByRole('combobox', { name: 'Rows per page' }).count())
+        fail(where, 'the pager still says "Rows per page"');
+    } catch (e) {
+      fail(where, `did not run: ${e.message.split('\n')[0]}`);
+    }
+    groupsChecked++;
+    await context.close();
   }
 
   /*

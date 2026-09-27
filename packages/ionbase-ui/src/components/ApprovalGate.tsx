@@ -36,6 +36,13 @@ export interface ApprovalGateProps extends Omit<
   approveLabel?: string;
   rejectLabel?: string;
   editLabel?: string;
+  /**
+   * What happened, in words — "Approved", "Rejected", "Expired without a
+   * decision" in English. Announced when `status` changes, and shown in place
+   * of the actions when there is no `resolution`. Pass the translation for
+   * `status`.
+   */
+  statusLabel?: string;
   /** A decision is in flight. Both actions disable; neither disappears. */
   isSubmitting?: boolean;
   /** Shown in place of the actions once the decision is made. */
@@ -59,7 +66,11 @@ const ShieldQuestion = () => (
   </svg>
 );
 
-const STATUS_TEXT: Record<Exclude<ApprovalGateStatus, 'pending'>, string> = {
+/** @replace statusLabel */
+const DEFAULT_STATUS_LABELS: Record<
+  Exclude<ApprovalGateStatus, 'pending'>,
+  string
+> = {
   approved: 'Approved',
   rejected: 'Rejected',
   expired: 'Expired without a decision',
@@ -113,6 +124,7 @@ export const ApprovalGate = forwardRef<HTMLElement, ApprovalGateProps>(
       approveLabel = 'Approve',
       rejectLabel = 'Reject',
       editLabel = 'Edit',
+      statusLabel,
       isSubmitting = false,
       resolution,
       className,
@@ -129,9 +141,9 @@ export const ApprovalGate = forwardRef<HTMLElement, ApprovalGateProps>(
 
     useEffect(() => {
       if (status !== previous.current && status !== 'pending')
-        setAnnouncement(STATUS_TEXT[status]);
+        setAnnouncement(statusLabel ?? DEFAULT_STATUS_LABELS[status]);
       previous.current = status;
-    }, [status]);
+    }, [status, statusLabel]);
 
     const pending = status === 'pending';
 
@@ -209,7 +221,7 @@ export const ApprovalGate = forwardRef<HTMLElement, ApprovalGateProps>(
             </div>
           ) : (
             <p className="ion-approval-gate__resolution">
-              {resolution ?? STATUS_TEXT[status]}
+              {resolution ?? statusLabel ?? DEFAULT_STATUS_LABELS[status]}
             </p>
           )}
         </div>

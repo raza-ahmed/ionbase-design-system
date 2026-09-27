@@ -594,6 +594,7 @@ function hostedIndex() {
 
   chartSection(p);
   agentRunSection(p);
+  stringsSection(p);
   p('## Coming from a Figma design?');
   p();
   p(
@@ -634,6 +635,26 @@ function agentRunSection(p) {
       'done, an unanswered approval is never a yes. `replay(recording)` plays ' +
       'a stored run; `agentRunFrom(events)` rebuilds a finished one. The full ' +
       'event list is in `dist/meta/patterns/AgentRun.json` under `drivenBy`.',
+  );
+  p();
+}
+
+/*
+ * Every built-in string is replaceable, and the inventory says how. An agent
+ * localising a product would otherwise find them by reading English in the
+ * rendered page.
+ */
+function stringsSection(p) {
+  p('## Shipping in another language?');
+  p();
+  p(
+    'Every string a component shows or announces can be replaced — by a prop ' +
+      '(`closeLabel`) or a key in its `labels`. `dist/meta/strings.json` ' +
+      '(`ionbase-ui/meta/strings.json`) lists every one: the English default ' +
+      'and what to pass. Wrap the app in `I18nProvider` with the locale: ' +
+      "react-aria's own strings (calendar, number field, tag remove) are " +
+      'already translated and follow it, and so do the numbers and units the ' +
+      'components format.',
   );
   p();
 }
@@ -753,6 +774,7 @@ function tarballIndex() {
 
   chartSection(p);
   agentRunSection(p);
+  stringsSection(p);
   p('## Coming from a Figma design?');
   p();
   p(

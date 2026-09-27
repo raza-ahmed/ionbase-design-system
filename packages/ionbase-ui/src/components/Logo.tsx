@@ -118,7 +118,8 @@ export const Logo = forwardRef<HTMLSpanElement, LogoProps>(
         // The vector wordmark carries no text of its own; the live-text
         // wordmark already is real text, so it needs no extra announcement.
         {...(wordmark === 'vector'
-          ? { role: 'img', 'aria-label': 'IonBase' }
+          ? // i18n-exempt: the product's name, which is not translated.
+            { role: 'img', 'aria-label': 'IonBase' }
           : {})}
       >
         <LogoMark size={size} />
@@ -134,6 +135,7 @@ export const Logo = forwardRef<HTMLSpanElement, LogoProps>(
           />
         ) : (
           <span className="ion-logo__wordmark ion-logo__wordmark--text">
+            {/* i18n-exempt: the product's name, which is not translated. */}
             IonBase
           </span>
         )}

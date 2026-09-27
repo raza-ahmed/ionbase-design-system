@@ -57,45 +57,78 @@ export function parseShortcut(shortcut: string): ParsedShortcut {
   return { modifiers, key };
 }
 
-const MAC_SYMBOL: Record<string, string> = {
-  mod: '⌘',
-  meta: '⌘',
-  ctrl: '⌃',
-  alt: '⌥',
-  shift: '⇧',
+/**
+ * A key as a person finds it on the keyboard. The modifiers resolve to one
+ * per platform — `mod` is `command` on a Mac and `control` elsewhere — so a
+ * translation names each physical key once.
+ */
+export type ShortcutKeyId =
+  | 'command'
+  | 'control'
+  | 'option'
+  | 'alt'
+  | 'shift'
+  | 'windows'
+  | 'enter'
+  | 'escape'
+  | 'backspace'
+  | 'delete'
+  | 'tab'
+  | 'space'
+  | 'arrowup'
+  | 'arrowdown'
+  | 'arrowleft'
+  | 'arrowright';
+
+/**
+ * What each key is printed as, and what a screen reader says for it. English
+ * defaults: a German keyboard prints `Strg` and `Entf` — pass those through
+ * Kbd's `keyLabels`.
+ *
+ * `symbol` is what is printed off a Mac, and on a Mac too unless the key has
+ * a `macSymbol` — the glyphs ⌘ ⌃ ⌥ ⇧, which are the same in every language
+ * and so are rarely replaced.
+ */
+export type ShortcutKeyLabels = Partial<
+  Record<ShortcutKeyId, { symbol?: string; macSymbol?: string; name?: string }>
+>;
+
+/** @replace keyLabels (Kbd), labels.keys (CommandPalette) */
+const DEFAULT_KEY_LABELS: Record<
+  ShortcutKeyId,
+  { symbol: string; macSymbol?: string; name: string }
+> = {
+  command: { symbol: '⌘', name: 'Command' },
+  control: { symbol: 'Ctrl', macSymbol: '⌃', name: 'Control' },
+  option: { symbol: '⌥', name: 'Option' },
+  alt: { symbol: 'Alt', name: 'Alt' },
+  shift: { symbol: 'Shift', macSymbol: '⇧', name: 'Shift' },
+  windows: { symbol: 'Win', name: 'Windows' },
+  enter: { symbol: '↵', name: 'Enter' },
+  escape: { symbol: 'Esc', name: 'Escape' },
+  backspace: { symbol: '⌫', name: 'Backspace' },
+  delete: { symbol: 'Del', name: 'Delete' },
+  tab: { symbol: 'Tab', name: 'Tab' },
+  space: { symbol: 'Space', name: 'Space' },
+  arrowup: { symbol: '↑', name: 'Up arrow' },
+  arrowdown: { symbol: '↓', name: 'Down arrow' },
+  arrowleft: { symbol: '←', name: 'Left arrow' },
+  arrowright: { symbol: '→', name: 'Right arrow' },
 };
-const MAC_NAME: Record<string, string> = {
-  mod: 'Command',
-  meta: 'Command',
-  ctrl: 'Control',
-  alt: 'Option',
-  shift: 'Shift',
+
+const MAC_MODIFIER: Record<Modifier, ShortcutKeyId> = {
+  mod: 'command',
+  meta: 'command',
+  ctrl: 'control',
+  alt: 'option',
+  shift: 'shift',
 };
-const OTHER_SYMBOL: Record<string, string> = {
-  mod: 'Ctrl',
-  ctrl: 'Ctrl',
-  meta: 'Win',
-  alt: 'Alt',
-  shift: 'Shift',
-};
-const OTHER_NAME: Record<string, string> = {
-  mod: 'Control',
-  ctrl: 'Control',
-  meta: 'Windows',
-  alt: 'Alt',
-  shift: 'Shift',
-};
-const KEY_SYMBOL: Record<string, [symbol: string, name: string]> = {
-  enter: ['↵', 'Enter'],
-  escape: ['Esc', 'Escape'],
-  backspace: ['⌫', 'Backspace'],
-  delete: ['Del', 'Delete'],
-  tab: ['Tab', 'Tab'],
-  space: ['Space', 'Space'],
-  arrowup: ['↑', 'Up arrow'],
-  arrowdown: ['↓', 'Down arrow'],
-  arrowleft: ['←', 'Left arrow'],
-  arrowright: ['→', 'Right arrow'],
+const OTHER_MODIFIER: Record<Modifier, ShortcutKeyId> = {
+  mod: 'control',
+  ctrl: 'control',
+  meta: 'windows',
+  alt: 'alt',
+  shift: 'shift',
 };
 
 /** macOS order: Control, Option, Shift, Command. Everywhere else: Ctrl, Alt, Shift. */
@@ -116,21 +149,30 @@ export interface ShortcutKey {
 }
 
 /** The keys to draw, in the platform's conventional order. */
-export function shortcutKeys(shortcut: string, isMac: boolean): ShortcutKey[] {
+export function shortcutKeys(
+  shortcut: string,
+  isMac: boolean,
+  labels?: ShortcutKeyLabels,
+): ShortcutKey[] {
   const { modifiers, key } = parseShortcut(shortcut);
   const order = isMac ? ORDER : OTHER_ORDER;
+  const label = (id: ShortcutKeyId): ShortcutKey => {
+    const d = DEFAULT_KEY_LABELS[id];
+    const o = labels?.[id];
+    const mac = o?.macSymbol ?? d.macSymbol;
+    return {
+      symbol: isMac && mac ? mac : (o?.symbol ?? d.symbol),
+      name: o?.name ?? d.name,
+    };
+  };
   const keys = order
     .filter((m) => modifiers.has(m))
     // `mod` and `meta` are the same key on a Mac; draw it once.
     .filter((m) => !(isMac && m === 'meta' && modifiers.has('mod')))
-    .map((m) => ({
-      symbol: (isMac ? MAC_SYMBOL : OTHER_SYMBOL)[m],
-      name: (isMac ? MAC_NAME : OTHER_NAME)[m],
-    }));
-  const named = KEY_SYMBOL[key];
+    .map((m) => label((isMac ? MAC_MODIFIER : OTHER_MODIFIER)[m]));
   keys.push(
-    named
-      ? { symbol: named[0], name: named[1] }
+    key in DEFAULT_KEY_LABELS
+      ? label(key as ShortcutKeyId)
       : { symbol: key.toUpperCase(), name: key.toUpperCase() },
   );
   return keys;

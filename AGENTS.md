@@ -1849,6 +1849,72 @@ must look different focused and blurred. Every visible SVG must reach 3:1
 against what it sits on. Neither check knows about any one component, so a
 new component is covered the day it ships.
 
+### Built-in strings: every one replaceable, and a gate that says so — 27 Sep 2026
+
+Every string a component shows or announces can be replaced by its caller.
+The English defaults stay; nothing is fetched or bundled per language.
+`dist/meta/strings.json` lists every one (151 today): where it lives, and what
+to pass to replace it. `pnpm --filter ionbase-ui strings` prints the list.
+
+**Where a string goes, by rule:**
+
+- **One or two strings:** a prop with a default — `closeLabel = 'Close
+dialog'`.
+- **More:** a `labels` prop, `Partial` of an exported `<Name>Labels` type, and
+  merged over a `DEFAULTS` table — `{ ...DEFAULTS, ...labels }`.
+- **A word that follows a changing status** (the agent tier): a
+  `statusLabel` prop. The caller passes the word for the status it is
+  passing, so the two cannot disagree.
+- **Components that predate the rule keep their props.** CopyButton,
+  InlineEdit and CodeSnippet use separate `*Label` props, and the rule does
+  not break their APIs.
+
+**Rules for the strings themselves:**
+
+- **Counts arrive as numbers,** so a translation can choose its plural form:
+  `results: (count) => …`.
+- **Values that are already words arrive formatted:** a file size ("12 MB"),
+  a page number in the locale's digits.
+- **Numbers and units a component formats itself use `Intl` and the
+  `I18nProvider` locale.** File sizes, durations and page numbers read
+  "1,5 КБ" and "1,2 с" in Russian.
+- **StatTile renders on the server,** where there is no locale to read. Its
+  default formats the number the English way, and `labels.change` hands the
+  formatting to the caller.
+- **react-aria's own strings are not ours.** The calendar's buttons, a number
+  field's steppers and a tag's remove button ship in over thirty languages
+  and follow the locale. Wrap the app in `I18nProvider`, and they need
+  nothing more.
+
+**`scripts/verify-strings.mjs` is in the build and fails on three things:**
+
+1. **Words in a component that a caller cannot replace.** A string counts as
+   replaceable if it is a prop's default, sits in a `DEFAULTS` or `DEFAULT_*`
+   table, or is the right-hand side of `??`. JSX text always counts as words.
+   Anything no user reads, such as a developer error or the product's own
+   name, carries `// i18n-exempt: <reason>`.
+2. **A defaults table with no `@replace` tag.** Only its author knows what
+   replaces it (`statusLabel`, `thumbLabels`, Kbd's `keyLabels`), and an
+   inventory that guesses is one an agent cannot act on. `DEFAULTS` is
+   exempt, because it is always `labels`.
+3. **A string-bearing component rendered without its strings handed on.**
+   PromptInput drew an AgentStop and did not pass AgentStop's `label` on, so
+   "Stop" was fixed for every PromptInput. CodeSnippet did the same with
+   CopyButton's `failedLabel`. The string scan could not see either.
+
+**`Foundations/Localised strings` proves the replacements arrive.** It runs
+in `ru-RU`, replaces every string with a `⟦marker⟧`, marks the caller's data
+too, and reads every text node, name, placeholder and title back. Any Latin
+word left over is a string that did not reach the DOM. It caught AgentStop
+keeping both of its labels in the DOM (for a stable width), so both must be
+replaced.
+
+**Kbd keys are named by the physical key.** `mod` is `command` on a Mac and
+`control` elsewhere, so a translation names each key once. A key's `symbol`
+is printed on every platform unless it has a `macSymbol`. The Mac glyphs
+(⌘ ⌃ ⌥ ⇧) are the same in every language, so a German
+`control: { symbol: 'Strg' }` changes Windows and leaves the Mac's ⌃ alone.
+
 ## Conventions
 
 - Reference files as clickable markdown links, not backticks.

@@ -71,6 +71,16 @@ export interface PromptInputProps extends Omit<
   attachments?: React.ReactNode;
   /** Accessible name of the send control. */
   sendLabel?: string;
+  /** The stop control's label while a run is in progress — AgentStop's `label`. */
+  stopLabel?: string;
+  /** The stop control's label once pressed — AgentStop's `stoppingLabel`. */
+  stoppingLabel?: string;
+  /**
+   * How to send, read after the field's name — "Press Enter to send, Shift
+   * and Enter for a new line." in English, or the ⌘/Ctrl+Enter version when
+   * `submitKey` is `mod-enter`. Pass the translation for your `submitKey`.
+   */
+  submitHint?: string;
   /** Class names for the outer box. */
   className?: string;
 }
@@ -150,6 +160,9 @@ export const PromptInput = forwardRef<HTMLTextAreaElement, PromptInputProps>(
       actions,
       attachments,
       sendLabel = 'Send',
+      stopLabel,
+      stoppingLabel,
+      submitHint,
       placeholder,
       className,
       onKeyDown,
@@ -223,9 +236,10 @@ export const PromptInput = forwardRef<HTMLTextAreaElement, PromptInputProps>(
     };
 
     const hint =
-      submitKey === 'enter'
+      submitHint ??
+      (submitKey === 'enter'
         ? 'Press Enter to send, Shift and Enter for a new line.'
-        : 'Press Command or Control and Enter to send.';
+        : 'Press Command or Control and Enter to send.');
 
     return (
       <div
@@ -274,6 +288,8 @@ export const PromptInput = forwardRef<HTMLTextAreaElement, PromptInputProps>(
               size="sm"
               onStop={onStop}
               isStopping={isStopping}
+              label={stopLabel}
+              stoppingLabel={stoppingLabel}
               className="ion-prompt-input__stop"
             />
           ) : (

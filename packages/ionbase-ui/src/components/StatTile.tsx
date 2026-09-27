@@ -8,6 +8,30 @@ export type StatTileGoodWhen = 'up' | 'down' | 'neutral';
 /** How `change` is expressed. */
 export type StatTileChangeUnit = 'percent' | 'points';
 
+export interface StatTileLabels {
+  /** The badge when the change rounds to zero — "No change". */
+  noChange?: string;
+  /**
+   * The badge — "+3.2%", "−1.5 pts". Receives the change rounded to one
+   * decimal, sign included, and its unit.
+   */
+  change?: (change: number, unit: StatTileChangeUnit) => string;
+  /** Read after the badge when the change is good — ", better". */
+  better?: string;
+  /** Read after the badge when the change is bad — ", worse". */
+  worse?: string;
+}
+
+const DEFAULTS: Required<StatTileLabels> = {
+  noChange: 'No change',
+  change: (change, unit) =>
+    `${change > 0 ? '+' : '−'}${Math.abs(change).toFixed(1)}${
+      unit === 'percent' ? '%' : ' pts'
+    }`,
+  better: ', better',
+  worse: ', worse',
+};
+
 export interface StatGroupProps extends React.HTMLAttributes<HTMLDListElement> {
   /** StatTile elements. */
   children?: React.ReactNode;
@@ -38,6 +62,13 @@ export interface StatTileProps extends Omit<
   goodWhen?: StatTileGoodWhen;
   /** What `change` is measured against. */
   comparison?: string;
+  /**
+   * The change's words, for translation. English by default. StatTile renders
+   * on the server, where there is no locale to read, so its default formats
+   * the number the English way — pass `labels.change` to format it in the
+   * reader's.
+   */
+  labels?: StatTileLabels;
   /** Shows a placeholder for the value and change while data loads. */
   isLoading?: boolean;
 }
@@ -117,6 +148,7 @@ export const StatTile = forwardRef<HTMLDivElement, StatTileProps>(
       changeUnit = 'percent',
       goodWhen = 'up',
       comparison = 'vs previous period',
+      labels,
       isLoading = false,
       className,
       ...rest
@@ -128,17 +160,16 @@ export const StatTile = forwardRef<HTMLDivElement, StatTileProps>(
 
     let intent: BadgeIntent = 'neutral';
     let icon: React.ReactNode;
-    let text = 'No change';
+    const l = { ...DEFAULTS, ...labels };
+    let text = l.noChange;
     let verdict = '';
     if (rounded) {
       const up = rounded > 0;
       const good = goodWhen === 'neutral' ? null : up === (goodWhen === 'up');
       intent = good === null ? 'neutral' : good ? 'success' : 'error';
       icon = up ? <TrendUp /> : <TrendDown />;
-      text = `${up ? '+' : '−'}${Math.abs(rounded).toFixed(1)}${
-        changeUnit === 'percent' ? '%' : ' pts'
-      }`;
-      verdict = good === null ? '' : good ? ', better' : ', worse';
+      text = l.change(rounded, changeUnit);
+      verdict = good === null ? '' : good ? l.better : l.worse;
     }
 
     return (
