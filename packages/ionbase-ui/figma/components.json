@@ -10,7 +10,7 @@
     "Do not hand-edit. Re-export when the Figma components change."
   ],
   "file": "gaLbGd0QNb1fUl6BjSpfBA",
-  "exported": "2026-09-27",
+  "exported": "2026-09-28",
   "components": {
     ".Notification": {
       "page": "Notifications Panel",
@@ -1329,6 +1329,11 @@
       "id": "1557:794",
       "kind": "SET",
       "props": {
+        "Density": {
+          "type": "VARIANT",
+          "options": ["Default", "Compact"],
+          "default": "Default"
+        },
         "Selection": {
           "type": "VARIANT",
           "options": ["None", "Single", "Multiple"],
@@ -1341,6 +1346,11 @@
       "id": "1556:534",
       "kind": "SET",
       "props": {
+        "Density": {
+          "type": "VARIANT",
+          "options": ["Default", "Compact"],
+          "default": "Default"
+        },
         "Description#1556:11": {
           "type": "TEXT"
         },

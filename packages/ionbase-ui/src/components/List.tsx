@@ -32,6 +32,9 @@ export interface ListItem {
 
 export type ListSelectionMode = 'none' | 'single' | 'multiple';
 
+/** Table's vocabulary. A list has no `relaxed`: its default is already 48px. */
+export type ListDensity = 'compact' | 'default';
+
 export interface ListProps {
   items: readonly ListItem[];
   /** Names the list. Required unless `aria-labelledby` is given. */
@@ -56,6 +59,13 @@ export interface ListProps {
   renderActions?: (item: ListItem) => React.ReactNode;
   /** Shown, in a row of its own, when `items` is empty. */
   renderEmptyState?: () => React.ReactNode;
+  /**
+   * `default`: 48px rows, room for a description and an Avatar. `compact`:
+   * 32px, a TreeView row — for a long list scanned by label, such as a log or
+   * an activity feed. An Icon keeps a compact row at 32; a `mini` Avatar makes
+   * it 36; `sm` and larger belong in default rows.
+   */
+  density?: ListDensity;
   id?: string;
   className?: string;
 }
@@ -202,6 +212,7 @@ export function List({
   onAction,
   renderActions,
   renderEmptyState,
+  density = 'default',
   id,
   className,
 }: ListProps) {
@@ -252,7 +263,13 @@ export function List({
     <div
       {...gridProps}
       ref={ref}
-      className={['ion-list', className || ''].filter(Boolean).join(' ')}
+      className={[
+        'ion-list',
+        density !== 'default' ? `ion-list--${density}` : '',
+        className || '',
+      ]
+        .filter(Boolean)
+        .join(' ')}
     >
       {rows.length === 0 && renderEmptyState ? (
         <div role="row" className="ion-list__empty">

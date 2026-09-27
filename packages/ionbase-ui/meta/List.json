@@ -43,6 +43,14 @@
       "multiple": {
         "use": "an inbox: a checkbox per row. A press opens the row while nothing is selected and toggles it once something is; Space selects from the keyboard"
       }
+    },
+    "density": {
+      "default": {
+        "use": "the default — 48px rows with room for a description and an Avatar, for rows a person reads one at a time"
+      },
+      "compact": {
+        "use": "a long list scanned by label — a log, an activity feed, a queue of hundreds. 32px rows, as TreeView's, with an Icon; a `mini` Avatar makes them 36. `sm` Avatars and descriptions belong in default rows"
+      }
     }
   },
   "slots": {
@@ -75,7 +83,7 @@
       "a disabled item is skipped by the arrow keys and cannot be opened or selected",
       "the description is read with the row's label",
       "an empty list stays a named grid, with `renderEmptyState` in a row of its own",
-      "rows are at least 48px tall; long labels wrap and the meta stays at the row's end; the keyboard focus ring is drawn on the row"
+      "rows are at least 48px tall, 32px when `compact` — above the 24px WCAG 2.2 target minimum either way; long labels wrap and the meta stays at the row's end; the keyboard focus ring is drawn on the row"
     ],
     "notes": [
       "in `multiple` a press opens the row until something is selected — the inbox convention. Say what the checkboxes are for with the batch action they feed, such as a TableBatchBar above the list",

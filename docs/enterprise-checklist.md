@@ -87,7 +87,7 @@
 - [x] **RTL** — logical properties everywhere, enforced by stylelint in the shipped config; a Storybook Direction toggle and RTL stories; the demo's Right to left setting and an RTL smoke sweep of every route — 0.119.0
 - [x] **Localised strings** — 151 built-in strings, every one replaceable by a prop or `labels`, listed in `dist/meta/strings.json`; a build gate for strings a caller cannot reach, including ones a component does not pass on; pseudo-localised stories in `ru-RU`; the demo's upload refusals in its own words — 0.121.0
 - [x] **Forced colours** — audited in the demo and 172 Storybook stories with the mode emulated; 11 components fixed, 12 stories and a smoke sweep of every route that checks focus and icons with no per-component knowledge — 0.120.0
-- [ ] **Density** — decide system-wide or per-component, then apply
+- [x] **Density** — per component, on collections of rows only: Table's compact/default/relaxed, now List's compact/default (Figma Density on List and List Item); controls keep `size`; no system-wide mode; `verify-meta` holds the vocabulary and refuses `size` and `density` on one component; the demo's Agents table compact, the Run history default — 0.122.0
 
 ## Close-out
 

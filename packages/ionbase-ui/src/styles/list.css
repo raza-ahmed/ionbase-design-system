@@ -5,7 +5,10 @@
  * rule, since a List is what a Table becomes when it loses its columns.
  *
  *   row          48px minimum, 12px block and 12px inline padding, a
- *                border/subtle rule between rows (none above the first)
+ *                border/subtle rule between rows (none above the first);
+ *                compact is 32px minimum and 6px block padding, the inline
+ *                padding unchanged — Table's rule: density moves rows, never
+ *                columns
  *   check        a Small Checkbox, only in `multiple`
  *   leading      an Avatar or a 16px Icon, icon/secondary
  *   label        body-sm, medium, text/default — it is what the row is
@@ -39,6 +42,15 @@
   cursor: default;
   outline: none;
   user-select: none;
+}
+
+/*
+ * Density — block padding only, as Table's. 6 + 20 + 6 is a TreeView row;
+ * the rule between rows sits on top of it, where a default row's 48 includes it.
+ */
+.ion-list--compact .ion-list__row {
+  min-height: var(--spacing-32);
+  padding-block: var(--spacing-6);
 }
 
 .ion-list__row + .ion-list__row {

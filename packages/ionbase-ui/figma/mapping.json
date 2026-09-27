@@ -1197,6 +1197,13 @@
             "Multiple": "multiple"
           },
           "note": "Multiple is where each row carries its Checkbox; the Figma rows show it with Selection=Multiple on List Item. The rows themselves are `items` — see List Item."
+        },
+        "Density": {
+          "prop": "density",
+          "values": {
+            "Default": "default",
+            "Compact": "compact"
+          }
         }
       }
     },
@@ -2560,7 +2567,7 @@
     "Table/Cell Text": "TableCell covers Figma's Table Cell and Cell Text together; the two are never used apart in the design. Recorded in TableCell's contract.",
     "Multi Select Menu": "The list MultiSelect opens, with a check on each row. Not a separate export, for Combobox Menu's reason: the list and the field are one control, and a listbox with nothing to own it is not a thing a caller should be able to mount. Drawn separately because a frame cannot both hug a field and overlay a list.",
     "Tree View Item": "One row of Tree View — `items[n]` in code, `{ id, label, icon, description, children, isDisabled }`. There is no row export and there should not be: the tree builds its rows from `items`, because a row's level, position among its siblings and open state are the tree's to know, not the row's. Kind is whether the item has `children` and is in `expandedKeys`; Level is its depth; State Selected is `selectedKeys`, Disabled is `isDisabled`, Hover and Focus are runtime. Label, Icon and Description are the item's fields; Show Check follows the tree's `selectionMode=\"multiple\"`.",
-    "List Item": "One row of List — `items[n]` in code, `{ id, label, description, leading, meta, href, isDisabled }`, plus the list's `renderActions(item)`. There is no row export: the list builds its rows from `items`, because a row's keyboard position, selection and link behaviour are the list's to know. Selection follows the list's `selectionMode` (Multiple draws the Checkbox); State Selected is `selectedKeys`, Disabled is `isDisabled`, Hover and Focus are runtime. Label and Description are the item's fields; Show Leading, Show Meta and Show Actions are whether `leading`, `meta` and `renderActions` are given.",
+    "List Item": "One row of List — `items[n]` in code, `{ id, label, description, leading, meta, href, isDisabled }`, plus the list's `renderActions(item)`. There is no row export: the list builds its rows from `items`, because a row's keyboard position, selection and link behaviour are the list's to know. Selection follows the list's `selectionMode` (Multiple draws the Checkbox), and Density the list's `density`; State Selected is `selectedKeys`, Disabled is `isDisabled`, Hover and Focus are runtime. Label and Description are the item's fields; Show Leading, Show Meta and Show Actions are whether `leading`, `meta` and `renderActions` are given.",
     ".Table Expander": "The toggle inside Table Row's Expander cell, shown by `Show Expander`. TableRow draws it from `expansion` — a disclosure button named by `expansion['aria-label']`, with `aria-expanded`; Collapsed points right and Expanded points down. The leading dot marks it private, as `.Status Indicator` and `.Notification` are."
   },
   "codeUnmapped": {

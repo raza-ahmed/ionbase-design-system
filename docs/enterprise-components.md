@@ -286,8 +286,9 @@ A missing pattern is a gap in the same way as a missing component — see
   "Next page", "Source 1:") must be overridable. Inventory them first.
 - **Forced colours.** Some stylesheets handle `forced-colors`, not all. Every
   component that relies on a background or border to be seen needs a rule.
-- **Density.** `Table` and `Sidebar` have it; decide whether it is a
-  system-wide setting before adding it anywhere else.
+- **Density.** Decided 28 Sep 2026: per component, on collections of rows
+  only (Table, List). Controls take `size`. No system-wide mode — see
+  AGENTS.md, "Density". Sidebar never had it.
 
 ---
 

@@ -72,7 +72,31 @@ for (const f of readdirSync(join(PKG, 'meta')).filter((f) =>
   }
 }
 
+/*
+ * Density is per component, and only for collections of rows — AGENTS.md,
+ * "Density". Controls take `size`. One vocabulary, Table's, so `compact` means
+ * the same on every component that has it; a component with both would have
+ * two answers to "how big is this?".
+ */
+const DENSITIES = ['compact', 'default', 'relaxed'];
+
 for (const [name, c] of Object.entries(components)) {
+  const density = c.props?.density;
+  if (density) {
+    const values = density.values ?? [];
+    const foreign = values.filter((v) => !DENSITIES.includes(v));
+    if (foreign.length || !values.includes('default'))
+      err(
+        name,
+        `density takes ${DENSITIES.join(', ')} and always "default" — got ${values.join(', ') || 'no values'}`,
+      );
+    if (c.props.size)
+      err(
+        name,
+        'has both `size` and `density`: a control takes size, a collection of rows density',
+      );
+  }
+
   const hasIntent = Boolean(c.summary);
   if (!hasIntent) {
     /* An error, not a warning, since 0.19.0: every exported component has an

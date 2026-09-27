@@ -233,8 +233,13 @@ export function AgentsTable({
   onPause: (agent: Agent, paused: boolean) => void;
   onDelete: (agent: Agent) => void;
 }) {
+  /*
+   * Compact: up to 50 agents a page, scanned for the one to act on, so row
+   * count matters more than room around each. The Run history, six runs
+   * read one at a time, keeps the default.
+   */
   return (
-    <Table id={id} aria-label="Agents">
+    <Table id={id} aria-label="Agents" density="compact">
       <TableHead>
         <TableRow
           selection={selection.headSelection(
@@ -338,7 +343,7 @@ export function AgentsTableSkeleton({
       <p className="ion-visually-hidden" role="status">
         Loading agents
       </p>
-      <Table aria-label="Agents (loading)">
+      <Table aria-label="Agents (loading)" density="compact">
         <TableHead>
           <TableRow>
             <TableCell header>

@@ -1915,6 +1915,51 @@ is printed on every platform unless it has a `macSymbol`. The Mac glyphs
 (⌘ ⌃ ⌥ ⇧) are the same in every language, so a German
 `control: { symbol: 'Strg' }` changes Windows and leaves the Mac's ⌃ alone.
 
+### Density: per component, on rows only — 28 Sep 2026
+
+**The rule:**
+
+- **Collections of rows take `density`:** Table (`compact`, `default`,
+  `relaxed`) and List (`compact`, `default`). Density moves a row's block
+  padding and nothing else. Columns and inline padding stay put, so a compact
+  list's text lines up with a default one beside it.
+- **Controls take `size`** (`sm`, `md`, `lg`). A component never has both,
+  because it would then have two answers to "how big is this?".
+- **There is no system-wide density.** No provider, no `data-density`, no
+  Compact mode on the spacing variables.
+
+**Why not system-wide:**
+
+1. **Density belongs to a view, not to an app.** In the demo, the Agents
+   table (up to 50 a page, scanned for the one to act on) is compact. The
+   Run history (six runs, read one at a time) stays default. A global switch
+   would make both the same, and one of them wrong.
+
+   The demo got this backwards first. Compact on the Run history fitted all
+   six runs into its 24rem, so its sticky header had nothing to scroll under,
+   and the sticky-table smoke check caught it. Compact is for row count; a
+   short table does not need it.
+
+2. **Figma varies density only on Table and List.** A Compact mode would mean
+   a second spacing scale in the variables, and every component drawn again
+   to check it.
+3. **Small controls sit near WCAG 2.2's 24px target minimum.** A mode that
+   tightened every control would push some of them under it. `size="sm"` is
+   a choice made one control at a time, where someone can check it.
+
+**`scripts/verify-meta.mjs` holds the rule.** A `density` prop must take
+values from `compact`, `default` and `relaxed`, and include `default`. A
+component with both `size` and `density` fails.
+
+**Compact List rows are 32px, a TreeView row,** when they hold a label and an
+Icon. A `mini` Avatar makes them 36px. `sm` Avatars and descriptions belong in
+default rows. A default row's 48px includes the rule between rows; a compact
+row's 32 does not, because its content, not `min-height`, sets its height.
+
+**Adding density to another component:** only a collection of repeated rows
+qualifies. Use Table's words, draw the Figma variant, and map it on the
+collection, not on its row.
+
 ## Conventions
 
 - Reference files as clickable markdown links, not backticks.
