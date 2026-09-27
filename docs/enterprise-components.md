@@ -100,7 +100,7 @@ IonBase column names the component that covers it.
 
 | Component                        | Carbon | M3  | SLDS | IonBase                                                                   |
 | -------------------------------- | :----: | :-: | :--: | ------------------------------------------------------------------------- |
-| Data table                       |   ●    |     |  ●   | ◐ `Table`, `TableBatchBar` — _expandable rows, sticky header, resize: P1_ |
+| Data table                       |   ●    |     |  ●   | ◐ `Table`, `TableBatchBar`, expandable rows — _sticky header, resize: P1_ |
 | Tree grid                        |        |     |  ●   | —                                                                         |
 | List (selectable / actionable)   |   ●    |  ●  |  ◐   | `List`                                                                    |
 | Description list / record detail |   ◐    |     |  ●   | `DescriptionList`                                                         |

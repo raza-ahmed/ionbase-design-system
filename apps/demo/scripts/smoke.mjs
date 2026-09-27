@@ -72,6 +72,16 @@ let loadingChecked = 0;
 let paletteChecked = 0;
 let menusChecked = 0;
 let groupsChecked = 0;
+/*
+ * SMOKE_ONLY="expandable rows" runs only the checks whose name contains it:
+ * a mutation run tests one check, not every page load — 2 instead of ~97,
+ * seconds instead of minutes. CI and a plain run set nothing and run it all.
+ */
+const only = process.env.SMOKE_ONLY?.trim() || null;
+const skip = (where) => only !== null && !where.includes(only);
+// The route loads are counted up front; every other check counts itself as
+// it runs, so only a skipped route load comes off the total.
+let skippedRoutes = 0;
 try {
   await waitForServer();
   browser = await chromium.launch();
@@ -94,6 +104,10 @@ try {
 
       for (const route of ROUTES) {
         const where = `#/${route} (${theme}, ${viewport})`;
+        if (skip(where)) {
+          skippedRoutes++;
+          continue;
+        }
         const page = await context.newPage();
         page.on(
           'console',
@@ -170,6 +184,7 @@ try {
       ['mobile', 390, 844],
     ]) {
       const where = `command palette (${theme}, ${viewport})`;
+      if (skip(where)) continue;
       const context = await browser.newContext({ viewport: { width, height } });
       await context.addInitScript(
         (t) =>
@@ -253,6 +268,7 @@ try {
    */
   for (const theme of THEMES) {
     const where = `menus (${theme}, desktop)`;
+    if (skip(where)) continue;
     const context = await browser.newContext({
       viewport: { width: 1280, height: 900 },
     });
@@ -359,8 +375,9 @@ try {
    * keep the chosen teams read with the field. axe runs with the list open,
    * which is where a multiselectable listbox would first go wrong.
    */
-  {
+  check: {
     const where = 'multi-select filter (light, desktop)';
+    if (skip(where)) break check;
     const context = await browser.newContext({
       viewport: { width: 1280, height: 900 },
     });
@@ -450,8 +467,9 @@ try {
    * real key presses: → moves between its actions, and one Tab leaves the whole
    * toolbar rather than walking each button.
    */
-  {
+  check: {
     const where = 'batch selection (light, desktop)';
+    if (skip(where)) break check;
     const context = await browser.newContext({
       viewport: { width: 1280, height: 900 },
     });
@@ -564,6 +582,7 @@ try {
     ['mobile', 390, 844],
   ]) {
     const where = `toggletip (light, ${viewport})`;
+    if (skip(where)) continue;
     const context = await browser.newContext({ viewport: { width, height } });
     await context.addInitScript(() =>
       localStorage.setItem(
@@ -640,6 +659,7 @@ try {
     ['mobile', 390, 844],
   ]) {
     const where = `slider (light, ${viewport})`;
+    if (skip(where)) continue;
     const context = await browser.newContext({ viewport: { width, height } });
     await context.addInitScript(() =>
       localStorage.setItem(
@@ -734,6 +754,7 @@ try {
     ['mobile', 390, 844],
   ]) {
     const where = `tree view (light, ${viewport})`;
+    if (skip(where)) continue;
     const context = await browser.newContext({ viewport: { width, height } });
     await context.addInitScript(() =>
       localStorage.setItem(
@@ -821,6 +842,7 @@ try {
     ['mobile', 390, 844],
   ]) {
     const where = `side panel (light, ${viewport})`;
+    if (skip(where)) continue;
     const context = await browser.newContext({ viewport: { width, height } });
     await context.addInitScript(() =>
       localStorage.setItem(
@@ -930,6 +952,7 @@ try {
     ['mobile', 390, 844],
   ]) {
     const where = `description list (light, ${viewport})`;
+    if (skip(where)) continue;
     const context = await browser.newContext({ viewport: { width, height } });
     await context.addInitScript(() =>
       localStorage.setItem(
@@ -1015,6 +1038,7 @@ try {
     ['mobile', 390, 844],
   ]) {
     const where = `list (light, ${viewport})`;
+    if (skip(where)) continue;
     const context = await browser.newContext({ viewport: { width, height } });
     await context.addInitScript(() =>
       localStorage.setItem(
@@ -1100,8 +1124,9 @@ try {
    * there really copies. At desktop width nothing is hidden. The wizard's
    * actions stack on a phone, one per line, full width, Next last.
    */
-  {
+  check: {
     const where = 'button group (light)';
+    if (skip(where)) break check;
     const context = await browser.newContext({
       viewport: { width: 320, height: 720 },
       permissions: ['clipboard-read', 'clipboard-write'],
@@ -1202,6 +1227,7 @@ try {
     ['mobile', 390, 844],
   ]) {
     const where = `split button (light, ${viewport})`;
+    if (skip(where)) continue;
     const context = await browser.newContext({ viewport: { width, height } });
     const name = `Smoke split ${viewport}`;
     await context.addInitScript((agentName) => {
@@ -1282,8 +1308,9 @@ try {
    * too, and Escape gives focus back to the link. The row's ⋯ button still
    * opens the same items — the context menu is a shortcut, not the only way.
    */
-  {
+  check: {
     const where = 'context menu (light, desktop)';
+    if (skip(where)) break check;
     const context = await browser.newContext({
       viewport: { width: 1280, height: 900 },
     });
@@ -1383,6 +1410,7 @@ try {
    */
   for (const refused of [false, true]) {
     const where = `copy button (light, ${refused ? 'refused' : 'granted'})`;
+    if (skip(where)) continue;
     const context = await browser.newContext({
       viewport: { width: 1280, height: 900 },
       permissions: refused ? [] : ['clipboard-read', 'clipboard-write'],
@@ -1475,8 +1503,9 @@ try {
    * it has focus. Each copy button copies its snippet exactly, the request's
    * newlines included. The inline command sits in the key's description.
    */
-  {
+  check: {
     const where = 'code snippet (light, mobile)';
+    if (skip(where)) break check;
     const context = await browser.newContext({
       viewport: { width: 390, height: 844 },
       permissions: ['clipboard-read', 'clipboard-write'],
@@ -1591,8 +1620,9 @@ try {
    * says "Password shown", and the name stays "Show password". axe runs on
    * the dialog with the password shown. Then the deletion is scheduled.
    */
-  {
+  check: {
     const where = 'password input (light, desktop)';
+    if (skip(where)) break check;
     const context = await browser.newContext({
       viewport: { width: 1280, height: 900 },
     });
@@ -1685,6 +1715,7 @@ try {
    */
   for (const route of ['agents', 'runs', 'overview']) {
     const where = `status indicator (#/${route}, forced colours)`;
+    if (skip(where)) continue;
     const context = await browser.newContext({
       viewport: { width: 1280, height: 900 },
       forcedColors: 'active',
@@ -1747,8 +1778,9 @@ try {
    * the workspace's deletion puts a warning banner on every page, with no
    * dismiss button, until the deletion is cancelled.
    */
-  {
+  check: {
     const where = 'banner (light, desktop)';
+    if (skip(where)) break check;
     const context = await browser.newContext({
       viewport: { width: 1280, height: 900 },
     });
@@ -1852,8 +1884,9 @@ try {
    * required while none is ticked), in the error the group shows on Next, and
    * on the box a screen reader lands on, which is where the error must be read.
    */
-  {
+  check: {
     const where = 'checkbox group (light, desktop)';
+    if (skip(where)) break check;
     const context = await browser.newContext({
       viewport: { width: 1280, height: 900 },
     });
@@ -1952,6 +1985,7 @@ try {
     ['mobile', 390, 844],
   ]) {
     const where = `inline loading (light, ${device})`;
+    if (skip(where)) continue;
     const context = await browser.newContext({ viewport: { width, height } });
     await context.addInitScript(() =>
       localStorage.setItem(
@@ -2084,6 +2118,7 @@ try {
     ['mobile', 390, 844],
   ]) {
     const where = `notifications panel (light, ${device})`;
+    if (skip(where)) continue;
     const context = await browser.newContext({ viewport: { width, height } });
     await context.addInitScript(() =>
       localStorage.setItem(
@@ -2225,6 +2260,7 @@ try {
     ['mobile', 390, 844],
   ]) {
     const where = `inline edit (light, ${device})`;
+    if (skip(where)) continue;
     const context = await browser.newContext({ viewport: { width, height } });
     await context.addInitScript(() =>
       localStorage.setItem(
@@ -2419,6 +2455,7 @@ try {
     ['mobile', 390, 844],
   ]) {
     const where = `selectable tile (light, ${device})`;
+    if (skip(where)) continue;
     const context = await browser.newContext({ viewport: { width, height } });
     await context.addInitScript(() => {
       localStorage.setItem(
@@ -2537,6 +2574,7 @@ try {
     ['mobile', 390, 844],
   ]) {
     const where = `truncated text (light, ${device})`;
+    if (skip(where)) continue;
     const context = await browser.newContext({ viewport: { width, height } });
     await context.addInitScript(() => {
       localStorage.setItem(
@@ -2643,6 +2681,7 @@ try {
     ['mobile', 390, 844],
   ]) {
     const where = `timeline (light, ${device})`;
+    if (skip(where)) continue;
     const context = await browser.newContext({ viewport: { width, height } });
     await context.addInitScript(() => {
       localStorage.setItem(
@@ -2758,6 +2797,112 @@ try {
   }
 
   /*
+   * Expandable rows, as an agent's recent runs. The newest failure starts
+   * open with why it failed, in one cell across every column, controlled by
+   * its toggle; the head names the toggle column. A completed run opens and
+   * closes from the keyboard, focus staying on its toggle. axe.
+   */
+  for (const [device, width, height] of [
+    ['desktop', 1280, 900],
+    ['mobile', 390, 844],
+  ]) {
+    const where = `expandable rows (light, ${device})`;
+    if (skip(where)) continue;
+    const context = await browser.newContext({ viewport: { width, height } });
+    await context.addInitScript(() => {
+      localStorage.setItem(
+        'ionbase-ops:demo-settings',
+        JSON.stringify({ theme: 'light', latency: 0 }),
+      );
+    });
+    const page = await context.newPage();
+    page.on('pageerror', (e) => fail(where, `exception: ${e.message}`));
+    await page.goto(`${BASE}/#/agents/agt_wx/runs`);
+    try {
+      const table = page.getByRole('table');
+      await table.waitFor({ timeout: 10_000 });
+      const toggles = table.getByRole('button', { name: /^Details for run / });
+      if ((await toggles.count()) < 2)
+        fail(where, `${await toggles.count()} run toggles`);
+      const open = table.locator('button[aria-expanded="true"]');
+      if ((await open.count()) !== 1)
+        fail(where, `${await open.count()} runs start open, not 1`);
+      const state = await open.first().evaluate((button) => {
+        const detail = document.getElementById(
+          button.getAttribute('aria-controls') ?? '',
+        );
+        const row = button.closest('tr');
+        const head = row.closest('table').querySelector('thead tr');
+        return {
+          under: row.nextElementSibling === detail,
+          text: detail?.textContent ?? '',
+          span: detail?.cells[0].colSpan,
+          columns: [...head.cells].reduce((n, c) => n + c.colSpan, 0),
+          outcome: row.textContent,
+        };
+      });
+      if (!state.under)
+        fail(where, 'the open toggle does not control the row under it');
+      if (!/Failed/.test(state.outcome))
+        fail(where, 'the run that starts open is not a failure');
+      if (!/timed out|archived|rejected/.test(state.text))
+        fail(where, `the failure says "${state.text}"`);
+      if (state.span !== state.columns)
+        fail(where, `the detail spans ${state.span} of ${state.columns}`);
+      if (
+        (await table.getByRole('columnheader', { name: 'Details' }).count()) !==
+        1
+      )
+        fail(where, 'the toggle column has no named header');
+
+      const completed = table
+        .getByRole('row')
+        .filter({ hasText: 'Completed' })
+        .first()
+        .getByRole('button');
+      await completed.focus();
+      await page.keyboard.press('Enter');
+      if ((await completed.getAttribute('aria-expanded')) !== 'true')
+        fail(where, 'Enter did not open a completed run');
+      const id = await completed.getAttribute('aria-controls');
+      const said = await page
+        .locator(`[id="${id}"]`)
+        .textContent({ timeout: 5_000 })
+        .catch(() => '');
+      if (!said.includes('Finished every step'))
+        fail(where, `the completed run says "${said}"`);
+      await page.keyboard.press(' ');
+      if ((await completed.getAttribute('aria-expanded')) !== 'false')
+        fail(where, 'Space did not close it');
+      if (!(await completed.evaluate((el) => el === document.activeElement)))
+        fail(where, 'focus left the toggle');
+
+      if (
+        await page.evaluate(
+          () => document.documentElement.scrollWidth > window.innerWidth,
+        )
+      )
+        fail(where, 'the page scrolls sideways');
+
+      await page.addScriptTag({ content: axeSource });
+      const violations = await page.evaluate(async () => {
+        const result = await window.axe.run(document, {
+          resultTypes: ['violations'],
+        });
+        return result.violations.map((v) => `${v.impact} ${v.id}`);
+      });
+      for (const v of violations) fail(where, `axe ${v}`);
+    } catch (e) {
+      fail(
+        where,
+        `did not run: ${e.message.split('\n').slice(0, 3).join(' | ')}`,
+      );
+    }
+    groupsChecked++;
+    await context.close();
+  }
+
+  /*
    * The loading states, at phone width. With no latency a skeleton is gone
    * before anything can measure it, and a skeleton is laid out differently
    * from the content it stands in for — the Agents skeleton once pushed the
@@ -2775,6 +2920,7 @@ try {
   );
   for (const route of ROUTES) {
     const where = `#/${route} (loading, mobile)`;
+    if (skip(where)) continue;
     const page = await slow.newPage();
     await page.goto(`${BASE}/#/${route}`);
     await page.locator('#page-title').waitFor({ timeout: 10_000 });
@@ -2797,14 +2943,21 @@ const checked =
   loadingChecked +
   paletteChecked +
   menusChecked +
-  groupsChecked;
+  groupsChecked -
+  skippedRoutes;
+const scope = only ? ` (only "${only}")` : '';
+// A filter that matches nothing checked nothing; that is not a pass.
+if (only && checked <= 0) {
+  console.error(`Demo smoke: SMOKE_ONLY="${only}" matched no check`);
+  process.exit(1);
+}
 if (failures.length) {
   console.error(
-    `Demo smoke: ${failures.length} failures across ${checked} page loads\n`,
+    `Demo smoke${scope}: ${failures.length} failures across ${checked} page loads\n`,
   );
   for (const f of failures) console.error(`  ✖ ${f}`);
   process.exit(1);
 }
 console.log(
-  `Demo smoke: ${checked} page loads — no errors, no axe violations, no sideways scroll`,
+  `Demo smoke${scope}: ${checked} page loads — no errors, no axe violations, no sideways scroll`,
 );

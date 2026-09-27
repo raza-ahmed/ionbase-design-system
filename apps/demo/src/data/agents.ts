@@ -539,7 +539,15 @@ export interface AgentRunRow {
   day: IsoDay;
   outcome: 'completed' | 'failed' | 'stopped';
   durationSec: number;
+  /** What happened, in a sentence — why it failed, who stopped it. */
+  result: string;
 }
+
+const FAILURES = [
+  'The ledger API timed out after 30 seconds, twice.',
+  'A purchase order it needed was archived.',
+  'The approval queue rejected the proposed amount.',
+];
 
 export interface AgentDetail {
   agent: Agent;
@@ -606,11 +614,25 @@ export async function getAgent(
     ? []
     : Array.from({ length: 12 }, (_, i) => {
         const r = noise(seed + i * 11);
+        // A failing agent's newest run failed — that is what "Failing" says,
+        // and the draw alone could leave it with no failure in sight.
+        const outcome: AgentRunRow['outcome'] =
+          (agent.status === 'failing' && i === 0) || r < failRate
+            ? 'failed'
+            : r > 0.96
+              ? 'stopped'
+              : 'completed';
         return {
           id: `${id}-r${120 - i}`,
           day: addDays(today(), -Math.floor(i / 3)),
-          outcome: r < failRate ? 'failed' : r > 0.96 ? 'stopped' : 'completed',
+          outcome,
           durationSec: 20 + Math.round(noise(seed + i * 7) * 200),
+          result:
+            outcome === 'failed'
+              ? FAILURES[i % FAILURES.length]
+              : outcome === 'stopped'
+                ? `Stopped by ${agent.owner.name} before the approval.`
+                : 'Finished every step; nothing needed a person.',
         };
       });
   const sorted = recentRuns.map((r) => r.durationSec).sort((a, b) => a - b);

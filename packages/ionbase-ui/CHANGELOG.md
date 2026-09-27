@@ -1,5 +1,51 @@
 # Changelog
 
+## 0.110.0 — 2026-09-27
+
+### Added — expandable table rows
+
+A row that opens to show more under it: why a run failed, a line item's
+breakdown. It is the fifteenth P1 item on the enterprise checklist.
+
+- **`expansion` on TableRow.** In `<tbody>` it takes `{ 'aria-label',
+content }`, and `isExpanded`, `defaultExpanded` and `onExpandedChange` for
+  controlled or uncontrolled use. In `<thead>`, `{ label }` is the named
+  header cell over the toggles, so the columns line up.
+- **A real disclosure.** The toggle is a button in the row's first cell, named
+  for the row, with `aria-expanded`, and `aria-controls` pointing at the
+  detail while it is open. The chevron points right when closed and down when
+  open, and the target is 24px.
+- **One cell across every column.** The detail row's span is counted from the
+  row's own cells, colSpans included, so it stays right when a column is
+  added.
+- **The pair reads as one.** The open row loses its bottom rule, and the
+  detail takes its row's stripe and selection. Stripes count real rows only,
+  so an open detail shifts nothing below it, and hovering the detail tints
+  nothing.
+- **Figma:** Table Row gains a `Show Expander` boolean with a private
+  `.Table Expander` (Collapsed, Expanded) in a leading cell, and a new Table
+  Expansion Row for the detail. Both map to TableRow. 101 blocks verified.
+- **Demo:** an agent's recent runs open to say why each run ended, and the
+  newest failure starts open. A failing agent's newest run is now a failure,
+  as its status says. The smoke check, at desktop and phone widths, covers:
+  - one run open, a failure, saying why, under its own row;
+  - the detail spanning every column, and a named header over the toggles;
+  - Enter and Space opening and closing a run, focus staying on the toggle;
+  - axe.
+
+  Each of six mutations fails it.
+
+- **Pattern:** DataTable opens short details under the row, and sends long
+  ones to a SidePanel.
+
+### Added — `SMOKE_ONLY` for the demo smoke check
+
+- **`SMOKE_ONLY="expandable rows"`** runs only the checks whose name contains
+  it: two page loads in about two seconds, where the full run is 97 and
+  about three minutes. It is for negative-testing one check, where every
+  mutation used to rerun the lot. A filter that matches nothing exits 1, and
+  CI sets nothing, so it runs every check.
+
 ## 0.109.0 — 2026-09-27
 
 ### Added — `Timeline` and `TimelineItem`

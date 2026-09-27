@@ -220,6 +220,12 @@ A smoke check that runs axe just after a control enables can measure its
 colours mid-transition and report a contrast it never settles on. Wait for
 `document.getAnimations()` to finish first.
 
+To negative-test one smoke check, run only it: `SMOKE_ONLY="expandable rows"
+node scripts/smoke.mjs` runs the checks whose name contains the text — two
+page loads in about two seconds, where the full run is ~97 and minutes. A
+filter that matches nothing exits 1 rather than passing. CI sets nothing and
+runs every check.
+
 ## Interaction tests — hover is a pulse, not a level
 
 Read this before asserting on `data-hovered` anywhere.

@@ -436,13 +436,18 @@ function Runs({ data }: { data: Detail }) {
       />
     );
   }
+  // The newest failure starts open: it is what someone opening this tab has
+  // come to read.
+  const firstFailed = recentRuns.find((r) => r.outcome === 'failed')?.id;
   return (
     // Not a region: the Table's scroll region is already a landmark with this
     // name, and two landmarks with one name are two doors with the same sign.
     <Card title="Recent runs" isRegion={false}>
       <Table aria-label="Recent runs">
         <TableHead>
-          <TableRow>
+          {/* The cell over the toggles, named for a screen reader, so the
+              columns line up. */}
+          <TableRow expansion={{ label: 'Details' }}>
             <TableCell>Run</TableCell>
             <TableCell>Day</TableCell>
             <TableCell>Outcome</TableCell>
@@ -451,7 +456,16 @@ function Runs({ data }: { data: Detail }) {
         </TableHead>
         <TableBody>
           {recentRuns.map((r) => (
-            <TableRow key={r.id}>
+            // Short, and read in place: why a run failed is one sentence, so
+            // it opens under its row rather than in a panel.
+            <TableRow
+              key={r.id}
+              expansion={{
+                'aria-label': `Details for run ${r.id}`,
+                content: r.result,
+                defaultExpanded: r.id === firstFailed,
+              }}
+            >
               <TableCell>
                 <code className="ion-text-caption">{r.id}</code>
               </TableCell>

@@ -19,7 +19,7 @@
   ],
   "file": "gaLbGd0QNb1fUl6BjSpfBA",
   "appliedOn": "2026-09-27",
-  "verifiedInFigma": 100,
+  "verifiedInFigma": 101,
   "applied": {
     "1360:267": {
       "figmaComponent": "Accordion",
@@ -371,10 +371,15 @@
       "component": "TableCell",
       "hash": "189e83ce69a6778e"
     },
+    "1652:796": {
+      "figmaComponent": "Table Expansion Row",
+      "component": "TableRow",
+      "hash": "d5f87a8816bb9922"
+    },
     "175:605": {
       "figmaComponent": "Table Row",
       "component": "TableRow",
-      "hash": "d9bd4edca3bd6d50"
+      "hash": "3798d93b5e60c67d"
     },
     "1444:761": {
       "figmaComponent": "Table Sort Indicator",

@@ -124,28 +124,38 @@
 }
 
 /*
- * Striped rows have to come BEFORE hover/selected in the file, not just
- * "be a plain background" — `.ion-table--striped tbody tr:nth-of-type(even)`
- * and `.ion-table tbody tr:hover` carry the same specificity (one class, one
- * pseudo-class, two elements), so with equal specificity the later rule in
- * the file wins. Checked, not assumed: swapping the order silently makes a
- * striped, hovered row show the page stripe instead of the hover tint.
+ * Striped rows have to come BEFORE hover/selected in the file, and match
+ * their specificity: with equal specificity the later rule wins, so a
+ * striped row that is hovered or selected shows the tint, not the stripe.
+ * Checked, not assumed: swapping the order silently shows the stripe.
+ *
+ * Counted among real rows only: an open row's detail is a second `<tr>`, and
+ * `nth-of-type` would count it and shift every stripe below. `:nth-child(…
+ * of .ion-table__row)` counts that class too, which is why the hover and
+ * selected rules below name `.ion-table__row` — to stay level with it. The
+ * detail takes its row's stripe and selection, so the pair reads as one.
  */
-.ion-table--striped tbody tr:nth-of-type(even) {
+.ion-table--striped tbody tr:nth-child(even of .ion-table__row),
+.ion-table--striped
+  tbody
+  tr:nth-child(even of .ion-table__row)
+  + .ion-table__detail {
   background-color: var(--surface-page);
 }
 
+/* The detail is not a row to point at: hovering it tints nothing. */
 @media (hover: hover) {
-  .ion-table tbody tr:hover {
+  .ion-table tbody tr.ion-table__row:hover {
     background-color: var(--surface-hover);
   }
 }
 
-.ion-table tbody tr[data-hovered='true'] {
+.ion-table tbody tr.ion-table__row[data-hovered='true'] {
   background-color: var(--surface-hover);
 }
 
-.ion-table tbody tr[data-selected='true'] {
+.ion-table tbody tr.ion-table__row[data-selected='true'],
+.ion-table tbody tr.ion-table__row[data-selected='true'] + .ion-table__detail {
   background-color: var(--surface-primary-subtle);
 }
 
@@ -253,4 +263,73 @@
 .ion-table th[data-divider='true'],
 .ion-table td[data-divider='true'] {
   border-right: var(--border-width-default) solid var(--border-default);
+}
+
+/*
+ * Expandable rows — `expansion` on TableRow, Figma's `Show Expander`.
+ *
+ * The toggle column is as narrow as its button: `width: 1%` is the table
+ * idiom for "shrink to content", and the cell loses its trailing padding so
+ * the chevron sits against the next column's own.
+ */
+.ion-table th.ion-table__expander,
+.ion-table td.ion-table__expander {
+  width: 1%;
+  padding-right: 0;
+}
+
+/* A 24px target (WCAG 2.5.8), reset to read as part of the row. */
+.ion-table__expander-button {
+  display: inline-flex;
+  width: var(--spacing-24);
+  height: var(--spacing-24);
+  margin: 0;
+  padding: 0;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: var(--radius-xs);
+  background: none;
+  color: var(--icon-secondary);
+  cursor: pointer;
+}
+
+.ion-table__expander-button svg {
+  width: var(--icon-size-sm);
+  height: var(--icon-size-sm);
+  transition: transform var(--ion-duration-base) var(--ion-ease-out);
+}
+
+/* Open points down; closed points right — the shape says it, not only the name. */
+.ion-table__expander-button[aria-expanded='true'] svg {
+  transform: rotate(90deg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ion-table__expander-button svg {
+    transition: none;
+  }
+}
+
+@media (hover: hover) {
+  .ion-table__expander-button:hover {
+    background-color: var(--surface-hover);
+    color: var(--icon-default);
+  }
+}
+
+.ion-table__expander-button:focus-visible {
+  outline: var(--border-width-thick) solid var(--ring-focus);
+  outline-offset: 2px;
+}
+
+/* The row and its detail read as one: no rule between them. */
+.ion-table tbody tr[data-expanded='true'] {
+  border-bottom-color: transparent;
+}
+
+/* The detail starts under the row's content, past the toggle. */
+.ion-table .ion-table__detail > td {
+  padding-top: 0;
+  padding-left: calc(var(--spacing-16) + var(--spacing-24));
 }

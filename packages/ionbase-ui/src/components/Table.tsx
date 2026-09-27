@@ -1,6 +1,15 @@
 'use client';
 
-import React, { createContext, forwardRef, useContext } from 'react';
+import React, {
+  createContext,
+  forwardRef,
+  useContext,
+  useId,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from 'react';
+import { mergeRefs } from 'react-aria';
 import { Checkbox } from './Checkbox.js';
 
 export type TableDensity = 'compact' | 'default' | 'relaxed';
@@ -107,8 +116,41 @@ TableBody.displayName = 'TableBody';
 export type TableRowSelection = React.ComponentProps<typeof Checkbox> &
   ({ 'aria-label': string } | { children: React.ReactNode });
 
+/**
+ * A body row that opens to show more under it. The toggle is a real
+ * disclosure button in the row's first cell, named for the row.
+ */
+export interface TableRowExpansion {
+  /**
+   * The toggle's accessible name. Name the row, not the action — "Details
+   * for run 4821" — since every row has one and "Expand" twelve times says
+   * nothing.
+   */
+  'aria-label': string;
+  /** What opens under the row, in one cell across every column. */
+  content: React.ReactNode;
+  /** Controlled: whether it is open. */
+  isExpanded?: boolean;
+  /** Uncontrolled: whether it starts open. */
+  defaultExpanded?: boolean;
+  onExpandedChange?: (isExpanded: boolean) => void;
+}
+
+/** The head row's cell over the toggles. Its name is visually hidden. */
+export interface TableHeadExpansion {
+  /** Names the toggle column for a screen reader: "Details". */
+  label: string;
+}
+
 export interface TableRowProps extends React.HTMLAttributes<HTMLTableRowElement> {
   isSelected?: boolean;
+  /**
+   * Makes the row expandable — Figma's `Show Expander`. In `<tbody>`, a
+   * `TableRowExpansion`: a leading toggle cell, and when open, a second row
+   * under this one holding `content`. In `<thead>`, a `TableHeadExpansion`:
+   * the header cell over the toggles, so the columns still line up.
+   */
+  expansion?: TableRowExpansion | TableHeadExpansion;
   /**
    * Renders a leading `Checkbox` cell — Figma's `Show Selection`. Takes the
    * checkbox's own props directly rather than a boolean, since a selectable
@@ -129,18 +171,91 @@ export interface TableRowProps extends React.HTMLAttributes<HTMLTableRowElement>
  * the same accessible pattern Menu and Table Cell's own link variant use;
  * nesting an interactive role on `<tr>` itself is not valid HTML.
  */
+const Chevron = () => (
+  <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false">
+    <path
+      d="m9 18 6-6-6-6"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
+
+/*
+ * The detail row spans every column. Counted from the row's own cells after
+ * render, colSpans included, rather than taken as a prop the caller has to
+ * keep in step with the columns. `useLayoutEffect` so it is right before the
+ * first paint; a no-op on a server, where the first client render fixes it.
+ */
+const useIsomorphicLayoutEffect =
+  typeof window === 'undefined' ? () => {} : useLayoutEffect;
+
 export const TableRow = forwardRef<HTMLTableRowElement, TableRowProps>(
-  ({ isSelected, selection, className, children, ...rest }, ref) => {
+  ({ isSelected, selection, expansion, className, children, ...rest }, ref) => {
     const section = useContext(TableSectionContext);
     const inHead = section === 'head';
+    const rowRef = useRef<HTMLTableRowElement>(null);
+    const detailId = useId();
 
-    return (
+    const body =
+      expansion && 'content' in expansion && !inHead ? expansion : undefined;
+    const [ownExpanded, setOwnExpanded] = useState(
+      body?.defaultExpanded ?? false,
+    );
+    const isExpanded = body ? (body.isExpanded ?? ownExpanded) : false;
+    const toggle = () => {
+      const next = !isExpanded;
+      // Harmless when controlled: `isExpanded` wins over it.
+      setOwnExpanded(next);
+      body?.onExpandedChange?.(next);
+    };
+
+    const [span, setSpan] = useState(1);
+    useIsomorphicLayoutEffect(() => {
+      if (!isExpanded || !rowRef.current) return;
+      const cells = [...rowRef.current.cells].reduce(
+        (n, cell) => n + cell.colSpan,
+        0,
+      );
+      if (cells !== span) setSpan(cells);
+    });
+
+    const expanderCell = !expansion ? null : inHead ? (
+      <th scope="col" className="ion-table__expander">
+        <span className="ion-visually-hidden">
+          {(expansion as TableHeadExpansion).label}
+        </span>
+      </th>
+    ) : (
+      <td className="ion-table__expander">
+        {body && (
+          // A real disclosure: the row keeps its row role, and the button
+          // gets focus, Enter and Space, and says open or closed.
+          <button
+            type="button"
+            className="ion-table__expander-button"
+            aria-label={body['aria-label']}
+            aria-expanded={isExpanded}
+            aria-controls={isExpanded ? detailId : undefined}
+            onClick={toggle}
+          >
+            <Chevron />
+          </button>
+        )}
+      </td>
+    );
+
+    const row = (
       <tr
         {...rest}
-        ref={ref}
+        ref={mergeRefs(rowRef, ref)}
         data-selected={isSelected || undefined}
+        data-expanded={isExpanded || undefined}
         className={['ion-table__row', className].filter(Boolean).join(' ')}
       >
+        {expanderCell}
         {selection &&
           (inHead ? (
             <th scope="col">
@@ -153,6 +268,16 @@ export const TableRow = forwardRef<HTMLTableRowElement, TableRowProps>(
           ))}
         {children}
       </tr>
+    );
+
+    if (!body || !isExpanded) return row;
+    return (
+      <>
+        {row}
+        <tr id={detailId} className="ion-table__detail">
+          <td colSpan={span}>{body.content}</td>
+        </tr>
+      </>
     );
   },
 );

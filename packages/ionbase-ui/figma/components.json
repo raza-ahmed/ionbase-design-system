@@ -54,6 +54,18 @@
         }
       }
     },
+    ".Table Expander": {
+      "page": "Table",
+      "id": "1652:795",
+      "kind": "SET",
+      "props": {
+        "State": {
+          "type": "VARIANT",
+          "options": ["Collapsed", "Expanded"],
+          "default": "Collapsed"
+        }
+      }
+    },
     "Accordion": {
       "page": "Accordion",
       "id": "1360:267",
@@ -2319,6 +2331,12 @@
         }
       }
     },
+    "Table Expansion Row": {
+      "page": "Table",
+      "id": "1652:796",
+      "kind": "COMPONENT",
+      "props": {}
+    },
     "Table Row": {
       "page": "Table",
       "id": "175:605",
@@ -2328,6 +2346,9 @@
           "type": "VARIANT",
           "options": ["Compact", "Default", "Relaxed"],
           "default": "Compact"
+        },
+        "Show Expander#1652:0": {
+          "type": "BOOLEAN"
         },
         "Show Selection#175:12": {
           "type": "BOOLEAN"
