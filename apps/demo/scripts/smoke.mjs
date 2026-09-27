@@ -2670,6 +2670,165 @@ try {
   }
 
   /*
+   * Table columns, on Agents. The Columns menu lists every column checked,
+   * the Agent column fixed; unchecking Owner takes its header and cells out
+   * and leaves the menu open. The Agent column resizes from its handle — a
+   * named separator whose value is the width — and a wider column shows more
+   * of each purpose. The view survives a reload; a double-click puts the
+   * width back. Nothing sideways on a phone; axe.
+   */
+  for (const [device, width, height] of [
+    ['desktop', 1280, 900],
+    ['mobile', 390, 844],
+  ]) {
+    const where = `table columns (light, ${device})`;
+    if (skip(where)) continue;
+    const context = await browser.newContext({ viewport: { width, height } });
+    await context.addInitScript(() => {
+      localStorage.setItem(
+        'ionbase-ops:demo-settings',
+        JSON.stringify({ theme: 'light', latency: 0 }),
+      );
+    });
+    const page = await context.newPage();
+    page.on('pageerror', (e) => fail(where, `exception: ${e.message}`));
+    await page.goto(`${BASE}/#/agents`);
+    // The name is the scroll region's: Table puts its label there.
+    const table = page.getByRole('region', { name: 'Agents' });
+    const headers = () =>
+      table
+        .locator('thead th')
+        .evaluateAll((ths) => ths.map((th) => th.textContent.trim()));
+    const agentHeader = table.getByRole('columnheader', {
+      name: 'Agent',
+      exact: true,
+    });
+    try {
+      await table.waitFor({ timeout: 10_000 });
+      if (!(await headers()).includes('Owner'))
+        fail(where, 'Owner is not shown to begin with');
+
+      const button = page.getByRole('button', { name: 'Columns' });
+      await button.click();
+      const menu = page.getByRole('menu', { name: 'Columns' });
+      await menu.waitFor({ timeout: 5_000 });
+      const items = menu.getByRole('menuitemcheckbox');
+      if ((await items.count()) !== 7)
+        fail(where, `the menu lists ${await items.count()} columns, not 7`);
+      const agentItem = menu.getByRole('menuitemcheckbox', { name: 'Agent' });
+      if ((await agentItem.getAttribute('aria-disabled')) !== 'true')
+        fail(where, 'the Agent column can be hidden');
+      const cellsBefore = await table
+        .locator('tbody tr')
+        .first()
+        .locator('td, th')
+        .count();
+      await menu.getByRole('menuitemcheckbox', { name: 'Owner' }).click();
+      await page
+        .waitForFunction(
+          () =>
+            ![...document.querySelectorAll('thead th')].some(
+              (th) => th.textContent.trim() === 'Owner',
+            ),
+          null,
+          { timeout: 5_000 },
+        )
+        .catch(() => fail(where, 'unchecking Owner did not hide it'));
+      const cellsAfter = await table
+        .locator('tbody tr')
+        .first()
+        .locator('td, th')
+        .count();
+      if (cellsAfter !== cellsBefore - 1)
+        fail(where, `a row went from ${cellsBefore} cells to ${cellsAfter}`);
+      if (!(await menu.isVisible()))
+        fail(where, 'the menu closed after one column');
+      await page.keyboard.press('Escape');
+      await page
+        .waitForFunction(
+          () => document.activeElement?.textContent?.trim() === 'Columns',
+          null,
+          { timeout: 5_000 },
+        )
+        .catch(() => fail(where, 'Escape did not return focus to Columns'));
+
+      const handle = table.getByRole('separator', { name: 'Resize Agent' });
+      const valueBefore = Number(await handle.getAttribute('aria-valuenow'));
+      const headerBefore = await agentHeader.evaluate(
+        (th) => th.getBoundingClientRect().width,
+      );
+      if (Math.abs(valueBefore - headerBefore) > 1)
+        fail(
+          where,
+          `the handle says ${valueBefore}, the column is ${headerBefore}`,
+        );
+      // The most cut purpose, held by its place among all of them: a filter
+      // on "is cut" would pick another row once widening uncuts this one.
+      const lines = table.locator('tbody .ion-truncated__text');
+      const most = await lines.evaluateAll((els) => {
+        const cut = els.map((el) => el.scrollWidth - el.clientWidth);
+        return cut.indexOf(Math.max(...cut));
+      });
+      const purpose = lines.nth(most);
+      const hidden = () =>
+        purpose.evaluate((el) => el.scrollWidth - el.clientWidth);
+      const hiddenBefore = await hidden();
+      if (hiddenBefore <= 0) fail(where, 'no purpose is cut to begin with');
+      await handle.focus();
+      await page.keyboard.press('End');
+      const widthOf = () =>
+        agentHeader.evaluate((th) =>
+          Math.round(th.getBoundingClientRect().width),
+        );
+      if ((await widthOf()) !== 560)
+        fail(where, `End took the Agent column to ${await widthOf()}, not 560`);
+      if ((await handle.getAttribute('aria-valuenow')) !== '560')
+        fail(where, 'the handle does not say 560');
+      // The widened column shows that much more of the cut purpose.
+      const hiddenAfter = await hidden();
+      if (hiddenAfter > Math.max(0, hiddenBefore - (560 - headerBefore)) + 2)
+        fail(
+          where,
+          `widening showed ${hiddenBefore - hiddenAfter}px more of the purpose`,
+        );
+
+      await page.reload();
+      await table.waitFor({ timeout: 10_000 });
+      if ((await headers()).includes('Owner'))
+        fail(where, 'Owner came back after a reload');
+      if ((await widthOf()) !== 560)
+        fail(where, `after a reload the Agent column is ${await widthOf()}`);
+
+      await table.getByRole('separator', { name: 'Resize Agent' }).dblclick();
+      if ((await agentHeader.evaluate((th) => th.style.width)) !== '')
+        fail(where, 'a double-click did not put the width back');
+
+      if (
+        await page.evaluate(
+          () => document.documentElement.scrollWidth > window.innerWidth,
+        )
+      )
+        fail(where, 'the page scrolls sideways');
+
+      await page.addScriptTag({ content: axeSource });
+      const violations = await page.evaluate(async () => {
+        const result = await window.axe.run(document, {
+          resultTypes: ['violations'],
+        });
+        return result.violations.map((v) => `${v.impact} ${v.id}`);
+      });
+      for (const v of violations) fail(where, `axe ${v}`);
+    } catch (e) {
+      fail(
+        where,
+        `did not run: ${e.message.split('\n').slice(0, 3).join(' | ')}`,
+      );
+    }
+    groupsChecked++;
+    await context.close();
+  }
+
+  /*
    * Timeline, as an agent's History on its Overview. An ordered list named
    * History, newest first; each event says what happened, who, and when in
    * a <time> with the exact instant; the markers are hidden. A purpose saved

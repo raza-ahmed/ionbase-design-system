@@ -266,6 +266,72 @@
 }
 
 /*
+ * Resizable columns — `resize` on a header TableCell, from `useTableColumns`.
+ *
+ * The handle is a strip on the header's trailing edge, inside the cell's
+ * padding so it never overlaps the label: wide enough to hit with a finger,
+ * with a rule drawn on the edge itself. The rule shows while the header is
+ * hovered, the handle focused or dragged — and always where there is no
+ * hover to find it with.
+ *
+ * `:where()` keeps `position: relative` below the sticky header's and held
+ * column's `position: sticky`: both are containing blocks for the handle, so
+ * a held header keeps its handle and stays held.
+ */
+.ion-table :where(th[data-resizable='true']) {
+  position: relative;
+
+  /* The width set is the column's, padding included: what a drag measures. */
+  box-sizing: border-box;
+}
+
+.ion-table__resizer {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  inset-inline-end: 0;
+  width: var(--spacing-16);
+  cursor: col-resize;
+  touch-action: none;
+}
+
+.ion-table__resizer::after {
+  position: absolute;
+  top: var(--spacing-8);
+  bottom: var(--spacing-8);
+  inset-inline-end: 0;
+  width: var(--border-width-thick);
+  border-radius: var(--radius-full);
+  background-color: var(--border-strong);
+  content: '';
+  opacity: 0;
+  transition: opacity var(--ion-duration-base) var(--ion-ease-out);
+}
+
+@media (hover: hover) {
+  .ion-table th:hover > .ion-table__resizer::after {
+    opacity: 1;
+  }
+}
+
+@media (hover: none) {
+  .ion-table__resizer::after {
+    opacity: 1;
+  }
+}
+
+.ion-table__resizer:focus-visible {
+  outline: var(--border-width-thick) solid var(--ring-focus);
+  outline-offset: calc(-1 * var(--border-width-thick));
+}
+
+.ion-table__resizer:focus-visible::after,
+.ion-table__resizer[data-resizing='true']::after {
+  background-color: var(--border-focus);
+  opacity: 1;
+}
+
+/*
  * Sticky header and first column — `maxHeight` and `stickyFirstColumn` on
  * Table.
  *

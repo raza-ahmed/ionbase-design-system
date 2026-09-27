@@ -26,7 +26,8 @@
     "StatusIndicator",
     "TruncatedText",
     "Timeline",
-    "TimelineItem"
+    "TimelineItem",
+    "TableColumnsMenu"
   ],
   "structure": [
     "A toolbar above the table: a SearchField (size sm, with an aria-label naming what it searches) and filter controls — a MultiSelect with `hideTags` for any filter that can match more than one value, and a range Slider (`defaultValue={[low, high]}`, with `formatOptions` for the unit) for a quantity bounded at both ends — duration, cost — which applies on `onChangeEnd`, not per step. They stay ordinary tab stops, not a Toolbar — see Toolbar's contract.",
@@ -35,6 +36,7 @@
     "Table, with an `id` passed to the bar as `tableId`, and a TableHead whose first cell carries the select-all Checkbox — `headSelection(pageKeys)`, which reaches the page on screen only — and a TableBody whose rows each carry `rowSelection(key, label)` and `isSelected(key)`.",
     "A long list that is not paged gets `maxHeight` on Table — the rows scroll inside it and the header stays at its top — so the filters above and the actions below stay in reach. A table wider than its space — on a phone, beside a SidePanel — gets `stickyFirstColumn`, so each row keeps its name in view as the rest scrolls sideways.",
     "Sortable columns: every header that sorts gets `sortDirection` — the current direction on the sorted column, `none` on the others — so each shows it can be sorted before anyone tries.",
+    "A table with more columns than most people need at once gets a TableColumnsMenu at the toolbar's end, from `useTableColumns(columns)`: render the headers and cells of `visibleColumns` only, give the column that names each row `canHide: false`, and make resizable only the column whose content is long — a purpose, a description — with `canResize` and its limits. Keep the view someone chose — store `hidden` and `widths`, and pass them back as `initial` — so coming back does not undo it.",
     "A status column is a StatusIndicator in each cell — a shape, a colour and a word — not a Badge with a dot: a dot is the same shape for every status, and a column of chips competes with the data.",
     "Text of any length in a cell — a description under a row's name, anything users or agents write — is a TruncatedText on one line, not a `title` or a sliced string: cut, it is a tab stop with the whole text in a tooltip, and a screen reader reads all of it. The column shrinks to its share and the line is cut there, rather than widening the table.",
     "A row's detail, when it is short and read in place — a failed run's reason, a line item's breakdown — opens under the row: `expansion` on TableRow, with `{ label }` on the head row so the columns line up. Name each toggle for its row (\"Details for run 4821\"), not \"Expand\". Anything longer, or with its own actions, goes in a SidePanel instead.",
@@ -72,7 +74,14 @@
   "propsUsed": {
     "Table": ["density", "isStriped", "maxHeight", "stickyFirstColumn"],
     "TableRow": ["selection", "isSelected", "expansion"],
-    "TableCell": ["scope", "align", "variant", "sortDirection", "onSort"],
+    "TableCell": [
+      "scope",
+      "align",
+      "variant",
+      "sortDirection",
+      "onSort",
+      "resize"
+    ],
     "Checkbox": ["isIndeterminate", "isDisabled"],
     "TableBatchBar": [
       "count",
@@ -125,7 +134,8 @@
     ],
     "StatusIndicator": ["intent", "children"],
     "TruncatedText": ["children", "className"],
-    "TimelineItem": ["title", "actor", "timestamp", "icon", "children"]
+    "TimelineItem": ["title", "actor", "timestamp", "icon", "children"],
+    "TableColumnsMenu": ["columns"]
   },
   "variantsUsed": {
     "Alert": {
@@ -226,6 +236,11 @@
       "dont": "a detail row added by hand under the row, with a counted colSpan",
       "do": "`expansion={{ 'aria-label': `Details for ${row.name}`, content }}` on the TableRow",
       "why": "a hand-built pair has no disclosure button a keyboard can reach or a screen reader can hear open, and its colSpan goes stale when a column is added"
+    },
+    {
+      "dont": "hiding a column with CSS or leaving its cells empty",
+      "do": "render the cells of `useTableColumns`' `visibleColumns`",
+      "why": "a screen reader still counts and reads the hidden column, so its headers no longer match what is on screen"
     }
   ]
 }

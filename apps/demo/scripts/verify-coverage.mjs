@@ -54,6 +54,7 @@ const REQUIRED = [
   'MultiSelect',
   'Toolbar',
   'TableBatchBar',
+  'TableColumnsMenu',
   'Toggletip',
   'Slider',
   'TreeView',

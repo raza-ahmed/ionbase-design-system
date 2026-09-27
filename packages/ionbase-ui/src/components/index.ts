@@ -197,7 +197,16 @@ export type {
   TableCellAlign,
   TableCellScope,
   TableSortDirection,
+  TableCellResize,
 } from './Table.js';
+export { useTableColumns } from './use-table-columns.js';
+export type {
+  TableColumn,
+  UseTableColumnsOptions,
+  UseTableColumnsResult,
+} from './use-table-columns.js';
+export { TableColumnsMenu } from './TableColumnsMenu.js';
+export type { TableColumnsMenuProps } from './TableColumnsMenu.js';
 export { useTableSort } from './use-table-sort.js';
 export { useTableSelection } from './use-table-selection.js';
 export type {

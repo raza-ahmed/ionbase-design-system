@@ -116,6 +116,11 @@ function useStickyLayout(
         : 0;
       container.style.setProperty('--ion-table-head-height', `${head}px`);
       container.style.setProperty('--ion-table-held-width', `${held}px`);
+      // A column resized inside a full-width table leaves the table's size
+      // alone, so its cells are watched too: every column has one in the
+      // first row. Watching a cell twice is a no-op.
+      const first = table.tHead?.rows[0] ?? table.rows[0];
+      if (first) for (const cell of first.cells) resize.observe(cell);
     };
 
     // The shadow at the held column's edge shows only once something has
@@ -142,9 +147,9 @@ function useStickyLayout(
         target.scrollIntoView({ block: 'nearest', inline: 'nearest' });
     };
 
+    const resize = new ResizeObserver(measure);
     measure();
     onScroll();
-    const resize = new ResizeObserver(measure);
     resize.observe(table);
     const rows = new MutationObserver(measure);
     rows.observe(table, { childList: true, subtree: true });
@@ -464,7 +469,128 @@ export interface TableCellProps extends Omit<
    * or paged from a server.
    */
   onSort?: () => void;
+  /**
+   * Makes a header cell's column resizable: a handle on its trailing edge,
+   * dragged or moved with the arrow keys. Header cells only. `useTableColumns`
+   * returns this for each column through `headerProps`.
+   */
+  resize?: TableCellResize;
   children?: React.ReactNode;
+}
+
+/** A resizable column's width, its limits, and what to do when it changes. */
+export interface TableCellResize {
+  /** In pixels; `undefined` sizes the column to its content. */
+  width: number | undefined;
+  minWidth: number;
+  maxWidth: number;
+  /** Called with the new width, or `undefined` on a double-click: back to
+   *  the column's own width. */
+  onResize: (width: number | undefined) => void;
+  /** The handle's name: "Resize Agent". It names the column, since every
+   *  resizable header has one. */
+  'aria-label': string;
+}
+
+/** Arrow keys move a handle this far; with Shift, four times as far. */
+const RESIZE_STEP = 16;
+
+/**
+ * The resize handle: a focusable vertical separator, the ARIA window-splitter
+ * pattern, with the column's width as its value. A drag, the arrow keys,
+ * Home and End, and a double-click to put the width back.
+ */
+function ResizeHandle({ resize }: { resize: TableCellResize }) {
+  const { width, minWidth, maxWidth, onResize } = resize;
+  const ref = useRef<HTMLSpanElement>(null);
+  const drag = useRef<{ x: number; width: number; rtl: boolean } | null>(null);
+  // A column sized by its content still has a width to announce and to
+  // step from: the one it was laid out at.
+  const [measured, setMeasured] = useState<number>();
+  useIsomorphicLayoutEffect(() => {
+    const cell = ref.current?.parentElement;
+    if (!cell) return;
+    const read = () =>
+      setMeasured(Math.round(cell.getBoundingClientRect().width));
+    read();
+    const observer = new ResizeObserver(read);
+    observer.observe(cell);
+    return () => observer.disconnect();
+  }, []);
+
+  const current = width ?? measured ?? minWidth;
+  const clamp = (w: number) =>
+    Math.round(Math.min(maxWidth, Math.max(minWidth, w)));
+  const isRtl = () =>
+    !!ref.current && getComputedStyle(ref.current).direction === 'rtl';
+
+  const onKeyDown = (e: React.KeyboardEvent) => {
+    const step = e.shiftKey ? RESIZE_STEP * 4 : RESIZE_STEP;
+    // Toward the trailing edge widens, whichever way the text runs.
+    const grow = isRtl() ? 'ArrowLeft' : 'ArrowRight';
+    const shrink = isRtl() ? 'ArrowRight' : 'ArrowLeft';
+    let next: number | undefined;
+    if (e.key === grow) next = current + step;
+    else if (e.key === shrink) next = current - step;
+    else if (e.key === 'Home') next = minWidth;
+    else if (e.key === 'End') next = maxWidth;
+    else return;
+    e.preventDefault();
+    onResize(clamp(next));
+  };
+
+  const onPointerDown = (e: React.PointerEvent<HTMLSpanElement>) => {
+    if (e.button !== 0) return;
+    // No text selection while dragging, and the column's own width, not
+    // the value, is where the drag starts.
+    e.preventDefault();
+    e.currentTarget.setPointerCapture(e.pointerId);
+    e.currentTarget.focus();
+    const cell = e.currentTarget.parentElement as HTMLElement;
+    drag.current = {
+      x: e.clientX,
+      width: cell.getBoundingClientRect().width,
+      rtl: isRtl(),
+    };
+    e.currentTarget.dataset.resizing = 'true';
+  };
+
+  const onPointerMove = (e: React.PointerEvent) => {
+    const start = drag.current;
+    if (!start) return;
+    const dx = e.clientX - start.x;
+    onResize(clamp(start.width + (start.rtl ? -dx : dx)));
+  };
+
+  const onPointerEnd = (e: React.PointerEvent<HTMLSpanElement>) => {
+    if (!drag.current) return;
+    drag.current = null;
+    delete e.currentTarget.dataset.resizing;
+    if (e.currentTarget.hasPointerCapture(e.pointerId))
+      e.currentTarget.releasePointerCapture(e.pointerId);
+  };
+
+  return (
+    <span
+      ref={ref}
+      role="separator"
+      tabIndex={0}
+      aria-orientation="vertical"
+      aria-label={resize['aria-label']}
+      aria-valuenow={current}
+      aria-valuemin={minWidth}
+      aria-valuemax={maxWidth}
+      className="ion-table__resizer"
+      onKeyDown={onKeyDown}
+      onPointerDown={onPointerDown}
+      onPointerMove={onPointerMove}
+      onPointerUp={onPointerEnd}
+      onPointerCancel={onPointerEnd}
+      // A sibling of the sort button, not inside it: a press here never
+      // sorts.
+      onDoubleClick={() => onResize(undefined)}
+    />
+  );
 }
 
 const SortIcon = ({ direction }: { direction: TableSortDirection }) => (
@@ -510,14 +636,18 @@ export const TableCell = forwardRef<HTMLTableCellElement, TableCellProps>(
       trailingIcon,
       sortDirection,
       onSort,
+      resize: resizeProp,
       className,
       children,
+      style,
       ...rest
     },
     ref,
   ) => {
     const section = useContext(TableSectionContext);
     const Tag = header ? 'th' : 'td';
+    const resize = header ? resizeProp : undefined;
+    const labelId = useId();
     const isSortable = header && sortDirection !== undefined;
     // `scope` is only valid on `<th>` — never put it on a `<td>`.
     const scope = header
@@ -575,18 +705,43 @@ export const TableCell = forwardRef<HTMLTableCellElement, TableCellProps>(
         }
         data-align={align !== 'leading' ? align : undefined}
         data-divider={showDivider || undefined}
+        data-resizable={resize ? 'true' : undefined}
+        // Named by its label alone: named from its content, the header would
+        // read the handle's name too — "Agent Resize Agent".
+        aria-labelledby={
+          resize
+            ? (rest['aria-labelledby'] ?? labelId)
+            : rest['aria-labelledby']
+        }
         className={className}
+        // The header's width is the column's: a table lays every cell in a
+        // column out at the widest of them. `width` alone gives way when the
+        // other columns fill the table; `min-width` counts toward the
+        // column's floor, so the table scrolls sideways instead.
+        style={
+          resize?.width !== undefined
+            ? { ...style, width: resize.width, minWidth: resize.width }
+            : style
+        }
       >
         {isSortable ? (
           // A real button inside the <th>, not a clickable <th>: the header
           // keeps its column-header role and the button gets focus, Enter
           // and Space for free.
-          <button type="button" className={contentClassNames} onClick={onSort}>
+          <button
+            type="button"
+            id={resize ? labelId : undefined}
+            className={contentClassNames}
+            onClick={onSort}
+          >
             {content}
           </button>
         ) : (
-          <span className={contentClassNames}>{content}</span>
+          <span id={resize ? labelId : undefined} className={contentClassNames}>
+            {content}
+          </span>
         )}
+        {resize && <ResizeHandle resize={resize} />}
       </Tag>
     );
   },

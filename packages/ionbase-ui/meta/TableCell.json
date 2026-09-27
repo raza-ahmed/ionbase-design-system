@@ -73,13 +73,17 @@
       "`scope` is inferred when omitted — `col` in TableHead, `row` in TableBody — and can be set explicitly when the inference is wrong",
       "`header` decides the element directly rather than a `type` prop that could disagree with where the cell sits",
       "a sortable header renders a real <button> inside the <th>, so it is focusable and answers Enter and Space, and the header keeps its column-header role",
-      "`aria-sort` is set on the sorted header only, never `none` on the rest"
+      "`aria-sort` is set on the sorted header only, never `none` on the rest",
+      "`resize` puts a handle on a header's trailing edge: a focusable `role=\"separator\"` named for the column (\"Resize Agent\"), with the width as `aria-valuenow` and its limits as `aria-valuemin` / `aria-valuemax`",
+      "the handle moves by drag, by the arrow keys (16px; 64px with Shift) and by Home and End to the limits, and a double-click puts the column back to its own width; right to left, ArrowLeft widens",
+      "a resizable header is named by its label alone, so it does not read the handle's name as well"
     ],
     "requires": [
       "`scope=\"col\"` on header cells — inferred inside TableHead, but explicit for a header rendered outside it"
     ],
     "notes": [
-      "`useTableSort` returns `sortDirection` and `onSort` for each column. The table never reorders rows itself: they may be one page of a server's thousands."
+      "`useTableSort` returns `sortDirection` and `onSort` for each column. The table never reorders rows itself: they may be one page of a server's thousands.",
+      "`useTableColumns` returns `resize` for each column through `headerProps(key)`. The width set is the column's, padding included, and is its `min-width` too: when the other columns fill the table, the table scrolls sideways rather than squeezing a widened column back."
     ]
   },
   "antiPatterns": [
@@ -102,6 +106,10 @@
     {
       "dont": "`trailingIcon` on a sortable header",
       "why": "the sort indicator takes the trailing slot; the icon is not rendered"
+    },
+    {
+      "dont": "`resize` on a body cell",
+      "why": "a column has one width and its header holds it; the prop is ignored on a `<td>`"
     }
   ]
 }

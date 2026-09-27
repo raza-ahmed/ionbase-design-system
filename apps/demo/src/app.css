@@ -219,6 +219,11 @@ body {
   flex: 1 1 16rem;
 }
 
+/* The view's controls sit apart from the filters, at the row's end. */
+.demo-toolbar__end {
+  margin-left: auto;
+}
+
 /* Wide enough to type a team into; Select's width was its longest option. */
 .demo-toolbar__teams {
   flex: 0 1 14rem;
