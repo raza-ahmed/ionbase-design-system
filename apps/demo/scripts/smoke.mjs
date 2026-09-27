@@ -2903,6 +2903,137 @@ try {
   }
 
   /*
+   * Sticky header and first column, as the Runs history. On a desktop the
+   * rows scroll inside the table and the header stays at its top, and a
+   * task focused above the view lands clear of it. On a phone the table
+   * scrolls sideways under a held Run column, whose edge then casts a
+   * shadow. Nothing sideways on the page; axe.
+   */
+  for (const [device, width, height] of [
+    ['desktop', 1280, 900],
+    ['mobile', 390, 844],
+  ]) {
+    const where = `sticky table (light, ${device})`;
+    if (skip(where)) continue;
+    const context = await browser.newContext({ viewport: { width, height } });
+    await context.addInitScript(() => {
+      localStorage.setItem(
+        'ionbase-ops:demo-settings',
+        JSON.stringify({ theme: 'light', latency: 0 }),
+      );
+    });
+    const page = await context.newPage();
+    page.on('pageerror', (e) => fail(where, `exception: ${e.message}`));
+    await page.goto(`${BASE}/#/runs`);
+    try {
+      const region = page.getByRole('region', { name: 'Run history' });
+      await region.waitFor({ timeout: 10_000 });
+      if (device === 'desktop') {
+        const held = await region.evaluate(async (box) => {
+          const frame = () =>
+            new Promise((r) =>
+              window.requestAnimationFrame(() =>
+                window.requestAnimationFrame(r),
+              ),
+            );
+          const scrolls = box.scrollHeight > box.clientHeight;
+          box.scrollTop = box.scrollHeight;
+          await frame();
+          // Not the corner: it is held by the column too, and would stay
+          // with the header broken.
+          const th = box.querySelector('thead th:last-child');
+          const top =
+            box.getBoundingClientRect().top +
+            parseFloat(window.getComputedStyle(box).borderTopWidth);
+          const headAtTop = Math.abs(th.getBoundingClientRect().top - top) <= 1;
+          // A task half under the header, focused: Chromium counts it as in
+          // view and would not scroll, so the table must.
+          // The lowest row that can be scrolled there — the scroll stops at
+          // the bottom.
+          const max = box.scrollHeight - box.clientHeight;
+          const row = [...box.querySelectorAll('tbody tr')]
+            .filter((r) => r.offsetTop - th.offsetHeight / 2 <= max)
+            .at(-1);
+          const link = row.querySelector('a');
+          box.scrollTop = row.offsetTop - th.offsetHeight / 2;
+          await frame();
+          const under =
+            link.getBoundingClientRect().top <
+            th.getBoundingClientRect().bottom;
+          link.focus();
+          await frame();
+          return {
+            scrolls,
+            headAtTop,
+            under,
+            clear:
+              link.getBoundingClientRect().top >=
+              th.getBoundingClientRect().bottom - 1,
+          };
+        });
+        if (!held.scrolls) fail(where, 'the history does not scroll inside');
+        if (!held.headAtTop) fail(where, 'the header did not stay at the top');
+        if (!held.under)
+          fail(
+            where,
+            'the check proves nothing: the task was not under the header',
+          );
+        if (!held.clear)
+          fail(where, 'a focused task was left under the header');
+      } else {
+        const held = await region.evaluate(async (box) => {
+          const frame = () =>
+            new Promise((r) =>
+              window.requestAnimationFrame(() =>
+                window.requestAnimationFrame(r),
+              ),
+            );
+          const wide = box.scrollWidth > box.clientWidth;
+          const first = box.querySelector('tbody tr').cells[0];
+          const before = first.getBoundingClientRect().left;
+          box.scrollLeft = 200;
+          box.dispatchEvent(new window.Event('scroll'));
+          await frame();
+          const edge = box.querySelector('tbody [data-sticky-edge]');
+          return {
+            wide,
+            stayed: Math.abs(first.getBoundingClientRect().left - before) <= 1,
+            shadow: edge
+              ? window.getComputedStyle(edge).boxShadow !== 'none'
+              : false,
+          };
+        });
+        if (!held.wide) fail(where, 'the history is not wider than a phone');
+        if (!held.stayed) fail(where, 'the Run column scrolled away');
+        if (!held.shadow) fail(where, "the held column's edge casts no shadow");
+      }
+
+      if (
+        await page.evaluate(
+          () => document.documentElement.scrollWidth > window.innerWidth,
+        )
+      )
+        fail(where, 'the page scrolls sideways');
+
+      await page.addScriptTag({ content: axeSource });
+      const violations = await page.evaluate(async () => {
+        const result = await window.axe.run(document, {
+          resultTypes: ['violations'],
+        });
+        return result.violations.map((v) => `${v.impact} ${v.id}`);
+      });
+      for (const v of violations) fail(where, `axe ${v}`);
+    } catch (e) {
+      fail(
+        where,
+        `did not run: ${e.message.split('\n').slice(0, 3).join(' | ')}`,
+      );
+    }
+    groupsChecked++;
+    await context.close();
+  }
+
+  /*
    * The loading states, at phone width. With no latency a skeleton is gone
    * before anything can measure it, and a skeleton is laid out differently
    * from the content it stands in for — the Agents skeleton once pushed the

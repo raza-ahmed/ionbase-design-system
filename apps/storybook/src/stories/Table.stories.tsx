@@ -1026,3 +1026,406 @@ export const TheRowKeepsItsRef: Story = {
     await expect(canvas.getByTestId('tag')).toHaveTextContent('TR');
   },
 };
+
+// ------------------------------------------------- sticky header and column
+
+const MANY = Array.from({ length: 24 }, (_, i) => ({
+  id: `run_${4800 + i}`,
+  agent: ['Invoice reconciler', 'Contract clause checker', 'Expense auditor'][
+    i % 3
+  ],
+  day: `Sep ${27 - Math.floor(i / 4)}`,
+  outcome: i % 5 === 0 ? 'Failed' : 'Completed',
+  duration: `${40 + ((i * 37) % 160)}s`,
+  model: 'atlas-m',
+  cost: `$${(0.04 + i * 0.01).toFixed(2)}`,
+}));
+
+function RunsTable(props: {
+  maxHeight?: number | string;
+  sticky?: boolean;
+  controls?: boolean;
+  width?: number;
+  rows?: number;
+  /** The first row shown: a page change keeps the count and swaps the rows. */
+  from?: number;
+  /** Changing it replaces every row with a new element, same content. */
+  keyPrefix?: string;
+}) {
+  const from = props.from ?? 0;
+  const rows = MANY.slice(from, from + (props.rows ?? MANY.length));
+  return (
+    <div style={{ width: props.width ?? 520 }}>
+      <Table
+        aria-label="Runs"
+        maxHeight={props.maxHeight}
+        stickyFirstColumn={props.sticky}
+      >
+        <TableHead>
+          <TableRow
+            expansion={props.controls ? { label: 'Details' } : undefined}
+            selection={
+              props.controls ? { 'aria-label': 'Select all' } : undefined
+            }
+          >
+            {[
+              'Run',
+              'Agent',
+              'Day',
+              'Outcome',
+              'Duration',
+              'Model',
+              'Cost',
+            ].map((h) => (
+              <TableCell key={h} header>
+                {h}
+              </TableCell>
+            ))}
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {rows.map((r) => (
+            <TableRow
+              key={`${props.keyPrefix ?? ''}${r.id}`}
+              expansion={
+                props.controls
+                  ? { 'aria-label': `Details for ${r.id}`, content: r.outcome }
+                  : undefined
+              }
+              selection={
+                props.controls ? { 'aria-label': `Select ${r.id}` } : undefined
+              }
+            >
+              <TableCell header scope="row">
+                <a href={`#${r.id}`}>{r.id}</a>
+              </TableCell>
+              <TableCell>{r.agent}</TableCell>
+              <TableCell>{r.day}</TableCell>
+              <TableCell>{r.outcome}</TableCell>
+              <TableCell>{r.duration}</TableCell>
+              <TableCell>{r.model}</TableCell>
+              <TableCell>
+                <a href={`#${r.id}-cost`}>{r.cost}</a>
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </div>
+  );
+}
+
+export const StickyHeaderAndColumn: Story = {
+  render: () => <RunsTable maxHeight={280} sticky controls />,
+};
+
+const region = (el: HTMLElement) =>
+  el.querySelector('.ion-table-container') as HTMLElement;
+const settle = () =>
+  new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
+
+/** `maxHeight` scrolls the rows inside the table, and the header stays at its top. */
+export const TheHeaderStaysAtTheTop: Story = {
+  render: () => <RunsTable maxHeight={240} />,
+  play: async ({ canvasElement }) => {
+    const box = region(canvasElement);
+    await expect(getComputedStyle(box).maxHeight).toBe('240px');
+    await expect(box.scrollHeight).toBeGreaterThan(box.clientHeight);
+    const th = canvasElement.querySelector('thead th') as HTMLElement;
+    box.scrollTop = 300;
+    await settle();
+    const top =
+      box.getBoundingClientRect().top +
+      parseFloat(getComputedStyle(box).borderTopWidth);
+    await expect(Math.round(th.getBoundingClientRect().top)).toBe(
+      Math.round(top),
+    );
+    // Its rule travels with it: drawn by the cell, not the collapsed grid.
+    await expect(getComputedStyle(th).boxShadow).not.toBe('none');
+    // The scroll padding is the header's height, so a control tabbed to
+    // lands clear of it in every browser — Chromium manages without, Firefox
+    // and Safari do not.
+    await expect(
+      parseFloat(getComputedStyle(box).scrollPaddingTop),
+    ).toBeCloseTo(th.getBoundingClientRect().height, 0);
+  },
+};
+
+/** A string height is any CSS length. */
+export const AStringHeightIsACssLength: Story = {
+  render: () => <RunsTable maxHeight="12rem" />,
+  play: async ({ canvasElement }) => {
+    await expect(getComputedStyle(region(canvasElement)).maxHeight).toBe(
+      '192px',
+    );
+  },
+};
+
+/** `stickyFirstColumn` holds the first column while the rest scrolls sideways. */
+export const TheFirstColumnStays: Story = {
+  render: () => <RunsTable sticky rows={4} />,
+  play: async ({ canvasElement }) => {
+    const box = region(canvasElement);
+    await expect(box.scrollWidth).toBeGreaterThan(box.clientWidth);
+    const first = canvasElement.querySelector('tbody tr')!.children;
+    const leftOf = (el: Element) => Math.round(el.getBoundingClientRect().left);
+    const start = leftOf(first[0]);
+    box.scrollLeft = 200;
+    await settle();
+    await expect(leftOf(first[0])).toBe(start);
+    await expect(
+      parseFloat(getComputedStyle(box).scrollPaddingLeft),
+    ).toBeCloseTo(first[0].getBoundingClientRect().width, 0);
+    await expect(leftOf(first[1])).toBeLessThan(start + 200);
+    // It hides what scrolls under it, rather than showing it through.
+    await expect(getComputedStyle(first[0]).backgroundColor).not.toBe(
+      'rgba(0, 0, 0, 0)',
+    );
+  },
+};
+
+/**
+ * The toggle and checkbox cells are held with it, each placed after the
+ * one before; the next content column is not held.
+ */
+export const ControlsAreHeldWithIt: Story = {
+  render: () => <RunsTable sticky controls rows={4} />,
+  play: async ({ canvasElement }) => {
+    const box = region(canvasElement);
+    box.scrollLeft = 400;
+    await settle();
+    for (const row of canvasElement.querySelectorAll(
+      'tr:not(.ion-table__detail)',
+    )) {
+      const cells = [...(row as HTMLTableRowElement).cells];
+      await expect(cells.slice(0, 3).every((c) => 'sticky' in c.dataset)).toBe(
+        true,
+      );
+      await expect('sticky' in cells[3].dataset).toBe(false);
+      await expect('stickyEdge' in cells[2].dataset).toBe(true);
+      // A held <td> takes its row's background, so nothing shows through.
+      const rowBg = getComputedStyle(row).backgroundColor;
+      if (row.closest('tbody'))
+        await expect(getComputedStyle(cells[0]).backgroundColor).toBe(rowBg);
+      const [a, b, c] = cells.map((x) => x.getBoundingClientRect());
+      await expect(Math.round(b.left)).toBe(Math.round(a.right));
+      await expect(Math.round(c.left)).toBe(Math.round(b.right));
+    }
+  },
+};
+
+/** The edge's shadow shows only once something has scrolled under it. */
+export const TheEdgeShowsOnlyWhenScrolled: Story = {
+  render: () => <RunsTable sticky rows={4} />,
+  play: async ({ canvasElement }) => {
+    const box = region(canvasElement);
+    const edge = canvasElement.querySelector(
+      'tbody [data-sticky-edge]',
+    ) as HTMLElement;
+    await expect(getComputedStyle(edge).boxShadow).toBe('none');
+    box.scrollLeft = 120;
+    box.dispatchEvent(new Event('scroll'));
+    await settle();
+    await expect(box.dataset.scrolledX).toBe('true');
+    await expect(getComputedStyle(edge).boxShadow).not.toBe('none');
+  },
+};
+
+/**
+ * A control tabbed to is scrolled clear of the held header, not under it
+ * (WCAG 2.4.11): the region's scroll padding is the header's height.
+ */
+export const FocusIsNotHiddenUnderTheHeader: Story = {
+  render: () => <RunsTable maxHeight={240} />,
+  play: async ({ canvasElement }) => {
+    const box = region(canvasElement);
+    box.scrollTop = box.scrollHeight;
+    await settle();
+    const link = canvasElement.querySelector(
+      'a[href="#run_4806"]',
+    ) as HTMLElement;
+    link.focus();
+    await settle();
+    // A header cell, not <thead>: only the cells stick; <thead> scrolls away.
+    const head = canvasElement
+      .querySelector('thead th')!
+      .getBoundingClientRect();
+    await expect(link.getBoundingClientRect().top).toBeGreaterThanOrEqual(
+      head.bottom - 1,
+    );
+  },
+};
+
+/** Half under the header counts as hidden too: it is scrolled clear. */
+export const HalfUnderTheHeaderIsScrolledClear: Story = {
+  render: () => <RunsTable maxHeight={240} />,
+  play: async ({ canvasElement }) => {
+    const box = region(canvasElement);
+    const link = canvasElement.querySelector(
+      'a[href="#run_4806"]',
+    ) as HTMLElement;
+    const head = canvasElement.querySelector('thead th') as HTMLElement;
+    const row = link.closest('tr') as HTMLElement;
+    // The row's top sits half a header under the header.
+    box.scrollTop = row.offsetTop - head.offsetHeight / 2;
+    await settle();
+    await expect(link.getBoundingClientRect().top).toBeLessThan(
+      head.getBoundingClientRect().bottom,
+    );
+    link.focus();
+    await settle();
+    await expect(link.getBoundingClientRect().top).toBeGreaterThanOrEqual(
+      head.getBoundingClientRect().bottom - 1,
+    );
+  },
+};
+
+/** …and clear of the held column when scrolling back sideways to it. */
+export const FocusIsNotHiddenUnderTheColumn: Story = {
+  render: () => <RunsTable sticky rows={4} />,
+  play: async ({ canvasElement }) => {
+    const box = region(canvasElement);
+    box.scrollLeft = box.scrollWidth;
+    await settle();
+    // The Agent column sits right after the held one, half under it: the
+    // browser counts it as in view and would not scroll on focus.
+    const agent = canvasElement.querySelector(
+      'tbody tr td:nth-of-type(1)',
+    ) as HTMLElement;
+    agent.tabIndex = -1;
+    agent.focus();
+    await settle();
+    const held = canvasElement
+      .querySelector('tbody [data-sticky-edge]')!
+      .getBoundingClientRect();
+    await expect(agent.getBoundingClientRect().left).toBeGreaterThanOrEqual(
+      held.right - 1,
+    );
+  },
+};
+
+/** A row's open detail spans everything and is not held. */
+export const TheDetailIsNotHeld: Story = {
+  render: () => (
+    <div style={{ width: 520 }}>
+      <Table aria-label="Runs" stickyFirstColumn>
+        <TableBody>
+          <TableRow
+            expansion={{
+              'aria-label': 'Details for run_4800',
+              content: 'Completed',
+              defaultExpanded: true,
+            }}
+          >
+            <TableCell>run_4800</TableCell>
+            <TableCell>Invoice reconciler</TableCell>
+          </TableRow>
+        </TableBody>
+      </Table>
+    </div>
+  ),
+  play: async ({ canvasElement }) => {
+    const detail = canvasElement.querySelector('.ion-table__detail td')!;
+    await expect(detail.hasAttribute('data-sticky')).toBe(false);
+  },
+};
+
+/**
+ * Rows that arrive later are held too — even new rows exactly the size of
+ * the old, which no resize reports: here every row is replaced by a new one
+ * with the same content.
+ */
+export const LaterRowsAreHeld: Story = {
+  render: () => {
+    function Replaced() {
+      const [prefix, setPrefix] = useState('a');
+      return (
+        <>
+          <button type="button" onClick={() => setPrefix('b')}>
+            Reload
+          </button>
+          <RunsTable sticky rows={6} keyPrefix={prefix} />
+        </>
+      );
+    }
+    return <Replaced />;
+  },
+  play: async ({ canvas, canvasElement, userEvent }) => {
+    // Let the resize observer's first report land now, so a late one
+    // cannot measure the new rows for it.
+    await settle();
+    const before = canvasElement.querySelector('tbody tr');
+    await userEvent.click(canvas.getByRole('button', { name: 'Reload' }));
+    // Read before the next frame: a resize notification, a frame later, can
+    // hold them by luck, and it is the replacement itself that must be seen.
+    const rows = [...canvasElement.querySelectorAll('tbody tr')];
+    const replaced = rows[0] !== before;
+    const held = rows.map((r) =>
+      (r as HTMLTableRowElement).cells[0].hasAttribute('data-sticky'),
+    );
+    await expect(replaced).toBe(true);
+    await expect(held).toEqual([true, true, true, true, true, true]);
+  },
+};
+
+/** Turned off, nothing stays held. */
+export const TurnedOffNothingIsHeld: Story = {
+  render: () => {
+    function Switchable() {
+      const [on, setOn] = useState(true);
+      return (
+        <>
+          <button type="button" onClick={() => setOn(false)}>
+            Off
+          </button>
+          <RunsTable sticky={on} rows={3} />
+        </>
+      );
+    }
+    return <Switchable />;
+  },
+  play: async ({ canvas, canvasElement, userEvent }) => {
+    await expect(
+      canvasElement.querySelectorAll('[data-sticky]').length,
+    ).toBeGreaterThan(0);
+    await userEvent.click(canvas.getByRole('button', { name: 'Off' }));
+    await settle();
+    await expect(canvasElement.querySelectorAll('[data-sticky]')).toHaveLength(
+      0,
+    );
+  },
+};
+
+/** Without either prop, nothing sticks and the table does not scroll up and down. */
+export const PlainTablesDoNotStick: Story = {
+  render: () => <RunsTable rows={4} />,
+  play: async ({ canvasElement }) => {
+    const th = canvasElement.querySelector('thead th') as HTMLElement;
+    await expect(getComputedStyle(th).position).not.toBe('sticky');
+    await expect(getComputedStyle(region(canvasElement)).maxHeight).toBe(
+      'none',
+    );
+    await expect(canvasElement.querySelectorAll('[data-sticky]')).toHaveLength(
+      0,
+    );
+  },
+};
+
+/** The corner — held both ways — sits above the header and the column. */
+export const TheCornerSitsAbove: Story = {
+  render: () => <RunsTable maxHeight={240} sticky rows={12} />,
+  play: async ({ canvasElement }) => {
+    const corner = canvasElement.querySelector(
+      'thead [data-sticky]',
+    ) as HTMLElement;
+    const head = canvasElement.querySelectorAll('thead th')[3] as HTMLElement;
+    const column = canvasElement.querySelector(
+      'tbody [data-sticky]',
+    ) as HTMLElement;
+    const z = (el: HTMLElement) => Number(getComputedStyle(el).zIndex);
+    await expect(z(corner)).toBeGreaterThan(z(head));
+    await expect(z(corner)).toBeGreaterThan(z(column));
+    await expect(getComputedStyle(corner).position).toBe('sticky');
+    await expect(getComputedStyle(corner).top).toBe('0px');
+  },
+};

@@ -266,6 +266,66 @@
 }
 
 /*
+ * Sticky header and first column — `maxHeight` and `stickyFirstColumn` on
+ * Table.
+ *
+ * BOTH STICK TO THE TABLE'S OWN SCROLL REGION. It scrolls sideways already,
+ * and a sticky cell sticks to its nearest scroller, so the header cannot
+ * stick to the page; `maxHeight` gives the region a height to scroll in.
+ *
+ * NOTHING FOCUSED HIDES UNDER THEM (WCAG 2.4.11). The region's scroll
+ * padding is the header's height and the held column's width, both measured,
+ * so a control tabbed to is scrolled clear of them rather than under them.
+ *
+ * No `overflow-y` here: `overflow-x: auto` already makes the region scroll
+ * both ways.
+ */
+.ion-table-container--sticky-header {
+  scroll-padding-top: var(--ion-table-head-height, 0);
+}
+
+.ion-table-container--sticky-column {
+  scroll-padding-left: var(--ion-table-held-width, 0);
+}
+
+/*
+ * `border-collapse` draws borders on the table's grid, not the cell, so a
+ * held header cell would leave its bottom rule behind as it scrolls. An
+ * inset shadow is drawn by the cell and moves with it.
+ */
+.ion-table-container--sticky-header thead th,
+.ion-table-container--sticky-header thead td {
+  position: sticky;
+  z-index: 2;
+  top: 0;
+  box-shadow: inset 0 calc(-1 * var(--border-width-default)) 0
+    var(--border-default);
+}
+
+/*
+ * A held cell takes its row's background — stripe, hover, selection — so the
+ * cells scrolling under it are hidden, not shown through.
+ */
+.ion-table-container--sticky-column [data-sticky] {
+  position: sticky;
+  z-index: 1;
+  left: var(--ion-table-sticky-left, 0);
+  background-color: inherit;
+}
+
+/* The corner is held both ways, above both. */
+.ion-table-container--sticky-column thead [data-sticky] {
+  z-index: 3;
+  background-color: var(--surface-page);
+}
+
+/* Once something has scrolled under the held column, its edge says so. */
+.ion-table-container--sticky-column[data-scrolled-x='true'] [data-sticky-edge] {
+  box-shadow: var(--ion-shadow-shadow-md);
+  clip-path: inset(0 -16px 0 0);
+}
+
+/*
  * Expandable rows — `expansion` on TableRow, Figma's `Show Expander`.
  *
  * The toggle column is as narrow as its button: `width: 1%` is the table

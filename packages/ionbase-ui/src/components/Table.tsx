@@ -21,12 +21,34 @@ export type TableDensity = 'compact' | 'default' | 'relaxed';
  */
 const TableSectionContext = createContext<'head' | 'body' | null>(null);
 
+/*
+ * Measured layout — the detail row's span, the sticky offsets — runs before
+ * the first paint, and is a no-op on a server, where the first client render
+ * fixes it.
+ */
+const useIsomorphicLayoutEffect =
+  typeof window === 'undefined' ? () => {} : useLayoutEffect;
+
 export interface TableProps extends React.TableHTMLAttributes<HTMLTableElement> {
   /** Matches Figma's `Density` variant on `Table Cell` / `Table Row`. */
   density?: TableDensity;
   /** Alternating row background, read from the row's position, not a prop
    *  repeated on every `TableRow`. */
   isStriped?: boolean;
+  /**
+   * Scroll the rows inside the table past this height, with the header held
+   * at the top — a number is pixels, a string any CSS length (`"60vh"`).
+   * The header sticks to the table's own scroll region, not the page: that
+   * region already scrolls sideways, and a sticky cell sticks to the nearest
+   * scroller.
+   */
+  maxHeight?: number | string;
+  /**
+   * Hold the first column in place while the table scrolls sideways — with
+   * the toggle and checkbox cells before it, when the rows have them. For a
+   * table wider than its space whose rows are named by their first column.
+   */
+  stickyFirstColumn?: boolean;
 }
 
 /**
@@ -46,11 +68,109 @@ export interface TableProps extends React.TableHTMLAttributes<HTMLTableElement> 
  * the only place the label can live. Prefer a `<caption>` via
  * `aria-labelledby` when the name should also be visible.
  */
+/** Leading cells that are controls, not content: they stick with the first column. */
+const isControlCell = (cell: HTMLTableCellElement) =>
+  cell.classList.contains('ion-table__expander') ||
+  cell.classList.contains('ion-table__select');
+
+/*
+ * Sticky columns and the header need offsets only layout knows: each held
+ * cell's `left` is the width of the held cells before it, and the scroll
+ * padding that keeps a focused control out from under them is the header's
+ * height and the held column's width. Measured after every render, and again
+ * on a resize or when rows come and go — a page change, a row opening.
+ */
+function useStickyLayout(
+  containerRef: React.RefObject<HTMLDivElement | null>,
+  tableRef: React.RefObject<HTMLTableElement | null>,
+  { column, header }: { column: boolean; header: boolean },
+) {
+  useIsomorphicLayoutEffect(() => {
+    const container = containerRef.current;
+    const table = tableRef.current;
+    if (!container || !table || (!column && !header)) return;
+
+    const measure = () => {
+      let held = 0;
+      for (const row of table.rows) {
+        if (row.classList.contains('ion-table__detail')) continue;
+        let left = 0;
+        let edge: HTMLTableCellElement | null = null;
+        for (const cell of row.cells) {
+          delete cell.dataset.sticky;
+          delete cell.dataset.stickyEdge;
+        }
+        if (!column) continue;
+        for (const cell of row.cells) {
+          cell.dataset.sticky = '';
+          cell.style.setProperty('--ion-table-sticky-left', `${left}px`);
+          left += cell.getBoundingClientRect().width;
+          edge = cell;
+          if (!isControlCell(cell)) break;
+        }
+        if (edge) edge.dataset.stickyEdge = '';
+        held = Math.max(held, left);
+      }
+      const head = header
+        ? (table.tHead?.getBoundingClientRect().height ?? 0)
+        : 0;
+      container.style.setProperty('--ion-table-head-height', `${head}px`);
+      container.style.setProperty('--ion-table-held-width', `${held}px`);
+    };
+
+    // The shadow at the held column's edge shows only once something has
+    // scrolled under it.
+    const onScroll = () => {
+      container.dataset.scrolledX = container.scrollLeft > 0 ? 'true' : 'false';
+    };
+
+    /*
+     * A control half under the held header or column is "in view" to the
+     * browser, which then does not scroll on focus. Scroll it clear here;
+     * `nearest` honours the scroll padding, so it lands just past them.
+     */
+    const onFocus = (e: FocusEvent) => {
+      const target = e.target as HTMLElement;
+      if (target === container || target.closest('[data-sticky]')) return;
+      const box = target.getBoundingClientRect();
+      const region = container.getBoundingClientRect();
+      const padTop =
+        parseFloat(getComputedStyle(container).scrollPaddingTop) || 0;
+      const padLeft =
+        parseFloat(getComputedStyle(container).scrollPaddingLeft) || 0;
+      if (box.top < region.top + padTop || box.left < region.left + padLeft)
+        target.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+    };
+
+    measure();
+    onScroll();
+    const resize = new ResizeObserver(measure);
+    resize.observe(table);
+    const rows = new MutationObserver(measure);
+    rows.observe(table, { childList: true, subtree: true });
+    container.addEventListener('scroll', onScroll, { passive: true });
+    container.addEventListener('focusin', onFocus);
+    return () => {
+      container.removeEventListener('focusin', onFocus);
+      resize.disconnect();
+      rows.disconnect();
+      container.removeEventListener('scroll', onScroll);
+      // Turned off: nothing stays held.
+      for (const cell of table.querySelectorAll<HTMLElement>('[data-sticky]')) {
+        delete cell.dataset.sticky;
+        delete cell.dataset.stickyEdge;
+      }
+    };
+  }, [column, header]);
+}
+
 export const Table = forwardRef<HTMLTableElement, TableProps>(
   (
     {
       density = 'default',
       isStriped,
+      maxHeight,
+      stickyFirstColumn,
       className,
       children,
       'aria-label': ariaLabel,
@@ -58,30 +178,55 @@ export const Table = forwardRef<HTMLTableElement, TableProps>(
       ...rest
     },
     ref,
-  ) => (
-    <div
-      className="ion-table-container"
-      role="region"
-      tabIndex={0}
-      aria-label={ariaLabel}
-      aria-labelledby={ariaLabelledBy}
-    >
-      <table
-        {...rest}
-        ref={ref}
+  ) => {
+    const containerRef = useRef<HTMLDivElement>(null);
+    const tableRef = useRef<HTMLTableElement>(null);
+    const stickyHeader = maxHeight !== undefined;
+    useStickyLayout(containerRef, tableRef, {
+      column: !!stickyFirstColumn,
+      header: stickyHeader,
+    });
+
+    return (
+      <div
+        ref={containerRef}
         className={[
-          'ion-table',
-          density !== 'default' ? `ion-table--${density}` : '',
-          isStriped ? 'ion-table--striped' : '',
-          className,
+          'ion-table-container',
+          stickyHeader ? 'ion-table-container--sticky-header' : '',
+          stickyFirstColumn ? 'ion-table-container--sticky-column' : '',
         ]
           .filter(Boolean)
           .join(' ')}
+        role="region"
+        tabIndex={0}
+        aria-label={ariaLabel}
+        aria-labelledby={ariaLabelledBy}
+        style={
+          stickyHeader
+            ? {
+                maxHeight:
+                  typeof maxHeight === 'number' ? `${maxHeight}px` : maxHeight,
+              }
+            : undefined
+        }
       >
-        {children}
-      </table>
-    </div>
-  ),
+        <table
+          {...rest}
+          ref={mergeRefs(tableRef, ref)}
+          className={[
+            'ion-table',
+            density !== 'default' ? `ion-table--${density}` : '',
+            isStriped ? 'ion-table--striped' : '',
+            className,
+          ]
+            .filter(Boolean)
+            .join(' ')}
+        >
+          {children}
+        </table>
+      </div>
+    );
+  },
 );
 Table.displayName = 'Table';
 
@@ -183,15 +328,6 @@ const Chevron = () => (
   </svg>
 );
 
-/*
- * The detail row spans every column. Counted from the row's own cells after
- * render, colSpans included, rather than taken as a prop the caller has to
- * keep in step with the columns. `useLayoutEffect` so it is right before the
- * first paint; a no-op on a server, where the first client render fixes it.
- */
-const useIsomorphicLayoutEffect =
-  typeof window === 'undefined' ? () => {} : useLayoutEffect;
-
 export const TableRow = forwardRef<HTMLTableRowElement, TableRowProps>(
   ({ isSelected, selection, expansion, className, children, ...rest }, ref) => {
     const section = useContext(TableSectionContext);
@@ -212,6 +348,8 @@ export const TableRow = forwardRef<HTMLTableRowElement, TableRowProps>(
       body?.onExpandedChange?.(next);
     };
 
+    // The detail row spans every column: counted from the row's own cells,
+    // colSpans included, rather than a prop kept in step with the columns.
     const [span, setSpan] = useState(1);
     useIsomorphicLayoutEffect(() => {
       if (!isExpanded || !rowRef.current) return;
@@ -258,11 +396,11 @@ export const TableRow = forwardRef<HTMLTableRowElement, TableRowProps>(
         {expanderCell}
         {selection &&
           (inHead ? (
-            <th scope="col">
+            <th scope="col" className="ion-table__select">
               <Checkbox {...selection} />
             </th>
           ) : (
-            <td>
+            <td className="ion-table__select">
               <Checkbox {...selection} />
             </td>
           ))}

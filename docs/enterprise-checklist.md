@@ -55,7 +55,7 @@
 - [x] **TruncatedText** — an agent's purpose in the Agents table, one line with the rest on focus — 0.108.0
 - [x] **Timeline** — an agent's History on its Overview: purpose edits, pauses and the seeded record — 0.109.0
 - [x] **Table: expandable rows** — an agent's recent runs: why a run failed opens under it, the newest failure open — 0.110.0
-- [ ] **Table: sticky header and first column**
+- [x] **Table: sticky header and first column** — Runs history: rows scroll under a held header, and the Run column stays on a phone — 0.111.0
 - [ ] **Table: column resize and visibility**
 - [ ] **AILabel** — agentic tier
 - [ ] **ChatMessage** — agentic tier; update the `AssistantAnswer` pattern
