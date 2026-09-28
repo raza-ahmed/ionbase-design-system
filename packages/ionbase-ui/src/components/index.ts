@@ -383,6 +383,12 @@ export type {
   ProgressBarIntent,
   ProgressBarSize,
 } from './ProgressBar.js';
+export { ProgressRing } from './ProgressRing.js';
+export type {
+  ProgressRingProps,
+  ProgressRingIntent,
+  ProgressRingSize,
+} from './ProgressRing.js';
 
 export { Skeleton } from './Skeleton.js';
 export type { SkeletonProps, SkeletonVariant } from './Skeleton.js';

@@ -13,7 +13,8 @@
     "ToolCall",
     "StreamingText",
     "Alert",
-    "Badge"
+    "Badge",
+    "ProgressRing"
   ],
   "drivenBy": {
     "hook": "useAgentRun",
@@ -35,7 +36,8 @@
     "The result below the log, in a StreamingText with `isStreaming` true until the run ends.",
     "A ToolCall under any step that called a tool, collapsed, with the same `status` as its step. The step is the account; the ToolCall is the evidence for it.",
     "When the run was started from a PromptInput, that composer's `isRunning` stop IS the run's AgentStop. Render one stop control, not two.",
-    "An Alert only when the run fails or is stopped — not for ordinary progress, which the step log already carries."
+    "An Alert only when the run fails or is stopped — not for ordinary progress, which the step log already carries.",
+    "While the run is going, a Small ProgressRing in the header's status: the steps done out of the steps planned, with `valueText` saying so — \"3 of 5 steps done\". The log carries where the run is; the ring says how far, in a glance, above a log that may be off screen. When the run ends a Badge takes its place, saying how it ended."
   ],
   "states": {
     "loading": {
@@ -63,7 +65,15 @@
     "ToolCall": ["title", "name", "status", "input", "output", "errorMessage"],
     "StreamingText": ["isStreaming", "minLines", "label", "hideCursor"],
     "Alert": ["intent", "title"],
-    "Badge": ["intent", "size"]
+    "Badge": ["intent", "size"],
+    "ProgressRing": [
+      "label",
+      "value",
+      "max",
+      "size",
+      "valueText",
+      "isValueVisible"
+    ]
   },
   "variantsUsed": {
     "AgentActivityStep": {
@@ -95,6 +105,11 @@
     ]
   },
   "antiPatterns": [
+    {
+      "dont": "a ProgressRing counting the steps started, or a percentage with no count",
+      "do": "`value={done}`, `max={planned}`, `valueText=\"3 of 5 steps done\"`",
+      "why": "a step still running is not done, and \"60%\" of a run is a number nobody planned; the count is what the log shows"
+    },
     {
       "dont": "a stop control that appears only after the run has been going for a few seconds",
       "why": "the moment a user most wants to stop is the moment they realise the agent misunderstood, which is usually within the first second"

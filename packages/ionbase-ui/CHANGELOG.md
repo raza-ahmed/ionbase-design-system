@@ -1,5 +1,60 @@
 # Changelog
 
+## 0.130.0 — 2026-09-28
+
+### ProgressRing — how far, in the space of an icon
+
+**`ProgressRing`** is ProgressBar's contract in a square: a `value` out of
+`max`, a required `label`, an `intent` for the thing measured and a
+`valueText` to say it in words. It is for measurable progress that has to fit
+a line of text or a card.
+
+**How it behaves:**
+
+- **Determinate only:** `value` is required. A ring with no value is a
+  Spinner, and work that starts unmeasurable is ProgressBar's.
+- **Sizes:** Small is 20px and sits in a line of text, with its value beside
+  it. Medium (56px) and Large (80px) hold the percentage inside.
+- **Why 56px:** "100%" is 34.7px wide at 12px, the smallest type token.
+  Medium was 40px, then 48px, and the text touched the ring at both; a story
+  now checks it fits.
+- **The drawing:** a circle in a 100-unit box, so the stroke is a tenth of
+  the ring at every size. The fill is dashed to the percentage through a
+  custom property, so no inline style names a raw value.
+- **Direction:** it fills clockwise from twelve o'clock in every direction. A
+  clock is not mirrored in right to left; only the text beside it moves.
+- **For a screen reader:** one progressbar named by `label`, shown or not,
+  with `aria-valuetext` from `valueText`. The drawing and the percentage
+  inside it are hidden, because the value is already announced.
+- **Forced colours:** the track is GrayText and the fill Highlight. The mode
+  leaves SVG strokes set in CSS alone, so without the rule the ring kept its
+  token colours.
+
+**Meta:** ProgressBar and Spinner now point at the ring for measurable
+progress in a small space. The ring's meta sends a column of rings to
+ProgressBar, because people compare lengths well and angles badly.
+
+**Figma:** Progress Ring is drawn on the Progress Bar page, Intent × Size (12
+variants), with Label, Value and Percent text and Show Label and Show Value
+switches. The arc is an ellipse with an inner radius of 0.8, so the stroke
+is a tenth of the ring, as in code. It is mapped, and its code block is
+applied. The audit found 109 of 109 blocks in the file, and they are
+countersigned.
+
+**The demo:** a live run's header shows a Small ring in its status slot,
+with the steps done out of the steps planned: "3 of 5 steps done". A step
+still running is not counted. When the run ends, the Badge saying how it
+ended takes its place. The AgentRun pattern now says the same.
+
+**Tests:**
+
+- 13 ProgressRing stories and one in Forced colours.
+- A smoke check of the run header on desktop and mobile. It reads the ring
+  and the step log in the same frame, checks the six planned steps, stops the
+  run, and runs axe on the header.
+
+Mutations: 19 of 19 caught (14 in the library, 5 in the demo).
+
 ## 0.129.0 — 2026-09-28
 
 ### ColorPicker — a colour a person chooses

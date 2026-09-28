@@ -82,6 +82,7 @@
 @import url('./empty-state.css');
 @import url('./spinner.css');
 @import url('./progress-bar.css');
+@import url('./progress-ring.css');
 @import url('./skeleton.css');
 @import url('./breadcrumb.css');
 @import url('./accordion.css');

@@ -13,6 +13,7 @@ import {
   DualListbox,
   Logo,
   Pagination,
+  ProgressRing,
   Radio,
   RadioGroup,
   ScrollProgress,
@@ -454,5 +455,21 @@ export const AColourPickerKeepsItsColours: Story = {
     const thumb = dialog.querySelector('.ion-color-picker__thumb');
     await expect(css(thumb, 'background-color')).toBe('rgb(11, 95, 255)');
     await userEvent.keyboard('{Escape}');
+  },
+};
+
+/**
+ * Forced colours leave SVG strokes set in CSS alone, so a ring kept its
+ * token colours in a mode meant to replace them: its track is GrayText and
+ * its fill Highlight, ProgressBar's fill.
+ */
+export const AProgressRingTakesSystemColours: Story = {
+  render: () => <ProgressRing label="Knowledge indexed" value={60} />,
+  play: async ({ canvasElement }) => {
+    await forced();
+    const track = canvasElement.querySelector('.ion-progress-ring__track');
+    const fill = canvasElement.querySelector('.ion-progress-ring__fill');
+    await expect(css(track, 'stroke')).toBe(system('GrayText'));
+    await expect(css(fill, 'stroke')).toBe(system('Highlight'));
   },
 };

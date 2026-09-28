@@ -1604,6 +1604,45 @@
         }
       }
     },
+    "Progress Ring": {
+      "code": "ProgressRing",
+      "props": {
+        "Intent": {
+          "prop": "intent",
+          "values": {
+            "Primary": "primary",
+            "Success": "success",
+            "Warning": "warning",
+            "Error": "error"
+          }
+        },
+        "Size": {
+          "prop": "size",
+          "values": {
+            "Small": "sm",
+            "Medium": "md",
+            "Large": "lg"
+          }
+        },
+        "Label#1703:0": {
+          "prop": "label"
+        },
+        "Value#1703:13": {
+          "prop": "valueText",
+          "note": "the text beside the ring. On Small it is the value, the percentage when no valueText is passed; on Medium and Large it shows only with a valueText, since the centre already has the percentage"
+        },
+        "Percent#1703:26": {
+          "ignore": "computed from value and max — there is no prop. The drawn arc is a sample 60%; in code the fill is dashed to the value. Medium and Large only: Small has no room inside"
+        },
+        "Show Label#1703:39": {
+          "prop": "isLabelVisible"
+        },
+        "Show Value#1703:52": {
+          "prop": "isValueVisible",
+          "note": "one switch for the percentage inside and the value beside, as in code"
+        }
+      }
+    },
     "Prompt Input": {
       "code": "PromptInput",
       "props": {

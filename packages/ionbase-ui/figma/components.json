@@ -1890,6 +1890,38 @@
         }
       }
     },
+    "Progress Ring": {
+      "page": "Progress Bar",
+      "id": "1703:333",
+      "kind": "SET",
+      "props": {
+        "Intent": {
+          "type": "VARIANT",
+          "options": ["Primary", "Success", "Warning", "Error"],
+          "default": "Primary"
+        },
+        "Label#1703:0": {
+          "type": "TEXT"
+        },
+        "Percent#1703:26": {
+          "type": "TEXT"
+        },
+        "Show Label#1703:39": {
+          "type": "BOOLEAN"
+        },
+        "Show Value#1703:52": {
+          "type": "BOOLEAN"
+        },
+        "Size": {
+          "type": "VARIANT",
+          "options": ["Small", "Medium", "Large"],
+          "default": "Small"
+        },
+        "Value#1703:13": {
+          "type": "TEXT"
+        }
+      }
+    },
     "Prompt Input": {
       "page": "Prompt Input",
       "id": "1393:387",
