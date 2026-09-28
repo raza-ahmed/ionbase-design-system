@@ -11,20 +11,26 @@ export const ROUTES = [
   'agents/new',
   'runs',
   'assistant',
+  'members',
   'settings',
 ] as const;
 /**
  * Detail pages carry an id: `#/runs/run_4821`, `#/agents/agt_rs` and its
  * `#/agents/agt_rs/runs` tab. `agents/new` is a route of its own and wins.
+ * `#/members/usr_ada` is the Members page with Ada selected — the ListDetail
+ * pattern keeps the selection in the address, so it can be shared.
  */
 export type Route =
-  (typeof ROUTES)[number] | `runs/${string}` | `agents/${string}`;
+  | (typeof ROUTES)[number]
+  | `runs/${string}`
+  | `agents/${string}`
+  | `members/${string}`;
 
 export const href = (route: Route) => `#/${route}`;
 
 function parse(hash: string): Route | null {
   const path = hash.replace(/^#\/?/, '') || 'overview';
-  if (/^runs\/[\w-]+$/.test(path)) return path as Route;
+  if (/^(runs|members)\/[\w-]+$/.test(path)) return path as Route;
   if (path !== 'agents/new' && /^agents\/[\w-]+(\/runs)?$/.test(path))
     return path as Route;
   return (ROUTES as readonly string[]).includes(path) ? (path as Route) : null;
@@ -36,10 +42,20 @@ export const sectionOf = (route: Route): Route =>
     ? 'agents'
     : route.startsWith('runs/')
       ? 'runs'
-      : route;
+      : route.startsWith('members/')
+        ? 'members'
+        : route;
 
 export function navigate(route: Route) {
   window.location.hash = href(route);
+}
+
+/**
+ * Go to a route without adding a history entry — for a selection that moves
+ * with the arrow keys, where every row would otherwise be a Back press.
+ */
+export function replaceRoute(route: Route) {
+  window.location.replace(href(route));
 }
 
 /** `null` is an unknown route — rendered as not-found, never silently redirected. */

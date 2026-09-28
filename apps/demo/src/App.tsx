@@ -41,6 +41,11 @@ const AssistantScreen = lazy(() =>
     default: m.AssistantScreen,
   })),
 );
+const MembersScreen = lazy(() =>
+  import('./screens/members/MembersScreen').then((m) => ({
+    default: m.MembersScreen,
+  })),
+);
 const SettingsScreen = lazy(() =>
   import('./screens/settings/SettingsScreen').then((m) => ({
     default: m.SettingsScreen,
@@ -49,12 +54,15 @@ const SettingsScreen = lazy(() =>
 
 /**
  * Which page a route is: an agent's Overview and Runs tabs are one page, so
- * switching between them keeps it — and its loaded data — mounted.
+ * switching between them keeps it — and its loaded data — mounted. So is
+ * Members with whoever is selected: the selection is in the address, and
+ * moving it must not mount the list again.
  */
 function pageOf(route: Route | null): string {
   if (route === null) return 'not-found';
   if (route.startsWith('agents/'))
     return route.split('/').slice(0, 2).join('/');
+  if (route.startsWith('members/')) return 'members';
   return route;
 }
 
@@ -64,11 +72,13 @@ function pageTitleOf(route: Route | null): string {
   if (route === 'agents/new') return 'New agent';
   if (route.startsWith('agents/')) return 'Agent';
   if (route.startsWith('runs/')) return 'Run';
+  if (route.startsWith('members/')) return 'Members';
   const names: Record<string, string> = {
     overview: 'Overview',
     agents: 'Agents',
     runs: 'Runs',
     assistant: 'Assistant',
+    members: 'Members',
     settings: 'Settings',
   };
   return names[route] ?? 'Page';
@@ -109,6 +119,9 @@ export function App() {
                 <RunDetail key={route} runId={route.slice('runs/'.length)} />
               )}
               {route === 'assistant' && <AssistantScreen />}
+              {(route === 'members' || route?.startsWith('members/')) && (
+                <MembersScreen selectedId={route.split('/')[1] ?? null} />
+              )}
               {route === 'settings' && <SettingsScreen />}
               {route === null && <NotFound />}
             </Suspense>

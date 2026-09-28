@@ -18,6 +18,7 @@ import { ListChecks } from 'ionbase-icons/icons/list-checks';
 import { MessageSquare } from 'ionbase-icons/icons/message-square';
 import { Plus } from 'ionbase-icons/icons/plus';
 import { Settings } from 'ionbase-icons/icons/settings';
+import { Users } from 'ionbase-icons/icons/users';
 
 import { listWaitingRuns } from '../data/runs';
 import { useDemoSettings } from '../lib/demo-settings';
@@ -150,20 +151,26 @@ export function NavSidebar({ route }: { route: Route | null }) {
         </SidebarItem>
       </SidebarSection>
 
-      {/*
-        Hidden, not shown and refused: a member cannot open Settings. The
-        403 page is for arriving anyway — a link, a bookmark.
-      */}
-      {role === 'admin' && (
-        <SidebarSection title="Workspace">
+      <SidebarSection title="Workspace">
+        <SidebarItem
+          label="Members"
+          icon={ic(Users)}
+          href={href('members')}
+          isCurrent={section === 'members'}
+        />
+        {/*
+          Hidden, not shown and refused: a member cannot open Settings. The
+          403 page is for arriving anyway — a link, a bookmark.
+        */}
+        {role === 'admin' && (
           <SidebarItem
             label="Settings"
             icon={ic(Settings)}
             href={href('settings')}
             isCurrent={section === 'settings'}
           />
-        </SidebarSection>
-      )}
+        )}
+      </SidebarSection>
     </Sidebar>
   );
 }

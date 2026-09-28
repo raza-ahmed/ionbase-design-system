@@ -5,6 +5,7 @@ import { ListChecks } from 'ionbase-icons/icons/list-checks';
 import { MessageSquare } from 'ionbase-icons/icons/message-square';
 import { Plus } from 'ionbase-icons/icons/plus';
 import { Settings } from 'ionbase-icons/icons/settings';
+import { Users } from 'ionbase-icons/icons/users';
 import { ShieldCheck } from 'ionbase-icons/icons/shield-check';
 
 import { listAgentLinks, TEAMS } from '../data/agents';
@@ -52,6 +53,7 @@ function buildCommands(role: Role): CommandPaletteItem[] {
     go('assistant', 'Assistant', MessageSquare, ['chat', 'ask']),
     go('agents', 'Agents', Bot),
     go('runs', 'Runs', ListChecks, ['history']),
+    go('members', 'Members', Users, ['people', 'team', 'users']),
     // Nothing the account cannot open: a member is not offered Settings.
     ...(role === 'admin'
       ? [go('settings', 'Settings', Settings, ['preferences', 'workspace'])]

@@ -51,7 +51,7 @@
     ],
     "guarantees": [
       "a `<section>` region named by its title, rendered in place — not portalled, not a dialog, and nothing on the page is hidden or made inert",
-      "opening focuses the title, so the panel is announced and reading starts at its top",
+      "opening focuses the title, so the panel is announced and reading starts at its top — unless `autoFocus={false}`, when focus stays where it is",
       "changing what an open panel shows does not move focus — the list can be arrowed through with the panel open",
       "Escape from inside closes it; Escape elsewhere on the page does not. A Toggletip, Menu or Select inside closes first",
       "closing with focus inside returns focus to the last thing focused outside it — the row picked most recently",
@@ -64,7 +64,8 @@
     "notes": [
       "set `--ion-side-panel-top` on the app shell (any ancestor) to the height of a sticky app header, or the panel's top slides under it",
       "the title's heading level is `headingLevel`, default 2 — set it to follow the page's own outline",
-      "`isOpen` and `onOpenChange` usually derive from the selected item: open while one is selected, and `onOpenChange(false)` clears the selection"
+      "`isOpen` and `onOpenChange` usually derive from the selected item: open while one is selected, and `onOpenChange(false)` clears the selection",
+      "`autoFocus={false}` beside a List with `selectionMode=\"single\"`: its selection follows focus, so tabbing into the list selects the first row and opens the panel. Taking focus then would pull the user out of the list before they had pressed a key. Tab reaches the panel next, because it comes next in the DOM. The ListDetail pattern is this case. As a Drawer, below `overlayBelow`, it is modal and always takes focus"
     ]
   },
   "antiPatterns": [
@@ -82,6 +83,11 @@
       "dont": "the panel before the content in the DOM, moved to the right with CSS",
       "do": "content first, SidePanel second, inside SidePanelLayout",
       "why": "reading and Tab order would reach the detail before the list it is the detail of"
+    },
+    {
+      "dont": "a SidePanel that takes focus on open, beside a List whose selection follows focus",
+      "do": "`autoFocus={false}`, and rows that open on a press below `overlayBelow`",
+      "why": "tabbing into the list selects its first row, the panel opens and takes focus, and the list can never be walked"
     },
     {
       "dont": "moving focus into the panel every time the selected row changes",

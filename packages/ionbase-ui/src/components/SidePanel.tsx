@@ -31,6 +31,15 @@ export interface SidePanelProps {
   showClose?: boolean;
   closeLabel?: string;
   /**
+   * Focus the title on open. Default `true`. `false` when the panel opens
+   * because of where focus already is — a List whose selection follows focus,
+   * where tabbing in selects the first row — so focus stays in the list and
+   * the next ↓ still reaches the next row. Tab from the list reaches the
+   * panel, which comes next in the DOM. Below `overlayBelow` it opens as a
+   * Drawer, which is modal and always takes focus.
+   */
+  autoFocus?: boolean;
+  /**
    * Below this viewport width, in px, there is no room beside the content and
    * the panel opens as a Drawer instead — modal, because it covers what it
    * would have sat beside. Default 768. `false` never switches.
@@ -80,6 +89,7 @@ function InlinePanel({
   headingLevel = 2,
   showClose = true,
   closeLabel = 'Close panel',
+  autoFocus = true,
   id,
   className,
 }: SidePanelProps & { state: ReturnType<typeof useOverlayTriggerState> }) {
@@ -94,10 +104,13 @@ function InlinePanel({
    * reader user is told the panel is there and starts at its top. Swapping
    * what the panel shows — the next row picked in the list — does not move
    * focus, or arrowing down a list with a panel open would be impossible.
+   * Not with `autoFocus={false}`: the panel opened because of where focus
+   * already is, and taking it would pull the user out of the list.
    */
+  const focusOnOpen = useRef(autoFocus);
   useLayoutEffect(() => {
     returnTo.current = document.activeElement as HTMLElement | null;
-    headingRef.current?.focus({ preventScroll: true });
+    if (focusOnOpen.current) headingRef.current?.focus({ preventScroll: true });
 
     const onFocusIn = (e: FocusEvent) => {
       const target = e.target as HTMLElement;
@@ -190,9 +203,10 @@ function InlinePanel({
  *   - A `<section>` region named by its title, rendered in place — not
  *     portalled — so it is part of the page's layout and reading order. Put
  *     it in a SidePanelLayout beside the content.
- *   - Opening focuses the title. Closing with focus inside returns it to the
- *     last thing focused outside the panel. Changing its content does
- *     neither.
+ *   - Opening focuses the title — unless `autoFocus={false}`, for a panel
+ *     that follows a List's selection. Closing with focus inside returns it
+ *     to the last thing focused outside the panel. Changing its content
+ *     does neither.
  *   - Escape closes it from inside; Escape elsewhere is the page's own.
  *   - No focus trap, no scrim, nothing hidden. Closed, it renders nothing.
  *   - Below `overlayBelow` (768px) there is no "beside": the panel would

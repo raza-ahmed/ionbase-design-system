@@ -1,0 +1,159 @@
+{
+  "summary": "A list of records beside the one selected — people, tickets, messages, files. Arrow down the list and the detail beside it follows, without anything to open or close; the selection is in the address.",
+  "useWhen": [
+    "the user works down a list reading each item in turn — members, an inbox, a queue of tickets — and wants the next without going back",
+    "each record is read or lightly acted on in its detail, not a task that must be finished before anything else",
+    "a row has a name and a line or two, not columns to compare down"
+  ],
+  "useInstead": [
+    {
+      "when": "the rows have columns compared down — status, owner, duration side by side",
+      "use": "the DataTable pattern, whose SidePanel opens from a per-row Details button",
+      "why": "a Table's rows hold links and buttons of their own, so its selection cannot follow focus; the detail opens on a press there, and stays open while the next is opened"
+    },
+    {
+      "when": "the record is the whole of what the user came for — minutes in it, sections, tabs, a history",
+      "use": "a page of its own, linked from the list",
+      "why": "a side view of a third of the width is a preview; a record worked in needs the whole page and its own address"
+    },
+    {
+      "when": "the detail is a form that must be saved or cancelled",
+      "use": "Drawer or Modal",
+      "why": "a detail that changes as focus moves would throw away what was typed the moment the user arrows to the next row"
+    }
+  ],
+  "composes": [
+    "PageHeader",
+    "SearchField",
+    "List",
+    "SidePanelLayout",
+    "SidePanel",
+    "Avatar",
+    "Badge",
+    "DescriptionList",
+    "DescriptionListItem",
+    "CopyButton",
+    "Link",
+    "Button",
+    "Skeleton",
+    "Alert",
+    "EmptyState",
+    "StatusIndicator"
+  ],
+  "structure": [
+    "A PageHeader naming the collection — \"Members\" — then, over the list only, a SearchField (size sm, an `aria-label` naming what it searches) when the list is long enough to need one.",
+    "A SidePanelLayout: the List first, the SidePanel second — reading order is DOM order, and the detail is the detail of the list before it.",
+    "Each row: `label` the record's name, `description` the line that tells two alike apart (an email, a subject), `leading` an Avatar or Icon (hidden from assistive technology, so it repeats nothing the label lacks), `meta` a Badge for one fact worth scanning for (\"Admin\"). Nothing interactive in the row: the row is the control.",
+    "At 768px and wider, `selectionMode=\"single\"`: the selection follows focus, so tabbing in selects the first row and each ↓ selects the next. The SidePanel is open while a row is selected, with `autoFocus={false}` — it opened because of where focus already is, and focus stays on the row. Tab goes on into the panel, next in the DOM; Escape there closes it and returns focus to the row. Enter or a double click (`onAction`) moves focus to the panel's title, for the user who wants to read on.",
+    "Below 768px, where the SidePanel opens as a modal Drawer, no selection mode: a row opens on a press (`onAction`), never on arrival, or tabbing into the list would open a dialog. Closing the Drawer returns focus to the row.",
+    "The selection is in the address — `#/members/usr_ada`, `/members/usr_ada` — so a link, a reload and a shared URL open the same record. Replace the history entry as the selection moves, never push: with a push, every row arrowed past is a Back press, and Back no longer leaves the page. The list and the address are one page: moving the selection must not mount the page again.",
+    "The panel's title is the record's name and its description one fact about it (\"Workspace admin\"). What the list already fetched shows at once — a DescriptionList, IDs and addresses with an icon-only CopyButton named for what it copies (\"Copy email\"). Anything that needs its own request loads inside the panel, below them.",
+    "A selected row the search hides: the panel closes with it, and opens again when the row comes back. Detail of a row the user can no longer see is a lie about the list.",
+    "An address whose ID matches nothing: the list as usual, and the panel open with an EmptyState — `reason=\"no-results\"`, `size=\"panel\"` — saying so (\"There is no member with this ID\") and a Button that clears the selection. Not a full-page 404: the page exists; one record in it does not."
+  ],
+  "states": {
+    "loading": {
+      "must": "The list: Skeleton rows in its place, `aria-busy` on their container and a status saying what is loading. The detail's own request: a Skeleton inside the panel, under the facts the list already had — never the whole panel blanked.",
+      "why": "blanking the panel on each ↓ while the next record loads makes arrowing down the list a flicker, and hides what was already known",
+      "a11y": "the panel's loading is a status inside it, not a live announcement per row — the row's name is already being read as the selection moves"
+    },
+    "empty": {
+      "must": "No records: an EmptyState in the list's place, `size=\"page\"`, and no panel. A search that matches nothing: the List's `renderEmptyState` saying what was searched for (\"No one matches “zzz”.\"), the SearchField still there to change it.",
+      "why": "an empty grid is announced as \"0 rows\" and nothing else; the user must be told whether the collection is empty or their search is"
+    },
+    "error": {
+      "must": "The list failing is the page failing: the FullPageError pattern. The detail's own request failing: an Alert inside the panel naming what is missing, with Try again, while the list and the facts it had stay.",
+      "why": "one record's missing part is not a reason to take away the list, or the rest of the record",
+      "a11y": "the panel's Alert takes `role=\"alert\"` from its intent — do not add your own"
+    }
+  },
+  "propsUsed": {
+    "PageHeader": ["title", "titleId", "description"],
+    "SearchField": ["size", "value", "onChange", "placeholder"],
+    "List": [
+      "items",
+      "selectionMode",
+      "selectedKeys",
+      "onSelectionChange",
+      "onAction",
+      "renderEmptyState"
+    ],
+    "SidePanel": [
+      "id",
+      "size",
+      "autoFocus",
+      "isOpen",
+      "onOpenChange",
+      "title",
+      "description"
+    ],
+    "Avatar": ["size", "initials"],
+    "Badge": ["size"],
+    "DescriptionList": ["layout"],
+    "DescriptionListItem": ["term"],
+    "CopyButton": ["value", "isIconOnly", "size", "label", "copiedLabel"],
+    "EmptyState": [
+      "reason",
+      "size",
+      "headingLevel",
+      "title",
+      "description",
+      "action"
+    ],
+    "Alert": ["intent", "title", "actions"],
+    "Skeleton": ["variant", "lines"]
+  },
+  "variantsUsed": {
+    "List": {
+      "selectionMode": ["single", "none"]
+    },
+    "SidePanel": {
+      "size": ["sm", "md"]
+    },
+    "EmptyState": {
+      "reason": ["first-run", "no-results"],
+      "size": ["page", "panel"]
+    },
+    "Alert": {
+      "intent": ["error"]
+    }
+  },
+  "a11y": {
+    "requires": [
+      "the List's `aria-label` or `aria-labelledby`, naming the collection",
+      "`autoFocus={false}` on the SidePanel beside a single-selection List: with it on, tabbing into the list selects the first row, opens the panel and takes focus out of the list before a key has been pressed",
+      "rows that open on a press, not on focus, where the panel is a Drawer: a modal dialog must not open because focus arrived somewhere"
+    ],
+    "notes": [
+      "Selection following focus is the listbox convention for a selection that is not disruptive, and a panel updating beside the list is not: focus stays put, and the row's name — read as it is selected — says which record the panel shows.",
+      "The panel is a named region, so a screen reader user can reach it by landmark as well as by Tab."
+    ]
+  },
+  "antiPatterns": [
+    {
+      "dont": "a SidePanel that takes focus on open beside a List whose selection follows focus",
+      "do": "`autoFocus={false}`",
+      "why": "Tab into the list selects the first row, the panel opens and takes focus, and the list can never be walked"
+    },
+    {
+      "dont": "pushing a history entry for each selection",
+      "do": "replace the entry",
+      "why": "arrowing down ten rows makes Back take ten presses to leave the page"
+    },
+    {
+      "dont": "a panel that opens as soon as a row is focused, on a phone",
+      "do": "no selection mode below 768px, and `onAction` opening the row",
+      "why": "there the panel is a modal Drawer: arriving in the list would open a dialog and trap the user in it"
+    },
+    {
+      "dont": "a full-page 404 for an ID that matches no record in a list that loaded",
+      "do": "the list, and the panel saying there is no such record",
+      "why": "the page is there; one record is not, and the rest of the list is the way forward"
+    },
+    {
+      "dont": "buttons or links inside the rows",
+      "do": "the actions in the panel",
+      "why": "a row that is also a selection target and holds its own controls cannot follow focus: → into a row's button would change nothing the panel shows, and the user loses track of which is which"
+    }
+  ]
+}

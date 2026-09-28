@@ -315,6 +315,15 @@ export function listAgentLinks(): Pick<Agent, 'id' | 'name' | 'team'>[] {
   return agents.map(({ id, name, team }) => ({ id, name, team }));
 }
 
+/** The agents a person owns, for their row in Members. */
+export function listAgentsOwnedBy(
+  name: string,
+): Pick<Agent, 'id' | 'name' | 'status'>[] {
+  return agents
+    .filter((a) => a.owner.name === name)
+    .map(({ id, name, status }) => ({ id, name, status }));
+}
+
 export const STATUS_LABEL: Record<AgentStatus, string> = {
   running: 'Running',
   paused: 'Paused',
