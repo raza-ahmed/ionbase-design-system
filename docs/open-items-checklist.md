@@ -23,15 +23,10 @@
 
 ## 1. Tidy the docs — no code
 
-- [ ] **Bring the plans' status lines up to date.** Docs only:
-  - [`demo-app-plan.md`](demo-app-plan.md): the header says Phase 4 is
-    "awaiting review", but the demo is live and smoke-tested in CI.
-  - `demo-app-plan.md` §6: close the `/demo/` vs own-domain question on its
-    default, `/demo/`, which is what shipped.
-  - [`agent-readiness-plan.md`](agent-readiness-plan.md) Phase 1 "Still open":
-    it says `knownIssues` is empty and `surface/information` is unused. Both
-    stopped being true when Phase 2c filled the field and Alert `solid`
-    started using the token. Point the note at 2c.
+- [x] **Bring the plans' status lines up to date** — PR #99. The demo plan's
+      header and its `/demo/` question; in the agent-readiness plan, the
+      header, the Phase 1 and 2c notes on Dark and `knownIssues`, and Phase 5's
+      "no model has generated anything", which was stale since the 14 Sep run.
 
 ## 2. Motion — [`motion-system.md`](motion-system.md) §6
 
@@ -50,11 +45,13 @@
 
 ## 3. Agent readiness — [`agent-readiness-plan.md`](agent-readiness-plan.md)
 
-- [ ] **Phase 5: run the real A/B test.** A model generates against the
-      contract pack and against the README, and the results are compared.
-      The harness is built; only the two fixtures have run. It needs
-      `--provider api`, an API key and some spend, so it's your call. It
-      settles the four questions in "What a real run should settle".
+- [ ] **Phase 5: settle what the first run left open.** The 14 Sep run
+      answered questions 1 and 2: the contracts beat the README, and the rules
+      brief added nothing. Still open: question 3 (does trimming the inherited
+      ARIA props help?) and how big the gaps really are, since each cell ran
+      once. Re-run with `--samples N` through `--provider claude-cli`, which
+      needs no API key but does use model time, so it's your call. Also:
+      a quarter to a third of every pack fails `tsc`.
 - [ ] **4a: a worked TSX example per pattern**, 6 patterns. The plan says
       it's worth building only if the eval shows it helps. _Needs_ Phase 5.
       Without the run, you choose.
@@ -72,5 +69,3 @@ move one up into a section if its condition is met.
   [`enterprise-components.md`](enterprise-components.md) P2.
 - **3c, an MCP server**: build it only if 3a turns out not to be enough.
   [`agent-readiness-plan.md`](agent-readiness-plan.md).
-- **Dark theme contrast defects**: deferred until the Dark theme is settled
-  in Figma; see AGENTS.md.

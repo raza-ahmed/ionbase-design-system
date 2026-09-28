@@ -1,6 +1,7 @@
 # Making IonBase agent-first
 
-_Proposal, 18 Aug 2026. Not yet a decision — nothing here has been implemented._
+_Proposed 18 Aug 2026. Phases 0–2, 3a, 4 and the first Phase 5 run are done;
+§5 has the state of each, and 3c is the only phase not started._
 
 A design system used to be a contract between a design team and a development
 team. IonBase is now being authored on the assumption that **the thing consuming
@@ -263,10 +264,11 @@ write each requirement on the component that actually carries it.
 
 - `since` is omitted where it could not be established from the CHANGELOG. It
   was not invented.
-- The a11y `knownIssues` field designed in this plan has no entries, because the
-  one defect it was designed for — Button `success` at 3.69:1 — got fixed the
-  same day. `surface/information` in Dark is still 3.44:1 but no component uses
-  it yet. The field stays; the contrast gate in phase 2c should populate it.
+- The a11y `knownIssues` field designed in this plan is filled by the
+  contrast gate in phase 2c, and has no entries today because the gate reports
+  0 outstanding defects in either theme. `surface/information` in Dark, 3.44:1
+  when this was written, was fixed at source before Dark stopped being
+  deferred on 4 Sep 2026 — `contrast-exceptions.json` records how.
 
 ### Phase 2 — Ship the guardrails, do not just keep them
 
@@ -327,7 +329,7 @@ base rule's text colour), component-local `--ion-*` indirection, and alpha
 compositing for translucent hover overlays. 250 pairings, 17 stylesheets, zero
 skipped.
 
-**It found three outstanding defects, two of them unknown** — all three in Dark, which is now deferred until the theme is settled in Figma (see AGENTS.md); Light has zero — and disproved a
+**It found three outstanding defects, two of them unknown** — all three in Dark; Light had zero. Dark was deferred from 18 Aug to 4 Sep 2026, while the theme was still being designed in Figma, and un-deferred once its defects were fixed at source (`contrast-exceptions.json`) — and disproved a
 documented assumption: `surface/information` was recorded in AGENTS.md as "not
 yet used" while Alert's own stylesheet comment said it shipped. Two documents in
 this repo disagreed, neither was checked, and both were partly wrong.
@@ -702,17 +704,20 @@ lint errors for a bad implementation, 7/7 and 0 for a good one.
 Note the bad fixture **compiles**. Plain HTML type-checks fine, which is exactly
 why the other eight checks exist.
 
-#### What is NOT done
+#### What the first run did not settle
 
-**No model has generated anything.** The only candidates so far are two
-fixtures, which measure the scorer and nothing else. The headline question —
-does the contract pack beat the README — is still open, and the fixture run
-must not be quoted as if it answered it.
+The run is written up in [`evals/README.md`](../evals/README.md): `claude-opus-5`
+through `--provider claude-cli`, 31 tasks × 3 packs, one sample per cell. It
+answered questions 1 and 2 below. Still open:
 
-Running it needs `--provider api`, `@anthropic-ai/sdk` (deliberately not a
-dependency of this repo), and money. The wiring, prompt, caching and reporting
-are in place; `--provider files` grades output from any tool with no model at
-all.
+- **Question 3, the inherited ARIA props, was not tested.**
+- **Magnitudes.** One sample per cell, and three samples of one cell spanned
+  40–71% on compile rate. `--samples N` exists for the re-run.
+- **A quarter to a third of every pack fails `tsc`**, contracts included — the
+  largest defect in the output, and no pack fixed it.
+
+`--provider api` needs `@anthropic-ai/sdk` (deliberately not a dependency of this
+repo) and money; `--provider claude-cli` and `--provider files` do not.
 
 #### What a real run should settle
 
@@ -729,7 +734,7 @@ all.
 ```
 Phase 0  ▓  DONE                                  manifest live: 26 components, 249 stories
 Phase 1  ▓▓▓▓▓▓▓▓▓▓  DONE                          ionbase-ui/meta, 48 of 48 with intent
-Phase 2c ▓▓  DONE                                 1008 pairings; 0 outstanding defects
+Phase 2c ▓▓  DONE                                 2308 pairings; 0 outstanding defects
 Phase 5  ▓▓▓▓▓▓▓▓  A/B RUN 15 Sep 2026            31 tasks, 10 checks; see the result below
 Phase 2  ▓▓▓▓▓▓  DONE                             5 lint rules + stylelint config, shipped
 Phase 3a ▓▓▓▓  DONE                                llms.txt + 48 mirrors, hosted + in-tarball
