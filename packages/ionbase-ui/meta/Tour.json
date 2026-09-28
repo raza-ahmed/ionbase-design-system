@@ -1,0 +1,66 @@
+{
+  "status": "stable",
+  "summary": "Coachmarks in a sequence — one at a time, each pointing at its target, with \"2 of 4\", Back, Next, and Done on the last. Steps are data, naming their targets by id; a target not on the page is skipped.",
+  "useWhen": [
+    "a first look round a page someone asked to be shown — \"Take the tour\"",
+    "several places matter in an order, and each is best explained beside it",
+    "the product wants to know who saw it through: `onComplete` fires for Done only"
+  ],
+  "useInstead": [
+    {
+      "when": "one place, one thing to say",
+      "use": "Coachmark",
+      "why": "a tour of one has no count and no Back; a Coachmark says the same with less"
+    },
+    {
+      "when": "the page itself is new to everyone and needs no pointing — an empty workspace",
+      "use": "EmptyState",
+      "why": "an empty page explains itself in place; a tour pointing at nothing yet is five dialogs for one sentence"
+    },
+    {
+      "when": "telling people something changed without their asking",
+      "use": "Banner",
+      "why": "a tour takes focus at every step; opened unasked it takes over the page"
+    }
+  ],
+  "composition": {
+    "order": ["Tour"],
+    "note": "Start it from a button — `isOpen` from its press — and end it through `onOpenChange(false)`. Each step is `{ target: id, title, body, placement? }`. Remember a finished tour in `onComplete`, and offer it again to someone who ended it early. Every string is in `labels`; `progress` receives the current step and the total as numbers.",
+    "example": "<Tour isOpen={touring} onOpenChange={setTouring} onComplete={markSeen} steps={[{ target: 'overview-range', title: 'Pick the period', body: 'Every figure follows the dates chosen here.' }]} />"
+  },
+  "a11y": {
+    "requires": [
+      "start it from a person's action, never on page load: every step takes focus",
+      "an `id` on every target, and a `title` on every step — it names that step's dialog"
+    ],
+    "guarantees": [
+      "one step at a time, each a Coachmark: a non-modal dialog named by its title, focused when it appears so each step is read out",
+      "the count, Back and Next / Done sit in each step's footer; there is no Back on the first step, and one step alone has no count",
+      "a target not on the page when the tour starts — removed, or not drawn at this width — is skipped, and the count is of the steps that remain",
+      "Done on the last step calls `onComplete` and ends the tour; the close button (`labels.close`, \"End tour\") and Escape end it without completing it",
+      "focus goes back to what started the tour once, when it ends, not between steps",
+      "started again, it begins at the first step",
+      "`onStepChange` receives the step's index in `steps`, so a skipped step never appears in it"
+    ],
+    "notes": [
+      "The page is measured once, when the tour starts: a target that appears mid-tour is not added, so the count never changes under the reader."
+    ]
+  },
+  "antiPatterns": [
+    {
+      "dont": "<Tour isOpen={!seen} … /> on first visit",
+      "do": "a \"Take the tour\" button, with `seen` deciding only whether to offer it",
+      "why": "a tour that opens itself takes focus from whoever arrived to do something else"
+    },
+    {
+      "dont": "steps pointing at elements that exist only after a click in an earlier step",
+      "do": "steps over what is on the page when the tour starts",
+      "why": "the page is measured when the tour starts; a target that was not there is skipped, and the step with it"
+    },
+    {
+      "dont": "marking the tour seen in `onOpenChange(false)`",
+      "do": "`onComplete`",
+      "why": "Escape on step one is not the same as reading it through; only one of them should stop the offer"
+    }
+  ]
+}

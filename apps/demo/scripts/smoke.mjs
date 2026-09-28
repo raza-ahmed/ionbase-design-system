@@ -1311,6 +1311,181 @@ try {
   }
 
   /*
+   * Tour, on Overview: offered by "Take the tour", never started for you.
+   * Escape on the first step ends it unfinished — the button still says
+   * "Take the tour". Taken through, each step is a dialog that takes focus,
+   * rings its target and stays on screen, "1 of N" counting the targets
+   * drawn; Done gives focus back to the button, which now says "Take the
+   * tour again". axe on a step; nothing sideways on a phone.
+   */
+  for (const [device, width, height] of [
+    ['desktop', 1280, 900],
+    ['mobile', 390, 844],
+  ]) {
+    const where = `tour (light, ${device})`;
+    if (skip(where)) continue;
+    const context = await browser.newContext({ viewport: { width, height } });
+    await context.addInitScript(() =>
+      localStorage.setItem(
+        'ionbase-ops:demo-settings',
+        JSON.stringify({ theme: 'light', latency: 0 }),
+      ),
+    );
+    const page = await context.newPage();
+    page.on('pageerror', (e) => fail(where, `exception: ${e.message}`));
+    const ids = [
+      'overview-range',
+      'overview-stats',
+      'overview-token-use',
+      'notifications-bell',
+    ];
+    const titles = [
+      'Pick the period',
+      'The period at a glance',
+      'Where the tokens went',
+      'What needs you',
+    ];
+    try {
+      await page.goto(`${BASE}/#/overview`);
+      await page.locator('#overview-stats').waitFor({ timeout: 10_000 });
+      const start = page.getByRole('button', { name: /^Take the tour/ });
+      if (await page.getByRole('dialog').count())
+        fail(where, 'a tour step is open before anyone asked');
+
+      await start.click();
+      await page.getByRole('dialog', { name: titles[0] }).waitFor();
+      await page.keyboard.press('Escape');
+      await page.getByRole('dialog').waitFor({ state: 'detached' });
+      if ((await start.textContent()) !== 'Take the tour')
+        fail(where, 'ended on the first step, the tour counts as seen');
+
+      const drawn = await page.evaluate(
+        (list) =>
+          list.filter((id) => {
+            const el = document.getElementById(id);
+            return el && el.getClientRects().length > 0;
+          }),
+        ids,
+      );
+      // Every step's target is drawn on Overview, at both widths.
+      if (drawn.length !== ids.length)
+        fail(where, `only ${drawn.join(', ')} of the tour's targets are drawn`);
+      await start.click();
+      for (const [n, id] of drawn.entries()) {
+        const title = titles[ids.indexOf(id)];
+        const dialog = page.getByRole('dialog', { name: title });
+        await dialog.waitFor({ timeout: 5_000 });
+        const state = await page.waitForFunction(
+          (t) => {
+            const d = document.querySelector('[role="dialog"]');
+            return d === document.activeElement &&
+              d.getAttribute('aria-labelledby') &&
+              document.getElementById(d.getAttribute('aria-labelledby'))
+                .textContent === t
+              ? true
+              : null;
+          },
+          title,
+          { timeout: 5_000 },
+        );
+        if (!state) fail(where, `step ${n + 1} did not take focus`);
+        const info = await page.evaluate((target) => {
+          const d = document.querySelector('[role="dialog"]');
+          const r = d.getBoundingClientRect();
+          return {
+            ringed: document
+              .getElementById(target)
+              .hasAttribute('data-ion-coachmark-target'),
+            others: document.querySelectorAll('[data-ion-coachmark-target]')
+              .length,
+            text: d.textContent,
+            onScreen:
+              r.left >= 0 &&
+              r.right <= window.innerWidth + 0.5 &&
+              r.top >= 0 &&
+              r.bottom <= window.innerHeight + 0.5,
+          };
+        }, id);
+        if (!info.ringed || info.others !== 1)
+          fail(where, `step ${n + 1} does not ring its target alone`);
+        if (!info.text.includes(`${n + 1} of ${drawn.length}`))
+          fail(
+            where,
+            `step ${n + 1} does not say "${n + 1} of ${drawn.length}"`,
+          );
+        // Placed and scrolled to, below the sticky header, within a second.
+        const visible = await page
+          .waitForFunction(
+            (target) => {
+              const d = document.querySelector('[role="dialog"]');
+              const head = document.querySelector('.demo-header');
+              const r = d.getBoundingClientRect();
+              // Under the header, unless it points at something in it.
+              const floor =
+                head && !head.contains(document.getElementById(target))
+                  ? head.getBoundingClientRect().bottom
+                  : 0;
+              return (
+                r.left >= 0 &&
+                r.right <= window.innerWidth + 0.5 &&
+                r.top >= floor &&
+                r.bottom <= window.innerHeight + 0.5
+              );
+            },
+            id,
+            { timeout: 1_000 },
+          )
+          .then(() => true)
+          .catch(() => false);
+        if (!info.onScreen && !visible)
+          fail(where, `step ${n + 1} runs off the screen`);
+        if (!visible)
+          fail(where, `step ${n + 1} is not in view below the header`);
+        if (
+          await page.evaluate(
+            () => document.documentElement.scrollWidth > window.innerWidth,
+          )
+        )
+          fail(where, `step ${n + 1} makes the page scroll sideways`);
+        if (n === 0 && device === 'desktop') {
+          await page.addScriptTag({ content: axeSource });
+          const violations = await page.evaluate(async () => {
+            const result = await window.axe.run(
+              document.querySelector('[role="dialog"]'),
+              { resultTypes: ['violations'] },
+            );
+            return result.violations.map(
+              (v) => `${v.impact} ${v.id} — ${v.nodes[0].target.join(' ')}`,
+            );
+          });
+          for (const v of violations) fail(where, `axe ${v} in a step`);
+        }
+        const last = n === drawn.length - 1;
+        await dialog
+          .getByRole('button', { name: last ? 'Done' : 'Next' })
+          .click();
+      }
+      await page.getByRole('dialog').waitFor({ state: 'detached' });
+      await page
+        .waitForFunction(
+          () =>
+            document.activeElement?.textContent?.startsWith('Take the tour'),
+          null,
+          { timeout: 2_000 },
+        )
+        .catch(() => fail(where, 'Done did not give focus back to the button'));
+      if ((await start.textContent()) !== 'Take the tour again')
+        fail(where, `finished, the button says "${await start.textContent()}"`);
+      if (await page.locator('[data-ion-coachmark-target]').count())
+        fail(where, 'a ring was left on the page');
+    } catch (e) {
+      fail(where, `did not run: ${e.message.split('\n')[0]}`);
+    }
+    groupsChecked++;
+    await context.close();
+  }
+
+  /*
    * SplitButton, on the wizard's Review step: a saved draft with the first
    * three steps done opens there. "Create agent" is the main half and makes
    * the agent paused; the menu half, "More options, Create agent", offers
@@ -5364,6 +5539,118 @@ try {
         )
       )
         fail(where, 'the page scrolls sideways');
+    } catch (e) {
+      fail(where, `did not run: ${e.message.split('\n')[0]}`);
+    }
+    groupsChecked++;
+    await context.close();
+  }
+
+  /*
+   * Coachmark, as Settings' "What's new?": nothing is open on arrival. The
+   * button opens one dialog, focused, named for the email colour, ringing
+   * that block alone and on screen below the header; Escape closes it,
+   * takes the ring away and gives focus back to the button. axe on it.
+   */
+  for (const [device, width, height] of [
+    ['desktop', 1280, 900],
+    ['mobile', 390, 844],
+  ]) {
+    const where = `whats new (light, ${device})`;
+    if (skip(where)) continue;
+    const context = await browser.newContext({ viewport: { width, height } });
+    await context.addInitScript(() =>
+      localStorage.setItem(
+        'ionbase-ops:demo-settings',
+        JSON.stringify({ theme: 'light', latency: 0 }),
+      ),
+    );
+    const page = await context.newPage();
+    page.on('pageerror', (e) => fail(where, `exception: ${e.message}`));
+    const title = 'Approval emails take your colour';
+    try {
+      await page.goto(`${BASE}/#/settings`);
+      const open = page.getByRole('button', { name: 'What’s new?' });
+      await open.waitFor({ timeout: 10_000 });
+      await page
+        .getByRole('textbox', { name: 'Approval email colour' })
+        .waitFor({ timeout: 10_000 });
+      if (await page.getByRole('dialog').count())
+        fail(where, 'a coachmark is open before anyone asked');
+
+      await open.click();
+      const dialog = page.getByRole('dialog', { name: title });
+      await dialog.waitFor({ timeout: 5_000 });
+      await page
+        .waitForFunction(
+          () =>
+            document.activeElement ===
+            document.querySelector('[role="dialog"]'),
+          null,
+          { timeout: 2_000 },
+        )
+        .catch(() => fail(where, 'the coachmark did not take focus'));
+      const ringed = await page.evaluate(() =>
+        [...document.querySelectorAll('[data-ion-coachmark-target]')].map(
+          (el) => el.id,
+        ),
+      );
+      if (ringed.join() !== 'd-emailAccent-block')
+        fail(where, `ringed: ${ringed.join(', ') || 'nothing'}`);
+      const visible = await page
+        .waitForFunction(
+          () => {
+            const d = document.querySelector('[role="dialog"]');
+            const head = document.querySelector('.demo-header');
+            const r = d.getBoundingClientRect();
+            const floor = head ? head.getBoundingClientRect().bottom : 0;
+            return (
+              r.left >= 0 &&
+              r.right <= window.innerWidth + 0.5 &&
+              r.top >= floor &&
+              r.bottom <= window.innerHeight + 0.5
+            );
+          },
+          null,
+          { timeout: 1_000 },
+        )
+        .then(() => true)
+        .catch(() => false);
+      if (!visible)
+        fail(where, 'the coachmark is not in view below the header');
+      if (
+        await page.evaluate(
+          () => document.documentElement.scrollWidth > window.innerWidth,
+        )
+      )
+        fail(where, 'the coachmark makes the page scroll sideways');
+      if (device === 'desktop') {
+        await page.addScriptTag({ content: axeSource });
+        const violations = await page.evaluate(async () => {
+          const result = await window.axe.run(
+            document.querySelector('[role="dialog"]'),
+            { resultTypes: ['violations'] },
+          );
+          return result.violations.map(
+            (v) => `${v.impact} ${v.id} — ${v.nodes[0].target.join(' ')}`,
+          );
+        });
+        for (const v of violations) fail(where, `axe ${v} in the coachmark`);
+      }
+
+      await page.keyboard.press('Escape');
+      await page.getByRole('dialog').waitFor({ state: 'detached' });
+      if (await page.locator('[data-ion-coachmark-target]').count())
+        fail(where, 'the ring stayed after Escape');
+      await page
+        .waitForFunction(
+          () => document.activeElement?.textContent === 'What’s new?',
+          null,
+          { timeout: 2_000 },
+        )
+        .catch(() =>
+          fail(where, 'Escape did not give focus back to “What’s new?”'),
+        );
     } catch (e) {
       fail(where, `did not run: ${e.message.split('\n')[0]}`);
     }

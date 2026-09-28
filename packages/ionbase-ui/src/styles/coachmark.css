@@ -1,0 +1,179 @@
+/*
+ * Coachmark, and Tour, which is Coachmarks in a row and has no styles of
+ * its own.
+ *
+ *   panel    Popover's surface: surface/raised, a border/subtle edge,
+ *            radius/md and shadow/lg, 320px and never wider than the
+ *            viewport less two gutters
+ *   header   the title in body, medium, and a 32px close
+ *   body     body/sm in text/secondary
+ *   footer   the progress ("2 of 4") at the start, the actions at the end
+ *   target   ringed in border/primary-strong while it is pointed at, 4px
+ *            clear of it, so the eye goes from the callout to the thing
+ *
+ * The arrow is Popover's rotated square, on the side React Aria resolved:
+ * `data-placement` is physical and already mirrored for right to left, so
+ * the arrow's side is physical too — see popover.css.
+ */
+.ion-coachmark {
+  --ion-coachmark-width: 320px;
+
+  /* Popover's layer: above a Modal, below a Toast. */
+  z-index: 1150;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-12);
+  width: var(--ion-coachmark-width);
+  max-width: calc(100vw - var(--spacing-16) * 2);
+  padding: var(--spacing-16);
+  background-color: var(--surface-raised);
+  border: var(--border-width-default) solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  box-shadow: var(--ion-shadow-shadow-lg);
+  font-family: var(--font-family-sans);
+
+  /* Scrolled into view with room round it. A page with a sticky header
+     adds the header's height — see the demo. */
+  scroll-margin: var(--spacing-16);
+}
+
+/*
+ * It takes focus so that it is read out, not because it is a control: a
+ * ring round the whole panel would be a second highlight beside the
+ * target's. Tab goes on to its buttons, which ring as usual.
+ */
+.ion-coachmark:focus {
+  outline: none;
+}
+
+.ion-coachmark__arrow {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  background-color: var(--surface-raised);
+  border: var(--border-width-default) solid var(--border-subtle);
+  transform: rotate(45deg);
+}
+
+/* stylelint-disable property-disallowed-list */
+.ion-coachmark[data-placement='top'] .ion-coachmark__arrow {
+  bottom: -7px;
+  border-top: none;
+  border-left: none;
+}
+
+.ion-coachmark[data-placement='bottom'] .ion-coachmark__arrow {
+  top: -7px;
+  border-bottom: none;
+  border-right: none;
+}
+
+.ion-coachmark[data-placement='left'] .ion-coachmark__arrow {
+  right: -7px;
+  border-bottom: none;
+  border-left: none;
+}
+
+.ion-coachmark[data-placement='right'] .ion-coachmark__arrow {
+  left: -7px;
+  border-top: none;
+  border-right: none;
+}
+/* stylelint-enable property-disallowed-list */
+
+.ion-coachmark__header {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-12);
+}
+
+.ion-coachmark__title {
+  flex: 1 1 auto;
+  min-width: 0;
+  margin: 0;
+  color: var(--text-default);
+  font-size: var(--type-body);
+  line-height: var(--type-body-line-height);
+  font-weight: var(--font-weight-medium);
+}
+
+/* 32px round a 20px glyph, Popover's close. */
+.ion-coachmark__close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: var(--spacing-32);
+  height: var(--spacing-32);
+  margin-block: calc(var(--spacing-6) * -1);
+  margin-inline-end: calc(var(--spacing-6) * -1);
+  padding: 0;
+  background: none;
+  border: none;
+  border-radius: var(--radius-sm);
+  color: var(--icon-secondary);
+  cursor: pointer;
+  transition: background-color var(--ion-duration-base) var(--ion-ease-out);
+}
+
+.ion-coachmark__close svg {
+  width: var(--icon-size-md);
+  height: var(--icon-size-md);
+}
+
+@media (hover: hover) {
+  .ion-coachmark__close:hover {
+    background-color: var(--surface-hover);
+  }
+}
+
+.ion-coachmark__close:focus-visible {
+  outline: var(--border-width-thick) solid var(--ring-focus);
+  outline-offset: 2px;
+}
+
+.ion-coachmark__body {
+  color: var(--text-secondary);
+  font-size: var(--type-body-sm);
+  line-height: var(--type-body-sm-line-height);
+  overflow-wrap: anywhere;
+}
+
+.ion-coachmark__footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-8);
+}
+
+.ion-coachmark__progress {
+  color: var(--text-tertiary);
+  font-size: var(--type-body-sm);
+  line-height: var(--type-body-sm-line-height);
+  font-variant-numeric: tabular-nums;
+}
+
+.ion-coachmark__actions {
+  display: flex;
+  gap: var(--spacing-8);
+  margin-inline-start: auto;
+}
+
+/* The thing being pointed at. */
+[data-ion-coachmark-target] {
+  outline: var(--border-width-thick) solid var(--border-primary-strong);
+  outline-offset: var(--spacing-4);
+  scroll-margin: var(--spacing-16);
+}
+
+@media (forced-colors: active) {
+  .ion-coachmark,
+  .ion-coachmark__arrow {
+    border-color: CanvasText;
+  }
+
+  [data-ion-coachmark-target] {
+    outline-color: Highlight;
+  }
+}

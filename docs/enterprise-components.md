@@ -139,7 +139,7 @@ IonBase column names the component that covers it.
 | Modal / dialog                  |   ●    |  ●  |  ●   | `Modal`              |
 | Drawer (modal side sheet)       |   ●    |  ●  |      | `Drawer`             |
 | Side panel (non-modal)          |   ●    |  ●  |  ●   | `SidePanel`          |
-| Coachmark / guided tour         |   ●    |     |  ●   | —                    |
+| Coachmark / guided tour         |   ●    |     |  ●   | `Coachmark`, `Tour`  |
 
 ### Layout and utilities
 
@@ -263,7 +263,7 @@ is to build:
 - **DateTimePicker** — decided: a component, because a bound such as "not before now" spans the date and the time, and two fields leave that rule to every caller. Shipped 0.128.0.
 - **ColorPicker** — a hex field first, with an area, a hue strip and named presets behind its swatch button; `#RRGGBB`, no alpha, and no contrast check of its own, because only the caller knows what sits on the colour. Shipped 0.129.0.
 - **ProgressRing** — circular determinate progress: determinate only, since a ring with no value is a Spinner. Shipped 0.130.0.
-- **Coachmark / guided tour**
+- **Coachmark / guided tour** — `Coachmark` for one callout and `Tour` for a sequence of them: opened only when asked, not modal, steps as data naming their targets by id. Shipped 0.131.0.
 - **AppSwitcher** — the grid of products in a suite's header.
 - **Calendar**, exported standalone — `Calendar.tsx` already exists internally.
 - **SplitPane** — resizable, keyboard-operable divider.

@@ -618,3 +618,18 @@ body {
   font-weight: var(--font-weight-medium);
   forced-color-adjust: none;
 }
+
+/*
+ * A coachmark and its target scroll into view below the sticky header, not
+ * under it: the library leaves 16px, and only the page knows its header.
+ * `html` for the specificity: the library's stylesheet loads after this one.
+ * The header's height restated, not `--demo-header-height`: the coachmark is
+ * portalled out of `.demo-app`, which defines it, and an undefined variable
+ * made the margin 0 — the step's top slid under the header.
+ */
+html .ion-coachmark,
+html [data-ion-coachmark-target] {
+  scroll-margin-top: calc(
+    var(--spacing-48) + var(--spacing-8) + var(--spacing-16)
+  );
+}

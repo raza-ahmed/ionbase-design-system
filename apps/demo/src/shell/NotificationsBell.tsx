@@ -80,6 +80,7 @@ export function NotificationsBell() {
       {/* The Tooltip is the Popover's trigger and passes its props through. */}
       <Tooltip label="Notifications">
         <Button
+          id="notifications-bell"
           variant="tertiary"
           size="sm"
           aria-label={name}

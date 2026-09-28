@@ -13,6 +13,7 @@ import {
   CitationListItem,
   CommandPalette,
   ColorPicker,
+  Tour,
   DateTimePicker,
   DualListbox,
   ConfidenceIndicator,
@@ -729,6 +730,57 @@ export const APickedColour: Story = {
     const dialog = await within(document.body).findByRole('dialog');
     await expectNoEnglish(dialog);
     await expectSaid(dialog, m('swatches'), m('blue'));
+    await userEvent.keyboard('{Escape}');
+  },
+};
+
+/**
+ * Tour's five strings, the count built from the numbers it is handed — and
+ * the steps, which are the caller's data.
+ */
+export const ATour: Story = {
+  render: function Render() {
+    const [open, setOpen] = useState(false);
+    return (
+      <>
+        <button type="button" onClick={() => setOpen(true)}>
+          {m('start')}
+        </button>
+        <p id="ls-one">{m('one')}</p>
+        <p id="ls-two">{m('two')}</p>
+        <Tour
+          isOpen={open}
+          onOpenChange={setOpen}
+          steps={[
+            { target: 'ls-one', title: m('t1'), body: m('b1') },
+            { target: 'ls-two', title: m('t2'), body: m('b2') },
+          ]}
+          labels={{
+            next: m('next'),
+            back: m('back'),
+            done: m('done'),
+            close: m('close'),
+            progress: (c, t) => m(`${c}/${t}`),
+          }}
+        />
+      </>
+    );
+  },
+  play: async ({ canvasElement }) => {
+    await userEvent.click(
+      within(canvasElement).getByRole('button', { name: m('start') }),
+    );
+    let dialog = await within(document.body).findByRole('dialog');
+    await expectNoEnglish(dialog);
+    await expectSaid(dialog, m('1/2'), m('next'), m('close'));
+    await userEvent.click(
+      within(dialog).getByRole('button', { name: m('next') }),
+    );
+    dialog = await within(document.body).findByRole('dialog', {
+      name: m('t2'),
+    });
+    await expectNoEnglish(dialog);
+    await expectSaid(dialog, m('2/2'), m('back'), m('done'));
     await userEvent.keyboard('{Escape}');
   },
 };

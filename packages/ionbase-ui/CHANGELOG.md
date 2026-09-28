@@ -1,5 +1,84 @@
 # Changelog
 
+## 0.131.0 — 2026-09-28
+
+### Coachmark and Tour — pointing at the page, when asked
+
+**`Coachmark`** is a callout pointing at one thing on the page, to say what
+it is or what changed. **`Tour`** is Coachmarks in a sequence.
+
+**How a Coachmark behaves:**
+
+- **The target:** an element id, or a ref. It is scrolled into view and
+  ringed in border/primary-strong while the coachmark shows. A target that
+  is not on the page shows nothing. A target drawn in the same commit as the
+  coachmark, such as a section one press reveals and points at, is looked
+  for again once it is on the page, and the coachmark still appears focused.
+- **Only when asked:** it takes focus when it appears, so it must open from
+  a person's action, such as "What's new?" or "Take the tour". The meta
+  sends "tell people without their asking" to Banner.
+- **Not modal:** a dialog named by its title and described by its body.
+  Nothing behind it is hidden or inert, and focus is not trapped. Escape and
+  the close button close it, and focus goes back.
+- **Placement:** `top`, `bottom`, `start` or `end`. These are logical, so
+  `start` is the right in a right-to-left page. React Aria flips it when
+  there is no room, and the arrow follows the side it resolved to.
+- **A target taller than the screen:** the coachmark scrolls itself into
+  view once placed. It is not held to the height React Aria measured beside
+  such a target, which was 0px above one whose top was off screen.
+
+**How a Tour behaves:**
+
+- **Steps are data:** `{ target: id, title, body, placement? }`. A target
+  not drawn when the tour starts, such as one hidden at a phone's width, is
+  skipped, and the count is of the steps that remain.
+- **Each step:** a Coachmark with "2 of 4", Back (none on the first step)
+  and Next, and Done on the last. One step alone has no count.
+- **Focus:** each step is a new dialog, focused and read out. Focus goes back
+  to what started the tour once, at the end.
+- **Finished is not dismissed:** `onComplete` fires for Done only. The close
+  button (`labels.close`, "End tour") and Escape end the tour without it, so
+  a product can offer it again to someone who stopped halfway.
+- **Starting again** begins at the first step. **Strings:** five, in
+  `labels`, with `progress` receiving the numbers. The strings gate now
+  counts 171.
+
+**Figma:** Coachmark is drawn on a page of its own, Placement × Step (16
+variants), cloned from Popover's Medium variants so the surface is Popover's.
+Step is a Tour's footer: Single has none, and First, Middle and Last carry
+the count and Back, Next or Done. An example frame shows a step pointing at a
+ringed target. It is mapped, and its code block is applied; Tour is in
+`codeUnmapped`, drawn as the Step axis. The audit found 110 of 110 blocks in
+the file, and they are countersigned.
+
+**The demo:** Overview has **Take the tour** in its header. The tour covers
+four stops: the date range, the period's figures, token use by team, and the
+Notifications bell. Finished, the button says **Take the tour again**;
+ended early, it still offers the tour as new. The PageShell pattern now says
+the same. Settings' Workspace defaults card has **What's new?** in its
+header, a single Coachmark on the new Approval email colour.
+
+**Found on the way:** the tour's third step scrolled under the demo's sticky
+header on a phone. The scroll margin read `--demo-header-height`, which the
+app shell defines, and the coachmark is portalled out of the shell, so it
+computed to 0px. ColorPicker's panel lost its width the same way in 0.129.0.
+Both are written up in AGENTS.md.
+
+**Tests:**
+
+- 10 Coachmark and 7 Tour stories.
+- One each in Forced colours and Localised strings.
+- A smoke check of the tour on desktop and mobile. Each step must take
+  focus, ring its target alone, say its count and sit in view below the
+  header. It checks that ending early is not finishing, and runs axe on a
+  step.
+- A smoke check of What's new? on desktop and mobile: nothing open on
+  arrival, then one focused dialog ringing the email colour alone, in view
+  below the header. Escape takes the ring away and gives focus back. axe
+  runs on it.
+
+Mutations: 28 of 28 caught (20 in the library, 8 in the demo).
+
 ## 0.130.0 — 2026-09-28
 
 ### ProgressRing — how far, in the space of an icon

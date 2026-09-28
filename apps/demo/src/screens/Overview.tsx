@@ -21,13 +21,16 @@ import {
   TableHead,
   TableRow,
   Tabs,
+  Tour,
   TreeGrid,
   type DateRange,
+  type TourStep,
   type TreeGridColumn,
 } from 'ionbase-ui';
 import { RefreshCw } from 'ionbase-icons/icons/refresh-cw';
 
 import { getOverview } from '../data/api';
+import { readTourSeen, writeTourSeen } from '../lib/tour';
 import {
   defaultRange,
   type Kpi,
@@ -108,9 +111,35 @@ function openUse(rows: TokenUse[], id: string) {
   } else navigate(`agents/${row.target}`);
 }
 
+const TOUR: TourStep[] = [
+  {
+    target: 'overview-range',
+    title: 'Pick the period',
+    body: 'Every figure on this page follows the dates chosen here, and each compares with the period before.',
+  },
+  {
+    target: 'overview-stats',
+    title: 'The period at a glance',
+    body: 'Runs, how many succeeded, how many are waiting for a person, and how long they take.',
+  },
+  {
+    target: 'overview-token-use',
+    title: 'Where the tokens went',
+    body: 'By team, then agent, then model. Open a team to see its agents; press a row to go to it.',
+    placement: 'top',
+  },
+  {
+    target: 'notifications-bell',
+    title: 'What needs you',
+    body: 'Approvals and failures arrive here, on every page.',
+  },
+];
+
 export function Overview() {
   const settings = useDemoSettings();
   const [range, setRange] = useState<DateRange>(() => defaultRange(today()));
+  const [touring, setTouring] = useState(false);
+  const [seen, setSeen] = useState(readTourSeen);
 
   const overview = useResource(
     (signal) => getOverview(range, settings, signal),
@@ -125,8 +154,19 @@ export function Overview() {
         titleId="page-title"
         title="Overview"
         description="How your agents performed, and what needs a human."
+        actions={
+          // Offered, never started for you: every step takes focus.
+          <Button
+            size="sm"
+            variant="secondary"
+            onPress={() => setTouring(true)}
+          >
+            {seen ? 'Take the tour again' : 'Take the tour'}
+          </Button>
+        }
       >
         <DateRangePicker
+          id="overview-range"
           label="Date range"
           size="sm"
           value={range}
@@ -192,6 +232,19 @@ export function Overview() {
       {overview.status === 'ready' && overview.data.runs.value > 0 && (
         <OverviewReady data={overview.data} onRetry={overview.retry} />
       )}
+
+      {/* Steps over what is on the page when it starts: while the figures
+          load, or on an empty range, the tour is the date range and the
+          bell, and says "1 of 2". */}
+      <Tour
+        isOpen={touring}
+        onOpenChange={setTouring}
+        onComplete={() => {
+          writeTourSeen();
+          setSeen(true);
+        }}
+        steps={TOUR}
+      />
     </div>
   );
 }
@@ -231,7 +284,7 @@ function OverviewReady({
         </Alert>
       )}
 
-      <StatGroup aria-label="This period">
+      <StatGroup id="overview-stats" aria-label="This period">
         <StatTile
           label="Runs"
           value={compact.format(data.runs.value)}
@@ -319,7 +372,7 @@ function OverviewReady({
         </Card>
       </Grid>
 
-      <Card title="Token use by team">
+      <Card id="overview-token-use" title="Token use by team">
         <TreeGrid
           aria-label="Token use by team"
           density="compact"

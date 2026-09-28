@@ -8,6 +8,7 @@ import {
   Button,
   ChartLegend,
   Checkbox,
+  Coachmark,
   ColorPicker,
   Divider,
   DualListbox,
@@ -471,5 +472,31 @@ export const AProgressRingTakesSystemColours: Story = {
     const fill = canvasElement.querySelector('.ion-progress-ring__fill');
     await expect(css(track, 'stroke')).toBe(system('GrayText'));
     await expect(css(fill, 'stroke')).toBe(system('Highlight'));
+  },
+};
+
+/**
+ * A coachmark's target keeps its ring, in Highlight, and the panel keeps an
+ * edge: its shadow is gone in forced colours, and without the border it
+ * would be text floating on the page.
+ */
+export const ACoachmarkKeepsItsTargetRing: Story = {
+  render: () => (
+    <div style={{ paddingBottom: 200 }}>
+      <button type="button" id="fc-target">
+        Export runs
+      </button>
+      <Coachmark target="fc-target" title="Export is here now">
+        Runs export as CSV from this button.
+      </Coachmark>
+    </div>
+  ),
+  play: async () => {
+    await forced();
+    const target = document.getElementById('fc-target')!;
+    await expect(css(target, 'outline-style')).toBe('solid');
+    await expect(css(target, 'outline-color')).toBe(system('Highlight'));
+    const dialog = await within(document.body).findByRole('dialog');
+    await expect(css(dialog, 'border-top-color')).toBe(system('CanvasText'));
   },
 };
