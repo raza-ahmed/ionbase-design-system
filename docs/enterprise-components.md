@@ -3,13 +3,23 @@
 What an enterprise product expects a design system to have, measured against
 three systems that ship to enterprises today, and what IonBase is missing.
 
-**This file is the reasoning. It does not record status.** Progress lives in
-[`enterprise-checklist.md`](enterprise-checklist.md) and nowhere else — a status
-kept in two places is a status that drifts, and AGENTS.md has three stale counts
-to prove it. When the checklist is finished it is deleted; this file stays, as
-the record of why the system has the shape it has.
+**This file is the reasoning, and now the record.** Progress was tracked in a
+separate checklist, one item per PR from 0.82.0 to 0.134.0, and deleted when
+its last box was ticked, so a status never lived in two places. What it
+built is in the IonBase column below and in `CHANGELOG.md`. This file stays,
+as the record of why the system has the shape it has.
 
-Snapshot taken 25 Sep 2026, against ionbase-ui 0.81.1.
+Snapshot taken 25 Sep 2026, against ionbase-ui 0.81.1. **Re-run 28 Sep 2026,
+against 0.134.0:**
+
+- Carbon's component directory had one new entry, `ConditionBuilder`. It was
+  moved in from Carbon for IBM Products on 25 Sep and is public from v12.
+- material-web and MUI had nothing new.
+- SLDS's `ui/components` had not changed since November 2025. Checking every
+  blueprint against the tables found its `expression` builder, which the
+  first pass had missed.
+
+Both are the one new row, the condition builder, in §3 as P2.
 
 ---
 
@@ -73,6 +83,7 @@ IonBase column names the component that covers it.
 | Fieldset / form group             |   ●    |     |  ●   | `Fieldset`                                  |
 | Inline edit                       |   ●    |     |  ●   | `InlineEdit`                                |
 | Tag / pill input                  |   ●    |  ●  |  ●   | `TagGroup`, `Tag`                           |
+| Condition / expression builder    |   ●    |     |  ●   | — _P2, §3_                                  |
 | Rich text editor                  |        |     |  ●   | — _deferred, §4_                            |
 | Fluid (borderless) input variants |   ●    |     |      | — _non-goal, §4_                            |
 
@@ -161,8 +172,8 @@ IonBase column names the component that covers it.
 | Agent stop / approval / activity  |        |     |      | `AgentStop`, `ApprovalGate`, `AgentActivity`  |
 | Tool call / citation / confidence |        |     |      | `ToolCall`, `Citation`, `ConfidenceIndicator` |
 
-IonBase is **ahead** of all three on the agentic tier and has nothing to add
-there beyond the two rows marked absent. The gaps are in the classic tiers.
+IonBase is **ahead** of all three on the agentic tier, where none of them has a
+row IonBase lacks. The gaps were in the classic tiers.
 
 ---
 
@@ -267,6 +278,7 @@ is to build:
 - **AppSwitcher** — the grid of products in a suite's header: links to each product's home, not a menu, with the current one marked. Shipped 0.132.0.
 - **Calendar**, exported standalone — the inline one, single-date, with a label and a surface of its own: for a day chosen by where it falls, and where a picker's popover would be a second layer. The pickers' grids stay internal. Shipped 0.133.0.
 - **SplitPane** — two panes and a divider a person moves: the window-splitter pattern, the share in percent, stacked on a phone. Shipped 0.134.0.
+- **Condition builder** (Carbon `ConditionBuilder`, SLDS `expression`) — rules of a property, an operator and a value, in a flat list or in nested and/or groups: segments, alert rules, routing. Found by the 28 Sep re-run; not built. Build when a product asks, not before. Filtering a listing is FilteredDataTable's, with MultiSelect and Select, and a rule a person writes once is a Form. Carbon's version is not public until v12, so there is no settled prior art to read yet.
 
 ### Patterns to add
 
