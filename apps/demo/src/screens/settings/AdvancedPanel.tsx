@@ -11,6 +11,7 @@ import {
   Popover,
   Select,
   SettingRow,
+  SplitPane,
 } from 'ionbase-ui';
 import { Info } from 'ionbase-icons/icons/info';
 
@@ -25,6 +26,17 @@ const API_REQUEST = `curl -X POST https://api.ionbase.dev/v1/runs \\
     "input": "march-invoices.csv",
     "notify": ["finance-ops"]
   }'`;
+
+const API_RESPONSE = `HTTP/1.1 202 Accepted
+Location: https://api.ionbase.dev/v1/runs/run_8f2c41
+
+{
+  "id": "run_8f2c41",
+  "agent": "invoice-reconciler",
+  "status": "queued",
+  "created_at": "2026-09-28T09:14:03Z",
+  "links": { "logs": "https://ops.ionbase.dev/runs/run_8f2c41" }
+}`;
 
 /**
  * Less-used settings, collapsed. Data residency is the pattern's `empty` rule:
@@ -65,15 +77,39 @@ export function AdvancedPanel({
               </CodeSnippet>
             </div>
             <div className="demo-snippet">
-              <p className="ion-text-body-sm">Or call the API</p>
-              <CodeSnippet
-                type="multi"
-                label="API request"
-                copyLabel="Copy API request"
-                language="bash"
-              >
-                {API_REQUEST}
-              </CodeSnippet>
+              <p className="ion-text-body-sm">
+                Or call the API — the request, and what it answers
+              </p>
+              {/* Two views of one call, read across: long lines on both
+                  sides, and which side needs the room depends on the
+                  reader. Stacked below the tablet breakpoint. */}
+              <SplitPane
+                label="Resize the API request"
+                defaultSize={55}
+                minSize={30}
+                maxSize={70}
+                collapse="tablet"
+                start={
+                  <CodeSnippet
+                    type="multi"
+                    label="API request"
+                    copyLabel="Copy API request"
+                    language="bash"
+                  >
+                    {API_REQUEST}
+                  </CodeSnippet>
+                }
+                end={
+                  <CodeSnippet
+                    type="multi"
+                    label="API response"
+                    copyLabel="Copy API response"
+                    language="json"
+                  >
+                    {API_RESPONSE}
+                  </CodeSnippet>
+                }
+              />
             </div>
             <Popover
               title="What this key can do"

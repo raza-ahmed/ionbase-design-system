@@ -1311,6 +1311,90 @@ try {
   }
 
   /*
+   * SplitPane, as Settings' API request beside its response: on a desktop
+   * the divider is a named separator at 55%, ArrowRight widens the request
+   * and End stops at 70%. On a tablet and a phone the two stack and the
+   * divider is gone from the tab order. axe on the split; nothing sideways.
+   */
+  for (const [device, width, height] of [
+    ['desktop', 1440, 900],
+    ['tablet', 900, 1000],
+    ['mobile', 390, 844],
+  ]) {
+    const where = `split pane (light, ${device})`;
+    if (skip(where)) continue;
+    const context = await browser.newContext({ viewport: { width, height } });
+    await context.addInitScript(() =>
+      localStorage.setItem(
+        'ionbase-ops:demo-settings',
+        JSON.stringify({ theme: 'light', latency: 0 }),
+      ),
+    );
+    const page = await context.newPage();
+    page.on('pageerror', (e) => fail(where, `exception: ${e.message}`));
+    try {
+      await page.goto(`${BASE}/#/settings`);
+      const api = page.getByRole('button', { name: 'API access' });
+      await api.waitFor({ timeout: 10_000 });
+      await api.click();
+      const split = page.locator('.ion-split-pane');
+      await split.waitFor({ timeout: 5_000 });
+      await split.scrollIntoViewIfNeeded();
+      const sep = page.getByRole('separator', {
+        name: 'Resize the API request',
+      });
+      const panes = () =>
+        split.evaluate((el) =>
+          [...el.querySelectorAll('.ion-split-pane__pane')].map((p) => {
+            const r = p.getBoundingClientRect();
+            return { top: r.top, bottom: r.bottom, width: r.width };
+          }),
+        );
+      if (device === 'desktop') {
+        if ((await sep.getAttribute('aria-valuenow')) !== '55')
+          fail(where, 'the divider does not start at 55%');
+        const before = (await panes())[0].width;
+        await sep.focus();
+        await page.keyboard.press('ArrowRight');
+        if ((await sep.getAttribute('aria-valuenow')) !== '57')
+          fail(where, 'ArrowRight did not move the divider');
+        if (!((await panes())[0].width > before))
+          fail(where, 'the request did not widen');
+        await page.keyboard.press('End');
+        if ((await sep.getAttribute('aria-valuenow')) !== '70')
+          fail(where, 'End did not stop at 70%');
+        await page.addScriptTag({ content: axeSource });
+        const violations = await page.evaluate(async () => {
+          const result = await window.axe.run(
+            document.querySelector('.ion-split-pane'),
+            { resultTypes: ['violations'] },
+          );
+          return result.violations.map(
+            (v) => `${v.impact} ${v.id} — ${v.nodes[0].target.join(' ')}`,
+          );
+        });
+        for (const v of violations) fail(where, `axe ${v} in the split`);
+      } else {
+        if (await sep.count())
+          fail(where, 'the divider is still there, stacked');
+        const [a, b] = await panes();
+        if (!(b.top >= a.bottom - 0.5))
+          fail(where, 'the request and the response are not stacked');
+        if (
+          await page.evaluate(
+            () => document.documentElement.scrollWidth > window.innerWidth,
+          )
+        )
+          fail(where, 'the page scrolls sideways');
+      }
+    } catch (e) {
+      fail(where, `did not run: ${e.message.split('\n')[0]}`);
+    }
+    groupsChecked++;
+    await context.close();
+  }
+
+  /*
    * Calendar, as an agent's "Pause until…": a Modal whose one question is
    * the day, so the month is in the dialog. Named "Resume on" with the month;
    * today and before cannot be picked; the button is disabled until a day

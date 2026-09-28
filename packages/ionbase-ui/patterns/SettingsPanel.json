@@ -20,7 +20,8 @@
     "TabItem",
     "CodeSnippet",
     "InlineLoading",
-    "ColorPicker"
+    "ColorPicker",
+    "SplitPane"
   ],
   "structure": [
     "Named groups, separated by Divider, each with a heading.",
@@ -29,6 +30,7 @@
     "For save-on-submit panels, a save bar that appears only when something is dirty, with save and discard.",
     "Tabs for panels large enough that a single scroll is unreasonable — but never with unsaved changes hidden behind an inactive tab.",
     "A setting used from outside the app — an API key, a webhook, a CLI — shows how to use it as CodeSnippets under a sentence saying what each is for: a command as `single`, a request as `multi`, each with its own `label` and `copyLabel`, and a command named in a description as `inline`.",
+    "A request shown with what it answers sits beside it, in a SplitPane: `start` the request's CodeSnippet, `end` the response's, `label` \"Resize the API request\", collapsing at the tablet breakpoint — both have long lines, and which one needs the room is the reader's to say.",
     "A colour the product shows to other people — a brand accent — is a ColorPicker with the brand's own colours as named `swatches`. When text sits on it, the panel measures the pair as it changes and refuses a colour under 4.5:1 with `isInvalid` and an error that gives the ratio, and a preview shows the colour where it will be used."
   ],
   "states": {
@@ -67,6 +69,15 @@
       "swatches",
       "isInvalid",
       "errorMessage"
+    ],
+    "SplitPane": [
+      "start",
+      "end",
+      "label",
+      "defaultSize",
+      "minSize",
+      "maxSize",
+      "collapse"
     ]
   },
   "variantsUsed": {

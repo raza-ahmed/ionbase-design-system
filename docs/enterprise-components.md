@@ -148,7 +148,7 @@ IonBase column names the component that covers it.
 | Grid                      |   ●    |     |  ●   | ● `Grid`      |
 | Stack                     |   ●    |     |      | ● `Stack`     |
 | Theme zone (scoped theme) |   ●    |     |      | ● `ThemeZone` |
-| Resizable split pane      |   ●    |     |  ●   | —             |
+| Resizable split pane      |   ●    |     |  ●   | `SplitPane`   |
 
 ### AI and agentic
 
@@ -266,7 +266,7 @@ is to build:
 - **Coachmark / guided tour** — `Coachmark` for one callout and `Tour` for a sequence of them: opened only when asked, not modal, steps as data naming their targets by id. Shipped 0.131.0.
 - **AppSwitcher** — the grid of products in a suite's header: links to each product's home, not a menu, with the current one marked. Shipped 0.132.0.
 - **Calendar**, exported standalone — the inline one, single-date, with a label and a surface of its own: for a day chosen by where it falls, and where a picker's popover would be a second layer. The pickers' grids stay internal. Shipped 0.133.0.
-- **SplitPane** — resizable, keyboard-operable divider.
+- **SplitPane** — two panes and a divider a person moves: the window-splitter pattern, the share in percent, stacked on a phone. Shipped 0.134.0.
 
 ### Patterns to add
 

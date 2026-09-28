@@ -20,6 +20,7 @@ import {
   Radio,
   RadioGroup,
   ScrollProgress,
+  SplitPane,
   StreamingText,
   TabItem,
   Table,
@@ -541,5 +542,30 @@ export const ACalendarKeepsItsFrameAndItsDay: Story = {
       name: /October 9, 2026/,
     });
     await expect(css(day, 'background-color')).toBe(system('Highlight'));
+  },
+};
+
+/** A SplitPane's divider and grip are CanvasText, and Highlight focused. */
+export const ASplitPaneKeepsItsDivider: Story = {
+  render: () => (
+    <div style={{ width: 600, height: 160 }}>
+      <SplitPane
+        label="Resize the request"
+        start={<p>Request</p>}
+        end={<p>Response</p>}
+        collapse="never"
+      />
+    </div>
+  ),
+  play: async ({ canvasElement }) => {
+    await forced();
+    const sep = within(canvasElement).getByRole('separator');
+    await expect(css(sep, 'background-color')).toBe(system('CanvasText'));
+    await expect(getComputedStyle(sep, '::after').backgroundColor).toBe(
+      system('CanvasText'),
+    );
+    sep.focus({ focusVisible: true } as FocusOptions);
+    await userEvent.keyboard('{ArrowRight}');
+    await expect(css(sep, 'background-color')).toBe(system('Highlight'));
   },
 };

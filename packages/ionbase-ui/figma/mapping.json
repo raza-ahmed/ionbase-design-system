@@ -2730,6 +2730,22 @@
           "note": "Disabled is isDisabled; the chosen day stays marked on the disabled surface. Hover and focus are the days' own, drawn by Calendar Day"
         }
       }
+    },
+    "Split Pane": {
+      "code": "SplitPane",
+      "props": {
+        "Orientation": {
+          "prop": "orientation",
+          "values": {
+            "Horizontal": "horizontal",
+            "Vertical": "vertical"
+          },
+          "note": "Horizontal is side by side, with a vertical divider; it stacks at `collapse`, mobile by default"
+        },
+        "State": {
+          "ignore": "The divider's own states: Hover is :hover, Focus is :focus-visible and a drag, both CSS. The share the Start pane takes is `defaultSize` or `size`, in percent — a value, not a variant"
+        }
+      }
     }
   },
   "unmapped": {

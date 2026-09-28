@@ -7,6 +7,11 @@
       "when": "the side content is the app's navigation",
       "use": "Sidebar",
       "why": "navigation belongs to the page shell, not to a content row"
+    },
+    {
+      "when": "two panes that are always there, read across, whose split the reader sets",
+      "use": "SplitPane",
+      "why": "a SidePanel comes and goes; a SplitPane's panes stay, with a divider between them that moves"
     }
   ],
   "a11y": {

@@ -235,6 +235,12 @@ export { Tour } from './Tour.js';
 export type { TourProps, TourStep, TourLabels } from './Tour.js';
 export { AppSwitcher } from './AppSwitcher.js';
 export type { AppSwitcherProps, AppSwitcherApp } from './AppSwitcher.js';
+export { SplitPane } from './SplitPane.js';
+export type {
+  SplitPaneProps,
+  SplitPaneOrientation,
+  SplitPaneCollapse,
+} from './SplitPane.js';
 export { Modal } from './Modal.js';
 export type { ModalProps, ModalSize, ModalAlign } from './Modal.js';
 export { Link } from './Link.js';

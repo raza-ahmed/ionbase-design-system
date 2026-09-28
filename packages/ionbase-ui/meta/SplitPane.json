@@ -1,0 +1,75 @@
+{
+  "status": "stable",
+  "summary": "Two panes and a divider between them that a person moves — by dragging, or with the arrow keys — for two views read across, where which one needs the room depends on the reader.",
+  "useWhen": [
+    "two views of one thing are read across and both have long lines — a request and its response, a source and its preview, a log and its detail",
+    "the right split depends on the content and on the reader, so it is theirs to set"
+  ],
+  "useInstead": [
+    {
+      "when": "detail that opens beside a list when something is picked, and closes",
+      "use": "SidePanel",
+      "why": "a SidePanel, in SidePanelLayout, is a region that comes and goes, with a title, a close button and a Drawer on a phone; a split is two panes that are always there"
+    },
+    {
+      "when": "columns that are simply laid out — a main column and an aside",
+      "use": "Grid",
+      "why": "a layout nobody needs to change should not offer a control that changes it; every divider is one more tab stop"
+    },
+    {
+      "when": "one table column is too narrow",
+      "use": "TableCell",
+      "why": "its `resize`, from useTableColumns, is the column's own handle in its header; a split around a table resizes the table, not the column"
+    }
+  ],
+  "composition": {
+    "order": ["SplitPane"],
+    "note": "`start` and `end` are the panes; `label` names the divider by what it resizes — \"Resize the API request\". The value is the first pane's share in percent: `defaultSize`, or `size` with `onSizeChange` to keep it (in the browser, say). Bound it with `minSize` and `maxSize`. Side by side it stacks at `collapse` (mobile by default); a vertical split needs a height from its container.",
+    "example": "<SplitPane label=\"Resize the API request\" defaultSize={55} minSize={30} maxSize={70} collapse=\"tablet\" start={<CodeSnippet type=\"multi\" …>{request}</CodeSnippet>} end={<CodeSnippet type=\"multi\" …>{response}</CodeSnippet>} />"
+  },
+  "slots": {
+    "start": {
+      "accepts": "any",
+      "note": "the first pane — start side, or top — whose share the divider sets; it scrolls on its own"
+    },
+    "end": {
+      "accepts": "any",
+      "note": "the second pane, taking the rest; it scrolls on its own"
+    }
+  },
+  "a11y": {
+    "requires": [
+      "a `label` naming what the divider resizes: it is the control's only name"
+    ],
+    "guarantees": [
+      "the divider is a focusable `separator` (the ARIA window-splitter pattern) with the first pane's share as `aria-valuenow`, `minSize` and `maxSize` as its bounds, and `aria-controls` pointing at the first pane",
+      "the arrow keys along its axis move it 2%, with Shift 10%; Home and End go to the bounds; Enter and a double-click put it back at `defaultSize`",
+      "the arrow moves the divider the way it points: side by side in a right-to-left page the first pane is on the right, so → shrinks it",
+      "a drag moves it, with the pointer held, and selects no text on the way",
+      "each pane scrolls on its own, and its content cannot widen it",
+      "at the collapse breakpoint the panes stack and the divider is removed, from the tab order too",
+      "a grip at the divider's middle marks it movable at 3:1; focused or dragged, the line and the grip turn to border/focus, and in forced colours to Highlight"
+    ],
+    "notes": [
+      "The share is percent, not pixels: it survives a window resize, and the value announced means something without knowing the width.",
+      "Nothing is kept between visits; keep `size` yourself, from `onSizeChange`, when it should be."
+    ]
+  },
+  "antiPatterns": [
+    {
+      "dont": "a SplitPane for a main column and an aside nobody needs to resize",
+      "do": "<Grid columns={[2, 1]} collapse=\"tablet\">",
+      "why": "a divider is a control and a tab stop; offered where nothing is gained, it is one more thing to tab past"
+    },
+    {
+      "dont": "a SplitPane whose end pane is a detail that opens and closes",
+      "do": "SidePanelLayout with a SidePanel",
+      "why": "the panel's title, close button and Drawer fallback are SidePanel's; an empty pane behind a divider is a layout with a hole in it"
+    },
+    {
+      "dont": "`collapse=\"never\"` for a side-by-side split",
+      "do": "the default, `mobile`",
+      "why": "two panes side by side on a phone are two strips too narrow to read"
+    }
+  ]
+}
