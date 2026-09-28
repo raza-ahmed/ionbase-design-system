@@ -30,9 +30,10 @@
 
 ## 2. Motion — [`motion-system.md`](motion-system.md) §6
 
-- [ ] **Button's Figma prototype reaction.** Figma says 300ms Ease In; the
-      code says 200ms ease-out. Change the reaction to match the code (or
-      delete it) so nobody takes the timing from Figma again.
+- [x] **Button's Figma prototype reaction** — PR #100. It now reads 200ms
+      `cubic-bezier(0.2, 0, 0, 1)`, the code's `base` + `out`, on Small,
+      Medium and the one instance that inherits it. Nav Item's hover swap,
+      which had no transition, got the same.
 - [ ] **Raw `ms` gate.** A build gate or stylelint rule that fails on a
       raw `ms` value in a component stylesheet. It allows the timing tokens
       and the `0.01ms` reduced-motion values. Colour and geometry already

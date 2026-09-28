@@ -29,9 +29,9 @@ Figma expresses motion as **prototype reactions**, readable at
 ```js
 { trigger: { type: 'ON_HOVER' },
   action: { transition: { type: 'SMART_ANIMATE',
-    duration: 0.3,
+    duration: 0.2,
     easing: { type: 'CUSTOM_CUBIC_BEZIER',
-      easingFunctionCubicBezier: { x1: 0.4, y1: 0, x2: 1, y2: 1 } } } } }
+      easingFunctionCubicBezier: { x1: 0.2, y1: 0, x2: 0, y2: 1 } } } } }
 ```
 
 Note that neither `get_motion_context` nor `manualKeyframeTracks` sees these —
@@ -86,10 +86,19 @@ The proposal's four-duration ladder also collapsed to three: `instant` and
 no component turned out to draw. `ease-in-out` survived for exactly one
 consumer — the Toggle knob — and is documented as such.
 
-Figma's one authored curve, `cubic-bezier(0.4, 0, 1, 1)`, is its Ease In
+Figma's one authored curve was `cubic-bezier(0.4, 0, 1, 1)`, its Ease In
 preset: flat start, arriving at full velocity. It is the wrong shape for a
 colour hold and is **not** the default here. It is preserved as
 `--ion-ease-in` for the case it does suit, things leaving.
+
+**Figma now follows the code.** On 29 Sep 2026 both hover reactions in the
+file were set to `base` + `out`, 200ms `cubic-bezier(0.2, 0, 0, 1)`: Button's
+Primary Brand Small (`21:11`) and Medium (`21:41`), which were 300ms Ease In,
+and the one instance that inherits Small; and Nav Item's `State=Default`
+(`53:9`), whose hover swap had no transition at all. A prototype now previews
+what ships, and nobody re-derives the ladder from an old value. The ladder is
+the source; a change to a rung either component uses changes its reaction in
+the same PR.
 
 ## 3. Which rung to pick
 
@@ -162,12 +171,6 @@ in a hurry. Colour and geometry both have gates; motion does not.
   gentler out. Not implemented, because Figma specifies only the enter
   direction and the value of the change is small next to §2's two fixes. It is
   roughly three lines per component if wanted.
-- **Button's Figma prototype reaction now disagrees with the code** (300ms
-  Ease In vs 200ms ease-out). It is the only authored motion in the file —
-  every other component page has zero reactions, and Nav Item's `State=Default`
-  has an `ON_HOVER` trigger with `transition: null`, an empty interaction
-  rather than a spec. Either delete it or treat it as a mockup, so nobody
-  re-derives from it later.
 - **Getting `box-shadow` off Button's transition list.** The raised/inset
   shadows are four-layer composites; interpolating four layers per frame
   repaints rather than composites. Moving the elevation to a `::before` and
