@@ -43,6 +43,10 @@ cannot download surfaces as a render error, and the boundary took it for a
 crash. The boundary now tells a download failure apart, and reloads rather
 than resets, because a browser may remember a failed import.
 
+The boundary was first keyed by the route. That made an agent's Overview and
+Runs tabs two pages, so every tab switch mounted and fetched the agent again.
+It is keyed by the page now, and a smoke check holds it.
+
 **Tests:** a smoke check, in one pass on desktop.
 
 - Each kind's words and document title.
@@ -53,7 +57,7 @@ than resets, because a browser may remember a failed import.
 - Both offline paths recovering by themselves.
 - axe on each kind.
 
-Mutations: 10 of 10 caught.
+Mutations: 11 of 11 caught.
 
 ## 0.122.0 — 2026-09-28
 

@@ -2355,11 +2355,21 @@ try {
       if (saved.text !== next) fail(where, `the purpose is "${saved.text}"`);
       if (saved.said !== 'Purpose saved') fail(where, 'the save was not said');
 
-      // The agent's own tabs, not the sidebar's Overview.
+      // The agent's own tabs, not the sidebar's Overview. They are one page:
+      // switching keeps it mounted, so the heading is the same element.
+      await page.evaluate(() => {
+        window.__agentHeading = document.querySelector('main h1');
+      });
       const tabs = page.getByRole('navigation', { name: /sections$/ });
       await tabs.getByRole('link', { name: 'Runs', exact: true }).click();
       await tabs.getByRole('link', { name: 'Overview', exact: true }).click();
       await backToView('after coming back to Overview');
+      if (
+        !(await page.evaluate(
+          () => window.__agentHeading === document.querySelector('main h1'),
+        ))
+      )
+        fail(where, 'switching tabs mounted the agent page again');
       if (
         (await page.locator('.ion-inline-edit__value').textContent()) !== next
       )

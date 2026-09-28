@@ -47,6 +47,17 @@ const SettingsScreen = lazy(() =>
   })),
 );
 
+/**
+ * Which page a route is: an agent's Overview and Runs tabs are one page, so
+ * switching between them keeps it — and its loaded data — mounted.
+ */
+function pageOf(route: Route | null): string {
+  if (route === null) return 'not-found';
+  if (route.startsWith('agents/'))
+    return route.split('/').slice(0, 2).join('/');
+  return route;
+}
+
 /** Each route's page name, for a page that crashed before it could say. */
 function pageTitleOf(route: Route | null): string {
   if (route === null) return 'Page not found';
@@ -72,12 +83,9 @@ export function App() {
         <AppShell route={route}>
           {/*
             The FullPageError pattern's crash case: caught inside the shell,
-            keyed by the route so going elsewhere clears it.
+            keyed by the page so going elsewhere clears it.
           */}
-          <PageErrorBoundary
-            key={route ?? 'not-found'}
-            pageTitle={pageTitleOf(route)}
-          >
+          <PageErrorBoundary key={pageOf(route)} pageTitle={pageTitleOf(route)}>
             <CrashWhenForced />
             <Suspense
               fallback={

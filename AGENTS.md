@@ -775,6 +775,12 @@ ships.
    member. The 403 page is for arriving anyway.
 5. **A retry that fails gets a new reference.** Support searches the log by
    the reference, and two failures sharing one would be one entry.
+6. **Key the boundary by the page, not the address.** Keyed by the route, an
+   agent's Overview and Runs tabs became two pages: every tab switch mounted
+   the agent again and fetched it again. It showed up as a flaky inline edit
+   check on CI, where focus fell to `<body>` when the button it held was
+   replaced. The smoke test now checks that a tab switch keeps the page's
+   heading the same element.
 
 **Checked by the demo's smoke test,** in one pass on desktop:
 
