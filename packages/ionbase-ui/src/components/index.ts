@@ -424,6 +424,8 @@ export type {
 
 export { DatePicker } from './DatePicker.js';
 export type { DatePickerProps, DatePickerSize } from './DatePicker.js';
+export { Calendar } from './Calendar.js';
+export type { CalendarProps } from './Calendar.js';
 export { DateTimePicker } from './DateTimePicker.js';
 export type {
   DateTimePickerProps,

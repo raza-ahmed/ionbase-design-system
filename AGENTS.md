@@ -262,6 +262,25 @@ checked: they contain focus. Combobox, MultiSelect and Menu do not want it.
 The stories `TabStaysInTheCalendar`, ColorPicker's `TabStaysInThePopover` and
 Popover's own `TabStaysInThePopover` catch it.
 
+## `hidden` loses to any `display` rule
+
+The `hidden` attribute is only the UA stylesheet's `display: none`, and an
+author rule beats it. `.ion-calendar__day { display: flex }` did, so from
+0.60.0 every calendar drew the neighbouring months' days that Calendar.tsx
+marked `hidden`. Figma never drew them. Nothing failed, and the popover
+shipped that way through three pickers until the inline Calendar showed a
+month with 30 and 31 August in it. A component that hides with `hidden`
+needs `[hidden] { display: none }` beside its own `display`.
+`OnlyItsOwnMonthIsDrawn` and `TheCalendarDrawsOnlyItsMonth` catch it.
+
+## react-aria selects no day in a disabled calendar
+
+`state.isSelected(date)` is false for every day while the calendar is
+disabled. A popover never shows that, because a disabled picker does not
+open. The inline Calendar did: disabled mid-save, it dropped the chosen day.
+Calendar.tsx keeps the day marked itself, drawn on the disabled surface.
+`ADisabledCalendarKeepsItsDayDimmed` catches it.
+
 ## A portalled overlay inherits nothing from where it was opened
 
 Overlays are rendered into `<body>`, outside the component and outside the

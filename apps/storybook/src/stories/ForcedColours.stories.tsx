@@ -5,6 +5,7 @@ import { commands } from 'vitest/browser';
 import {
   AppSwitcher,
   AvatarGradient,
+  Calendar,
   Badge,
   Button,
   ChartLegend,
@@ -525,5 +526,20 @@ export const AnAppSwitcherMarksTheCurrentProduct: Story = {
     await expect(css(current, 'border-top-style')).toBe('solid');
     await expect(css(current, 'border-top-color')).toBe(system('Highlight'));
     await userEvent.keyboard('{Escape}');
+  },
+};
+
+/** An inline Calendar keeps its frame and its selected day. */
+export const ACalendarKeepsItsFrameAndItsDay: Story = {
+  render: () => <Calendar label="Resume on" defaultValue="2026-10-09" />,
+  play: async ({ canvasElement }) => {
+    await forced();
+    const frame = canvasElement.querySelector('.ion-calendar-field__frame')!;
+    await expect(css(frame, 'border-top-style')).toBe('solid');
+    await expect(css(frame, 'border-top-color')).toBe(system('CanvasText'));
+    const day = within(canvasElement).getByRole('button', {
+      name: /October 9, 2026/,
+    });
+    await expect(css(day, 'background-color')).toBe(system('Highlight'));
   },
 };

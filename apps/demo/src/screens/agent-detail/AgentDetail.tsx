@@ -6,6 +6,7 @@ import {
   Breadcrumb,
   BreadcrumbItem,
   Button,
+  ButtonGroup,
   Card,
   DescriptionList,
   DescriptionListItem,
@@ -48,6 +49,7 @@ import {
   type AgentStatus,
 } from '../../data/agents';
 import { KnowledgeSources } from './KnowledgeSources';
+import { PauseUntilModal } from './PauseUntilModal';
 import { formatDay } from '../../lib/dates';
 import { useDemoSettings } from '../../lib/demo-settings';
 import { isOffline } from '../../lib/online';
@@ -90,6 +92,7 @@ export function AgentDetail({ id, tab }: { id: string; tab: AgentTab }) {
   const toast = useToast();
   const [version, setVersion] = useState(0);
   const [busy, setBusy] = useState(false);
+  const [pausingUntil, setPausingUntil] = useState(false);
   // The purpose as saved in place, for this agent — kept rather than
   // refetched, so a save does not drop the page back to its skeleton.
   const [edited, setEdited] = useState<{
@@ -136,6 +139,17 @@ export function AgentDetail({ id, tab }: { id: string; tab: AgentTab }) {
   const { agent } = detail.data;
   const canToggle = agent.status !== 'draft';
   const paused = agent.status === 'paused';
+
+  async function pauseUntil(resumesOn: string) {
+    await setPaused([agent.id], true, settings, resumesOn);
+    setPausingUntil(false);
+    setVersion((v) => v + 1);
+    setEdited(null);
+    toast.toast({
+      intent: 'success',
+      title: `Paused ${agent.name} until ${formatDay(resumesOn)}`,
+    });
+  }
 
   async function togglePause() {
     setBusy(true);
@@ -216,9 +230,18 @@ export function AgentDetail({ id, tab }: { id: string; tab: AgentTab }) {
           canToggle={canToggle}
           paused={paused}
           onToggle={togglePause}
+          onPauseUntil={() => setPausingUntil(true)}
         />
       ) : (
         <Runs data={detail.data} />
+      )}
+
+      {pausingUntil && (
+        <PauseUntilModal
+          agentName={agent.name}
+          onPause={pauseUntil}
+          onClose={() => setPausingUntil(false)}
+        />
       )}
     </div>
   );
@@ -240,6 +263,7 @@ function Overview({
   canToggle,
   paused,
   onToggle,
+  onPauseUntil,
 }: {
   data: Detail;
   history: AgentEvent[];
@@ -247,6 +271,7 @@ function Overview({
   canToggle: boolean;
   paused: boolean;
   onToggle: () => void;
+  onPauseUntil: () => void;
 }) {
   const { agent, daily, medianDurationSec } = data;
   const totals = daily?.reduce(
@@ -289,20 +314,33 @@ function Overview({
         }
         actions={
           canToggle && (
-            <Button
-              variant="secondary"
-              isDisabled={busy}
-              startIcon={<Icon as={paused ? Play : Pause} size="sm" />}
-              onClick={onToggle}
-            >
-              {busy
-                ? paused
-                  ? 'Resuming…'
-                  : 'Pausing…'
-                : paused
-                  ? 'Resume agent'
-                  : 'Pause agent'}
-            </Button>
+            // Paused, the one action is Resume; running, a pause now or
+            // until a day.
+            <ButtonGroup>
+              <Button
+                variant="secondary"
+                isDisabled={busy}
+                startIcon={<Icon as={paused ? Play : Pause} size="sm" />}
+                onClick={onToggle}
+              >
+                {busy
+                  ? paused
+                    ? 'Resuming…'
+                    : 'Pausing…'
+                  : paused
+                    ? 'Resume agent'
+                    : 'Pause agent'}
+              </Button>
+              {!paused && (
+                <Button
+                  variant="tertiary"
+                  isDisabled={busy}
+                  onClick={onPauseUntil}
+                >
+                  Pause until…
+                </Button>
+              )}
+            </ButtonGroup>
           )
         }
         media={

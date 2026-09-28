@@ -1,4 +1,4 @@
-import { addDays, today, type IsoDay } from '../lib/dates';
+import { addDays, formatDay, today, type IsoDay } from '../lib/dates';
 import { read, write, type CallSettings } from './store';
 
 export type AgentStatus = 'running' | 'paused' | 'failing' | 'draft';
@@ -414,13 +414,19 @@ export async function setPaused(
   ids: string[],
   paused: boolean,
   settings: CallSettings,
+  /** Paused until the start of this day, UTC. The demo does not resume it. */
+  resumesOn?: IsoDay,
 ): Promise<void> {
   await write(settings, 'The agents service did not respond (HTTP 503).');
   for (const a of agents)
     if (ids.includes(a.id) && a.status !== 'draft')
       record(a.id, {
         kind: paused ? 'paused' : 'resumed',
-        title: paused ? 'Paused the agent' : 'Resumed the agent',
+        title: !paused
+          ? 'Resumed the agent'
+          : resumesOn
+            ? `Paused the agent until ${formatDay(resumesOn)}`
+            : 'Paused the agent',
       });
   agents = agents.map((a) =>
     ids.includes(a.id) && a.status !== 'draft'

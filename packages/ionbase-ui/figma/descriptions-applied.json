@@ -19,7 +19,7 @@
   ],
   "file": "gaLbGd0QNb1fUl6BjSpfBA",
   "appliedOn": "2026-09-28",
-  "verifiedInFigma": 111,
+  "verifiedInFigma": 112,
   "applied": {
     "1661:272": {
       "figmaComponent": "AI Label",
@@ -575,6 +575,11 @@
       "figmaComponent": "Dual Listbox",
       "component": "DualListbox",
       "hash": "82d4ee54435ede59"
+    },
+    "1714:1267": {
+      "figmaComponent": "Calendar",
+      "component": "Calendar",
+      "hash": "642f2be7e90406a0"
     }
   }
 }

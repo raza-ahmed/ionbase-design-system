@@ -3,8 +3,8 @@
  * holds it. `date-range-picker.css` carries only what the range adds.
  *
  * Drawn in Figma as `Date Picker` (1394:536, the field — Type=Range is
- * DateRangePicker's), `Calendar` (1395:1102) and `Calendar Day` (1395:318), from
- * this file. Measurements were borrowed rather than invented, the same way
+ * DateRangePicker's), `Calendar Popover` (1395:1102), `Calendar Day`
+ * (1395:318) and `Calendar` (1714:1267, the inline one), from this file. Measurements were borrowed rather than invented, the same way
  * AgentStop borrowed Button's and ApprovalGate borrowed Alert's:
  *
  *   the field    Input's box, unchanged — `.ion-date-picker` rides on
@@ -155,6 +155,30 @@
   border: var(--border-width-default) solid var(--border-subtle);
   border-radius: var(--radius-md);
   box-shadow: var(--ion-shadow-shadow-lg);
+}
+
+/* ---------------------------------------------------------- inline calendar */
+
+/*
+ * `Calendar`: the same grid in the page. The popover's surface, without the
+ * shadow — it sits in the page rather than over it — and as wide as its
+ * month, not the column it is in.
+ */
+.ion-calendar-field__frame {
+  align-self: flex-start;
+  padding: var(--spacing-12);
+  background-color: var(--surface-raised);
+  border: var(--border-width-default) solid var(--border-subtle);
+  border-radius: var(--radius-md);
+}
+
+.ion-calendar-field--error .ion-calendar-field__frame,
+.ion-calendar-field[data-invalid] .ion-calendar-field__frame {
+  border-color: var(--border-error-strong);
+}
+
+.ion-calendar-field[data-disabled] .ion-calendar-field__frame {
+  border-color: var(--border-disabled);
 }
 
 /* --------------------------------------------------------------- calendar */
@@ -336,6 +360,16 @@
 }
 
 /*
+ * A neighbouring month's day, which Calendar.tsx marks `hidden`. The
+ * attribute alone lost to `display: flex` above, so from 0.60.0 every
+ * calendar drew the last days of the month before and the first of the
+ * next, which Figma never has.
+ */
+.ion-calendar__day[hidden] {
+  display: none;
+}
+
+/*
  * Not on a selected day. The `:not()` gave this (0,3,0), over the selected
  * fill's (0,2,0), so the day under the pointer after a click — the one just
  * picked — turned grey behind its white numeral: 1.11:1. A range's endpoints
@@ -413,6 +447,15 @@
   color: var(--text-disabled);
   cursor: not-allowed;
   text-decoration: line-through;
+}
+
+/*
+ * The chosen day of a disabled Calendar, which Calendar.tsx keeps marked —
+ * react-aria selects none while disabled. Drawn as disabled: the disabled
+ * text on the selected fill would be grey on blue.
+ */
+.ion-calendar__day[data-selected][data-disabled] {
+  background-color: var(--surface-disabled);
 }
 
 /*

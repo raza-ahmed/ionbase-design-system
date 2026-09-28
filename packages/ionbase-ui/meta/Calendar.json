@@ -1,0 +1,71 @@
+{
+  "status": "stable",
+  "summary": "One month in the page for a day chosen by where it falls — a day to resume on, a delivery day — taking and returning a YYYY-MM-DD string.",
+  "useWhen": [
+    "the day is chosen by looking at the month — which weekday, how far off — not recalled and typed",
+    "the calendar would otherwise be a second layer: inside a Modal or a SidePanel, where a DatePicker's popover opens over a dialog",
+    "the page has room for a month, and the day is the main question on it"
+  ],
+  "useInstead": [
+    {
+      "when": "a date the person knows — a birthday, an invoice date — or a form with other fields",
+      "use": "DatePicker",
+      "why": "typing a known date is faster than finding it, and a field takes one row where this takes a month"
+    },
+    {
+      "when": "a start and an end",
+      "use": "DateRangePicker",
+      "why": "this holds one day; a range needs the band between its ends and a check that the end is not before the start"
+    },
+    {
+      "when": "a moment, with a time of day",
+      "use": "DateTimePicker",
+      "why": "this is fixed to days; a moment's bound such as \"not before now\" needs the time too"
+    },
+    {
+      "when": "one of a few days the product defines — four delivery slots",
+      "use": "RadioGroup",
+      "why": "a choice from a short list, not a date; a month of which four days work reads as a month of refusals"
+    }
+  ],
+  "composition": {
+    "order": ["Calendar"],
+    "note": "`label` names it, joined to the visible month. `value` is YYYY-MM-DD, or null for none yet; `onChange` gets YYYY-MM-DD and never null. Bound it with `minValue` and `maxValue`, and refuse single days with `isDateUnavailable`. With nothing selected it opens on today, or on `minValue` when today is before it, or on `defaultFocusedValue`.",
+    "example": "<Calendar label=\"Resume on\" value={day} onChange={setDay} minValue={tomorrow} maxValue={inNinetyDays} description=\"At the start of the day, UTC.\" />"
+  },
+  "a11y": {
+    "requires": [
+      "a `label`: it is the calendar's name, and the only thing that says what the day is for"
+    ],
+    "guarantees": [
+      "named by `label` and then the visible month — \"Resume on October 2026\" — so paging months says where you are",
+      "arrow keys move by day and week, Page Up and Page Down by month, Home and End to the week's ends; Enter or Space picks the focused day",
+      "every day is named by its full date in the reader's language, with today and the selected day said as such; a newly picked day is announced",
+      "days before `minValue`, after `maxValue` or refused by `isDateUnavailable` cannot be picked, and the month arrows stop at the bounds",
+      "a value it refuses marks it invalid on its own — `errorMessage`, when given, replaces the description — and the frame turns to the error border",
+      "`description` or the error is the calendar's accessible description",
+      "disabled, it keeps showing the chosen day, on the disabled surface, and no day can be picked or moved to"
+    ],
+    "notes": [
+      "No clearing: a day is changed by picking another. Offer a separate control when \"no day\" is an answer.",
+      "Always one month; for two months side by side, the range is DateRangePicker's."
+    ]
+  },
+  "antiPatterns": [
+    {
+      "dont": "a Calendar for a date of birth or any date the person knows",
+      "do": "<DatePicker label=\"Date of birth\" />",
+      "why": "paging back decades through months is the worst way to enter a date someone can type in a second"
+    },
+    {
+      "dont": "a DatePicker inside a Modal whose only question is the day",
+      "do": "<Calendar label=\"Resume on\" /> in the Modal",
+      "why": "the picker's calendar opens a popover over the dialog; the day is the dialog's whole content, so show the month"
+    },
+    {
+      "dont": "a Calendar without bounds for a day that has them",
+      "do": "minValue and maxValue",
+      "why": "an unbounded month lets someone pick yesterday and learn only on save that it was never possible"
+    }
+  ]
+}
