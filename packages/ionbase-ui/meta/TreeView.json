@@ -19,8 +19,8 @@
     },
     {
       "when": "the rows have columns — size, owner, modified",
-      "use": "Table",
-      "why": "TreeView is a single-column treegrid; nested rows with columns are a table's job"
+      "use": "TreeGrid",
+      "why": "TreeView is a single-column treegrid; nested rows with columns to compare down are a TreeGrid"
     },
     {
       "when": "the items are flat — records to open or pick, with no nesting",

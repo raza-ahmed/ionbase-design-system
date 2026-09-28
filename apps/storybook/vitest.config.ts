@@ -52,9 +52,16 @@ export default defineConfig({
           // See options at: https://storybook.js.org/docs/next/writing-tests/integrations/vitest-addon#storybooktest
           storybookTest({ configDir: path.join(dirname, '.storybook') }),
         ],
-        // Found only by Timeline's server-render test. Discovered mid-run, it
-        // made Vite reload the page and fail every test in the file with it.
-        optimizeDeps: { include: ['react-dom/server'] },
+        // Found only by Timeline's server-render test, and by TreeGrid's
+        // private React Aria paths. Discovered mid-run, each made Vite reload
+        // the page and fail every test in the file with it.
+        optimizeDeps: {
+          include: [
+            'react-dom/server',
+            'ionbase-ui > react-stately/private/flags/flags',
+            'ionbase-ui > react-stately/private/table/useTreeGridState',
+          ],
+        },
         test: {
           name: 'storybook',
           browser: {

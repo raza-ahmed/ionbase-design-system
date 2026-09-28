@@ -1,5 +1,80 @@
 # Changelog
 
+## 0.127.0 — 2026-09-28
+
+### TreeGrid — rows that open onto rows, in columns
+
+**`TreeGrid`** shows nested records in columns compared down, such as spend
+by agent and then by task. It is the WAI-ARIA treegrid pattern, drawn as a
+Table.
+
+Pass `items` with their `children`, and `columns`, each with a `header` and a
+`cell(item)`. The first column holds the tree and names the row.
+
+**How it behaves:**
+
+- **Keyboard:** one tab stop. ↑ ↓ move between rows, or between cells in a
+  column. → opens a closed row, and on an open row or a leaf it moves into the
+  cells. ← comes back out to the row, closes it, and then goes to the parent.
+  Home and End go to the ends, and typing jumps to a row.
+- **Structure:** a `<table>` with `role="treegrid"`. Only open rows are
+  rendered, each with `aria-level`, `aria-posinset` and `aria-setsize`, and
+  `aria-expanded` when it has rows under it.
+- **Names:** each row is named by its first column alone. React Aria named it
+  by the whole cell, chevron included, which read as "Collapse Support
+  triage".
+- **Chevron:** a button out of the tab order, named "Expand" or "Collapse"
+  and the row's name, in the user's locale.
+- **Selection:** `multiple` gives each row a Checkbox and the header a
+  select-all. Select-all is every row that can be selected, open or not, and
+  `onSelectionChange` always gets a Set of ids. Selection does not cascade.
+- **Disabled rows:** a disabled row cannot be selected, but it can still be
+  opened and activated, so the rows under it stay reachable.
+- **Layout:** Table's density, header, rules and selected tint. A narrow grid
+  wraps names between words and scrolls sideways in its own region. In RTL
+  the indent comes from the right and ← opens.
+
+**Built on** React Aria's tree-table state, `UNSTABLE_useTreeGridState`.
+React Aria 3.50 ships it on a private path and behind a flag that gates only
+that hook. AGENTS.md has the details.
+
+**Figma:** Tree Grid is drawn on its own page.
+
+- **Axes:** Tree Grid has Selection (None, Multiple). Tree Grid Row has Kind
+  (Closed, Open, Leaf) × Level (1, 2, 3) × State (Default, Selected, Focus),
+  with Label and Show Selection. Its figure cells are Table Cells.
+- **Mapping:** Tree Grid is mapped, and Tree Grid Row is unmapped with a
+  reason, as Tree View Item is. The code block is applied. The audit found
+  106 of 106 blocks in the file, and they are countersigned.
+
+**The demo:** Overview has a new Token use by team card.
+
+- Teams, then their agents, then the models each agent called, largest first,
+  with the largest team open.
+- A team opens Agents filtered to it. An agent, or one of its models, opens
+  that agent.
+
+**Found on the way:**
+
+- **Forced colours:** on a selected row, which is Highlight, the focus ring
+  was blue on blue and the chevron grey. A checked box was a Highlight square
+  on a Highlight row, and Table's selection checkbox had the same bug. Each
+  now takes HighlightText.
+- **Smoke tests:** Playwright's `locator.focus()` is a virtual focus. React
+  Aria then waits for transitions before moving focus onto a row, so a key
+  pressed at once was lost. Written up in AGENTS.md.
+- **Deleted code:** marking the first column as the row header was deleted
+  when its mutation survived, because React Aria already takes the first
+  column.
+
+**Tests:**
+
+- 19 TreeGrid stories.
+- A pseudo-localised story, an RTL story and a forced-colours story.
+- A smoke check on desktop and mobile.
+
+Mutations: 26 of 26 caught (18 in the component, 8 in the demo).
+
 ## 0.126.0 — 2026-09-28
 
 ### DualListbox — choose some of many in two lists, with an order

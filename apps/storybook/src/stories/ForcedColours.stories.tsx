@@ -1,6 +1,6 @@
 import React from 'react';
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { expect, waitFor, within } from 'storybook/test';
+import { expect, userEvent, waitFor, within } from 'storybook/test';
 import { commands } from 'vitest/browser';
 import {
   AvatarGradient,
@@ -25,6 +25,7 @@ import {
   ThemeZone,
   Toggle,
   Tooltip,
+  TreeGrid,
 } from 'ionbase-ui';
 
 /**
@@ -381,5 +382,43 @@ export const APickedOptionKeepsAnOutline: Story = {
     await forced();
     await expect(css(picked, 'outline-style')).toBe('solid');
     await expect(css(other, 'outline-style')).toBe('none');
+  },
+};
+
+/**
+ * A selected tree-grid row is Highlight, and it keeps its own colours to
+ * stay so. On it the focus ring was blue on blue, the chevron grey, and the
+ * checked box a Highlight square on a Highlight row: each takes the row's
+ * text colour instead.
+ */
+export const ASelectedTreeGridRowKeepsItsMarks: Story = {
+  render: () => (
+    <div style={{ width: 480 }}>
+      <TreeGrid
+        aria-label="Spend"
+        selectionMode="multiple"
+        defaultSelectedKeys={['support']}
+        columns={[{ id: 'name', header: 'Agent', cell: (r) => r.id }]}
+        items={[{ id: 'support', children: [{ id: 'refunds' }] }]}
+      />
+    </div>
+  ),
+  play: async ({ canvasElement }) => {
+    const c = within(canvasElement);
+    const row = c.getByRole('row', { name: 'support' });
+    // Tabbing in lands on the selected row, with a visible ring.
+    await userEvent.tab();
+    await waitFor(() => expect(document.activeElement).toBe(row));
+    await forced();
+    await expect(css(row, 'background-color')).toBe(system('Highlight'));
+    await expect(css(row, 'outline-color')).toBe(system('HighlightText'));
+    await expect(css(within(row).getByRole('button'), 'color')).toBe(
+      system('HighlightText'),
+    );
+    const indicator = row.querySelector('.ion-checkbox__indicator');
+    await expect(css(indicator, 'border-top-color')).toBe(
+      system('HighlightText'),
+    );
+    await expect(css(indicator, 'background-color')).toBe(system('Highlight'));
   },
 };

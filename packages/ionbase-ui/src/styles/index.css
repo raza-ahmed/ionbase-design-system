@@ -48,6 +48,7 @@
 @import url('./logo.css');
 @import url('./table.css');
 @import url('./table-batch.css');
+@import url('./tree-grid.css');
 @import url('./pagination.css');
 @import url('./divider.css');
 @import url('./toolbar.css');
@@ -331,6 +332,19 @@ body {
 
   .ion-toggle__input:checked:disabled + .ion-toggle__track .ion-toggle__thumb {
     background-color: Canvas;
+  }
+
+  /*
+   * A selected table row is Highlight (above), and so is its checked box:
+   * edged in the row's text colour, or it is a Highlight square on a
+   * Highlight row. After the disabled boxes, which it outweighs.
+   */
+  .ion-table
+    tbody
+    tr.ion-table__row[data-selected='true']
+    .ion-checkbox__input:checked
+    + .ion-checkbox__indicator {
+    border-color: HighlightText;
   }
 
   .ion-radio__input:checked:disabled + .ion-radio__indicator {

@@ -27,7 +27,8 @@
     "TruncatedText",
     "Timeline",
     "TimelineItem",
-    "TableColumnsMenu"
+    "TableColumnsMenu",
+    "TreeGrid"
   ],
   "structure": [
     "Where the query lives — in the address, so a reload, a link and Back keep the listing — and how a refilter keeps the rows on screen: the FilteredDataTable pattern.",
@@ -41,6 +42,7 @@
     "A status column is a StatusIndicator in each cell — a shape, a colour and a word — not a Badge with a dot: a dot is the same shape for every status, and a column of chips competes with the data.",
     "Text of any length in a cell — a description under a row's name, anything users or agents write — is a TruncatedText on one line, not a `title` or a sliced string: cut, it is a tab stop with the whole text in a tooltip, and a screen reader reads all of it. The column shrinks to its share and the line is cut there, rather than widening the table.",
     "A row's detail, when it is short and read in place — a failed run's reason, a line item's breakdown — opens under the row: `expansion` on TableRow, with `{ label }` on the head row so the columns line up. Name each toggle for its row (\"Details for run 4821\"), not \"Expand\". Anything longer, or with its own actions, goes in a SidePanel instead.",
+    "Records that nest — a total and the rows it is made of, each with the same columns, such as spend by agent and then by task — are a TreeGrid in place of the Table: `items` with their `children`, `columns` with a `cell(item)` each, the name first, figures `align: 'end'`, and `defaultExpandedKeys` open to the path that matters. It keeps the toolbar, the states and the region below; sort `items` yourself within each level. A detail is one record's own content and stays a TableRow's `expansion`.",
     "A row's detail, when it is read beside the list rather than on its own page, goes in a SidePanel: Table and SidePanel inside a SidePanelLayout, opened from a per-row Button with `aria-expanded`, and closed when its row is filtered out. The table stays usable, so the next row can be opened without closing anything; below 768px it opens as a Drawer. An ID in the detail is shown whole, with an icon-only CopyButton named for what it copies — \"Copy run ID\".",
     "A record's history — in its detail or on its own page — is a Timeline named \"History\", newest first: each change a TimelineItem saying what happened as a sentence (\"Paused the agent\"), who did it and when, with what it changed from and to as the detail. It is history, not a feed of the record's runs: an agent run's steps are AgentActivity.",
     "A row's actions, when it has more than one, in a ⋯ MenuTrigger in its last cell, named for the row — \"Actions for Invoice reconciler\". For a table people work in all day, wrap each row in a ContextMenu given the same Menu element, so a right-click or Shift+F10 opens those actions too — a shortcut, never the only way to them.",
@@ -136,7 +138,14 @@
     "StatusIndicator": ["intent", "children"],
     "TruncatedText": ["children", "className"],
     "TimelineItem": ["title", "actor", "timestamp", "icon", "children"],
-    "TableColumnsMenu": ["columns"]
+    "TableColumnsMenu": ["columns"],
+    "TreeGrid": [
+      "items",
+      "columns",
+      "aria-label",
+      "defaultExpandedKeys",
+      "onAction"
+    ]
   },
   "variantsUsed": {
     "Alert": {
@@ -242,6 +251,11 @@
       "dont": "hiding a column with CSS or leaving its cells empty",
       "do": "render the cells of `useTableColumns`' `visibleColumns`",
       "why": "a screen reader still counts and reads the hidden column, so its headers no longer match what is on screen"
+    },
+    {
+      "dont": "a Table whose rows are indented by hand to show that some belong to others",
+      "do": "<TreeGrid items={…} columns={…} />",
+      "why": "indentation carries no level: a screen reader hears a flat table, and there is nothing to open or close"
     }
   ]
 }

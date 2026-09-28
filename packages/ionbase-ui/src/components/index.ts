@@ -157,6 +157,15 @@ export type {
   TreeViewItem,
   TreeViewSelectionMode,
 } from './TreeView.js';
+export { TreeGrid } from './TreeGrid.js';
+export type {
+  TreeGridProps,
+  TreeGridItem,
+  TreeGridColumn,
+  TreeGridColumnAlign,
+  TreeGridSelectionMode,
+  TreeGridDensity,
+} from './TreeGrid.js';
 export { SidePanel, SidePanelLayout } from './SidePanel.js';
 export type {
   SidePanelProps,

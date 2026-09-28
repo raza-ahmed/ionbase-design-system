@@ -194,6 +194,41 @@ written, then deleted when their mutations survived:
   is removed from the collection.
 - **It keeps an empty collection focusable,** with `tabIndex` 0.
 
+## React Aria's tree-table state is private, behind a flag
+
+TreeGrid is built on `UNSTABLE_useTreeGridState`, which React Aria 3.50
+ships but does not export from `react-stately`'s index. It is imported from
+`react-stately/private/table/useTreeGridState`, and it throws unless
+`enableTableNestedRows()` from `react-stately/private/flags/flags` has run.
+TreeGrid calls it on every render. The flag is read by that hook and nothing
+else, so it changes no other table. The public `useTable` and `useTableRow`
+take the state and do the rest: `role="treegrid"`, the levels, and the
+expand keys. Three things to know:
+
+- **A private path can move in any minor release.** After upgrading
+  React Aria, run TreeGrid's stories before anything else. An import that
+  broke fails them all.
+- **Vite finds the two paths mid-run** and reloads the page, which fails a
+  whole story file. They are in `optimizeDeps.include` in
+  `apps/storybook/vitest.config.ts` as `ionbase-ui > react-stately/…`,
+  because Storybook itself has no `react-stately` dependency to resolve them
+  from.
+- **The row header's id names three things.** The row, its checkbox and its
+  chevron are all labelled by the first cell's id. On the cell itself, that
+  name would include the chevron's own, and the row would read "Collapse
+  Support triage". TreeGrid moves the id onto the label span.
+
+## Smoke tests — `locator.focus()` into a collection is a virtual focus
+
+Playwright's `locator.focus()` focuses the element with no key or pointer
+before it, which React Aria counts as _virtual_ modality. Focusing a
+collection's container, such as TreeGrid's `<table>`, then moves focus to a
+row only once the page's CSS transitions have ended (`focusSafely` →
+`runAfterTransition`). A key pressed in that gap lands on the container and
+does nothing. The Overview's smoke check lost one Enter in three this way.
+A real Tab moves focus at once. So after `focus()`, wait until
+`document.activeElement` is the row before pressing anything.
+
 ## A context menu's events are not what they look like
 
 Two things about `contextmenu` that ContextMenu had to learn by failing:

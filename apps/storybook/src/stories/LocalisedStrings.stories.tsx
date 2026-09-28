@@ -26,6 +26,7 @@ import {
   Stepper,
   StepperStep,
   ToolCall,
+  TreeGrid,
   type RejectedFile,
   type ShortcutKeyLabels,
 } from 'ionbase-ui';
@@ -641,5 +642,41 @@ export const DuelingLists: Story = {
     await browserUser.click(c.getByRole('button', { name: m('up') }));
     await expectSaid(canvasElement, m(`reordered ${m('b')} 1 2`));
     await expectNoEnglish(canvasElement);
+  },
+};
+
+/**
+ * TreeGrid has no strings of its own to replace: its chevron's "Expand" and
+ * "Collapse" and its checkboxes' "Select" and "Select All" are React Aria's,
+ * in the locale the provider gives — Russian here, with no English left.
+ */
+export const TreeGridSpeaksTheLocale: Story = {
+  render: () => (
+    <div style={{ width: 480 }}>
+      <TreeGrid
+        aria-label={m('grid')}
+        selectionMode="multiple"
+        columns={[
+          { id: 'name', header: m('agent'), cell: (r) => m(r.id) },
+          { id: 'cost', header: m('cost'), cell: () => m('1'), align: 'end' },
+        ]}
+        items={[
+          { id: 'a', children: [{ id: 'b' }] },
+          { id: 'c', children: [{ id: 'd' }] },
+        ]}
+        defaultExpandedKeys={['a']}
+      />
+    </div>
+  ),
+  play: async ({ canvasElement }) => {
+    await expectNoEnglish(canvasElement);
+    const c = within(canvasElement);
+    // Something is said before each row's name, not nothing.
+    for (const name of [m('a'), m('c')])
+      await expect(
+        c.getByRole('button', { name: new RegExp(`^\\S+ ${name}$`) }),
+      ).toBeVisible();
+    for (const box of c.getAllByRole('checkbox'))
+      await expect(box.getAttribute('aria-label')).toMatch(/\S/);
   },
 };

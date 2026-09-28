@@ -2871,6 +2871,18 @@
         }
       }
     },
+    "Tree Grid": {
+      "page": "Tree Grid",
+      "id": "1688:1129",
+      "kind": "SET",
+      "props": {
+        "Selection": {
+          "type": "VARIANT",
+          "options": ["None", "Multiple"],
+          "default": "None"
+        }
+      }
+    },
     "Tree View Item": {
       "page": "Tree View",
       "id": "1542:770",
@@ -2907,6 +2919,36 @@
         "State": {
           "type": "VARIANT",
           "options": ["Default", "Hover", "Selected", "Focus", "Disabled"],
+          "default": "Default"
+        }
+      }
+    },
+    "Tree Grid Row": {
+      "page": "Tree Grid",
+      "id": "1687:939",
+      "kind": "SET",
+      "props": {
+        "Label#1687:0": {
+          "type": "TEXT",
+          "default": "Support triage"
+        },
+        "Show Selection#1687:28": {
+          "type": "BOOLEAN",
+          "default": true
+        },
+        "Kind": {
+          "type": "VARIANT",
+          "options": ["Closed", "Open", "Leaf"],
+          "default": "Closed"
+        },
+        "Level": {
+          "type": "VARIANT",
+          "options": ["1", "2", "3"],
+          "default": "1"
+        },
+        "State": {
+          "type": "VARIANT",
+          "options": ["Default", "Selected", "Focus"],
           "default": "Default"
         }
       }
