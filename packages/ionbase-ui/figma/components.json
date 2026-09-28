@@ -776,6 +776,32 @@
         }
       }
     },
+    "Coachmark": {
+      "page": "Coachmark",
+      "id": "1706:718",
+      "kind": "SET",
+      "props": {
+        "Body#1706:17": {
+          "type": "TEXT"
+        },
+        "Placement": {
+          "type": "VARIANT",
+          "options": ["Bottom", "Top", "Start", "End"],
+          "default": "Bottom"
+        },
+        "Show Close#1706:34": {
+          "type": "BOOLEAN"
+        },
+        "Step": {
+          "type": "VARIANT",
+          "options": ["Single", "First", "Middle", "Last"],
+          "default": "Single"
+        },
+        "Title#1706:0": {
+          "type": "TEXT"
+        }
+      }
+    },
     "Code Snippet": {
       "page": "Code Snippet",
       "id": "1585:273",

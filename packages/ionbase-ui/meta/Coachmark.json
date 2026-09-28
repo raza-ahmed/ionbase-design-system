@@ -1,0 +1,83 @@
+{
+  "status": "stable",
+  "summary": "A callout pointing at one thing on the page, to say what it is or what changed — anchored to its target by id or ref, which is ringed while it shows. Several in a row are a Tour.",
+  "useWhen": [
+    "someone asked what a control does, or what changed — a \"What's new?\" link beside a feature that moved",
+    "the explanation is about one place on the page and reads best beside it",
+    "it is one of several: then it is a Tour, which sequences them"
+  ],
+  "useInstead": [
+    {
+      "when": "telling people something changed without their asking",
+      "use": "Banner",
+      "why": "a coachmark takes focus; opened on page load, it pulls a keyboard or screen-reader user out of what they came to do"
+    },
+    {
+      "when": "several places in order — a first look round a page",
+      "use": "Tour",
+      "why": "Tour gives the count, Back and Next, and one focus hand-back at the end; a row of separate coachmarks gives none of them"
+    },
+    {
+      "when": "a short hint on a control, on hover or focus",
+      "use": "Tooltip",
+      "why": "a tooltip holds no controls and never takes focus; a coachmark is for what needs reading"
+    },
+    {
+      "when": "more detail the reader opens themselves from a control",
+      "use": "Toggletip",
+      "why": "a toggletip is the control's own explanation; a coachmark points at the page from outside it"
+    }
+  ],
+  "composition": {
+    "order": ["Coachmark"],
+    "note": "`target` is an element id, or a ref. Render it when a person asks — `isOpen` from a button's press — with `onClose`, which gives it a close button and Escape. `footer` holds its actions and `progress` a count, which is how Tour builds its steps.",
+    "example": "<Coachmark target=\"export-runs\" title=\"Export is here now\" isOpen={open} onClose={() => setOpen(false)}>Runs export as CSV from this button, filtered as the table is.</Coachmark>"
+  },
+  "slots": {
+    "children": {
+      "accepts": "text",
+      "note": "what to know about the target; linked as the dialog's description, so keep it to a sentence or two"
+    },
+    "footer": {
+      "accepts": "Button",
+      "note": "actions, end-aligned; one primary at most"
+    }
+  },
+  "a11y": {
+    "requires": [
+      "a `title` — it names the dialog",
+      "open it from a person's action, never on page load: it takes focus"
+    ],
+    "guarantees": [
+      "a dialog named by `title` and described by the body, focused when it appears so it is read out",
+      "not modal: the rest of the page is neither hidden from assistive tech nor inert, and focus is not trapped",
+      "Escape and the close button call `onClose`; focus goes back to where it was when it opened",
+      "its target is scrolled into view and ringed in border/primary-strong while it shows, and the ring goes when it closes",
+      "`placement` is logical: `start` is the right in a right-to-left page; React Aria flips it when there is no room, and the arrow follows the side it resolved to",
+      "a target that is not on the page shows nothing, rather than a callout pointing at nothing",
+      "a target drawn in the same commit as the coachmark — a section one press reveals and points at — is looked for again once it is on the page, and the coachmark still appears focused",
+      "in forced colours the target's ring is Highlight and the panel keeps a CanvasText edge"
+    ],
+    "notes": [
+      "No `onClose`, no close button, and Escape does nothing: give one unless something else closes it.",
+      "The close button is named by `closeLabel`, \"Close\" by default."
+    ]
+  },
+  "antiPatterns": [
+    {
+      "dont": "a Coachmark with `isOpen` true on page load",
+      "do": "a \"What's new?\" button that opens it, or a Banner",
+      "why": "it takes focus when it appears; unasked, it moves a keyboard user away from what they came to do"
+    },
+    {
+      "dont": "three Coachmarks opened one after another from your own state",
+      "do": "<Tour steps={…} />",
+      "why": "the count, Back, Next, the skipping of missing targets and the single focus hand-back are Tour's"
+    },
+    {
+      "dont": "a coachmark holding a form",
+      "do": "a SidePanel or a Modal",
+      "why": "a coachmark points at the page; a task needs its own surface"
+    }
+  ]
+}

@@ -253,6 +253,32 @@ CalendarPopover now passes `shouldContainFocus` to `<Overlay>`. Any new
 component that calls `usePopover` above its own `<Overlay>` needs the same.
 The stories `TabStaysInTheCalendar` and `TabStaysInThePopover` catch it.
 
+## A portalled overlay inherits nothing from where it was opened
+
+Overlays are rendered into `<body>`, outside the component and outside the
+app shell. Anything they read from an ancestor is gone, and nothing reports
+it: an undefined custom property makes the declaration invalid, which falls
+back to the initial value.
+
+It has cost two components:
+
+- **ColorPicker:** the panel's width was set on `.ion-color-picker`, the
+  field, and came out as `auto`. The panel's measures are now set on the
+  panel.
+- **The demo's tour:** a step's scroll margin used `--demo-header-height`,
+  which `.demo-app` defines. It computed to 0px, so the step scrolled under
+  the sticky header. The height is restated in the rule.
+
+Set an overlay's variables on the overlay itself. A story that measures the
+overlay catches this; one that only reads its text does not.
+
+React Aria's `useOverlayPosition` has a related trap. While it measures, it
+writes `max-height` straight onto the element, sized to the room it found
+beside the target. Above a target whose top is off screen that is 0px, and
+the panel collapsed to its padding. A `style` prop does not undo it, because
+React does not rewrite a value it thinks is unchanged. Coachmark clears it
+on the element after each placement.
+
 ## React Aria's colour hooks: four things they do not do
 
 Found building ColorPicker on 3.50, each caught by a story:

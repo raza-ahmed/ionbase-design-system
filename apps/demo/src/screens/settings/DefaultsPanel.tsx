@@ -6,6 +6,7 @@ import {
   Card,
   Checkbox,
   CheckboxGroup,
+  Coachmark,
   ColorPicker,
   DualListbox,
   Fieldset,
@@ -79,6 +80,8 @@ export function DefaultsPanel({
     Partial<Record<keyof WorkspaceDefaults, string>>
   >({});
   const [announcement, setAnnouncement] = useState('');
+  // "What's new?" opens it, nothing else: a coachmark takes focus.
+  const [whatsNew, setWhatsNew] = useState(false);
   // Checked on save, then as it changes — the Form pattern's rule.
   const [triedToSave, setTriedToSave] = useState(false);
   const noApprovers = !!draft && draft.approvers.length === 0;
@@ -137,6 +140,16 @@ export function DefaultsPanel({
     <Card
       title="Workspace defaults"
       description="Applied to agents created from now on. Saved together."
+      action={
+        <Button
+          size="sm"
+          variant="tertiary"
+          onClick={() => setWhatsNew(true)}
+          isDisabled={!draft}
+        >
+          What’s new?
+        </Button>
+      }
     >
       <p className="ion-visually-hidden" role="status">
         {announcement}
@@ -255,7 +268,7 @@ export function DefaultsPanel({
 
       {/* A colour other people see, with white text on it: the panel knows
           the text, so the panel checks the pair. */}
-      <div className="demo-email-accent">
+      <div className="demo-email-accent" id="d-emailAccent-block">
         <ColorPicker
           id="d-emailAccent"
           label="Approval email colour"
@@ -280,6 +293,16 @@ export function DefaultsPanel({
           Approve
         </span>
       </div>
+
+      <Coachmark
+        target="d-emailAccent-block"
+        title="Approval emails take your colour"
+        isOpen={whatsNew}
+        onClose={() => setWhatsNew(false)}
+      >
+        The Approve button in approval emails is drawn in this colour. It is
+        checked against white text as you choose, and saved with the rest.
+      </Coachmark>
 
       {dirtyKeys.length > 0 && (
         <div
