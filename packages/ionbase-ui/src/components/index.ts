@@ -421,6 +421,15 @@ export type {
 } from './DateTimePicker.js';
 export type { IsoDateTime } from './iso-date-time.js';
 
+export { ColorPicker } from './ColorPicker.js';
+export type {
+  ColorPickerProps,
+  ColorPickerSize,
+  ColorPickerSwatch,
+  ColorPickerLabels,
+} from './ColorPicker.js';
+export type { HexColor } from './hex-color.js';
+
 export { DateRangePicker } from './DateRangePicker.js';
 export type {
   DateRangePickerProps,

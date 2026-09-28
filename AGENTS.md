@@ -239,6 +239,38 @@ picker does not override, so the picked day was dropped. DateTimePicker hands
 CalendarPopover a state whose `close` is `setOpen(false)`. The story
 `ADayWithNoTimeTakesMidnight` catches it.
 
+## `usePopover` outside `<Overlay>` contains no focus
+
+A modal `usePopover` (3.50) asks for focus containment through
+`useOverlayFocusContain`. That reads a context which only `<Overlay>`
+provides, to the components rendered inside it. CalendarPopover calls
+`usePopover` itself and renders `<Overlay>` below that, so the request found
+no context and did nothing. Nothing reported it. Tab from the popover's last
+control went to `<body>`, not back to the first. This was true of all three
+date pickers until ColorPicker, which shares the popover, had a story for it.
+
+CalendarPopover now passes `shouldContainFocus` to `<Overlay>`. Any new
+component that calls `usePopover` above its own `<Overlay>` needs the same.
+The stories `TabStaysInTheCalendar` and `TabStaysInThePopover` catch it.
+
+## React Aria's colour hooks: four things they do not do
+
+Found building ColorPicker on 3.50, each caught by a story:
+
+- **Hex loses the hue.** Black and greys have no hue in hex, so a colour
+  round-tripped through `#RRGGBB` comes back at hue 0. Dragged to black, the
+  hue strip jumps to red. ColorPicker keeps its own HSB colour, and takes the
+  caller's value only when its hex differs (`BlackKeepsItsHue`).
+- **`useColorField` commits on blur only.** Enter does nothing, so ColorPicker
+  commits on Enter itself (`TypingAHexSetsTheValue`).
+- **`useColorField` ignores `id`.** It gives the input an id of its own.
+  ColorPicker puts the caller's back on the input and the label's `for`, since
+  that is what an error summary links to (`IdIsTheInputs`).
+- **Validity comes from the state.** `isInvalid` passed only to
+  `useColorField` never reaches `aria-invalid`. It has to go to
+  `useColorFieldState` as well (`Invalid`). The demo's smoke check found this
+  one, not a story.
+
 ## A context menu's events are not what they look like
 
 Two things about `contextmenu` that ContextMenu had to learn by failing:

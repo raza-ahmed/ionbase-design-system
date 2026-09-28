@@ -66,6 +66,29 @@
         }
       }
     },
+    "AI Label": {
+      "page": "AI Label",
+      "id": "1661:272",
+      "kind": "SET",
+      "props": {
+        "Explanation#1661:5": {
+          "type": "TEXT"
+        },
+        "Show Edited#1661:0": {
+          "type": "BOOLEAN"
+        },
+        "Size": {
+          "type": "VARIANT",
+          "options": ["Medium", "Small"],
+          "default": "Medium"
+        },
+        "State": {
+          "type": "VARIANT",
+          "options": ["Closed", "Open"],
+          "default": "Closed"
+        }
+      }
+    },
     "Accordion": {
       "page": "Accordion",
       "id": "1360:267",
@@ -140,29 +163,6 @@
         },
         "Stopping Label#1156:10": {
           "type": "TEXT"
-        }
-      }
-    },
-    "AI Label": {
-      "page": "AI Label",
-      "id": "1661:272",
-      "kind": "SET",
-      "props": {
-        "Explanation#1661:5": {
-          "type": "TEXT"
-        },
-        "Show Edited#1661:0": {
-          "type": "BOOLEAN"
-        },
-        "Size": {
-          "type": "VARIANT",
-          "options": ["Medium", "Small"],
-          "default": "Medium"
-        },
-        "State": {
-          "type": "VARIANT",
-          "options": ["Closed", "Open"],
-          "default": "Closed"
         }
       }
     },
@@ -791,6 +791,31 @@
         }
       }
     },
+    "Color Picker": {
+      "page": "Color Picker",
+      "id": "1696:834",
+      "kind": "SET",
+      "props": {
+        "Size": {
+          "type": "VARIANT",
+          "options": ["Small", "Medium", "Large"],
+          "default": "Small"
+        },
+        "State": {
+          "type": "VARIANT",
+          "options": [
+            "Default",
+            "Hover",
+            "Focus",
+            "Filled",
+            "Invalid",
+            "Disabled",
+            "Read-only"
+          ],
+          "default": "Default"
+        }
+      }
+    },
     "Combobox": {
       "page": "Combobox",
       "id": "1370:2359",
@@ -1042,26 +1067,22 @@
       "id": "1680:527",
       "kind": "SET",
       "props": {
-        "Label#1680:0": {
-          "type": "TEXT",
-          "default": "Approval order"
-        },
         "Description#1680:7": {
-          "type": "TEXT",
-          "default": "Asked in this order. The next is asked if one does not answer in a day."
+          "type": "TEXT"
         },
-        "Show Description#1680:14": {
-          "type": "BOOLEAN",
-          "default": true
-        },
-        "Reorderable#1680:21": {
-          "type": "BOOLEAN",
-          "default": true
+        "Label#1680:0": {
+          "type": "TEXT"
         },
         "Layout": {
           "type": "VARIANT",
           "options": ["Side by side", "Stacked"],
           "default": "Side by side"
+        },
+        "Reorderable#1680:21": {
+          "type": "BOOLEAN"
+        },
+        "Show Description#1680:14": {
+          "type": "BOOLEAN"
         },
         "State": {
           "type": "VARIANT",
@@ -1075,17 +1096,14 @@
       "id": "1679:254",
       "kind": "SET",
       "props": {
-        "Label#1679:0": {
-          "type": "TEXT",
-          "default": "Kwame Mensah"
-        },
         "Description#1679:5": {
-          "type": "TEXT",
-          "default": "Platform"
+          "type": "TEXT"
+        },
+        "Label#1679:0": {
+          "type": "TEXT"
         },
         "Show Description#1679:10": {
-          "type": "BOOLEAN",
-          "default": true
+          "type": "BOOLEAN"
         },
         "State": {
           "type": "VARIANT",
@@ -2884,18 +2902,6 @@
         }
       }
     },
-    "Tree View": {
-      "page": "Tree View",
-      "id": "1542:4542",
-      "kind": "SET",
-      "props": {
-        "Selection": {
-          "type": "VARIANT",
-          "options": ["None", "Single", "Multiple"],
-          "default": "None"
-        }
-      }
-    },
     "Tree Grid": {
       "page": "Tree Grid",
       "id": "1688:1129",
@@ -2904,6 +2910,46 @@
         "Selection": {
           "type": "VARIANT",
           "options": ["None", "Multiple"],
+          "default": "None"
+        }
+      }
+    },
+    "Tree Grid Row": {
+      "page": "Tree Grid",
+      "id": "1687:939",
+      "kind": "SET",
+      "props": {
+        "Kind": {
+          "type": "VARIANT",
+          "options": ["Closed", "Open", "Leaf"],
+          "default": "Closed"
+        },
+        "Label#1687:0": {
+          "type": "TEXT"
+        },
+        "Level": {
+          "type": "VARIANT",
+          "options": ["1", "2", "3"],
+          "default": "1"
+        },
+        "Show Selection#1687:28": {
+          "type": "BOOLEAN"
+        },
+        "State": {
+          "type": "VARIANT",
+          "options": ["Default", "Selected", "Focus"],
+          "default": "Default"
+        }
+      }
+    },
+    "Tree View": {
+      "page": "Tree View",
+      "id": "1542:4542",
+      "kind": "SET",
+      "props": {
+        "Selection": {
+          "type": "VARIANT",
+          "options": ["None", "Single", "Multiple"],
           "default": "None"
         }
       }
@@ -2944,36 +2990,6 @@
         "State": {
           "type": "VARIANT",
           "options": ["Default", "Hover", "Selected", "Focus", "Disabled"],
-          "default": "Default"
-        }
-      }
-    },
-    "Tree Grid Row": {
-      "page": "Tree Grid",
-      "id": "1687:939",
-      "kind": "SET",
-      "props": {
-        "Label#1687:0": {
-          "type": "TEXT",
-          "default": "Support triage"
-        },
-        "Show Selection#1687:28": {
-          "type": "BOOLEAN",
-          "default": true
-        },
-        "Kind": {
-          "type": "VARIANT",
-          "options": ["Closed", "Open", "Leaf"],
-          "default": "Closed"
-        },
-        "Level": {
-          "type": "VARIANT",
-          "options": ["1", "2", "3"],
-          "default": "1"
-        },
-        "State": {
-          "type": "VARIANT",
-          "options": ["Default", "Selected", "Focus"],
           "default": "Default"
         }
       }

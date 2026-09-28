@@ -1,0 +1,101 @@
+{
+  "status": "stable",
+  "summary": "A colour chosen by a person — a brand accent, a label, a chart series — as a hex field with a swatch button that opens a saturation and brightness area, a hue strip and any preset swatches, taking and returning `#RRGGBB`.",
+  "useWhen": [
+    "the colour is the user's to choose: a workspace's brand accent, a label's or a tag's colour, a series in a chart they own",
+    "any colour should be possible, not only a list — with the likely ones offered as `swatches`",
+    "the value is stored and shown back as a colour, not as a name"
+  ],
+  "useInstead": [
+    {
+      "when": "the choice is among a few named colours and nothing else is allowed",
+      "use": "RadioGroup",
+      "why": "an open picker invites a colour the product then has to refuse; radios name each choice and allow no other"
+    },
+    {
+      "when": "the colour marks a status — failed, running, healthy",
+      "use": "StatusIndicator",
+      "why": "status colours are the system's, each with a word and a shape beside it; a picked colour carries neither, and means nothing to the next reader"
+    },
+    {
+      "when": "the choice is a theme — light, dark, the system's",
+      "use": "SegmentedControl",
+      "why": "a theme is a named mode with every colour decided; a picker would ask for one colour and leave the rest to chance"
+    }
+  ],
+  "composition": {
+    "order": ["ColorPicker"],
+    "note": "One field. `value` is `#RRGGBB`; `onChange` fires on every step of a drag, `onChangeEnd` once a change is finished — save or recompute there. Offer the likely colours as `swatches`, each with a `label` when it has a name people use. When text will sit on the colour, check the pair yourself and pass `isInvalid` with an `errorMessage` that gives the ratio.",
+    "example": "<ColorPicker label=\"Brand colour\" description=\"The Approve button in approval emails.\" value={brand} onChange={setBrand} swatches={[{ value: '#0B5FFF', label: 'Northwind blue' }]} />"
+  },
+  "variants": {
+    "size": {
+      "sm": {
+        "use": "dense forms, a colour in a table row"
+      },
+      "md": {
+        "use": "the default"
+      },
+      "lg": {
+        "use": "prominent single-field forms"
+      }
+    }
+  },
+  "slots": {
+    "description": {
+      "accepts": "text",
+      "note": "where the colour is used, and any rule it must meet; replaced by `errorMessage` while the field is invalid"
+    },
+    "labels": {
+      "accepts": "text",
+      "note": "the swatch button's name and the presets' group name"
+    }
+  },
+  "a11y": {
+    "requires": [
+      "`label`, or an `aria-label` when no visible label is rendered",
+      "a `label` on every swatch that has a name people use — \"Northwind blue\" says more than \"vibrant blue\""
+    ],
+    "guarantees": [
+      "the hex is a text field named by the label, typed and committed on Enter or blur; shorthand such as `f00` is accepted as typing and expanded, and anything that is not a colour goes back to the last one",
+      "the swatch button is named by `labels.picker`, not by the field's label, and opens a modal dialog named by the field's label, with focus in the area",
+      "the area is a two-dimensional slider: the arrow keys move saturation and brightness, Page Up and Down take bigger steps, and each step is announced with the colour's name",
+      "the hue strip is a slider named Hue, in the reader's language; in a right-to-left locale it runs from the right and the arrows follow it",
+      "presets are one radio group named by `labels.swatches`: the arrow keys move and pick, the chosen one is ringed as well as coloured, and a colour off every preset leaves none checked",
+      "a preset with no `label` is named by its colour in the reader's language",
+      "Tab moves from the area to the hue strip to the presets and stays in the dialog; Escape or a click outside closes it and focus returns to the button",
+      "the hue is kept at a grey or black: dragged to black and back up, a blue comes back blue",
+      "a caller that does not take the change keeps its value, and the field shows it",
+      "in forced colours the chip, the swatches and the thumbs keep their colours; their edges and the chosen ring take the system's",
+      "a name, `rgb()` or shorthand passed as a prop throws with the prop's name, rather than rendering an empty field",
+      "`name` posts the hex with the form"
+    ],
+    "notes": [
+      "No alpha: a translucent colour looks different on every ground it lands on. Ask for a solid one.",
+      "No contrast check: the picker cannot know what goes on the colour. When text sits on it, measure the pair and say so with `isInvalid`.",
+      "The colour names are React Aria's, and follow the locale."
+    ]
+  },
+  "antiPatterns": [
+    {
+      "dont": "`value=\"red\"`, `value=\"#f00\"` or `value=\"rgb(255, 0, 0)\"`",
+      "do": "`value=\"#FF0000\"`",
+      "why": "a value the picker cannot show as it came would come back different, and the form would read as edited the first time it was saved"
+    },
+    {
+      "dont": "saving on `onChange`",
+      "do": "`onChangeEnd={(hex) => save(hex)}`",
+      "why": "`onChange` fires on every pixel of a drag — dozens of saves for one gesture, answered out of order"
+    },
+    {
+      "dont": "a brand colour taken with no check when white text will sit on it",
+      "do": "measure the pair, and `isInvalid` with \"Too light for white text: 2.1:1. Needs 4.5:1.\"",
+      "why": "the picker offers every colour, and half of them make the text on them unreadable"
+    },
+    {
+      "dont": "a ColorPicker for an interface colour — a button's, a status's",
+      "do": "the token",
+      "why": "interface colours are chosen once, in the design system, and checked there; a picker hands that decision to whoever has the settings page open"
+    }
+  ]
+}

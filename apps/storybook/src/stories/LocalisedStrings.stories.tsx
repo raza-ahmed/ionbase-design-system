@@ -12,6 +12,7 @@ import {
   CitationList,
   CitationListItem,
   CommandPalette,
+  ColorPicker,
   DateTimePicker,
   DualListbox,
   ConfidenceIndicator,
@@ -703,6 +704,31 @@ export const WhenARunStarts: Story = {
     const dialog = await within(document.body).findByRole('dialog');
     await expectNoEnglish(dialog);
     await expectSaid(dialog, m('time'));
+    await userEvent.keyboard('{Escape}');
+  },
+};
+
+/**
+ * ColorPicker's two strings, and a preset with no label named by React Aria
+ * in Russian — the colour names are its, and follow the locale.
+ */
+export const APickedColour: Story = {
+  render: () => (
+    <ColorPicker
+      label={m('brand')}
+      description={m('where')}
+      defaultValue="#0B5FFF"
+      swatches={[{ value: '#0B5FFF', label: m('blue') }, '#FF0000']}
+      labels={{ picker: m('picker'), swatches: m('swatches') }}
+    />
+  ),
+  play: async ({ canvasElement }) => {
+    await expectNoEnglish(canvasElement);
+    const c = within(canvasElement);
+    await userEvent.click(c.getByRole('button', { name: m('picker') }));
+    const dialog = await within(document.body).findByRole('dialog');
+    await expectNoEnglish(dialog);
+    await expectSaid(dialog, m('swatches'), m('blue'));
     await userEvent.keyboard('{Escape}');
   },
 };

@@ -5150,6 +5150,134 @@ try {
   }
 
   /*
+   * ColorPicker, as Settings' approval email colour: white text sits on it,
+   * so the panel refuses a colour under 4.5:1. #FACC15 typed and committed
+   * says "1.5:1" in the field's error and is refused on save, with focus
+   * sent to the field; Plum picked from the presets clears it and the
+   * preview takes the colour; saved, it is still Plum after leaving the
+   * page. Escape gives focus back to the swatch button; axe on the dialog.
+   */
+  for (const [device, width, height] of [
+    ['desktop', 1280, 900],
+    ['mobile', 390, 844],
+  ]) {
+    const where = `color picker (light, ${device})`;
+    if (skip(where)) continue;
+    const context = await browser.newContext({
+      viewport: { width, height },
+      locale: 'en-US',
+    });
+    await context.addInitScript(() =>
+      localStorage.setItem(
+        'ionbase-ops:demo-settings',
+        JSON.stringify({ theme: 'light', latency: 0 }),
+      ),
+    );
+    const page = await context.newPage();
+    page.on('pageerror', (e) => fail(where, `exception: ${e.message}`));
+    const field = page.getByRole('textbox', { name: 'Approval email colour' });
+    const preview = page.locator('.demo-email-accent__preview');
+    const fill = () =>
+      preview.evaluate((el) => window.getComputedStyle(el).backgroundColor);
+    try {
+      await page.goto(`${BASE}/#/settings`);
+      await field.waitFor({ timeout: 10_000 });
+      await field.scrollIntoViewIfNeeded();
+      if ((await field.inputValue()) !== '#0B5FFF')
+        fail(where, `the field reads "${await field.inputValue()}"`);
+      if ((await fill()) !== 'rgb(11, 95, 255)')
+        fail(where, `the preview is ${await fill()}`);
+
+      await field.fill('#facc15');
+      await field.press('Enter');
+      const error = page.getByText(
+        'Too light for white text: 1.5:1. It needs 4.5:1.',
+      );
+      await error.waitFor({ timeout: 5_000 });
+      if ((await field.getAttribute('aria-invalid')) !== 'true')
+        fail(where, 'a colour at 1.5:1 is not marked invalid');
+      const bar = page.getByRole('region', { name: 'Unsaved changes' });
+      await bar.getByRole('button', { name: 'Save changes' }).click();
+      await page.waitForTimeout(100);
+      if (
+        (await page.evaluate(() => document.activeElement?.id)) !==
+        'd-emailAccent'
+      )
+        fail(where, 'saving a refused colour did not send focus to it');
+      if (!(await bar.isVisible())) fail(where, 'a refused colour was saved');
+
+      const button = page
+        .locator('.demo-email-accent')
+        .getByRole('button', { name: 'Choose a colour' });
+      await button.click();
+      const dialog = page.getByRole('dialog', {
+        name: 'Approval email colour',
+      });
+      await dialog.waitFor({ timeout: 5_000 });
+      // The swatch is what a person presses; its radio is visually hidden.
+      await dialog
+        .locator('label', { has: page.getByRole('radio', { name: 'Plum' }) })
+        .click();
+      if ((await field.inputValue()) !== '#7E22CE')
+        fail(where, `Plum made the field "${await field.inputValue()}"`);
+      if (await error.isVisible())
+        fail(where, 'Plum passes 4.5:1 and the error stayed');
+      if ((await fill()) !== 'rgb(126, 34, 206)')
+        fail(where, `after Plum the preview is ${await fill()}`);
+      if (device === 'desktop') {
+        await page.addScriptTag({ content: axeSource });
+        const violations = await page.evaluate(async () => {
+          const result = await window.axe.run(
+            document.querySelector('[role="dialog"]'),
+            { resultTypes: ['violations'] },
+          );
+          return result.violations.map(
+            (v) => `${v.impact} ${v.id} — ${v.nodes[0].target.join(' ')}`,
+          );
+        });
+        for (const v of violations) fail(where, `axe ${v} in the picker`);
+      }
+      await page.keyboard.press('Escape');
+      await dialog.waitFor({ state: 'detached', timeout: 5_000 });
+      // Given back a frame after the dialog goes, so waited for, not read.
+      const handle = await button.elementHandle();
+      await page
+        .waitForFunction((b) => b === document.activeElement, handle, {
+          timeout: 2_000,
+        })
+        .catch(() =>
+          fail(where, 'Escape did not give focus back to the swatch button'),
+        );
+
+      await bar.getByRole('button', { name: 'Save changes' }).click();
+      await bar.waitFor({ state: 'detached', timeout: 5_000 });
+      await page.evaluate(() => {
+        window.location.hash = '#/overview';
+      });
+      await page.getByRole('heading', { name: 'Overview', level: 1 }).waitFor();
+      await page.evaluate(() => {
+        window.location.hash = '#/settings';
+      });
+      await field.waitFor({ timeout: 10_000 });
+      if ((await field.inputValue()) !== '#7E22CE')
+        fail(
+          where,
+          `saved, the colour came back "${await field.inputValue()}"`,
+        );
+      if (
+        await page.evaluate(
+          () => document.documentElement.scrollWidth > window.innerWidth,
+        )
+      )
+        fail(where, 'the page scrolls sideways');
+    } catch (e) {
+      fail(where, `did not run: ${e.message.split('\n')[0]}`);
+    }
+    groupsChecked++;
+    await context.close();
+  }
+
+  /*
    * Timeline, as an agent's History on its Overview. An ordered list named
    * History, newest first; each event says what happened, who, and when in
    * a <time> with the exact instant; the markers are hidden. A purpose saved

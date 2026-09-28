@@ -19,7 +19,8 @@
     "Tabs",
     "TabItem",
     "CodeSnippet",
-    "InlineLoading"
+    "InlineLoading",
+    "ColorPicker"
   ],
   "structure": [
     "Named groups, separated by Divider, each with a heading.",
@@ -27,7 +28,8 @@
     "For immediate-apply panels, an InlineLoading beside each Toggle, mounted with the row: Saving… while the save runs, Saved until `onSuccess` sets it back to `inactive`, Not saved until the next attempt. The Toggle stays enabled mid-save and a second press is ignored; the words grow away from the Toggle, so it never moves.",
     "For save-on-submit panels, a save bar that appears only when something is dirty, with save and discard.",
     "Tabs for panels large enough that a single scroll is unreasonable — but never with unsaved changes hidden behind an inactive tab.",
-    "A setting used from outside the app — an API key, a webhook, a CLI — shows how to use it as CodeSnippets under a sentence saying what each is for: a command as `single`, a request as `multi`, each with its own `label` and `copyLabel`, and a command named in a description as `inline`."
+    "A setting used from outside the app — an API key, a webhook, a CLI — shows how to use it as CodeSnippets under a sentence saying what each is for: a command as `single`, a request as `multi`, each with its own `label` and `copyLabel`, and a command named in a description as `inline`.",
+    "A colour the product shows to other people — a brand accent — is a ColorPicker with the brand's own colours as named `swatches`. When text sits on it, the panel measures the pair as it changes and refuses a colour under 4.5:1 with `isInvalid` and an error that gives the ratio, and a preview shows the colour where it will be used."
   ],
   "states": {
     "loading": {
@@ -56,15 +58,36 @@
     "Alert": ["intent", "title", "actions"],
     "Tabs": ["type", "size"],
     "CodeSnippet": ["type", "label", "copyLabel", "language"],
-    "InlineLoading": ["status", "onSuccess"]
+    "InlineLoading": ["status", "onSuccess"],
+    "ColorPicker": [
+      "label",
+      "description",
+      "value",
+      "onChange",
+      "swatches",
+      "isInvalid",
+      "errorMessage"
+    ]
   },
   "variantsUsed": {
-    "Toggle": { "intent": ["brand", "danger"] },
-    "Alert": { "intent": ["error", "warning"] },
-    "Button": { "variant": ["primary-brand", "tertiary"] },
-    "Tabs": { "type": ["underline"] },
-    "CodeSnippet": { "type": ["single", "multi", "inline"] },
-    "InlineLoading": { "status": ["inactive", "active", "finished", "error"] }
+    "Toggle": {
+      "intent": ["brand", "danger"]
+    },
+    "Alert": {
+      "intent": ["error", "warning"]
+    },
+    "Button": {
+      "variant": ["primary-brand", "tertiary"]
+    },
+    "Tabs": {
+      "type": ["underline"]
+    },
+    "CodeSnippet": {
+      "type": ["single", "multi", "inline"]
+    },
+    "InlineLoading": {
+      "status": ["inactive", "active", "finished", "error"]
+    }
   },
   "a11y": {
     "requires": [
@@ -98,6 +121,11 @@
     {
       "dont": "hiding settings the account cannot use",
       "why": "an absent control is indistinguishable from a missing feature"
+    },
+    {
+      "dont": "a colour setting saved with no check, when text will sit on the colour",
+      "do": "`<ColorPicker isInvalid={ratio < 4.5} errorMessage={`Too light for white text: ${ratio}:1. Needs 4.5:1.`} … />`",
+      "why": "the picker offers every colour; the one the admin likes best may leave every email's button unreadable"
     }
   ]
 }

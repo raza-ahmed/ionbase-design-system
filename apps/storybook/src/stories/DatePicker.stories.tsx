@@ -349,3 +349,32 @@ export const ASelectedDayKeepsItsFillUnderThePointer: Story = {
     await userEvent.keyboard('{Escape}');
   },
 };
+
+/**
+ * Tab stays in the calendar: from its last control it wraps to the first,
+ * never out to the page `usePopover` has hidden behind it. It used to go to
+ * <body> — the popover asked for containment from outside the <Overlay>
+ * that grants it.
+ */
+export const TabStaysInTheCalendar: Story = {
+  render: () => (
+    <>
+      <DatePicker label="Due date" defaultValue="2026-04-12" />
+      <button type="button">After</button>
+    </>
+  ),
+  play: async ({ canvas }) => {
+    await userEvent.click(
+      canvas.getByRole('button', { name: 'Open calendar' }),
+    );
+    const dialog = await within(document.body).findByRole('dialog');
+    await waitFor(() =>
+      expect(dialog.contains(document.activeElement)).toBe(true),
+    );
+    for (let i = 0; i < 6; i++) {
+      await browserUser.keyboard('{Tab}');
+      await expect(dialog.contains(document.activeElement)).toBe(true);
+    }
+    await userEvent.keyboard('{Escape}');
+  },
+};
