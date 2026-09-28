@@ -229,6 +229,16 @@ does nothing. The Overview's smoke check lost one Enter in three this way.
 A real Tab moves focus at once. So after `focus()`, wait until
 `document.activeElement` is the row before pressing anything.
 
+## A date picker with a time commits only through `setOpen(false)`
+
+At minute granularity, `useDatePickerState` (3.50) holds a day that was
+picked without a time and commits it, with a placeholder time, only in its
+own `setOpen(false)`. `usePopover` closes on Escape and on an outside click
+through `state.close()`. That is the overlay state's `close`, which the date
+picker does not override, so the picked day was dropped. DateTimePicker hands
+CalendarPopover a state whose `close` is `setOpen(false)`. The story
+`ADayWithNoTimeTakesMidnight` catches it.
+
 ## A context menu's events are not what they look like
 
 Two things about `contextmenu` that ContextMenu had to learn by failing:

@@ -52,3 +52,17 @@ export function formatTime(time: string): string {
     timeZone: 'UTC',
   }).format(new Date(Date.UTC(2000, 0, 1, h, m)));
 }
+
+/**
+ * The workspace's wall clock now, to the minute: `YYYY-MM-DDTHH:MM` in UTC —
+ * DateTimePicker's shape, and the "not before now" for a schedule.
+ */
+export function nowMinute(): string {
+  return new Date().toISOString().slice(0, 16);
+}
+
+/** `YYYY-MM-DDTHH:MM` as the reader writes it — "Apr 12, 9:00 AM". UTC throughout. */
+export function formatMoment(moment: string): string {
+  const [day, time] = moment.split('T');
+  return `${formatDay(day)}, ${formatTime(time)}`;
+}

@@ -121,6 +121,7 @@
  */
 @import url('./date-picker.css');
 @import url('./date-range-picker.css');
+@import url('./date-time-picker.css');
 @import url('./time-field.css');
 @import url('./stat-tile.css');
 @import url('./setting-row.css');

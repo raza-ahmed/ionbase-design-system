@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { expect, userEvent, waitFor, within } from 'storybook/test';
 import { DateRangePicker } from 'ionbase-ui';
+import { userEvent as browserUser } from 'vitest/browser';
 import type { DateRange } from 'ionbase-ui';
 
 const meta: Meta<typeof DateRangePicker> = {
@@ -361,5 +362,22 @@ export const OutOfBoundsIsShownNotClamped: Story = {
     await expect(
       canvas.getByText(/5\/31\/2026 or earlier/),
     ).toBeInTheDocument();
+  },
+};
+
+/** A range's endpoint keeps its fill under the pointer — see DatePicker's. */
+export const AnEndpointKeepsItsFillUnderThePointer: Story = {
+  args: Default.args,
+  play: async ({ canvas }) => {
+    await open(canvas);
+    const dialog = await within(document.body).findByRole('dialog');
+    const [start] = within(dialog).getAllByRole('button', {
+      name: /April 6, 2026/,
+    });
+    const fill = () => getComputedStyle(start).backgroundColor;
+    const before = fill();
+    await browserUser.hover(start);
+    await waitFor(() => expect(fill()).toBe(before));
+    await userEvent.keyboard('{Escape}');
   },
 };

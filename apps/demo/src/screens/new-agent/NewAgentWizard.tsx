@@ -24,7 +24,7 @@ import { FIELD_LABELS, validateStep, type FieldErrors } from './validate';
 
 /*
  * Moves focus to a field from the error summary. The id is on the field's
- * root, and for a segmented DatePicker or TimeField that root is a group
+ * root, and for a segmented DateTimePicker that root is a group
  * `<div>` with nothing to focus, so `.focus()` on it did nothing — the Start
  * date link had been silently dead since the wizard was built. Fall through to
  * the first focusable thing inside: the first segment.

@@ -67,7 +67,7 @@ IonBase column names the component that covers it.
 | Slider (single and range)         |   ●    |  ●  |  ●   | `Slider`                        |
 | Date picker / range               |   ●    |  ●  |  ●   | `DatePicker`, `DateRangePicker` |
 | Time picker                       |   ●    |  ●  |  ●   | `TimeField`                     |
-| Date-time picker                  |        |     |  ●   | —                               |
+| Date-time picker                  |        |     |  ●   | `DateTimePicker`                |
 | Color picker                      |        |     |  ●   | —                               |
 | File uploader                     |   ●    |     |  ●   | `FileUpload`                    |
 | Fieldset / form group             |   ●    |     |  ●   | `Fieldset`                      |
@@ -260,7 +260,7 @@ is to build:
 
 - **DualListbox** (SLDS dueling picklist, MUI transfer list) — shipped 0.126.0.
 - **TreeGrid** — hierarchical rows in a table. Depends on TreeView and Table work. — shipped 0.127.0.
-- **DateTimePicker** — probably a pattern over `DatePicker` + `TimeField`; decide first.
+- **DateTimePicker** — decided: a component, because a bound such as "not before now" spans the date and the time, and two fields leave that rule to every caller. Shipped 0.128.0.
 - **ColorPicker**
 - **ProgressRing** — circular determinate progress.
 - **Coachmark / guided tour**

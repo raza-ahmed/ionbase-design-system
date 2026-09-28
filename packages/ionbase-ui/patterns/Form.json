@@ -15,6 +15,7 @@
     "RadioGroup",
     "Toggletip",
     "Toggle",
+    "DateTimePicker",
     "PhoneInput",
     "NumberInput",
     "Button",
@@ -31,6 +32,7 @@
     "Guidance needed to fill a field in goes in its `description`, always visible. An explanation most people will not need — why a limit exists, where to read more — goes in a Toggletip right after the label text, where it can hold a link.",
     "Related fields that answer one question — an address, a pair of limits, a set of checkboxes — sit in a Fieldset, CheckboxGroup or RadioGroup, so the question is announced with each field and a group-level error has somewhere to live.",
     "Choices that form a hierarchy — folders, teams within departments — are one TreeView with `selectionMode=\"multiple\"` and an `aria-label` naming the question, not Checkboxes indented by hand. The tree announces each choice's level and place; indentation alone announces nothing.",
+    "A moment — when a run starts, when a window opens — is one DateTimePicker, not a DatePicker beside a TimeField: one value, one error, and a bound such as \"not before now\" checked against the date and the time together through `minValue`. Its `description` names the timezone. A date and a time that are separate, optional choices — a due date with an optional reminder — stay two fields.",
     "An error summary Alert above the form after a failed submit, listing each invalid field as a link to it.",
     "The actions in a ButtonGroup at the end: cancel first, the submit Button last — the primary last, as every action row in the system has it, so it is reached after the options it is chosen over and sits at the end of the row. `stack` on a form a phone will fill.",
     "One value on a page that is read far more often than changed — a record's name or description — is an InlineEdit where it stands, not a form of one field: Edit, then Save or Cancel, with `validate` for its rule. Several values that belong together are still a form with one submit.",
@@ -106,7 +108,15 @@
       "onSelectionChange",
       "defaultExpandedKeys"
     ],
-    "Grid": ["columns", "align"]
+    "Grid": ["columns", "align"],
+    "DateTimePicker": [
+      "label",
+      "description",
+      "value",
+      "onChange",
+      "minValue",
+      "isRequired"
+    ]
   },
   "variantsUsed": {
     "Alert": {
@@ -169,6 +179,11 @@
       "dont": "a record's name as a button that turns into a field and saves on blur",
       "do": "<InlineEdit label=\"Name\" value={name} onSave={save} />",
       "why": "the value is announced as a button, and tabbing away to check something commits a half-typed value"
+    },
+    {
+      "dont": "a DatePicker and a TimeField for one moment, with the TimeField's minimum moved when the date is today",
+      "do": "<DateTimePicker minValue={now} description=\"Workspace time, UTC.\" … />",
+      "why": "the rule spans two fields, so each form writes it again and gets an edge wrong — midnight, a date typed after the time"
     }
   ]
 }

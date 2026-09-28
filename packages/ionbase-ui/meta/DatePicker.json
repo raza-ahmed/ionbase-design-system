@@ -23,9 +23,9 @@
       "why": "picking from four delivery slots is a choice from a list, not a date"
     },
     {
-      "when": "a time of day is part of the value",
-      "use": "TimeField",
-      "why": "this picker is fixed to day granularity; put a TimeField beside it — the two share one box and one set of states"
+      "when": "a time of day is part of the value — one moment, such as when a run starts",
+      "use": "DateTimePicker",
+      "why": "this picker is fixed to day granularity; a DateTimePicker holds the date and the time as one value and checks a bound such as \"not before now\" against both. A TimeField beside this is only for a time that is a separate, optional choice"
     }
   ],
   "variants": {

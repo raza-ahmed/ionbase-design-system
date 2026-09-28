@@ -335,8 +335,19 @@
   outline: none;
 }
 
+/*
+ * Not on a selected day. The `:not()` gave this (0,3,0), over the selected
+ * fill's (0,2,0), so the day under the pointer after a click — the one just
+ * picked — turned grey behind its white numeral: 1.11:1. A range's endpoints
+ * had the same fault; its middle days keep their own hover in
+ * date-range-picker.css.
+ */
 @media (hover: hover) {
-  .ion-calendar__day:not([data-disabled], [data-unavailable]):hover {
+  .ion-calendar__day:not(
+      [data-disabled],
+      [data-unavailable],
+      [data-selected]
+    ):hover {
     background-color: var(--surface-hover);
   }
 }

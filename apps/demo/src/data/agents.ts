@@ -492,10 +492,14 @@ export interface AgentDraft {
   purpose: string;
   team: string | null;
   trigger: 'schedule' | 'webhook' | 'manual';
-  startDate: IsoDay | null;
+  /**
+   * When the schedule first runs, `YYYY-MM-DDTHH:MM` in workspace time (UTC).
+   * Its time of day is when every later run starts, except hourly.
+   */
+  firstRun: string | null;
   frequency: string;
-  /** Time of day the schedule runs, `HH:MM` in workspace time. Unused hourly. */
-  runAt: string | null;
+  /** The last day it runs, `YYYY-MM-DD`; `null` runs until it is paused. */
+  endsOn: IsoDay | null;
   escalationPhone: string;
   knowledgeFiles: string[];
   requireApproval: boolean;
