@@ -3,6 +3,7 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 import { expect, userEvent, waitFor, within } from 'storybook/test';
 import { commands } from 'vitest/browser';
 import {
+  AppSwitcher,
   AvatarGradient,
   Badge,
   Button,
@@ -498,5 +499,31 @@ export const ACoachmarkKeepsItsTargetRing: Story = {
     await expect(css(target, 'outline-color')).toBe(system('Highlight'));
     const dialog = await within(document.body).findByRole('dialog');
     await expect(css(dialog, 'border-top-color')).toBe(system('CanvasText'));
+  },
+};
+
+/** The product you are in keeps its border, in Highlight. */
+export const AnAppSwitcherMarksTheCurrentProduct: Story = {
+  render: () => (
+    <div style={{ paddingBottom: 300 }}>
+      <AppSwitcher
+        currentApp="ops"
+        apps={[
+          { id: 'ops', name: 'Ops', href: '#ops' },
+          { id: 'docs', name: 'Docs', href: '#docs' },
+        ]}
+      />
+    </div>
+  ),
+  play: async ({ canvasElement }) => {
+    await forced();
+    await userEvent.click(
+      within(canvasElement).getByRole('button', { name: 'Apps' }),
+    );
+    const dialog = await within(document.body).findByRole('dialog');
+    const current = within(dialog).getByRole('link', { name: 'Ops' });
+    await expect(css(current, 'border-top-style')).toBe('solid');
+    await expect(css(current, 'border-top-color')).toBe(system('Highlight'));
+    await userEvent.keyboard('{Escape}');
   },
 };

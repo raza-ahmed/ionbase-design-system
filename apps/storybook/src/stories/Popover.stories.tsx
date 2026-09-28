@@ -1,6 +1,6 @@
 import React from 'react';
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { expect, fn, waitFor } from 'storybook/test';
+import { expect, fn, userEvent, waitFor, within } from 'storybook/test';
 import { Popover, Button } from 'ionbase-ui';
 
 const PLACEMENTS = ['top', 'bottom', 'left', 'right'] as const;
@@ -170,6 +170,39 @@ export const TitleNamesTheDialog: Story = {
     await expect(document.getElementById(labelledBy!)).toHaveTextContent(
       'Filter results',
     );
+  },
+};
+
+/** Tab stays in the panel and wraps: the page behind is hidden from
+ *  assistive tech while it is open, so focus must not go there. */
+export const TabStaysInThePopover: Story = {
+  args: {
+    content: (
+      <>
+        <button type="button">First</button>{' '}
+        <button type="button">Second</button>
+      </>
+    ),
+  },
+  render: (args) => (
+    <Frame>
+      <button type="button">Before</button>
+      <Popover {...args}>
+        <Button>Open</Button>
+      </Popover>
+      <button type="button">After</button>
+    </Frame>
+  ),
+  play: async ({ canvas }) => {
+    await userEvent.click(canvas.getByRole('button', { name: 'Open' }));
+    const dialog = await within(document.body).findByRole('dialog');
+    await waitFor(() =>
+      expect(dialog.contains(document.activeElement)).toBe(true),
+    );
+    for (let i = 0; i < 5; i++) {
+      await userEvent.tab();
+      await expect(dialog.contains(document.activeElement)).toBe(true);
+    }
   },
 };
 

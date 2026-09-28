@@ -28,7 +28,8 @@
     "Grid",
     "ThemeZone",
     "I18nProvider",
-    "Tour"
+    "Tour",
+    "AppSwitcher"
   ],
   "structure": [
     "A SkipLink first in the body, before any Banner and the Header, with `target` the id of <main>: the first Tab on any page reaches it, and Enter lands in the content. The shell renders it once; <main> carries the `id` on every route.",
@@ -41,6 +42,7 @@
     "When navigation is hierarchical or longer than a header row holds, a Sidebar replaces the NavItems in Header's `center`: Header keeps the brand and account actions, and the Sidebar sits beside <main> as the primary navigation. Below the tablet breakpoint the same Sidebar moves into a Drawer opened by Header's own toggle with `menuType=\"dialog\"` — one copy, not two, and one menu button.",
     "A CommandPalette, when the product has one, is mounted once inside the shell beside ToastProvider, not per route. Header's `end` carries a Search button showing <Kbd shortcut=\"mod+k\" /> — the visible door for anyone who does not know the shortcut, and the only one on a phone. Everything in the palette is also reachable from the navigation.",
     "Notifications, when the product has them, are a bell in Header's `end`: a Tooltip inside a Popover titled Notifications, size `lg`, whose content is a NotificationsPanel. The bell's name carries the count — \"Notifications, 2 unread\" — because a dot on it is not read. The shell loads them once, so the count is right on every page before the panel is opened, and opening a notification closes the panel.",
+    "A product that is one of a suite has an AppSwitcher in Header's `end`, before the account: `apps` the suite and `currentApp` this product's `id`. It opens with the Header's theme, as Notifications do. The suite's products are links to their homes; the product's own sections stay in its Sidebar.",
     "Inside <main>, the page is a Stack: its sections one after another — PageHeader, a filter row, the content — with a gap from the scale (20 to 32 between sections). A row of filters or suggestions inside it is a `direction=\"row\" wrap` Stack with gap 8, never hand-written flex CSS.",
     "Content that lines up in columns is a Grid, not a Stack: a main column beside its aside is `columns={[2, 1]} collapse=\"tablet\"`, falling under it at 1023px; a set of cards is `minColumnWidth`, which follows the space with no breakpoint. Never a hand-written `display: grid` with its own media query.",
     "One I18nProvider around the whole shell, with the product's locale. Right-to-left is that locale and `dir=\"rtl\"` on <html>, set together: the stylesheets are logical and mirror on `dir` alone, but react-aria's arrow keys follow the locale. Nothing in the shell needs an RTL stylesheet of its own.",
@@ -117,7 +119,8 @@
     "ThemeZone": ["theme", "contents"],
     "SkipLink": ["target"],
     "I18nProvider": ["locale"],
-    "Tour": ["steps", "isOpen", "onOpenChange", "onComplete"]
+    "Tour": ["steps", "isOpen", "onOpenChange", "onComplete"],
+    "AppSwitcher": ["apps", "currentApp", "footer"]
   },
   "variantsUsed": {
     "ToastProvider": {
@@ -179,6 +182,11 @@
       "dont": "a skip link anywhere but first, or none",
       "do": "SkipLink as the first element of the shell",
       "why": "a keyboard user otherwise tabs through every banner button and Header control on every page before reaching the content — WCAG 2.4.1"
+    },
+    {
+      "dont": "the product's own sections in the AppSwitcher",
+      "do": "Sidebar for sections, AppSwitcher for the other products in the suite",
+      "why": "sections are moved between constantly and belong in view; hidden behind nine dots, every move costs two presses"
     }
   ]
 }

@@ -82,7 +82,7 @@ IonBase column names the component that covers it.
 | ---------------------------- | :----: | :-: | :--: | -------------------- |
 | App header / shell           |   ●    |  ●  |  ●   | `Header`             |
 | Side navigation              |   ●    |  ●  |  ●   | `Sidebar`, `NavItem` |
-| App switcher / launcher      |   ●    |     |  ●   | —                    |
+| App switcher / launcher      |   ●    |     |  ●   | `AppSwitcher`        |
 | Page header                  |   ●    |  ◐  |  ●   | `PageHeader`         |
 | Breadcrumb                   |   ●    |     |  ●   | `Breadcrumb`         |
 | Tabs (incl. vertical)        |   ●    |  ●  |  ●   | `Tabs`               |
@@ -264,7 +264,7 @@ is to build:
 - **ColorPicker** — a hex field first, with an area, a hue strip and named presets behind its swatch button; `#RRGGBB`, no alpha, and no contrast check of its own, because only the caller knows what sits on the colour. Shipped 0.129.0.
 - **ProgressRing** — circular determinate progress: determinate only, since a ring with no value is a Spinner. Shipped 0.130.0.
 - **Coachmark / guided tour** — `Coachmark` for one callout and `Tour` for a sequence of them: opened only when asked, not modal, steps as data naming their targets by id. Shipped 0.131.0.
-- **AppSwitcher** — the grid of products in a suite's header.
+- **AppSwitcher** — the grid of products in a suite's header: links to each product's home, not a menu, with the current one marked. Shipped 0.132.0.
 - **Calendar**, exported standalone — `Calendar.tsx` already exists internally.
 - **SplitPane** — resizable, keyboard-operable divider.
 

@@ -1,0 +1,71 @@
+{
+  "status": "stable",
+  "summary": "The nine-dot button in a suite's header and the grid of products it opens — links, each to a product's home, with the one you are in marked.",
+  "useWhen": [
+    "a suite of separate products shares a header, and people move between them",
+    "the products have their own addresses: each opens at its home, in this tab or a new one"
+  ],
+  "useInstead": [
+    {
+      "when": "sections of one product",
+      "use": "Sidebar",
+      "why": "sections are navigation within a product, always in view; a switcher hides them behind a button for the sake of a move people make every minute"
+    },
+    {
+      "when": "choosing a workspace or an account inside the same product",
+      "use": "MenuTrigger",
+      "why": "that changes what the product shows, not which product it is — a menu of choices, not a set of places"
+    },
+    {
+      "when": "jumping to anything by name, products included",
+      "use": "CommandPalette",
+      "why": "search reaches every page by typing; the switcher is for recognising a product's mark"
+    }
+  ],
+  "composition": {
+    "order": ["AppSwitcher"],
+    "note": "Goes in Header's `end`, before the account. `apps` is the suite, in the order people look for them; `currentApp` names this product's `id`. `label` names the button, its tooltip and the panel. `footer` takes a Link to every app or to managing access.",
+    "example": "<Header brand={…} end={<><AppSwitcher currentApp=\"ops\" apps={[{ id: 'ops', name: 'Ops', href: '/' }, { id: 'docs', name: 'Docs', href: 'https://docs.example' }]} /><Avatar … /></>} />"
+  },
+  "slots": {
+    "footer": {
+      "accepts": "Link",
+      "note": "one link under the grid, centred"
+    }
+  },
+  "a11y": {
+    "requires": [
+      "a `label` in the product's language when it is not English — it is the button's only name, the icon being nine dots"
+    ],
+    "guarantees": [
+      "the button is named by `label`, \"Apps\" by default, with a tooltip showing it; `aria-expanded` says whether the panel is open",
+      "the panel is a dialog named by `label`: focus moves into it and stays there, and Escape or a click outside closes it and gives focus back to the button",
+      "each product is a link, reached with Tab, so it opens in a new tab with a modifier and its address can be copied",
+      "the product you are in is `aria-current=\"true\"` and drawn with a border as well as a tint",
+      "a product's `description` is its link's accessible description",
+      "a press on a product closes the panel, so a same-document route does not leave it open over the page it went to",
+      "in forced colours the current product's border is Highlight"
+    ],
+    "notes": [
+      "Not a `menu`: menu items would give up opening in a new tab and copying the address for arrow keys.",
+      "`icon` sits centred on a 40px tinted square, at its own size — a 24px icon suits. A product without one shows its initial there."
+    ]
+  },
+  "antiPatterns": [
+    {
+      "dont": "an AppSwitcher listing the sections of one product",
+      "do": "<Sidebar> with a NavItem each",
+      "why": "sections are moved between constantly and belong in view; a switcher is for the few moves between products"
+    },
+    {
+      "dont": "a Menu of products, each a MenuItem with an onAction that sets `location`",
+      "do": "<AppSwitcher apps={…} />",
+      "why": "menu items are not links: no new tab, no copied address, no status-bar URL"
+    },
+    {
+      "dont": "leaving out `currentApp`",
+      "do": "currentApp=\"ops\"",
+      "why": "without it nothing says which product you are in, and the grid reads as a list of elsewheres"
+    }
+  ]
+}

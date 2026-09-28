@@ -12,6 +12,30 @@
   "file": "gaLbGd0QNb1fUl6BjSpfBA",
   "exported": "2026-09-28",
   "components": {
+    ".App Switcher Tile": {
+      "page": "App Switcher",
+      "id": "1711:270",
+      "kind": "SET",
+      "props": {
+        "Description#1711:5": {
+          "type": "TEXT"
+        },
+        "Icon#1711:15": {
+          "type": "INSTANCE_SWAP"
+        },
+        "Name#1711:0": {
+          "type": "TEXT"
+        },
+        "Show Description#1711:10": {
+          "type": "BOOLEAN"
+        },
+        "State": {
+          "type": "VARIANT",
+          "options": ["Default", "Hover", "Current", "Focus"],
+          "default": "Default"
+        }
+      }
+    },
     ".Notification": {
       "page": "Notifications Panel",
       "id": "1611:267",
@@ -210,6 +234,19 @@
         },
         "Title#812:0": {
           "type": "TEXT"
+        }
+      }
+    },
+    "App Switcher": {
+      "page": "App Switcher",
+      "id": "1711:6649",
+      "kind": "COMPONENT",
+      "props": {
+        "Label#1711:20": {
+          "type": "TEXT"
+        },
+        "Show Footer#1711:21": {
+          "type": "BOOLEAN"
         }
       }
     },

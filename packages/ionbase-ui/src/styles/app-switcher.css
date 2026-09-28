@@ -1,0 +1,100 @@
+/*
+ * AppSwitcher
+ *
+ * A Popover (lg) holding a three-column grid of product links. The panel is
+ * Popover's; only the grid is drawn here.
+ */
+.ion-app-switcher__grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--spacing-4);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ion-app-switcher__app {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-4);
+  height: 100%;
+  padding: var(--spacing-12) var(--spacing-8);
+  border: var(--border-width-default) solid transparent;
+  border-radius: var(--radius-md);
+  color: var(--text-default);
+  text-align: center;
+  text-decoration: none;
+}
+
+.ion-app-switcher__app:hover {
+  background-color: var(--surface-hover);
+}
+
+.ion-app-switcher__app:focus-visible {
+  outline: var(--border-width-thick) solid var(--ring-focus);
+  outline-offset: 0;
+}
+
+/* Where you are: a border as well as the tint, so not by colour alone. */
+.ion-app-switcher__app[aria-current='true'] {
+  border-color: var(--border-primary-strong);
+  background-color: var(--surface-selected);
+}
+
+.ion-app-switcher__app[aria-current='true']:hover {
+  background-color: var(--surface-selected-hover);
+}
+
+.ion-app-switcher__icon {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: var(--spacing-40);
+  height: var(--spacing-40);
+  margin-bottom: var(--spacing-4);
+  border-radius: var(--radius-md);
+  background-color: var(--surface-primary-subtle);
+  color: var(--icon-primary);
+}
+
+/* A product without a mark: its initial, on the same square. */
+.ion-app-switcher__initial {
+  color: var(--text-primary);
+  font-size: var(--type-body-md);
+  line-height: var(--type-body-md-line-height);
+  font-weight: var(--font-weight-semibold);
+}
+
+.ion-app-switcher__name {
+  font-size: var(--type-body-sm);
+  line-height: var(--type-body-sm-line-height);
+  font-weight: var(--font-weight-medium);
+  overflow-wrap: anywhere;
+}
+
+.ion-app-switcher__description {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  color: var(--text-secondary);
+  font-size: var(--type-caption);
+  line-height: var(--type-caption-line-height);
+}
+
+.ion-app-switcher__footer {
+  display: flex;
+  justify-content: center;
+  padding-top: var(--spacing-12);
+  border-top: var(--border-width-default) solid var(--border-subtle);
+  font-size: var(--type-body-sm);
+  line-height: var(--type-body-sm-line-height);
+}
+
+@media (forced-colors: active) {
+  .ion-app-switcher__app[aria-current='true'] {
+    border-color: Highlight;
+  }
+}

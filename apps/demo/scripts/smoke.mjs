@@ -1311,6 +1311,126 @@ try {
   }
 
   /*
+   * AppSwitcher, in the Header before the account: "Apps" opens a dialog of
+   * the IonBase products, focused, Tab kept inside it. Ops is current and
+   * links home; the rest leave the demo. Escape gives focus back to the
+   * button; Ops pressed from Agents lands on Overview with the panel closed.
+   * axe on the panel; on a phone it fits the screen.
+   */
+  for (const [device, width, height] of [
+    ['desktop', 1280, 900],
+    ['mobile', 390, 844],
+  ]) {
+    const where = `app switcher (light, ${device})`;
+    if (skip(where)) continue;
+    const context = await browser.newContext({ viewport: { width, height } });
+    await context.addInitScript(() =>
+      localStorage.setItem(
+        'ionbase-ops:demo-settings',
+        JSON.stringify({ theme: 'light', latency: 0 }),
+      ),
+    );
+    const page = await context.newPage();
+    page.on('pageerror', (e) => fail(where, `exception: ${e.message}`));
+    try {
+      await page.goto(`${BASE}/#/agents`);
+      const button = page.getByRole('button', { name: 'Apps', exact: true });
+      await button.waitFor({ timeout: 10_000 });
+      if ((await button.getAttribute('aria-expanded')) !== 'false')
+        fail(where, 'the button does not say the panel is closed');
+
+      await button.click();
+      const dialog = page.getByRole('dialog', { name: 'Apps' });
+      await dialog.waitFor({ timeout: 5_000 });
+      if ((await button.getAttribute('aria-expanded')) !== 'true')
+        fail(where, 'the button does not say the panel is open');
+      const links = await dialog.getByRole('link').evaluateAll((all) =>
+        all.map((a) => ({
+          name: document.getElementById(a.getAttribute('aria-labelledby'))
+            ?.textContent,
+          href: a.getAttribute('href'),
+          current: a.getAttribute('aria-current'),
+        })),
+      );
+      const names = links.map((l) => l.name).join(', ');
+      if (names !== 'Ops, Docs, Billing, Status, Trust')
+        fail(where, `the products are ${names}`);
+      const current = links.filter((l) => l.current === 'true');
+      if (current.length !== 1 || current[0].name !== 'Ops')
+        fail(where, 'Ops is not the one current product');
+      if (!links[0].href?.startsWith('#/overview'))
+        fail(where, `Ops links to ${links[0].href}, not its home`);
+      if (links.slice(1).some((l) => !l.href?.startsWith('https://')))
+        fail(where, 'another product links inside the demo');
+
+      // Focus in the panel, and Tab kept there past the last product.
+      for (let i = 0; i < links.length + 2; i++) {
+        await page.keyboard.press('Tab');
+        const inside = await page.evaluate(() =>
+          document
+            .querySelector('[role="dialog"]')
+            ?.contains(document.activeElement),
+        );
+        if (!inside) {
+          fail(where, `Tab ${i + 1} left the panel`);
+          break;
+        }
+      }
+      const box = await dialog.boundingBox();
+      if (!box || box.x < 0 || box.x + box.width > width + 0.5)
+        fail(where, 'the panel runs off the screen');
+      if (
+        await page.evaluate(
+          () => document.documentElement.scrollWidth > window.innerWidth,
+        )
+      )
+        fail(where, 'the page scrolls sideways with the panel open');
+      if (device === 'desktop') {
+        await page.addScriptTag({ content: axeSource });
+        const violations = await page.evaluate(async () => {
+          const result = await window.axe.run(
+            document.querySelector('[role="dialog"]'),
+            { resultTypes: ['violations'] },
+          );
+          return result.violations.map(
+            (v) => `${v.impact} ${v.id} — ${v.nodes[0].target.join(' ')}`,
+          );
+        });
+        for (const v of violations) fail(where, `axe ${v} in the panel`);
+      }
+
+      await page.keyboard.press('Escape');
+      await dialog.waitFor({ state: 'detached' });
+      await page
+        .waitForFunction(
+          () => document.activeElement?.getAttribute('aria-label') === 'Apps',
+          null,
+          { timeout: 2_000 },
+        )
+        .catch(async () =>
+          fail(
+            where,
+            `Escape gave focus to ${await page.evaluate(
+              () =>
+                document.activeElement?.outerHTML.slice(0, 120) ?? 'nothing',
+            )}, not the button`,
+          ),
+        );
+
+      await button.click();
+      await dialog.getByRole('link', { name: 'Ops' }).click();
+      await page.waitForURL(/#\/overview/, { timeout: 5_000 });
+      await page.getByRole('heading', { level: 1, name: 'Overview' }).waitFor();
+      if (await page.getByRole('dialog', { name: 'Apps' }).count())
+        fail(where, 'the panel stayed open over Overview');
+    } catch (e) {
+      fail(where, `did not run: ${e.message.split('\n')[0]}`);
+    }
+    groupsChecked++;
+    await context.close();
+  }
+
+  /*
    * Tour, on Overview: offered by "Take the tour", never started for you.
    * Escape on the first step ends it unfinished — the button still says
    * "Take the tour". Taken through, each step is a dialog that takes focus,

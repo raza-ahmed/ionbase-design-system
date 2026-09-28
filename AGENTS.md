@@ -251,7 +251,16 @@ date pickers until ColorPicker, which shares the popover, had a story for it.
 
 CalendarPopover now passes `shouldContainFocus` to `<Overlay>`. Any new
 component that calls `usePopover` above its own `<Overlay>` needs the same.
-The stories `TabStaysInTheCalendar` and `TabStaysInThePopover` catch it.
+
+Popover itself had the same shape and the same leak, and fixing CalendarPopover
+did not find it: it was found in 0.132.0, by AppSwitcher's story that tabs past
+the last product. Every Popover (the demo's Notifications among them) let Tab
+leave for a page it had hidden from assistive tech. It passes
+`shouldContainFocus` now too. Modal and Drawer use `useModalOverlay`, and were
+checked: they contain focus. Combobox, MultiSelect and Menu do not want it.
+
+The stories `TabStaysInTheCalendar`, ColorPicker's `TabStaysInThePopover` and
+Popover's own `TabStaysInThePopover` catch it.
 
 ## A portalled overlay inherits nothing from where it was opened
 
