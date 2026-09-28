@@ -1,6 +1,6 @@
 import React from 'react';
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { expect, within } from 'storybook/test';
+import { expect, waitFor, within } from 'storybook/test';
 import { commands } from 'vitest/browser';
 import {
   AvatarGradient,
@@ -9,6 +9,7 @@ import {
   ChartLegend,
   Checkbox,
   Divider,
+  DualListbox,
   Logo,
   Pagination,
   Radio,
@@ -348,5 +349,37 @@ export const ASelectedRowIsHighlight: Story = {
     const [chosen] = canvasElement.querySelectorAll('tbody tr');
     await expect(css(chosen, 'background-color')).toBe(system('Highlight'));
     await expect(css(chosen, 'color')).toBe(system('HighlightText'));
+  },
+};
+
+/**
+ * A picked option is a background, which forced colours paint as the page,
+ * so a DualListbox would lose which options are about to move. It keeps an
+ * outline; an unpicked option has none.
+ */
+export const APickedOptionKeepsAnOutline: Story = {
+  render: () => (
+    <div style={{ width: 640 }}>
+      <DualListbox
+        label="Approvers"
+        options={[
+          { value: 'ada', label: 'Ada Reyes' },
+          { value: 'kwame', label: 'Kwame Mensah' },
+        ]}
+      />
+    </div>
+  ),
+  play: async ({ canvasElement }) => {
+    const c = within(canvasElement);
+    const available = c.getByRole('listbox', { name: 'Approvers Available' });
+    available.focus();
+    const [picked, other] = within(available).getAllByRole('option');
+    // Arriving in the list picks its first option.
+    await waitFor(() =>
+      expect(picked).toHaveAttribute('aria-selected', 'true'),
+    );
+    await forced();
+    await expect(css(picked, 'outline-style')).toBe('solid');
+    await expect(css(other, 'outline-style')).toBe('none');
   },
 };

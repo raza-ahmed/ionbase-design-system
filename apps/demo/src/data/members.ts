@@ -54,6 +54,23 @@ const members: Member[] = SEED.map(
   }),
 );
 
+/**
+ * Everyone, synchronously, for a field that picks among them — the approval
+ * order in Settings. A field's options are not a page's data: they are
+ * there when the field is.
+ */
+export function listMemberOptions(): Pick<
+  Member,
+  'id' | 'name' | 'team' | 'lastActiveMinutesAgo'
+>[] {
+  return members.map(({ id, name, team, lastActiveMinutesAgo }) => ({
+    id,
+    name,
+    team,
+    lastActiveMinutesAgo,
+  }));
+}
+
 export async function listMembers(
   settings: CallSettings,
   signal: AbortSignal,

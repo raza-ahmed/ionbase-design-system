@@ -54,6 +54,12 @@ export type { ToggleProps, ToggleSize, ToggleIntent } from './Toggle.js';
 export { Toolbar } from './Toolbar.js';
 export type { ToolbarProps, ToolbarOrientation } from './Toolbar.js';
 export { MultiSelect } from './MultiSelect.js';
+export { DualListbox } from './DualListbox.js';
+export type {
+  DualListboxProps,
+  DualListboxOption,
+  DualListboxLabels,
+} from './DualListbox.js';
 export type {
   MultiSelectProps,
   MultiSelectOption,

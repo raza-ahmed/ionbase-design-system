@@ -66,7 +66,7 @@
 
 ## P2 — build when a product asks
 
-- [ ] **DualListbox**
+- [x] **DualListbox** — two listboxes and the buttons between them, `isReorderable` for an order that means something, focus handed to what moved when a button disables, every move announced, stacking below 30rem of its own width; Figma Dual Listbox (Layout × State) and Dual Listbox Option; the demo's Approval order in Settings — 0.126.0
 - [ ] **TreeGrid** — _needs TreeView and Table: expandable rows_
 - [ ] **DateTimePicker** — decide component or pattern first
 - [ ] **ColorPicker**

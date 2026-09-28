@@ -1,0 +1,193 @@
+/*
+ * DualListbox — two listboxes and the buttons between them.
+ *
+ * Laid out on its own width, not the viewport's: a container query stacks
+ * the lists below 30rem, the same call SettingRow makes, so it stacks in a
+ * narrow panel on a wide screen too.
+ */
+.ion-dual-listbox {
+  container-type: inline-size;
+  min-inline-size: 0;
+}
+
+.ion-dual-listbox__body {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: stretch;
+  gap: var(--spacing-12);
+}
+
+.ion-dual-listbox__body--reorderable {
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr) auto;
+}
+
+.ion-dual-listbox__pane {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-6);
+  min-inline-size: 0;
+}
+
+.ion-dual-listbox__name {
+  color: var(--text-tertiary);
+  font-family: var(--font-family-sans);
+  font-size: var(--type-caption);
+  line-height: var(--type-caption-line-height);
+}
+
+.ion-dual-listbox__box {
+  position: relative;
+  background-color: var(--surface-default);
+  border: var(--border-width-default) solid var(--border-default);
+  border-radius: var(--radius-md);
+}
+
+.ion-field--error .ion-dual-listbox__pane:nth-child(3) .ion-dual-listbox__box {
+  border-color: var(--border-error);
+}
+
+/* A fixed height, so both lists line up and the longer one scrolls. */
+.ion-dual-listbox__list {
+  block-size: var(--ion-dual-listbox-height, 15rem);
+  margin: 0;
+  padding: var(--spacing-4);
+  overflow-y: auto;
+  border-radius: inherit;
+  list-style: none;
+  outline: none;
+}
+
+.ion-dual-listbox__list:focus-visible {
+  outline: var(--border-width-thick) solid var(--border-focus);
+  outline-offset: calc(-1 * var(--border-width-thick));
+}
+
+.ion-dual-listbox__option {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2);
+  min-block-size: var(--spacing-32);
+  justify-content: center;
+  padding: var(--spacing-6) var(--spacing-8);
+  border-radius: var(--radius-sm);
+  cursor: default;
+  outline: none;
+  user-select: none;
+}
+
+@media (hover: hover) {
+  .ion-dual-listbox__option:hover {
+    background-color: var(--surface-hover);
+  }
+}
+
+.ion-dual-listbox__option[data-selected='true'] {
+  background-color: var(--surface-selected);
+}
+
+@media (hover: hover) {
+  .ion-dual-listbox__option[data-selected='true']:hover {
+    background-color: var(--surface-selected-hover);
+  }
+}
+
+.ion-dual-listbox__option[data-focus-visible='true'] {
+  outline: var(--border-width-thick) solid var(--border-focus);
+  outline-offset: calc(-1 * var(--border-width-thick));
+}
+
+.ion-dual-listbox__option[data-disabled='true'] {
+  cursor: not-allowed;
+}
+
+.ion-dual-listbox__label {
+  color: var(--text-default);
+  font-family: var(--font-family-sans);
+  font-size: var(--type-body-sm);
+  line-height: var(--type-body-sm-line-height);
+  overflow-wrap: anywhere;
+}
+
+.ion-dual-listbox__option[data-selected='true'] .ion-dual-listbox__label {
+  font-weight: var(--font-weight-medium);
+}
+
+.ion-dual-listbox__description {
+  color: var(--text-tertiary);
+  font-family: var(--font-family-sans);
+  font-size: var(--type-caption);
+  line-height: var(--type-caption-line-height);
+  overflow-wrap: anywhere;
+}
+
+.ion-dual-listbox__option[data-disabled='true'] .ion-dual-listbox__label,
+.ion-dual-listbox__option[data-disabled='true'] .ion-dual-listbox__description,
+.ion-dual-listbox--disabled .ion-dual-listbox__name {
+  color: var(--text-disabled);
+}
+
+.ion-dual-listbox__empty {
+  position: absolute;
+  inset-block-start: 50%;
+  inset-inline: 0;
+  padding-inline: var(--spacing-12);
+  color: var(--text-tertiary);
+  font-family: var(--font-family-sans);
+  font-size: var(--type-body-sm);
+  line-height: var(--type-body-sm-line-height);
+  text-align: center;
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+.ion-dual-listbox__actions {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: var(--spacing-8);
+
+  /* Level with the boxes, not with the list names above them. */
+  padding-block-start: calc(var(--type-caption-line-height) + var(--spacing-6));
+}
+
+.ion-dual-listbox__across {
+  display: inline-flex;
+}
+
+/* Across is the reading direction: in RTL the lists swap sides. */
+.ion-dual-listbox__across:dir(rtl) {
+  transform: scaleX(-1);
+}
+
+@container (width < 30rem) {
+  .ion-dual-listbox__body,
+  .ion-dual-listbox__body--reorderable {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .ion-dual-listbox__actions {
+    flex-direction: row;
+    padding-block-start: 0;
+  }
+
+  /* Stacked, across is down and back is up. */
+  .ion-dual-listbox__across,
+  .ion-dual-listbox__across:dir(rtl) {
+    transform: rotate(90deg);
+  }
+
+  .ion-dual-listbox__list {
+    block-size: var(--ion-dual-listbox-height, 11rem);
+  }
+}
+
+@media (forced-colors: active) {
+  .ion-dual-listbox__option[data-selected='true'] {
+    outline: var(--border-width-default) solid;
+    outline-offset: calc(-1 * var(--border-width-default));
+  }
+
+  .ion-dual-listbox__option[data-focus-visible='true'] {
+    outline-width: var(--border-width-thick);
+  }
+}

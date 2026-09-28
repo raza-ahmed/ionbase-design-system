@@ -1,5 +1,69 @@
 # Changelog
 
+## 0.126.0 — 2026-09-28
+
+### DualListbox — choose some of many in two lists, with an order
+
+**`DualListbox`** is a form field with two listboxes side by side:
+**Available** and **Selected**. Buttons move options between them. With
+`isReorderable`, Move up and Move down set the chosen order.
+
+It is for a long selection reviewed whole, or an order that means something.
+A handful chosen with no order is still MultiSelect's job.
+
+**How it behaves:**
+
+- **Selection:** each list is one tab stop, using the listbox pattern's
+  recommended multiple selection. ↑ ↓ pick, Shift extends, Ctrl or ⌘ moves
+  without picking, Space toggles, and Ctrl+A picks all. A click picks one;
+  Shift- and Ctrl-click extend.
+- **Moving across:** Enter or a double click moves an option straight across.
+  What moved stays picked in its new list, so Move up can follow Add at once.
+  Several options move up or down as a block.
+- **Focus:** it stays on the button pressed. When the move disables that
+  button, focus goes to the first option that moved.
+- **Announcements:** every move is announced through a status region that is
+  always mounted, such as "2 moved to Selected" or "Kwame Mensah, 2 of 4".
+- **Form field:** `isRequired` and `isInvalid` go on the chosen list, which the
+  error message describes. `name` posts the values in their chosen order, and
+  a disabled option cannot be picked.
+- **Layout:** below 30rem of its own width the lists stack and the buttons
+  turn to point down and up. In RTL the lists swap sides. In forced colours a
+  picked option keeps an outline.
+- **Strings:** every string, including the announcements, can be replaced
+  through `labels`. The strings gate now counts 161.
+
+**Figma:** Dual Listbox is drawn on its own page:
+
+- **Axes:** Layout (Side by side, Stacked) × State (Default, Invalid,
+  Disabled), with Label, Description, Show Description and Reorderable.
+- **Parts:** it is built from Dual Listbox Option (Default, Picked, Focus,
+  Disabled) and Icon Button.
+- **Mapping:** it is mapped, and its code block is applied. The audit found
+  105 of 105 blocks in the file, and they are countersigned.
+
+**The demo:** Settings has a new Approval order field under Workspace
+defaults.
+
+- It lists who a new agent asks for approval, first to last.
+- It saves with the other defaults.
+- An invitation not yet accepted cannot be chosen.
+- An empty order is refused on save. Focus goes to the Approvers list.
+
+**Found on the way:** after Enter moved the focused option, Tab back into the
+list it left landed on nothing. The option had left the page without a blur,
+so the list still believed it had focus. Two pieces of code were also deleted
+when their mutations survived, because React Aria already does the job: moving
+a list's focus off a removed option, and keeping an empty list focusable.
+
+**Tests:**
+
+- 19 DualListbox stories.
+- A pseudo-localised story, an RTL story and a forced-colours story.
+- A smoke check on desktop and mobile.
+
+Mutations: 16 of 16 caught (9 in the component, 7 in the demo).
+
 ## 0.125.0 — 2026-09-28
 
 ### FilteredDataTable — the listing in the address

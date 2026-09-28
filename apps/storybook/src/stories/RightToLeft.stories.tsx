@@ -6,6 +6,7 @@ import {
   AvatarGroup,
   Button,
   DatePicker,
+  DualListbox,
   Pagination,
   Sidebar,
   SidebarItem,
@@ -432,5 +433,35 @@ export const FocusIsNotHiddenUnderTheHeldColumn: Story = {
     agent.focus();
     await settle();
     await expect(box(agent).right).toBeLessThanOrEqual(box(held).left + 1);
+  },
+};
+
+/**
+ * Two lists read from the right: Available is the right-hand one, Selected
+ * the left, and the arrow that moves across points left — the way the
+ * option goes.
+ */
+export const TwoListsReadFromTheRight: Story = {
+  render: () => (
+    <div style={{ width: 640 }}>
+      <DualListbox
+        label="Approvers"
+        options={[
+          { value: 'ada', label: 'Ada Reyes' },
+          { value: 'kwame', label: 'Kwame Mensah' },
+        ]}
+        defaultValue={['kwame']}
+      />
+    </div>
+  ),
+  play: async ({ canvasElement }) => {
+    const c = within(canvasElement);
+    const available = c.getByRole('listbox', { name: 'Approvers Available' });
+    const selected = c.getByRole('listbox', { name: 'Approvers Selected' });
+    await expect(box(available).left).toBeGreaterThan(box(selected).right);
+    const add = c.getByRole('button', { name: 'Add to selected' });
+    await expect(
+      Math.abs(turn(add.querySelector('.ion-dual-listbox__across')!)),
+    ).toBe(180);
   },
 };

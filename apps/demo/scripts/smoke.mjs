@@ -4590,6 +4590,175 @@ try {
   }
 
   /*
+   * DualListbox, as Settings' approval order. Pick in Everyone, Add: the
+   * person joins the end of Approvers, still picked, with focus on them and
+   * the move announced. Move up reorders and says where they are now. The
+   * order saves with the other defaults and survives leaving the page. An
+   * empty order is refused on save — the field says why, and focus goes to
+   * the Approvers list. An invitation not yet accepted cannot be picked. On
+   * a phone the lists stack. axe with the field in use.
+   */
+  for (const [device, width, height] of [
+    ['desktop', 1280, 900],
+    ['mobile', 390, 844],
+  ]) {
+    const where = `dual listbox (light, ${device})`;
+    if (skip(where)) continue;
+    const context = await browser.newContext({ viewport: { width, height } });
+    await context.addInitScript(() =>
+      localStorage.setItem(
+        'ionbase-ops:demo-settings',
+        JSON.stringify({ theme: 'light', latency: 0 }),
+      ),
+    );
+    const page = await context.newPage();
+    page.on('pageerror', (e) => fail(where, `exception: ${e.message}`));
+    const field = page.getByRole('group', { name: 'Approval order' });
+    const everyone = field.getByRole('listbox', {
+      name: 'Approval order Everyone',
+    });
+    const approvers = field.getByRole('listbox', {
+      name: 'Approval order Approvers',
+    });
+    const order = () =>
+      approvers
+        .getByRole('option')
+        .evaluateAll((os) =>
+          os.map(
+            (o) => o.querySelector('.ion-dual-listbox__label')?.textContent,
+          ),
+        );
+    const said = () =>
+      field.evaluate(
+        (g) =>
+          g
+            .querySelector(':scope > [role="status"]')
+            ?.textContent?.replace(/\u00a0/g, '') ?? '',
+      );
+    try {
+      await page.goto(`${BASE}/#/settings`);
+      await field.waitFor({ timeout: 10_000 });
+      await field.scrollIntoViewIfNeeded();
+      const start = await order();
+      if (JSON.stringify(start) !== '["Kwame Mensah","Ada Reyes"]')
+        fail(where, `the saved order is ${JSON.stringify(start)}`);
+
+      if (device === 'mobile') {
+        const a = await everyone.boundingBox();
+        const b = await approvers.boundingBox();
+        if (!a || !b || b.y < a.y + a.height)
+          fail(where, 'the lists did not stack on a phone');
+        if (
+          await page.evaluate(
+            () => document.documentElement.scrollWidth > window.innerWidth,
+          )
+        )
+          fail(where, 'the page scrolls sideways');
+      }
+
+      // An invitation not yet accepted cannot be picked.
+      const ravi = everyone.getByRole('option', { name: /^Ravi Kapoor/ });
+      if ((await ravi.getAttribute('aria-disabled')) !== 'true')
+        fail(where, 'an unaccepted invitation can be picked');
+
+      // Pick, Add: joins the end, still picked, focused, announced.
+      await everyone.getByRole('option', { name: /^Priya/ }).click();
+      await field.getByRole('button', { name: 'Add to approvers' }).click();
+      const priya = approvers.getByRole('option', { name: /^Priya/ });
+      await priya.waitFor({ timeout: 5_000 });
+      if (
+        JSON.stringify(await order()) !==
+        '["Kwame Mensah","Ada Reyes","Priya Natarajan"]'
+      )
+        fail(where, `after Add the order is ${JSON.stringify(await order())}`);
+      if ((await priya.getAttribute('aria-selected')) !== 'true')
+        fail(where, 'the added person is not still picked');
+      await page
+        .waitForFunction(
+          () => document.activeElement?.textContent?.startsWith('Priya'),
+          null,
+          { timeout: 2_000 },
+        )
+        .catch(() => fail(where, 'focus did not follow the added person'));
+      if ((await said()) !== '1 moved to Approvers')
+        fail(where, `Add said "${await said()}"`);
+
+      // Move up: second of three, and said so.
+      await field.getByRole('button', { name: 'Move up' }).click();
+      if (
+        JSON.stringify(await order()) !==
+        '["Kwame Mensah","Priya Natarajan","Ada Reyes"]'
+      )
+        fail(
+          where,
+          `after Move up the order is ${JSON.stringify(await order())}`,
+        );
+      if ((await said()) !== 'Priya Natarajan, 2 of 3')
+        fail(where, `Move up said "${await said()}"`);
+
+      await page.addScriptTag({ content: axeSource });
+      const violations = await page.evaluate(async () => {
+        const result = await window.axe.run(document, {
+          resultTypes: ['violations'],
+        });
+        return result.violations.map((v) => `${v.impact} ${v.id}`);
+      });
+      for (const v of violations) fail(where, `axe ${v}`);
+
+      // Saved with the other defaults; still there after leaving the page.
+      const bar = page.getByRole('region', { name: 'Unsaved changes' });
+      await bar.getByText('1 unsaved change').waitFor({ timeout: 5_000 });
+      await bar.getByRole('button', { name: 'Save changes' }).click();
+      await bar.waitFor({ state: 'detached', timeout: 5_000 });
+      await page.evaluate(() => {
+        window.location.hash = '#/overview';
+      });
+      await page.getByRole('heading', { name: 'Overview', level: 1 }).waitFor();
+      await page.evaluate(() => {
+        window.location.hash = '#/settings';
+      });
+      await field.waitFor({ timeout: 10_000 });
+      if (
+        JSON.stringify(await order()) !==
+        '["Kwame Mensah","Priya Natarajan","Ada Reyes"]'
+      )
+        fail(
+          where,
+          `the saved order came back as ${JSON.stringify(await order())}`,
+        );
+
+      // Empty: refused on save, said on the field, focus on Approvers.
+      await approvers.focus();
+      await page.keyboard.press('ControlOrMeta+a');
+      await field
+        .getByRole('button', { name: 'Remove from approvers' })
+        .click();
+      if ((await approvers.getByRole('option').count()) !== 0)
+        fail(where, 'Remove did not empty the approvers');
+      await page
+        .getByRole('region', { name: 'Unsaved changes' })
+        .getByRole('button', { name: 'Save changes' })
+        .click();
+      if ((await approvers.getAttribute('aria-invalid')) !== 'true')
+        fail(where, 'an empty order was not marked invalid');
+      const why = await approvers.evaluate((el) =>
+        (el.getAttribute('aria-describedby') ?? '')
+          .split(' ')
+          .map((id) => document.getElementById(id)?.textContent ?? '')
+          .join(' '),
+      );
+      if (!why.includes('Choose at least one approver.'))
+        fail(where, `the empty order is described as "${why}"`);
+      if (!(await approvers.evaluate((el) => el === document.activeElement)))
+        fail(where, 'focus did not go to the approvers list');
+    } catch (e) {
+      fail(where, `did not run: ${e.message.split('\n')[0]}`);
+    }
+    groupsChecked++;
+    await context.close();
+  }
+
+  /*
    * Timeline, as an agent's History on its Overview. An ordered list named
    * History, newest first; each event says what happened, who, and when in
    * a <time> with the exact instant; the markers are hidden. A purpose saved

@@ -11,6 +11,8 @@ export interface WorkspaceDefaults {
   retentionDays: '30' | '90' | '365';
   redactPii: boolean;
   approvalForNewAgents: boolean;
+  /** Members asked to approve, in the order they are asked. */
+  approvers: string[];
 }
 
 export interface WorkspaceSettings {
@@ -34,6 +36,7 @@ let server: WorkspaceSettings = {
     retentionDays: '90',
     redactPii: true,
     approvalForNewAgents: true,
+    approvers: ['usr_kwame', 'usr_ada'],
   },
   deletionScheduledFor: null,
 };

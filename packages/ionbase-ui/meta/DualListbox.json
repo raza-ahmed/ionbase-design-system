@@ -1,0 +1,101 @@
+{
+  "status": "stable",
+  "summary": "Choose some of many in two lists side by side — what is available, and what is chosen — with buttons that move options across, and optionally an order for what is chosen. A form field.",
+  "useWhen": [
+    "the chosen ORDER means something and must be set — who is asked to approve first, which source is searched first, the columns of an export",
+    "the chosen set is long and must be reviewed whole, not as tags that wrap",
+    "both sides need to be seen at once: what is left out matters as much as what is in"
+  ],
+  "useInstead": [
+    {
+      "when": "a handful chosen from a list, with no order",
+      "use": "MultiSelect",
+      "why": "one field with tags takes a line, where two lists take a panel; the lists earn their room only for a long selection or an order"
+    },
+    {
+      "when": "a few options, all visible at once, with no order",
+      "use": "CheckboxGroup",
+      "why": "a box per option is one click each and needs no second list"
+    },
+    {
+      "when": "hundreds of options, found by typing",
+      "use": "MultiSelect",
+      "why": "these lists do not filter; scrolling hundreds of rows to find one is slower than typing three letters"
+    },
+    {
+      "when": "choosing rows of a table to act on",
+      "use": "Table",
+      "why": "a selection for a bulk action is not a form value — the DataTable pattern's row selection is"
+    }
+  ],
+  "composition": {
+    "order": ["DualListbox"],
+    "note": "Pass every option in `options`, in the order Available should list them; `value` is the chosen ones, in their chosen order. Name what the lists hold through `labels` — \"Available\" and \"Selected\" become \"Everyone\" and \"Approvers\" — and the buttons with them (\"Add to approvers\"). `isReorderable` when the order is part of the value.",
+    "example": "<DualListbox label=\"Approval order\" description=\"Asked in this order. The next is asked if one does not answer in a day.\" options={people} value={approvers} onChange={setApprovers} isReorderable labels={{ available: 'Everyone', selected: 'Approvers', add: 'Add to approvers', remove: 'Remove from approvers' }} />"
+  },
+  "slots": {
+    "label": {
+      "accepts": "text",
+      "note": "names the field, and both lists with it — \"Approval order Available\""
+    },
+    "description": {
+      "accepts": "text",
+      "note": "what the choice does; say what the order means when there is one. Replaced by `errorMessage` while `isInvalid` is set"
+    },
+    "errorMessage": {
+      "accepts": "text",
+      "note": "shown only while `isInvalid` is set, and read with the chosen list"
+    },
+    "labels": {
+      "accepts": "text",
+      "note": "every string it shows or announces: the two lists' names, the four buttons, the empty text, and the announcements after a move"
+    }
+  },
+  "a11y": {
+    "requires": [
+      "`label` or `aria-label` — the field's name, which each list is named by, then which list it is",
+      "`labels.add` and `labels.remove` that name the list they move to, when the lists are renamed — \"Add to approvers\", not \"Add\""
+    ],
+    "guarantees": [
+      "a `group` named by the label and described by the helper text, holding two `listbox`es, each `aria-multiselectable` and one tab stop",
+      "the listbox pattern's recommended multiple selection: ↑ ↓ move and select, Shift+↑ ↓ extend, Ctrl or ⌘ with ↑ ↓ moves without selecting and Space toggles, Ctrl+A picks every option; a click picks one, Shift- and Ctrl-click extend; Home and End go to the ends; typing jumps to a matching label",
+      "Enter or a double click moves an option straight across",
+      "four icon-only Buttons, each named by `labels` and disabled while there is nothing for it to do",
+      "what moved stays picked in the list it moved to, so Move up can follow Add at once",
+      "focus stays on the button pressed; when the move leaves it disabled, focus goes to the first option that moved",
+      "every move is announced through a `status` region that is always in the page — \"2 moved to Selected\", \"Kwame Mensah, 2 of 4\"",
+      "a list with nothing in it stays a named, focusable listbox, described by `labels.empty`",
+      "`isRequired` and `isInvalid` are `aria-required` and `aria-invalid` on the chosen list, which the error message describes",
+      "a disabled option cannot be picked or moved; `isDisabled` disables every option and button",
+      "`name` posts each chosen value, in order, as a hidden input",
+      "below 30rem of its own width the lists stack, and the buttons turn to point down and up between them; in RTL the lists swap sides and the arrows follow",
+      "rows are at least 32px, above the 24px WCAG 2.2 target minimum; in forced colours the picked rows keep an outline"
+    ],
+    "notes": [
+      "`isReorderable` when the order is part of the value — Move up and Move down beside the chosen list. Without it the value is a set, kept in the order it was chosen.",
+      "The buttons act on what is picked in each list, not on where focus is — pick in Available, then press Add.",
+      "Picking and choosing are different: an option picked in Available is highlighted to be moved; only the Selected list is the value."
+    ]
+  },
+  "antiPatterns": [
+    {
+      "dont": "two Lists or two MultiSelects with buttons between them",
+      "do": "<DualListbox … />",
+      "why": "the moves, what stays picked, where focus goes and what is announced are the component; hand-built, each is left out"
+    },
+    {
+      "dont": "labels={{ selected: 'Approvers' }} with the buttons left as \"Add to selected\"",
+      "do": "rename the buttons with the list — `add: 'Add to approvers'`",
+      "why": "a button that names a list the screen does not show says nothing about where the option goes"
+    },
+    {
+      "dont": "a DualListbox for three or four options",
+      "do": "CheckboxGroup",
+      "why": "two lists and four buttons to pick among three things is more control than choice"
+    },
+    {
+      "dont": "an order that matters, with `isReorderable` left off",
+      "why": "the order is then whatever order they were added in, with no way to change it but removing and adding again"
+    }
+  ]
+}

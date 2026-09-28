@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { expect, userEvent, waitFor, within } from 'storybook/test';
+import { userEvent as browserUser } from 'vitest/browser';
 import {
   AgentActivity,
   AgentActivityStep,
@@ -11,6 +12,7 @@ import {
   CitationList,
   CitationListItem,
   CommandPalette,
+  DualListbox,
   ConfidenceIndicator,
   FileUpload,
   I18nProvider,
@@ -579,5 +581,65 @@ export const EverythingElse: Story = {
       m('noChange'),
       m('high'),
     );
+  },
+};
+
+/** Both lists' names, the four buttons, the empty text and each announcement. */
+export const DuelingLists: Story = {
+  render: () => (
+    <div style={{ width: 640 }}>
+      <DualListbox
+        aria-label={m('field')}
+        isReorderable
+        options={[
+          { value: 'a', label: m('a') },
+          { value: 'b', label: m('b') },
+        ]}
+        labels={{
+          available: m('available'),
+          selected: m('selected'),
+          add: m('add'),
+          remove: m('remove'),
+          moveUp: m('up'),
+          moveDown: m('down'),
+          empty: m('empty'),
+          moved: (n, list) => m(`moved ${n} ${list}`),
+          reordered: (labels, p, t) => m(`reordered ${labels[0]} ${p} ${t}`),
+        }}
+      />
+    </div>
+  ),
+  play: async ({ canvasElement }) => {
+    await expectNoEnglish(canvasElement);
+    await expectSaid(canvasElement, m('empty'));
+    const c = within(canvasElement);
+    // Enter moves the option focused on arriving; twice takes both across.
+    const [available] = c.getAllByRole('listbox');
+    const moveFirst = async () => {
+      available.focus();
+      await waitFor(() =>
+        expect(available.contains(document.activeElement)).toBe(true),
+      );
+      await waitFor(() =>
+        expect(document.activeElement?.getAttribute('role')).toBe('option'),
+      );
+      await userEvent.keyboard('{Enter}');
+      // Focus follows the option into the other list before anything else.
+      await waitFor(() =>
+        expect(
+          c.getAllByRole('listbox')[1].contains(document.activeElement),
+        ).toBe(true),
+      );
+    };
+    await moveFirst();
+    await moveFirst();
+    await expectSaid(canvasElement, m(`moved 1 ${m('selected')}`));
+    const [, selected] = c.getAllByRole('listbox');
+    // A pointer's click picks; a virtual one — a screen reader's — moves,
+    // as Enter does.
+    await browserUser.click(within(selected).getAllByRole('option')[1]);
+    await browserUser.click(c.getByRole('button', { name: m('up') }));
+    await expectSaid(canvasElement, m(`reordered ${m('b')} 1 2`));
+    await expectNoEnglish(canvasElement);
   },
 };

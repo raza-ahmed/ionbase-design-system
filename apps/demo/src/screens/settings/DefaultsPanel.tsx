@@ -6,6 +6,7 @@ import {
   Card,
   Checkbox,
   CheckboxGroup,
+  DualListbox,
   Link,
   Radio,
   RadioGroup,
@@ -14,6 +15,7 @@ import {
   Toggletip,
 } from 'ionbase-ui';
 
+import { listMemberOptions } from '../../data/members';
 import { saveDefaults, type WorkspaceDefaults } from '../../data/settings';
 import { useDemoSettings } from '../../lib/demo-settings';
 import { href } from '../../lib/router';
@@ -26,6 +28,15 @@ const MODEL_OPTIONS = [
 ];
 
 const SAFEGUARDS = ['redactPii', 'approvalForNewAgents'] as const;
+
+/* Everyone who can be asked. An invitation not yet accepted cannot answer. */
+const APPROVER_OPTIONS = listMemberOptions().map((m) => ({
+  value: m.id,
+  label: m.name,
+  description:
+    m.lastActiveMinutesAgo === null ? 'Invited, not joined yet' : m.team,
+  isDisabled: m.lastActiveMinutesAgo === null,
+}));
 
 /**
  * Save-together half of the pattern: Checkboxes and Radios, never Toggles, and a
@@ -46,12 +57,16 @@ export function DefaultsPanel({
     Partial<Record<keyof WorkspaceDefaults, string>>
   >({});
   const [announcement, setAnnouncement] = useState('');
+  // Checked on save, then as it changes — the Form pattern's rule.
+  const [triedToSave, setTriedToSave] = useState(false);
+  const noApprovers = !!draft && draft.approvers.length === 0;
 
   const disabled = !draft || saving;
   const dirtyKeys =
     draft && saved
       ? (Object.keys(draft) as (keyof WorkspaceDefaults)[]).filter(
-          (k) => draft[k] !== saved[k],
+          // By value: the approvers are a list, a new one on every change.
+          (k) => JSON.stringify(draft[k]) !== JSON.stringify(saved[k]),
         )
       : [];
   const set = (patch: Partial<WorkspaceDefaults>) =>
@@ -59,6 +74,16 @@ export function DefaultsPanel({
 
   async function save() {
     if (!draft) return;
+    if (noApprovers) {
+      // Refused here, not by the server: the field says why, and focus goes
+      // to the list that needs an entry.
+      setTriedToSave(true);
+      setAnnouncement('');
+      document
+        .querySelectorAll<HTMLElement>('#d-approvers [role="listbox"]')[1]
+        ?.focus();
+      return;
+    }
     setSaving(true);
     setError(null);
     try {
@@ -153,6 +178,28 @@ export function DefaultsPanel({
         </Checkbox>
       </CheckboxGroup>
 
+      {/* The order is the setting: who is asked first, and who next. */}
+      <DualListbox
+        id="d-approvers"
+        label="Approval order"
+        description="Who a new agent asks when it needs approval, in this order. The next is asked if one does not answer within a day."
+        options={APPROVER_OPTIONS}
+        value={draft?.approvers ?? []}
+        onChange={(approvers) => set({ approvers })}
+        isReorderable
+        isDisabled={disabled}
+        isRequired
+        isInvalid={triedToSave && noApprovers}
+        errorMessage="Choose at least one approver."
+        labels={{
+          available: 'Everyone',
+          selected: 'Approvers',
+          add: 'Add to approvers',
+          remove: 'Remove from approvers',
+          empty: 'No one yet',
+        }}
+      />
+
       {dirtyKeys.length > 0 && (
         <div
           className="demo-savebar"
@@ -173,6 +220,7 @@ export function DefaultsPanel({
               isDisabled={saving}
               onClick={() => {
                 setDraft(saved);
+                setTriedToSave(false);
                 setRejected({});
                 setError(null);
               }}

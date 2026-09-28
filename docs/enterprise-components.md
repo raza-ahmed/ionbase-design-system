@@ -58,7 +58,7 @@ IonBase column names the component that covers it.
 | Select                            |   ●    |  ●  |  ●   | `Select`                        |
 | Combobox (single)                 |   ●    |  ◐  |  ●   | `Combobox`                      |
 | Multi-select                      |   ●    |  ◐  |  ●   | `MultiSelect`                   |
-| Dual listbox / dueling picklist   |        |     |  ●   | —                               |
+| Dual listbox / dueling picklist   |        |     |  ●   | `DualListbox`                   |
 | Checkbox                          |   ●    |  ●  |  ●   | `Checkbox`                      |
 | Checkbox group                    |   ●    |     |  ●   | `CheckboxGroup`                 |
 | Radio / radio group               |   ●    |  ●  |  ●   | `Radio`, `RadioGroup`           |
@@ -258,7 +258,7 @@ is to build:
 
 ### P2
 
-- **DualListbox** (SLDS dueling picklist, MUI transfer list)
+- **DualListbox** (SLDS dueling picklist, MUI transfer list) — shipped 0.126.0.
 - **TreeGrid** — hierarchical rows in a table. Depends on TreeView and Table work.
 - **DateTimePicker** — probably a pattern over `DatePicker` + `TimeField`; decide first.
 - **ColorPicker**
