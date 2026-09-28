@@ -1,5 +1,65 @@
 # Changelog
 
+## 0.134.0 — 2026-09-28
+
+### SplitPane — two panes, and a divider a person moves
+
+**`SplitPane`** is two panes with a divider between them, moved by dragging
+or with the arrow keys. It is for two views read across, where which one
+needs the room depends on the reader: a request and its response, a source
+and its preview. The meta sends detail that opens and closes to SidePanel,
+columns nobody resizes to Grid, and one narrow table column to TableCell's
+`resize`.
+
+**How it behaves:**
+
+- **The divider** follows the ARIA window-splitter pattern, as Table's column
+  resize does. It is a focusable `separator` named by `label` ("Resize the
+  API request"). Its value is the first pane's share, bounded by `minSize`
+  and `maxSize` (20 and 80 by default), and `aria-controls` points at that
+  pane.
+- **Keys:** the arrows along its axis move it 2%, or 10% with Shift. Home and
+  End go to the bounds. Enter and a double-click put it back at
+  `defaultSize`. The arrow moves the divider the way it points, so side by
+  side in a right-to-left page → shrinks the first pane.
+- **Drag:** a drag moves it with the pointer held, and selects no text.
+- **Percent, not pixels:** the share survives a window resize, and the
+  announced value means something without the width. `size` and
+  `onSizeChange` control it, for a caller that keeps it.
+- **Panes:** `orientation` is `horizontal` (side by side) or `vertical`
+  (stacked, needing a height). Each pane scrolls on its own, and its content
+  cannot widen it. There are 12px either side of the divider.
+- **Narrow screens:** at `collapse` (mobile by default, or tablet, or never)
+  a side-by-side split stacks and the divider is removed, from the tab order
+  too.
+- **Seen at 3:1:** the line is a border, and a border says nothing about
+  moving. A grip at its middle in icon/secondary does. Focused or dragged,
+  both turn to border/focus, and in forced colours to Highlight.
+- **No built-in strings:** `label` is the only name.
+
+**Figma:** Split Pane, on a page of its own. It has Orientation (Horizontal,
+Vertical) × State (Default, Hover, Focus), with the Start and End panes, the
+line, the grip, and on Focus the ring. It is mapped (State is the divider's
+CSS) and its block is applied. The audit found 113 of 113 blocks in the file,
+and they are countersigned.
+
+**The demo:** Settings → Advanced → API access shows the API request beside
+the response it returns, in a SplitPane. The divider starts at 55%, is
+bounded 30–70%, and stacks below the tablet breakpoint. The SettingsPanel
+pattern says the same, and SidePanelLayout's meta points here for two panes
+that stay.
+
+**Tests:**
+
+- 13 SplitPane stories.
+- One in Forced colours.
+- A smoke check on desktop, tablet and phone. On desktop it checks the named
+  divider at 55%, ArrowRight widening the request, End stopping at 70%, and
+  axe. On tablet and phone it checks that the panes stack with no divider
+  and nothing sideways.
+
+Mutations: 25 of 25 caught (21 in the library, 4 in the demo).
+
 ## 0.133.0 — 2026-09-28
 
 ### Calendar — one month in the page

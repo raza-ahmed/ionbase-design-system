@@ -74,7 +74,7 @@
 - [x] **Coachmark / guided tour** — `Coachmark`, a non-modal dialog pointing at a target by id, which it rings and scrolls to, taking focus because it opens only when asked; `Tour`, Coachmarks in a sequence with the count, Back, Next and Done, skipping targets not drawn, and `onComplete` for Done only; Figma Coachmark (Placement × Step) and an example step; the demo's Take the tour on Overview and What's new? in Settings — 0.131.0
 - [x] **AppSwitcher** — `AppSwitcher`, the nine-dot button and a Popover of product links, the current one `aria-current="true"` with a border as well as the tint, closing on a press; Popover now contains focus; Figma App Switcher and a private tile (four states); the demo's Header, between the bell and the account — 0.132.0
 - [x] **Calendar** — `Calendar`, the inline single-date calendar with its own label, surface and helper text, `YYYY-MM-DD` in and out, keeping its chosen day marked when disabled; neighbouring months' days hidden in every calendar again; Figma Calendar (Default, Invalid, Disabled), the pickers' panel renamed Calendar Popover; the demo's Pause until… on an agent — 0.133.0
-- [ ] **SplitPane**
+- [x] **SplitPane** — `SplitPane`, two panes and a focusable separator (the window-splitter pattern) whose value is the first pane's share in percent: arrows along its axis, Shift for more, Home and End, Enter and a double-click to put it back, a drag; a grip at 3:1; stacked at `collapse`; Figma Split Pane (Orientation × State); the demo's API request beside its response in Settings — 0.134.0
 
 ## Patterns
 

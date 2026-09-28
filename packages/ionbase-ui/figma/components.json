@@ -2435,6 +2435,23 @@
         }
       }
     },
+    "Split Pane": {
+      "page": "Split Pane",
+      "id": "1719:286",
+      "kind": "SET",
+      "props": {
+        "Orientation": {
+          "type": "VARIANT",
+          "options": ["Horizontal", "Vertical"],
+          "default": "Horizontal"
+        },
+        "State": {
+          "type": "VARIANT",
+          "options": ["Default", "Hover", "Focus"],
+          "default": "Default"
+        }
+      }
+    },
     "Stat Group": {
       "page": "Stat Tile",
       "id": "1412:344",

@@ -1,0 +1,184 @@
+/*
+ * SplitPane
+ *
+ * Two panes and the divider between them. The first pane's share comes in as
+ * `--ion-split-pane-size`; the second takes the rest. Each pane scrolls on
+ * its own, and neither can be widened by what is in it (`min-width: 0`).
+ *
+ * The divider is one line of border/default with a 16px target around it,
+ * and a grip at its middle in icon/secondary — the line alone is a border,
+ * and says nothing about being movable; the grip does, at 3:1. The line goes
+ * to border/strong on hover, and both to border/focus while focused or
+ * dragged.
+ */
+.ion-split-pane {
+  display: flex;
+  min-width: 0;
+  min-height: 0;
+}
+
+.ion-split-pane--vertical {
+  flex-direction: column;
+  height: 100%;
+}
+
+.ion-split-pane__pane {
+  min-width: 0;
+  min-height: 0;
+  overflow: auto;
+}
+
+.ion-split-pane__start {
+  flex: 0 0 var(--ion-split-pane-size, 50%);
+}
+
+.ion-split-pane__end {
+  flex: 1 1 0;
+}
+
+/* Room either side of the divider, so neither pane's content touches it. */
+.ion-split-pane--horizontal > .ion-split-pane__start {
+  padding-inline-end: var(--spacing-12);
+}
+
+.ion-split-pane--horizontal > .ion-split-pane__end {
+  padding-inline-start: var(--spacing-12);
+}
+
+.ion-split-pane--vertical > .ion-split-pane__start {
+  padding-block-end: var(--spacing-12);
+}
+
+.ion-split-pane--vertical > .ion-split-pane__end {
+  padding-block-start: var(--spacing-12);
+}
+
+.ion-split-pane__divider {
+  position: relative;
+  flex: none;
+  background-color: var(--border-default);
+  touch-action: none;
+}
+
+.ion-split-pane--horizontal > .ion-split-pane__divider {
+  width: var(--border-width-default);
+  cursor: col-resize;
+}
+
+.ion-split-pane--vertical > .ion-split-pane__divider {
+  height: var(--border-width-default);
+  cursor: row-resize;
+}
+
+/* The target: 16px across the line, centred on it. */
+.ion-split-pane__divider::before {
+  position: absolute;
+  z-index: 1;
+  content: '';
+}
+
+.ion-split-pane--horizontal > .ion-split-pane__divider::before {
+  top: 0;
+  bottom: 0;
+  inset-inline-start: calc(var(--spacing-8) * -1);
+  width: var(--spacing-16);
+}
+
+.ion-split-pane--vertical > .ion-split-pane__divider::before {
+  inset-inline: 0;
+  top: calc(var(--spacing-8) * -1);
+  height: var(--spacing-16);
+}
+
+/* The grip: a short bar across the middle of the line. */
+.ion-split-pane__divider::after {
+  position: absolute;
+  inset: 50% auto auto 50%;
+  border-radius: var(--radius-full);
+  background-color: var(--icon-secondary);
+  content: '';
+  translate: -50% -50%;
+}
+
+.ion-split-pane--horizontal > .ion-split-pane__divider::after {
+  width: var(--spacing-4);
+  height: var(--spacing-24);
+}
+
+.ion-split-pane--vertical > .ion-split-pane__divider::after {
+  width: var(--spacing-24);
+  height: var(--spacing-4);
+}
+
+.ion-split-pane__divider:focus-visible::after,
+.ion-split-pane__divider[data-resizing='true']::after {
+  background-color: var(--border-focus);
+}
+
+@media (hover: hover) {
+  .ion-split-pane__divider:hover {
+    background-color: var(--border-strong);
+  }
+}
+
+.ion-split-pane__divider:focus-visible,
+.ion-split-pane__divider[data-resizing='true'] {
+  background-color: var(--border-focus);
+}
+
+.ion-split-pane__divider:focus-visible {
+  outline: var(--border-width-thick) solid var(--ring-focus);
+  outline-offset: var(--border-width-thick);
+}
+
+/*
+ * Stacked at the collapse breakpoint, Grid's: the divider goes, and with it
+ * its tab stop, and each pane takes the height its content needs.
+ */
+@media (width <= 1023px) {
+  .ion-split-pane--collapse-tablet {
+    flex-direction: column;
+    gap: var(--spacing-12);
+  }
+
+  .ion-split-pane--collapse-tablet > .ion-split-pane__divider {
+    display: none;
+  }
+
+  .ion-split-pane--collapse-tablet > .ion-split-pane__pane {
+    flex: none;
+    padding: 0;
+    overflow: visible;
+  }
+}
+
+@media (width <= 767px) {
+  .ion-split-pane--collapse-mobile {
+    flex-direction: column;
+    gap: var(--spacing-12);
+  }
+
+  .ion-split-pane--collapse-mobile > .ion-split-pane__divider {
+    display: none;
+  }
+
+  .ion-split-pane--collapse-mobile > .ion-split-pane__pane {
+    flex: none;
+    padding: 0;
+    overflow: visible;
+  }
+}
+
+@media (forced-colors: active) {
+  .ion-split-pane__divider,
+  .ion-split-pane__divider::after {
+    background-color: CanvasText;
+  }
+
+  .ion-split-pane__divider:focus-visible,
+  .ion-split-pane__divider[data-resizing='true'],
+  .ion-split-pane__divider:focus-visible::after,
+  .ion-split-pane__divider[data-resizing='true']::after {
+    background-color: Highlight;
+  }
+}

@@ -19,7 +19,7 @@
   ],
   "file": "gaLbGd0QNb1fUl6BjSpfBA",
   "appliedOn": "2026-09-28",
-  "verifiedInFigma": 112,
+  "verifiedInFigma": 113,
   "applied": {
     "1661:272": {
       "figmaComponent": "AI Label",
@@ -580,6 +580,11 @@
       "figmaComponent": "Calendar",
       "component": "Calendar",
       "hash": "642f2be7e90406a0"
+    },
+    "1719:286": {
+      "figmaComponent": "Split Pane",
+      "component": "SplitPane",
+      "hash": "5f7f5668122a23a8"
     }
   }
 }
