@@ -177,6 +177,23 @@ has an action performs the action instead of selecting it. So under
 `selectionBehavior: 'replace'` it opens a row that a mouse would select. Use
 `vitest/browser`'s real click for any test about what a press selects.
 
+## A focused option taken out of the page fires no blur
+
+DualListbox moves options between two listboxes. When Enter moves the
+focused option, that option leaves the page. An element removed while focused
+fires no `blur`, so the list it left still believes it has focus. The next
+time that list is focused, `useSelectableCollection` sees it already focused,
+returns early, and focuses no option: Tab lands on the list and Enter does
+nothing. DualListbox calls `selectionManager.setFocused(false)` on the list
+options leave. The Enter path of the pseudo-localised story catches it.
+
+Two things React Aria 3.50 already does, so they need no code. Both were
+written, then deleted when their mutations survived:
+
+- **It moves a list's focused option to the next one** when the focused one
+  is removed from the collection.
+- **It keeps an empty collection focusable,** with `tabIndex` 0.
+
 ## A context menu's events are not what they look like
 
 Two things about `contextmenu` that ContextMenu had to learn by failing:

@@ -66,29 +66,6 @@
         }
       }
     },
-    "AI Label": {
-      "page": "AI Label",
-      "id": "1661:272",
-      "kind": "SET",
-      "props": {
-        "Explanation#1661:5": {
-          "type": "TEXT"
-        },
-        "Show Edited#1661:0": {
-          "type": "BOOLEAN"
-        },
-        "Size": {
-          "type": "VARIANT",
-          "options": ["Medium", "Small"],
-          "default": "Medium"
-        },
-        "State": {
-          "type": "VARIANT",
-          "options": ["Closed", "Open"],
-          "default": "Closed"
-        }
-      }
-    },
     "Accordion": {
       "page": "Accordion",
       "id": "1360:267",
@@ -163,6 +140,29 @@
         },
         "Stopping Label#1156:10": {
           "type": "TEXT"
+        }
+      }
+    },
+    "AI Label": {
+      "page": "AI Label",
+      "id": "1661:272",
+      "kind": "SET",
+      "props": {
+        "Explanation#1661:5": {
+          "type": "TEXT"
+        },
+        "Show Edited#1661:0": {
+          "type": "BOOLEAN"
+        },
+        "Size": {
+          "type": "VARIANT",
+          "options": ["Medium", "Small"],
+          "default": "Medium"
+        },
+        "State": {
+          "type": "VARIANT",
+          "options": ["Closed", "Open"],
+          "default": "Closed"
         }
       }
     },
@@ -1009,6 +1009,63 @@
         },
         "Title#1365:0": {
           "type": "TEXT"
+        }
+      }
+    },
+    "Dual Listbox": {
+      "page": "Dual Listbox",
+      "id": "1680:527",
+      "kind": "SET",
+      "props": {
+        "Label#1680:0": {
+          "type": "TEXT",
+          "default": "Approval order"
+        },
+        "Description#1680:7": {
+          "type": "TEXT",
+          "default": "Asked in this order. The next is asked if one does not answer in a day."
+        },
+        "Show Description#1680:14": {
+          "type": "BOOLEAN",
+          "default": true
+        },
+        "Reorderable#1680:21": {
+          "type": "BOOLEAN",
+          "default": true
+        },
+        "Layout": {
+          "type": "VARIANT",
+          "options": ["Side by side", "Stacked"],
+          "default": "Side by side"
+        },
+        "State": {
+          "type": "VARIANT",
+          "options": ["Default", "Invalid", "Disabled"],
+          "default": "Default"
+        }
+      }
+    },
+    "Dual Listbox Option": {
+      "page": "Dual Listbox",
+      "id": "1679:254",
+      "kind": "SET",
+      "props": {
+        "Label#1679:0": {
+          "type": "TEXT",
+          "default": "Kwame Mensah"
+        },
+        "Description#1679:5": {
+          "type": "TEXT",
+          "default": "Platform"
+        },
+        "Show Description#1679:10": {
+          "type": "BOOLEAN",
+          "default": true
+        },
+        "State": {
+          "type": "VARIANT",
+          "options": ["Default", "Picked", "Focus", "Disabled"],
+          "default": "Default"
         }
       }
     },
