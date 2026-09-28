@@ -21,6 +21,8 @@ import { Search } from 'ionbase-icons/icons/search';
 
 import { subscribeWorkspaceNotice, workspaceNotice } from '../data/settings';
 import { formatDay } from '../lib/dates';
+import { useDemoSettings } from '../lib/demo-settings';
+import { useOnline } from '../lib/online';
 import { href, type Route } from '../lib/router';
 import { AppCommands } from './AppCommands';
 import { DemoControls } from './DemoControls';
@@ -52,6 +54,19 @@ export function AppShell({
     workspaceNotice,
   );
 
+  /*
+   * The connection. A Banner inserted with its message is not reliably
+   * announced, so the words go through a status region that is always here;
+   * it says "Back online" once the Banner goes. Empty until the first change,
+   * so nothing is read on load.
+   */
+  const online = useOnline();
+  const { role } = useDemoSettings();
+  const [wasOffline, setWasOffline] = useState(false);
+  useEffect(() => {
+    if (!online) setWasOffline(true);
+  }, [online]);
+
   return (
     <div className="demo-app">
       {/*
@@ -67,12 +82,30 @@ export function AppShell({
        * is cancelled, so it has no dismissKey; the maintenance notice, once
        * dismissed, stays dismissed in this browser.
        */}
+      <span className="ion-visually-hidden" role="status">
+        {!online ? 'You’re offline' : wasOffline ? 'Back online' : ''}
+      </span>
       <div className="demo-banners">
+        {/*
+          The FullPageError pattern's offline case, for a page that loaded:
+          what is on screen stays, and this says why nothing new arrives.
+        */}
+        {!online && (
+          <Banner intent="warning" title="You’re offline">
+            What’s on screen stays readable. Changes can’t be saved until you’re
+            back online.
+          </Banner>
+        )}
         {notice.deletionScheduledFor && (
           <Banner
             intent="warning"
             title={`${notice.workspaceName} will be deleted on ${formatDay(notice.deletionScheduledFor)}`}
-            actions={<Link href={href('settings')}>Review in Settings</Link>}
+            // Only an admin can open Settings, so only an admin is sent there.
+            actions={
+              role === 'admin' && (
+                <Link href={href('settings')}>Review in Settings</Link>
+              )
+            }
           >
             Agents are paused until then.
           </Banner>

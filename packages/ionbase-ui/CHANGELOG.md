@@ -1,5 +1,64 @@
 # Changelog
 
+## 0.123.0 — 2026-09-28
+
+### FullPageError — a pattern for the page that cannot be shown
+
+**`patterns/FullPageError.json`** covers four kinds: not found (404), no
+access (403), failed (a load or a render crash, 500) and offline. Each says a
+different thing, because each has a different fix, and each goes inside the
+shell: only `<main>` changes. The recipe's rules:
+
+- The PageHeader keeps the page's name.
+- A page-size EmptyState gives the true reason.
+- There is one action most likely to fix it, and a way to somewhere that works.
+- A failure carries a reference to quote, with a CopyButton.
+- 404, not 403, for a record the user could not already know exists.
+- Navigation hides what the role cannot open.
+
+PageShell's error state now points to it. The pattern composes only existing
+components, so there is no new code in the package.
+
+**The demo follows it:**
+
+- **One `FullPageError` component** now draws the unknown address, a missing
+  agent, a missing run, and the agent and Settings pages failing to load.
+- **An error boundary inside the shell** catches a render crash. Reload page
+  resets it, and a failed retry gets a new reference. The presenter's Screen
+  state has a new Crash option.
+- **A "Signed in as" control, Admin or Member.** A member is not offered
+  Settings in the navigation, the command palette or the deletion Banner, and
+  gets the 403 page at its address.
+- **Real offline paths:**
+  - The pretend API refuses requests while offline.
+  - The shell shows a Banner over a page that loaded, and says "You're
+    offline" and "Back online" through an always-mounted status region.
+  - A page that cannot load shows the offline kind and loads by itself when
+    the connection returns. That covers a refused request, and a page whose
+    code never downloaded.
+
+**Found on the way.** The first cut showed "This page stopped working" to
+anyone who went offline before opening Settings. A lazily loaded page that
+cannot download surfaces as a render error, and the boundary took it for a
+crash. The boundary now tells a download failure apart, and reloads rather
+than resets, because a browser may remember a failed import.
+
+The boundary was first keyed by the route. That made an agent's Overview and
+Runs tabs two pages, so every tab switch mounted and fetched the agent again.
+It is keyed by the page now, and a smoke check holds it.
+
+**Tests:** a smoke check, in one pass on desktop.
+
+- Each kind's words and document title.
+- The shell staying up, and <main> named by its h1.
+- A member not being offered Settings.
+- The crash reference changing on a failed retry, and Reload page recovering
+  once the cause is gone.
+- Both offline paths recovering by themselves.
+- axe on each kind.
+
+Mutations: 11 of 11 caught.
+
 ## 0.122.0 — 2026-09-28
 
 ### Density — the fourth cross-cutting audit

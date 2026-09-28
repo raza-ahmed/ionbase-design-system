@@ -29,6 +29,7 @@ import { getOverview } from '../data/api';
 import { defaultRange, type Kpi, type OverviewData } from '../data/overview';
 import { addDays, today } from '../lib/dates';
 import { useDemoSettings } from '../lib/demo-settings';
+import { isOffline } from '../lib/online';
 import { href } from '../lib/router';
 import { useResource } from '../lib/use-resource';
 import { RunHeatmap } from '../local/charts/RunHeatmap';
@@ -88,8 +89,18 @@ export function Overview() {
           reason="error"
           size="page"
           headingLevel={2}
-          title="The overview couldn't load"
-          description={`${overview.error.message} Your agents are unaffected — only this page's metrics are missing.`}
+          // Not FullPageError: the header's date range still works. The
+          // pattern's words, though — offline is its own kind.
+          title={
+            isOffline(overview.error)
+              ? 'You’re offline'
+              : "The overview couldn't load"
+          }
+          description={
+            isOffline(overview.error)
+              ? 'The overview needs a connection to load. It will load by itself when you’re back online.'
+              : `${overview.error.message} Your agents are unaffected — only this page's metrics are missing.`
+          }
           action={
             <Button
               variant="secondary"

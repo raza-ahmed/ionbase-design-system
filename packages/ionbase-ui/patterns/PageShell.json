@@ -54,7 +54,7 @@
       "why": "a blank content region with working chrome reads as a failed load"
     },
     "error": {
-      "must": "Keep the shell and the PageHeader. Put the error beneath the header inside <main>, with a retry and a way back to somewhere that works.",
+      "must": "Keep the shell and the PageHeader. Put the error beneath the header inside <main>, with a retry and a way back to somewhere that works. When the whole page cannot be shown — not found, no access, failed, offline — follow the FullPageError pattern, which does this.",
       "why": "a full-page error strands the user with no navigation, so their only option is the browser's back button"
     }
   },

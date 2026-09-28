@@ -9,6 +9,7 @@ import { ShieldCheck } from 'ionbase-icons/icons/shield-check';
 
 import { listAgentLinks, TEAMS } from '../data/agents';
 import { listWaitingRuns } from '../data/runs';
+import { useDemoSettings, type Role } from '../lib/demo-settings';
 import { navigate, type Route } from '../lib/router';
 
 const ic = (as: typeof Bot) => <Icon as={as} size="sm" />;
@@ -16,7 +17,7 @@ const teamLabel = (team: string) =>
   TEAMS.find((t) => t.value === team)?.label ?? team;
 
 /** Every command, rebuilt from the current data each time the palette opens. */
-function buildCommands(): CommandPaletteItem[] {
+function buildCommands(role: Role): CommandPaletteItem[] {
   const go = (
     route: Route,
     label: string,
@@ -51,7 +52,10 @@ function buildCommands(): CommandPaletteItem[] {
     go('assistant', 'Assistant', MessageSquare, ['chat', 'ask']),
     go('agents', 'Agents', Bot),
     go('runs', 'Runs', ListChecks, ['history']),
-    go('settings', 'Settings', Settings, ['preferences', 'workspace']),
+    // Nothing the account cannot open: a member is not offered Settings.
+    ...(role === 'admin'
+      ? [go('settings', 'Settings', Settings, ['preferences', 'workspace'])]
+      : []),
     ...listAgentLinks().map((a) => ({
       id: `route:agents/${a.id}`,
       label: `Open ${a.name}`,
@@ -73,12 +77,13 @@ export function AppCommands({
   isOpen: boolean;
   onOpenChange: (isOpen: boolean) => void;
 }) {
+  const { role } = useDemoSettings();
   return (
     <CommandPalette
       label="Search and commands"
       placeholder="Search agents, pages and actions…"
       // Built only while open: the list reads the data as it is right now.
-      commands={isOpen ? buildCommands() : []}
+      commands={isOpen ? buildCommands(role) : []}
       isOpen={isOpen}
       onOpenChange={onOpenChange}
       onAction={(id) => navigate(id.slice('route:'.length) as Route)}

@@ -6,6 +6,7 @@ import {
   useDemoSettings,
   type ForcedState,
   type Latency,
+  type Role,
 } from '../lib/demo-settings';
 
 const STATES: { value: ForcedState; label: string }[] = [
@@ -14,6 +15,12 @@ const STATES: { value: ForcedState; label: string }[] = [
   { value: 'empty', label: 'Empty' },
   { value: 'error', label: 'Error' },
   { value: 'partial', label: 'Partial failure' },
+  { value: 'crash', label: 'Crash' },
+];
+
+const ROLES: { value: Role; label: string }[] = [
+  { value: 'admin', label: 'Workspace admin' },
+  { value: 'member', label: 'Member' },
 ];
 
 const LATENCIES: { value: string; label: string }[] = [
@@ -29,7 +36,7 @@ const LATENCIES: { value: string; label: string }[] = [
  * the button itself, so nobody takes a simulated outage for a real one.
  */
 export function DemoControls() {
-  const { theme, state, latency, direction, update } = useDemoSettings();
+  const { theme, state, latency, direction, role, update } = useDemoSettings();
   const [open, setOpen] = useState(false);
   const forced = STATES.find((s) => s.value === state);
 
@@ -58,6 +65,13 @@ export function DemoControls() {
               onChange={(e) =>
                 update({ latency: Number(e.target.value) as Latency })
               }
+            />
+            <Select
+              size="sm"
+              label="Signed in as"
+              options={ROLES}
+              value={role}
+              onChange={(e) => update({ role: e.target.value as Role })}
             />
             <Toggle
               size="sm"

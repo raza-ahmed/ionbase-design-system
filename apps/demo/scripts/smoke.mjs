@@ -2355,11 +2355,21 @@ try {
       if (saved.text !== next) fail(where, `the purpose is "${saved.text}"`);
       if (saved.said !== 'Purpose saved') fail(where, 'the save was not said');
 
-      // The agent's own tabs, not the sidebar's Overview.
+      // The agent's own tabs, not the sidebar's Overview. They are one page:
+      // switching keeps it mounted, so the heading is the same element.
+      await page.evaluate(() => {
+        window.__agentHeading = document.querySelector('main h1');
+      });
       const tabs = page.getByRole('navigation', { name: /sections$/ });
       await tabs.getByRole('link', { name: 'Runs', exact: true }).click();
       await tabs.getByRole('link', { name: 'Overview', exact: true }).click();
       await backToView('after coming back to Overview');
+      if (
+        !(await page.evaluate(
+          () => window.__agentHeading === document.querySelector('main h1'),
+        ))
+      )
+        fail(where, 'switching tabs mounted the agent page again');
       if (
         (await page.locator('.ion-inline-edit__value').textContent()) !== next
       )
@@ -3923,6 +3933,199 @@ try {
     } catch (e) {
       fail(where, `did not run: ${e.message.split('\n')[0]}`);
     }
+    groupsChecked++;
+    await context.close();
+  }
+
+  /*
+   * FullPageError: the four kinds, each inside the shell. 404, an unknown
+   * address. 403, a member arriving at Settings by its address, having not
+   * been offered it in the navigation. 500, a page that throws, with a
+   * reference to quote that changes on a failed retry, and a Reload page that
+   * recovers once the cause is gone. Offline, a Banner over a loaded page and
+   * the offline kind for one that could not load — which loads by itself when
+   * the connection returns. axe on each.
+   */
+  check: {
+    const where = 'full page error (light, desktop)';
+    if (skip(where)) break check;
+    const context = await browser.newContext({
+      viewport: { width: 1280, height: 900 },
+    });
+    await context.addInitScript(() => {
+      const saved = JSON.parse(
+        localStorage.getItem('ionbase-ops:demo-settings') ?? '{}',
+      );
+      localStorage.setItem(
+        'ionbase-ops:demo-settings',
+        JSON.stringify({ theme: 'light', latency: 0, role: 'admin', ...saved }),
+      );
+    });
+    const page = await context.newPage();
+    const kind = () =>
+      page.locator('[data-page-error]').getAttribute('data-page-error', {
+        timeout: 5_000,
+      });
+    const headings = () => page.locator('main h1, main h2').allTextContents();
+    const shellIntact = async (label) => {
+      if (!(await page.getByRole('button', { name: 'Search' }).count()))
+        fail(where, `${label}: the Header is gone`);
+      if (!(await page.getByRole('link', { name: 'Overview' }).count()))
+        fail(where, `${label}: the navigation is gone`);
+      const named = await page.evaluate(() => {
+        const main = document.querySelector('main');
+        const id = main?.getAttribute('aria-labelledby');
+        const h1 = main?.querySelector('h1');
+        return !!id && h1?.id === id;
+      });
+      if (!named) fail(where, `${label}: <main> is not named by its h1`);
+    };
+    const axe = async (label) => {
+      await page.addScriptTag({ content: axeSource });
+      const violations = await page.evaluate(async () => {
+        const result = await window.axe.run(document, {
+          resultTypes: ['violations'],
+        });
+        return result.violations.map((v) => `${v.impact} ${v.id}`);
+      });
+      for (const v of violations) fail(where, `${label}: axe ${v}`);
+    };
+    const demoState = async (value) => {
+      await page.getByRole('button', { name: 'Demo' }).click();
+      await page.getByLabel('Screen state').selectOption(value);
+      await page.keyboard.press('Escape');
+    };
+    try {
+      // 404
+      await page.goto(`${BASE}/#/no-such-page`);
+      if ((await kind()) !== 'not-found')
+        fail(where, '404: not the not-found kind');
+      const h404 = await headings();
+      if (
+        h404[0] !== 'Page not found' ||
+        !h404.includes('There is no page at this address')
+      )
+        fail(where, `404 says ${JSON.stringify(h404)}`);
+      if ((await page.title()) !== 'Page not found · Ionbase Ops')
+        fail(where, `404 document title is "${await page.title()}"`);
+      await shellIntact('404');
+      await axe('404');
+
+      // 403 — a member: no Settings offered, and its address refused.
+      await page.evaluate(() => {
+        const s = JSON.parse(localStorage.getItem('ionbase-ops:demo-settings'));
+        localStorage.setItem(
+          'ionbase-ops:demo-settings',
+          JSON.stringify({ ...s, role: 'member' }),
+        );
+      });
+      await page.goto(`${BASE}/#/overview`);
+      await page.reload();
+      await page.getByRole('link', { name: 'Overview' }).first().waitFor();
+      if (await page.getByRole('link', { name: 'Settings' }).count())
+        fail(where, '403: a member is offered Settings in the navigation');
+      await page.goto(`${BASE}/#/settings`);
+      if ((await kind()) !== 'no-access')
+        fail(where, '403: not the no-access kind');
+      const h403 = await headings();
+      if (!h403.includes('You don’t have access to workspace settings'))
+        fail(where, `403 says ${JSON.stringify(h403)}`);
+      if (await page.getByText('Danger zone').count())
+        fail(where, '403: the settings themselves are showing');
+      await shellIntact('403');
+      await axe('403');
+      await page.evaluate(() => {
+        const s = JSON.parse(localStorage.getItem('ionbase-ops:demo-settings'));
+        localStorage.setItem(
+          'ionbase-ops:demo-settings',
+          JSON.stringify({ ...s, role: 'admin' }),
+        );
+      });
+
+      // 500 — a page that throws while rendering.
+      await page.goto(`${BASE}/#/agents`);
+      await page.reload();
+      await page.getByRole('region', { name: 'Agents' }).waitFor();
+      await demoState('crash');
+      if ((await kind()) !== 'failed') fail(where, '500: not the failed kind');
+      const reference = () =>
+        page.locator('.demo-error-reference code').textContent();
+      const first = await reference();
+      if (!/^err_[A-Z0-9]{5}$/.test(first ?? ''))
+        fail(where, `500: no reference to quote ("${first}")`);
+      if (!(await page.getByRole('button', { name: 'Copy reference' }).count()))
+        fail(where, '500: the reference cannot be copied');
+      if ((await headings())[0] !== 'Agents')
+        fail(where, '500: the heading does not name the page');
+      await shellIntact('500');
+      await axe('500');
+      await page.getByRole('button', { name: 'Reload page' }).click();
+      const second = await reference();
+      if (second === first)
+        fail(where, '500: a failed retry kept the same reference');
+      await demoState('live');
+      await page.getByRole('button', { name: 'Reload page' }).click();
+      await page
+        .getByRole('region', { name: 'Agents' })
+        .waitFor({ timeout: 5_000 });
+      if (await page.locator('[data-page-error]').count())
+        fail(where, '500: Reload page did not recover once the cause was gone');
+
+      // Offline — a Banner over what loaded; the offline kind for what cannot.
+      // First a page whose code is here and whose data is refused: the agent
+      // is opened once online, so its chunk is loaded, then again offline.
+      await page.goto(`${BASE}/#/agents/agt_rs`);
+      await page.getByRole('heading', { level: 1 }).waitFor();
+      await page.goto(`${BASE}/#/overview`);
+      await page.getByRole('heading', { name: 'Overview', level: 1 }).waitFor();
+      await context.setOffline(true);
+      await page.evaluate(() => {
+        window.location.hash = '#/agents/agt_rs';
+      });
+      if ((await kind()) !== 'offline')
+        fail(where, 'offline data: not the offline kind');
+      await context.setOffline(false);
+      await page
+        .getByRole('heading', { name: 'History' })
+        .waitFor({ timeout: 10_000 })
+        .catch(() =>
+          fail(where, 'offline data: the page did not load when back online'),
+        );
+
+      // Then a page whose code never arrived.
+      await page.goto(`${BASE}/#/overview`);
+      await page.getByRole('heading', { name: 'Overview', level: 1 }).waitFor();
+      await context.setOffline(true);
+      await page
+        .getByText('What’s on screen stays readable')
+        .waitFor({ timeout: 5_000 });
+      if (
+        !(await page
+          .getByRole('heading', { name: 'Overview', level: 1 })
+          .count())
+      )
+        fail(where, 'offline: the loaded page was replaced');
+      const said = await page.evaluate(() =>
+        [...document.querySelectorAll('[role="status"]')]
+          .map((el) => el.textContent)
+          .join(' | '),
+      );
+      if (!said.includes('You’re offline'))
+        fail(where, `offline is not announced: "${said}"`);
+      await page.evaluate(() => {
+        window.location.hash = '#/settings';
+      });
+      if ((await kind()) !== 'offline')
+        fail(where, 'offline: not the offline kind');
+      await axe('offline');
+      await context.setOffline(false);
+      await page
+        .getByRole('heading', { name: 'Notifications' })
+        .waitFor({ timeout: 10_000 });
+    } catch (e) {
+      fail(where, `did not run: ${e.message.split('\n')[0]}`);
+    }
+    await context.setOffline(false);
     groupsChecked++;
     await context.close();
   }
