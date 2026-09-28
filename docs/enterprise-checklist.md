@@ -79,7 +79,7 @@
 ## Patterns
 
 - [x] **FullPageError** — 404, 403, 500 and offline as one pattern, always inside the shell; the demo's four kinds on one component, an error boundary, a Member role and real offline paths, with a smoke check of each — 0.123.0
-- [ ] **ListDetail** — _needs List and SidePanel_
+- [x] **ListDetail** — a List beside the selected record in a SidePanel: the selection follows focus and the panel follows it without taking focus (SidePanel `autoFocus`), the selection in the address and replaced rather than pushed, rows opened on a press below 768px; the demo's Members page — 0.124.0
 - [ ] **FilteredDataTable** — _needs SearchField, MultiSelect, Table: row selection_
 
 ## Cross-cutting audits

@@ -703,9 +703,9 @@ leave an approval pending fails `StopKeepsWhatWasDone`.
 
 ## Patterns — the tier that owns the states nothing else does
 
-`patterns/*.json` describes compositions. Seven for classic screens — `DataTable`,
+`patterns/*.json` describes compositions. Eight for classic screens — `DataTable`,
 `Form`, `PageShell`, `DestructiveConfirm`, `SettingsPanel`, `Wizard`,
-`FullPageError` — and three
+`FullPageError`, `ListDetail` — and three
 for the agentic tier: `AgentRun`, `HumanApproval`, `AssistantAnswer`. They are
 built and verified into `dist/meta/patterns/` by `scripts/build-patterns.mjs` and
 published beside the component pages.
@@ -792,6 +792,55 @@ ships.
 - both offline paths recovering by themselves when the connection returns:
   the refused request, and the page whose code never arrived;
 - axe on each kind.
+
+### ListDetail: a selection that follows focus — 28 Sep 2026
+
+**The shape.** A List beside the record selected in it, in a SidePanel. The
+demo's Members page is the example. At 768px and wider the List has
+`selectionMode="single"`, whose selection follows focus: Tab in and the first
+row is selected, ↓ selects the next, and the panel follows. The selection is
+in the address, `#/members/usr_ada`.
+
+**Found by probing before writing:** a single-selection List selects its
+first row when Tab arrives in it. React Aria's `replace` selection behaviour
+selects on focus. A SidePanel that opens then takes focus to its title, so
+the user is out of the list before pressing a key. That is why SidePanel
+gained `autoFocus` (0.124.0). With `autoFocus={false}` focus stays on the row,
+Tab reaches the panel next in the DOM, and Enter moves to the panel's title
+through `onAction`.
+
+**The traps:**
+
+1. **Push a history entry per selection, and Back walks the list.** Replace
+   it. Arrowing past ten rows would otherwise take ten Backs to leave.
+2. **The selection is part of the page, not a new page.** `pageOf` keys
+   `members/<id>` as `members`, the same as an agent's tabs in
+   FullPageError's trap 6. Otherwise every ↓ mounts the list again.
+3. **Below 768px the panel is a modal Drawer.** There the List has no
+   selection mode, and a row opens on a press. Otherwise tabbing into the
+   list opens a dialog.
+4. **Rows hold no controls.** A row that is a selection target and also holds
+   buttons cannot follow focus sensibly. The actions go in the panel. The
+   DataTable pattern is the other way round: a Table's rows hold links, so its
+   SidePanel opens from a Details button.
+5. **An unknown ID is not a 404.** The list loaded; one record in it did not.
+   The panel says so, and the list is the way forward.
+
+**Checked by the demo's smoke test:**
+
+- Desktop:
+  - Tab in, then ↓ ↓: focus stays on the row and the panel follows.
+  - Moving the selection adds no history entry and does not mount the list
+    again.
+  - Tab reaches the panel. Escape there returns focus to the row. Enter goes
+    into the panel.
+  - Back leaves the page.
+  - A deep link opens the panel without moving focus.
+  - A search hides the panel and brings it back.
+  - An unknown ID is said in the panel.
+  - In the `partial` state, the detail's own call fails in the panel alone.
+- Mobile: arriving in the list opens nothing, Enter opens the Drawer, and
+  closing it returns focus to the row.
 
 ---
 

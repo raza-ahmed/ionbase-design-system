@@ -1,5 +1,57 @@
 # Changelog
 
+## 0.124.0 — 2026-09-28
+
+### ListDetail — a list beside the record selected in it
+
+**`patterns/ListDetail.json`**: a List, and a SidePanel beside it showing the
+selected record. The recipe's rules:
+
+- **Wide screens:** `selectionMode="single"`. The selection follows focus, so
+  ↓ moves the detail with it. Nothing opens or closes.
+- **Below 768px,** where the panel is a Drawer: rows open on a press, never on
+  arrival.
+- **The selection is in the address.** Replace the history entry as it moves,
+  never push one, so Back leaves the page.
+- **Rows hold no controls.** Actions go in the panel.
+- **The detail loads in stages.** What the list already had shows at once.
+  The detail's own request loads, and fails, inside the panel alone.
+- **An unknown ID is said in the panel,** not as a 404, because the list
+  loaded.
+
+### SidePanel `autoFocus`
+
+A single-selection List selects its first row as Tab arrives. A SidePanel that
+opened then took focus to its title, pulling the user out of the list before
+they pressed a key. `autoFocus={false}` keeps focus where it is. Tab reaches
+the panel next in the DOM. The default stays `true`. As a Drawer, below
+`overlayBelow`, the panel is modal and always takes focus.
+
+### The demo's Members page
+
+A new page under Workspace, for both roles, in the navigation and the command
+palette:
+
+- 8 people, and the agents each one owns.
+- A search over the list.
+- An email with a CopyButton.
+- The `partial` state fails the agents call inside the panel, while the list
+  and the facts it had stay.
+
+**Tests:**
+
+- A SidePanel story: Tab into a following List, ↓, Tab into the panel, and
+  Escape back to the row.
+- A smoke check on desktop and mobile:
+  - focus staying on the row while the panel follows;
+  - no history entry per selection, and Back leaving the page;
+  - the list not mounting again;
+  - Enter going into the panel;
+  - a deep link, a search, an unknown ID and the partial state;
+  - on a phone, nothing opening on arrival.
+
+Mutations: 10 of 10 caught.
+
 ## 0.123.0 — 2026-09-28
 
 ### FullPageError — a pattern for the page that cannot be shown

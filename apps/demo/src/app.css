@@ -547,3 +547,34 @@ body {
   gap: var(--spacing-8);
   margin: 0;
 }
+
+/* Members — the ListDetail pattern. The search sits over the list only. */
+.demo-members-search {
+  max-inline-size: 24rem;
+}
+
+.demo-member-detail {
+  display: grid;
+  gap: var(--spacing-24);
+}
+
+.demo-member-agents {
+  display: grid;
+  gap: var(--spacing-8);
+}
+
+.demo-member-agent-list {
+  display: grid;
+  gap: var(--spacing-8);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.demo-member-agent-list li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-8);
+}

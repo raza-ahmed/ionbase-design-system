@@ -5,6 +5,7 @@ import { userEvent as browserUser } from 'vitest/browser';
 import {
   Badge,
   Button,
+  List,
   SidePanel,
   SidePanelLayout,
   Toggletip,
@@ -217,6 +218,74 @@ export const TabLeavesThePanel: Story = {
     await expect(
       canvas.getByRole('button', { name: 'After the layout' }),
     ).toHaveFocus();
+  },
+};
+
+/**
+ * The ListDetail pattern: a List whose selection follows focus, and a panel
+ * that shows the selected row without taking focus.
+ */
+function FollowingList() {
+  const [selected, setSelected] = useState<string | null>(null);
+  const run = RUNS.find((r) => r.id === selected);
+  return (
+    <>
+      <button type="button">Before the list</button>
+      <SidePanelLayout>
+        <List
+          aria-label="Runs"
+          selectionMode="single"
+          items={RUNS.map((r) => ({ id: r.id, label: r.task }))}
+          selectedKeys={selected ? [selected] : []}
+          onSelectionChange={(keys) => setSelected([...keys][0] ?? null)}
+        />
+        <SidePanel
+          overlayBelow={false}
+          size="sm"
+          autoFocus={false}
+          isOpen={!!run}
+          onOpenChange={(open) => !open && setSelected(null)}
+          title={run?.task}
+        >
+          <p>{run?.outcome}</p>
+        </SidePanel>
+      </SidePanelLayout>
+    </>
+  );
+}
+
+/**
+ * `autoFocus={false}`: tabbing into the list selects its first row and opens
+ * the panel, and focus stays on the row, so ↓ walks the list and the panel
+ * follows. Tab goes on into the panel; Escape there closes it and returns
+ * focus to the row.
+ */
+export const WithoutAutoFocusTheListKeepsFocus: Story = {
+  render: () => <FollowingList />,
+  play: async ({ canvas }) => {
+    canvas.getByRole('button', { name: 'Before the list' }).focus();
+    await userEvent.tab();
+    const first = canvas.getByRole('row', { name: /^Reconcile/ });
+    await expect(
+      canvas.getByRole('region', { name: 'Reconcile March invoices' }),
+    ).toBeInTheDocument();
+    await expect(first).toHaveFocus();
+
+    await userEvent.keyboard('{ArrowDown}');
+    const second = canvas.getByRole('row', { name: /^Draft refund/ });
+    await expect(
+      canvas.getByRole('region', { name: 'Draft refund replies' }),
+    ).toBeInTheDocument();
+    await expect(second).toHaveFocus();
+
+    await userEvent.tab();
+    await expect(
+      canvas.getByRole('button', { name: 'Close panel' }),
+    ).toHaveFocus();
+    await userEvent.keyboard('{Escape}');
+    await expect(canvas.queryByRole('region')).toBeNull();
+    await expect(second).toHaveFocus();
+    await expect(second).toHaveAttribute('aria-selected', 'false');
   },
 };
 

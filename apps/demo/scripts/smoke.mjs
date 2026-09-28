@@ -4131,6 +4131,219 @@ try {
   }
 
   /*
+   * ListDetail, as Members. Wide: the List's selection follows focus and the
+   * SidePanel beside it follows the selection without taking focus — Tab in,
+   * arrow down, read each; Tab reaches the panel, Escape there returns to the
+   * row, Enter goes into it. The selection is in the address, replaced not
+   * pushed, so Back leaves the page; a deep link opens it without moving
+   * focus, an unknown ID is said in the panel, a search hides it and brings
+   * it back. The detail's own call fails in the panel alone. Narrow: arriving
+   * in the list opens nothing, and a press opens the Drawer.
+   */
+  for (const [device, width, height] of [
+    ['desktop', 1280, 900],
+    ['mobile', 390, 844],
+  ]) {
+    const where = `list detail (light, ${device})`;
+    if (skip(where)) continue;
+    const context = await browser.newContext({ viewport: { width, height } });
+    await context.addInitScript(() =>
+      localStorage.setItem(
+        'ionbase-ops:demo-settings',
+        JSON.stringify({ theme: 'light', latency: 0 }),
+      ),
+    );
+    const page = await context.newPage();
+    page.on('pageerror', (e) => fail(where, `exception: ${e.message}`));
+    const hash = () => page.evaluate(() => window.location.hash);
+    const focused = () =>
+      page.evaluate(() => {
+        const el = document.activeElement;
+        return {
+          role: el?.getAttribute('role') ?? el?.tagName.toLowerCase(),
+          text: el?.textContent?.trim().slice(0, 40) ?? '',
+          inPanel: !!el?.closest('#member-panel, [role="dialog"]'),
+        };
+      });
+    const row = (name) =>
+      page.getByRole('row', { name: new RegExp(`^${name}`) });
+    const panel = (name) => page.getByRole('region', { name });
+    const axe = async (label) => {
+      await page.addScriptTag({ content: axeSource });
+      const violations = await page.evaluate(async () => {
+        const result = await window.axe.run(document, {
+          resultTypes: ['violations'],
+        });
+        return result.violations.map((v) => `${v.impact} ${v.id}`);
+      });
+      for (const v of violations) fail(where, `${label}: axe ${v}`);
+    };
+    const search = page.getByRole('searchbox', { name: 'Search members' });
+    try {
+      if (device === 'mobile') {
+        await page.goto(`${BASE}/#/members`);
+        await search.waitFor({ timeout: 10_000 });
+        await search.focus();
+        await page.keyboard.press('Tab');
+        await page.keyboard.press('ArrowDown');
+        const f = await focused();
+        if (f.role !== 'row' || !f.text.includes('Kwame'))
+          fail(where, `↓ in the list focused ${JSON.stringify(f)}`);
+        if (await page.getByRole('dialog').count())
+          fail(where, 'arriving in the list opened the Drawer');
+        if ((await hash()) !== '#/members')
+          fail(where, `arriving in the list selected: ${await hash()}`);
+        await page.keyboard.press('Enter');
+        const dialog = page.getByRole('dialog', { name: 'Kwame Mensah' });
+        await dialog.waitFor({ timeout: 5_000 });
+        await axe('drawer');
+        await page.keyboard.press('Escape');
+        await dialog.waitFor({ state: 'detached', timeout: 5_000 });
+        // Focus goes back a frame after the Drawer leaves.
+        await page
+          .waitForFunction(
+            () => document.activeElement?.getAttribute('role') === 'row',
+            null,
+            { timeout: 2_000 },
+          )
+          .catch(() => {});
+        const back = await focused();
+        if (back.role !== 'row' || !back.text.includes('Kwame'))
+          fail(
+            where,
+            `closing the Drawer left focus on ${JSON.stringify(back)}`,
+          );
+        if (
+          await page.evaluate(
+            () => document.documentElement.scrollWidth > window.innerWidth,
+          )
+        )
+          fail(where, 'the page scrolls sideways');
+      } else {
+        // Arrive from elsewhere, so Back has somewhere to go.
+        await page.goto(`${BASE}/#/overview`);
+        await page.getByRole('link', { name: 'Members' }).click();
+        await search.waitFor({ timeout: 10_000 });
+        const entries = await page.evaluate(() => window.history.length);
+        await page.evaluate(() => {
+          window.__membersList = document.querySelector('[role="grid"]');
+        });
+        if (await page.locator('#member-panel').count())
+          fail(where, 'a panel is open with nothing selected');
+
+        // Tab in: the first row is selected, the panel opens, focus stays.
+        await search.focus();
+        await page.keyboard.press('Tab');
+        await panel('Ada Reyes').waitFor({ timeout: 5_000 });
+        let f = await focused();
+        if (f.role !== 'row' || !f.text.includes('Ada'))
+          fail(where, `tabbing in focused ${JSON.stringify(f)}`);
+        if ((await hash()) !== '#/members/usr_ada')
+          fail(where, `tabbing in: the address is ${await hash()}`);
+
+        // ↓ ↓: the panel follows, focus stays on the row, no history.
+        await page.keyboard.press('ArrowDown');
+        await page.keyboard.press('ArrowDown');
+        await panel('Lin Zhou').waitFor({ timeout: 5_000 });
+        f = await focused();
+        if (f.role !== 'row' || !f.text.includes('Lin'))
+          fail(where, `after ↓ ↓ focus is on ${JSON.stringify(f)}`);
+        if ((await hash()) !== '#/members/usr_lin')
+          fail(where, `after ↓ ↓ the address is ${await hash()}`);
+        if ((await page.evaluate(() => window.history.length)) !== entries)
+          fail(where, 'moving the selection added history entries');
+        if (
+          !(await page.evaluate(
+            () =>
+              window.__membersList === document.querySelector('[role="grid"]'),
+          ))
+        )
+          fail(where, 'moving the selection mounted the list again');
+        await panel('Lin Zhou')
+          .getByRole('link')
+          .first()
+          .waitFor({ timeout: 5_000 });
+        await axe('panel open');
+
+        // Tab goes on into the panel; Escape there returns to the row.
+        await page.keyboard.press('Tab');
+        if (!(await focused()).inPanel)
+          fail(where, 'Tab from the list did not reach the panel');
+        await page.keyboard.press('Escape');
+        await panel('Lin Zhou').waitFor({ state: 'detached', timeout: 5_000 });
+        f = await focused();
+        if (f.role !== 'row' || !f.text.includes('Lin'))
+          fail(where, `Escape left focus on ${JSON.stringify(f)}`);
+        if ((await hash()) !== '#/members')
+          fail(where, `closing left the address at ${await hash()}`);
+
+        // Enter goes into the detail.
+        await page.keyboard.press('ArrowDown');
+        await panel('Priya Natarajan').waitFor({ timeout: 5_000 });
+        await page.keyboard.press('Enter');
+        f = await focused();
+        if (!f.inPanel || f.text !== 'Priya Natarajan')
+          fail(where, `Enter did not go into the detail: ${JSON.stringify(f)}`);
+
+        // Back leaves the page, not the last row.
+        await page.goBack();
+        await page
+          .getByRole('heading', { name: 'Overview', level: 1 })
+          .waitFor({ timeout: 5_000 })
+          .catch(() => fail(where, `Back went to ${page.url()}`));
+
+        // A deep link opens the panel and leaves focus where it was.
+        await page.goto(`${BASE}/#/members/usr_tomas`);
+        await page.reload();
+        await panel('Tomás Ortega').waitFor({ timeout: 10_000 });
+        if ((await focused()).inPanel)
+          fail(where, 'a deep link moved focus into the panel');
+        if ((await row('Tomás').getAttribute('aria-selected')) !== 'true')
+          fail(where, 'a deep link did not select its row');
+
+        // A search that hides the row hides its detail; clearing brings it back.
+        await search.fill('zzz');
+        await page
+          .getByText('No one matches “zzz”.')
+          .waitFor({ timeout: 5_000 });
+        if (await panel('Tomás Ortega').count())
+          fail(where, 'the panel stayed open for a row the search hid');
+        await search.fill('');
+        await panel('Tomás Ortega').waitFor({ timeout: 5_000 });
+
+        // An ID that matches no one: said in the panel, the list intact.
+        await page.goto(`${BASE}/#/members/usr_nobody`);
+        await page.reload();
+        await panel('Member not found')
+          .getByRole('heading', { name: 'There is no member with this ID' })
+          .waitFor({ timeout: 10_000 });
+        if ((await page.getByRole('row').count()) < 8)
+          fail(where, 'an unknown ID emptied the list');
+
+        // Partial: the detail's own call fails in the panel alone.
+        await page.getByRole('button', { name: /^Demo/ }).click();
+        await page.getByLabel('Screen state').selectOption('partial');
+        await page.keyboard.press('Escape');
+        await row('Ada').click();
+        const ada = panel('Ada Reyes');
+        await ada
+          .getByText('Their agents couldn’t load')
+          .or(ada.getByText("Their agents couldn't load"))
+          .waitFor({ timeout: 5_000 });
+        if (!(await ada.getByText('ada@ionbase.example').count()))
+          fail(where, 'partial: the facts the list had went with the agents');
+        if ((await page.getByRole('row').count()) < 8)
+          fail(where, 'partial: the list went with the detail');
+        await axe('partial');
+      }
+    } catch (e) {
+      fail(where, `did not run: ${e.message.split('\n')[0]}`);
+    }
+    groupsChecked++;
+    await context.close();
+  }
+
+  /*
    * Timeline, as an agent's History on its Overview. An ordered list named
    * History, newest first; each event says what happened, who, and when in
    * a <time> with the exact instant; the markers are hidden. A purpose saved
