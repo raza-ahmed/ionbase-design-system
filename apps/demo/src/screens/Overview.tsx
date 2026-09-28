@@ -21,19 +21,27 @@ import {
   TableHead,
   TableRow,
   Tabs,
+  TreeGrid,
   type DateRange,
+  type TreeGridColumn,
 } from 'ionbase-ui';
 import { RefreshCw } from 'ionbase-icons/icons/refresh-cw';
 
 import { getOverview } from '../data/api';
-import { defaultRange, type Kpi, type OverviewData } from '../data/overview';
+import {
+  defaultRange,
+  type Kpi,
+  type OverviewData,
+  type TokenUse,
+} from '../data/overview';
 import { addDays, today } from '../lib/dates';
 import { useDemoSettings } from '../lib/demo-settings';
 import { isOffline } from '../lib/online';
-import { href } from '../lib/router';
+import { href, navigate } from '../lib/router';
 import { useResource } from '../lib/use-resource';
 import { RunHeatmap } from '../local/charts/RunHeatmap';
 import { SuccessRateChart } from '../local/charts/SuccessRateChart';
+import { readListing, writeListing } from './agents/agent-query';
 import { ago, OUTCOME } from './runs/outcome';
 
 const PRESETS = [
@@ -52,6 +60,53 @@ const change = (k: Kpi) =>
   k.previous === 0 ? undefined : ((k.value - k.previous) / k.previous) * 100;
 
 const compact = new Intl.NumberFormat('en', { notation: 'compact' });
+const percent = new Intl.NumberFormat('en', {
+  style: 'percent',
+  maximumFractionDigits: 1,
+});
+
+const USE_COLUMNS = (total: number): TreeGridColumn<TokenUse>[] => [
+  { id: 'name', header: 'Team', cell: (r) => r.name },
+  {
+    id: 'runs',
+    header: 'Runs',
+    cell: (r) => r.runs.toLocaleString('en'),
+    align: 'end',
+  },
+  {
+    id: 'tokens',
+    header: 'Tokens',
+    cell: (r) => compact.format(r.tokens),
+    align: 'end',
+  },
+  {
+    id: 'share',
+    header: 'Share',
+    cell: (r) => percent.format(r.tokens / total),
+    align: 'end',
+  },
+];
+
+const findUse = (rows: TokenUse[], id: string): TokenUse | undefined => {
+  for (const r of rows) {
+    if (r.id === id) return r;
+    const found = r.children && findUse(r.children, id);
+    if (found) return found;
+  }
+};
+
+/**
+ * A team opens the Agents listing filtered to it; an agent, or one of its
+ * models, opens that agent.
+ */
+function openUse(rows: TokenUse[], id: string) {
+  const row = findUse(rows, id);
+  if (!row) return;
+  if (row.kind === 'team') {
+    const query = writeListing({ ...readListing(''), teams: [row.target] });
+    window.location.hash = `${href('agents')}?${query}`;
+  } else navigate(`agents/${row.target}`);
+}
 
 export function Overview() {
   const settings = useDemoSettings();
@@ -263,6 +318,17 @@ function OverviewReady({
           </ul>
         </Card>
       </Grid>
+
+      <Card title="Token use by team">
+        <TreeGrid
+          aria-label="Token use by team"
+          density="compact"
+          columns={USE_COLUMNS(data.tokenUse.reduce((a, t) => a + t.tokens, 0))}
+          items={data.tokenUse}
+          defaultExpandedKeys={data.tokenUse.slice(0, 1).map((t) => t.id)}
+          onAction={(id) => openUse(data.tokenUse, id)}
+        />
+      </Card>
 
       <Card
         title="Recent runs"

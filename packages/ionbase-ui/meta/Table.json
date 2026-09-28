@@ -15,6 +15,11 @@
       "why": "a table claims columns and a header; a one-column table is announced as one and has no row actions a keyboard can reach"
     },
     {
+      "when": "the rows nest — a total and the rows it is made of, each with the same columns",
+      "use": "TreeGrid",
+      "why": "indented rows in a Table carry no level and no expand keys; a TreeGrid is the treegrid pattern, drawn as a Table"
+    },
+    {
       "when": "it is a layout grid rather than data",
       "use": "CSS grid",
       "why": "a <table> announces row and column semantics that a layout does not have"

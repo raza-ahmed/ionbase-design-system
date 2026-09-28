@@ -19,7 +19,7 @@
   ],
   "file": "gaLbGd0QNb1fUl6BjSpfBA",
   "appliedOn": "2026-09-28",
-  "verifiedInFigma": 105,
+  "verifiedInFigma": 106,
   "applied": {
     "1661:272": {
       "figmaComponent": "AI Label",
@@ -535,6 +535,11 @@
       "figmaComponent": "Tree View",
       "component": "TreeView",
       "hash": "e2bc1e603a3f5c64"
+    },
+    "1688:1129": {
+      "figmaComponent": "Tree Grid",
+      "component": "TreeGrid",
+      "hash": "8caf5866bc8729e9"
     },
     "1637:287": {
       "figmaComponent": "Truncated Text",

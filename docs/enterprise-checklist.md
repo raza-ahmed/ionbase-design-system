@@ -67,7 +67,7 @@
 ## P2 — build when a product asks
 
 - [x] **DualListbox** — two listboxes and the buttons between them, `isReorderable` for an order that means something, focus handed to what moved when a button disables, every move announced, stacking below 30rem of its own width; Figma Dual Listbox (Layout × State) and Dual Listbox Option; the demo's Approval order in Settings — 0.126.0
-- [ ] **TreeGrid** — _needs TreeView and Table: expandable rows_
+- [x] **TreeGrid** — the WAI-ARIA treegrid on React Aria's tree-table state: one tab stop, → opens a row and then moves into its cells, ← comes back out, closes it and goes to its parent; rows named by their first column alone, a checkbox per row and a select-all that means every row, drawn as a Table; Figma Tree Grid (Selection) and Tree Grid Row (Kind × Level × State); the demo's Token use by team on Overview — 0.127.0
 - [ ] **DateTimePicker** — decide component or pattern first
 - [ ] **ColorPicker**
 - [ ] **ProgressRing**

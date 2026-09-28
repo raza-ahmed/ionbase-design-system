@@ -1,0 +1,140 @@
+/*
+ * TreeGrid
+ *
+ * Drawn by table.css — the container, density, header, row rules, hover and
+ * selected tint all come from `.ion-table`, so a tree grid beside a table
+ * reads as the same thing. This file adds only what the tree needs:
+ *
+ *   indent    level x spacing/20 before the first column's content, from
+ *             `--ion-tree-grid-level`, set on the cell
+ *   toggle    Table's 24px expander, turned 90deg when the row is open
+ *   spacer    the same 24px on a leaf, so every label at a level lines up
+ *   focus     the row, or the one cell, that has the grid's focus
+ */
+.ion-tree-grid__tree-cell {
+  --ion-tree-grid-level: 0;
+  --ion-tree-grid-indent: var(--spacing-20);
+}
+
+.ion-tree-grid__tree {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-4);
+  padding-inline-start: calc(
+    var(--ion-tree-grid-level) * var(--ion-tree-grid-indent)
+  );
+}
+
+.ion-tree-grid__toggle,
+.ion-tree-grid__spacer {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: var(--spacing-24);
+  height: var(--spacing-24);
+
+  /* Centred on the label's first line. */
+  margin-block: calc((var(--type-body-sm-line-height) - var(--spacing-24)) / 2);
+}
+
+.ion-tree-grid__toggle {
+  margin-inline: 0;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-xs);
+  background: none;
+  color: var(--icon-secondary);
+  cursor: pointer;
+}
+
+.ion-tree-grid__toggle svg {
+  width: var(--icon-size-sm);
+  height: var(--icon-size-sm);
+  transition: transform var(--ion-duration-base) var(--ion-ease-out);
+}
+
+/*
+ * Closed points the reading direction; open points down. Right-to-left turns
+ * it half round rather than mirroring it, so opening animates 180° to 90°.
+ */
+.ion-tree-grid__toggle--expanded svg {
+  transform: rotate(90deg);
+}
+
+.ion-tree-grid__toggle:dir(rtl):not(.ion-tree-grid__toggle--expanded) svg {
+  transform: rotate(180deg);
+}
+
+@media (hover: hover) {
+  .ion-tree-grid__toggle:hover {
+    background-color: var(--surface-hover);
+    color: var(--icon-default);
+  }
+}
+
+/*
+ * Wrapped between words only. `anywhere` let a narrow table shrink the name
+ * column to one letter a line while the figures kept their width; a word is
+ * as narrow as it goes, and past that the table's region scrolls sideways.
+ */
+.ion-tree-grid__label {
+  min-width: 0;
+  overflow-wrap: break-word;
+}
+
+/*
+ * The select cell is a control, not content: as narrow as its box. Its
+ * header cell is Table's `.ion-table__select` as well.
+ */
+.ion-table th.ion-tree-grid__select,
+.ion-table td.ion-tree-grid__select {
+  width: 1%;
+  padding-inline-end: 0;
+}
+
+.ion-tree-grid__select > span {
+  display: inline-flex;
+  vertical-align: middle;
+}
+
+/*
+ * Focus is drawn inside the row or cell: a table's rows sit edge to edge,
+ * and an outline outside one would be cut by its neighbour.
+ */
+.ion-tree-grid :is(tr, th, td) {
+  outline: none;
+}
+
+.ion-tree-grid tr[data-focus-visible='true'],
+.ion-tree-grid th[data-focus-visible='true'],
+.ion-tree-grid td[data-focus-visible='true'] {
+  outline: var(--border-width-thick) solid var(--border-focus);
+  outline-offset: calc(-1 * var(--border-width-thick));
+}
+
+.ion-tree-grid__empty {
+  text-align: center;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ion-tree-grid__toggle svg {
+    transition-duration: 1ms;
+  }
+}
+
+/*
+ * Forced colours paint a selected row Highlight and keep its own colours
+ * (index.css). On that fill the focus ring — blue on blue — and the grey
+ * chevron were gone; both take the row's text colour.
+ */
+@media (forced-colors: active) {
+  .ion-tree-grid tr[data-selected='true'][data-focus-visible='true'],
+  .ion-tree-grid tr[data-selected='true'] [data-focus-visible='true'] {
+    outline-color: HighlightText;
+  }
+
+  .ion-tree-grid tr[data-selected='true'] .ion-tree-grid__toggle {
+    color: HighlightText;
+  }
+}

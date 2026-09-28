@@ -101,7 +101,7 @@ IonBase column names the component that covers it.
 | Component                        | Carbon | M3  | SLDS | IonBase                                                                                                  |
 | -------------------------------- | :----: | :-: | :--: | -------------------------------------------------------------------------------------------------------- |
 | Data table                       |   ●    |     |  ●   | ● `Table`, `TableBatchBar`, `TableColumnsMenu`, expandable rows, sticky header and column, column resize |
-| Tree grid                        |        |     |  ●   | —                                                                                                        |
+| Tree grid                        |        |     |  ●   | `TreeGrid`                                                                                               |
 | List (selectable / actionable)   |   ●    |  ●  |  ◐   | `List`                                                                                                   |
 | Description list / record detail |   ◐    |     |  ●   | `DescriptionList`                                                                                        |
 | Card / tile                      |   ●    |  ●  |  ●   | `Card`, `FullCard`                                                                                       |
@@ -259,7 +259,7 @@ is to build:
 ### P2
 
 - **DualListbox** (SLDS dueling picklist, MUI transfer list) — shipped 0.126.0.
-- **TreeGrid** — hierarchical rows in a table. Depends on TreeView and Table work.
+- **TreeGrid** — hierarchical rows in a table. Depends on TreeView and Table work. — shipped 0.127.0.
 - **DateTimePicker** — probably a pattern over `DatePicker` + `TimeField`; decide first.
 - **ColorPicker**
 - **ProgressRing** — circular determinate progress.

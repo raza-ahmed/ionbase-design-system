@@ -1,6 +1,6 @@
 import React from 'react';
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { expect, userEvent, within } from 'storybook/test';
+import { expect, userEvent, waitFor, within } from 'storybook/test';
 import {
   Avatar,
   AvatarGroup,
@@ -24,6 +24,7 @@ import {
   Toggle,
   Toolbar,
   Tooltip,
+  TreeGrid,
   useLocale,
 } from 'ionbase-ui';
 
@@ -463,5 +464,44 @@ export const TwoListsReadFromTheRight: Story = {
     await expect(
       Math.abs(turn(add.querySelector('.ion-dual-listbox__across')!)),
     ).toBe(180);
+  },
+};
+
+/**
+ * A tree grid read from the right: its rows indent from the right, a closed
+ * row's chevron points left, the reading direction, and ← — not → — opens
+ * it. React Aria reads the direction from the locale.
+ */
+export const ATreeGridOpensLeftward: Story = {
+  render: () => (
+    <div style={{ width: 480 }}>
+      <TreeGrid
+        aria-label="Spend"
+        columns={[
+          { id: 'name', header: 'Agent', cell: (r) => r.id },
+          { id: 'cost', header: 'Cost', cell: () => '$1', align: 'end' },
+        ]}
+        items={[{ id: 'support', children: [{ id: 'refunds' }] }]}
+      />
+    </div>
+  ),
+  play: async ({ canvasElement }) => {
+    const c = within(canvasElement);
+    const chevron = c.getByRole('button', { name: /support/ });
+    await expect(Math.abs(turn(chevron.querySelector('svg')!))).toBe(180);
+    await userEvent.tab();
+    await userEvent.keyboard('{ArrowLeft}');
+    const child = await c.findByRole('row', { name: 'refunds' });
+    // Open points down, once the turn has run.
+    await waitFor(() => expect(turn(chevron.querySelector('svg')!)).toBe(90));
+    const label = (row: HTMLElement) =>
+      box(row.querySelector('.ion-tree-grid__label'));
+    // Indented from the right: the child's label ends left of its parent's.
+    await expect(label(child).right).toBeLessThan(
+      label(c.getByRole('row', { name: 'support' })).right,
+    );
+    // And → closes it again.
+    await userEvent.keyboard('{ArrowRight}');
+    await expect(c.queryByRole('row', { name: 'refunds' })).toBeNull();
   },
 };

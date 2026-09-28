@@ -4759,6 +4759,163 @@ try {
   }
 
   /*
+   * TreeGrid, as the Overview's token use: teams, their agents, and the
+   * models each agent called. The largest team is open, its agents at level
+   * 2 and their models not yet rendered. A team's runs are its agents' added
+   * up, and the teams' shares make the whole. One tab stop: ↓ goes to the
+   * first agent, → opens it onto its models, → again moves into its cells.
+   * Enter on an agent opens it; on a team, the Agents listing filtered to
+   * that team. Nothing sideways on a phone; axe.
+   */
+  for (const [device, width, height] of [
+    ['desktop', 1280, 900],
+    ['mobile', 390, 844],
+  ]) {
+    const where = `tree grid (light, ${device})`;
+    if (skip(where)) continue;
+    const context = await browser.newContext({ viewport: { width, height } });
+    await context.addInitScript(() =>
+      localStorage.setItem(
+        'ionbase-ops:demo-settings',
+        JSON.stringify({ theme: 'light', latency: 0 }),
+      ),
+    );
+    const page = await context.newPage();
+    page.on('pageerror', (e) => fail(where, `exception: ${e.message}`));
+    const grid = page.getByRole('treegrid', { name: 'Token use by team' });
+    /** Every rendered row: its level, whether it is open, and its cells. */
+    const rows = () =>
+      grid.evaluate((g) =>
+        [...g.querySelectorAll('tbody tr')].map((tr) => ({
+          level: Number(tr.getAttribute('aria-level')),
+          expanded: tr.getAttribute('aria-expanded'),
+          cells: [...tr.children].map((td) => td.textContent),
+        })),
+      );
+    const focusedRow = () =>
+      page.evaluate(() => {
+        const el = document.activeElement;
+        return el?.getAttribute('role') === 'row'
+          ? `${el.getAttribute('aria-level')} ${el.textContent}`
+          : `${el?.getAttribute('role')} ${el?.textContent}`;
+      });
+    /*
+     * `focus()` is a virtual focus to React Aria, which then moves it onto a
+     * row only once the page's transitions end; a key pressed before that
+     * lands on the <table> and does nothing. Tab moves it at once — this
+     * waits for what a Tab would have done.
+     */
+    const enterGrid = async () => {
+      await grid.focus();
+      await page.waitForFunction(
+        () => document.activeElement?.getAttribute('role') === 'row',
+        null,
+        { timeout: 5_000 },
+      );
+    };
+    try {
+      await page.goto(`${BASE}/#/overview`);
+      await grid.waitFor({ timeout: 10_000 });
+      await grid.scrollIntoViewIfNeeded();
+      const before = await rows();
+      const teams = before.filter((r) => r.level === 1);
+      if (teams.length < 3) fail(where, `only ${teams.length} teams`);
+      if (before[0].expanded !== 'true')
+        fail(where, 'the largest team is not open');
+      if (teams.slice(1).some((t) => t.expanded !== 'false'))
+        fail(where, 'a team other than the largest is open');
+      if (before.some((r) => r.level === 3))
+        fail(where, 'a closed agent’s models are rendered');
+      const runs = (r) => Number(r.cells[1].replace(/,/g, ''));
+      const firstAgents = [];
+      for (const r of before.slice(1)) {
+        if (r.level !== 2) break;
+        firstAgents.push(r);
+      }
+      if (!firstAgents.length) fail(where, 'the open team shows no agents');
+      const added = firstAgents.reduce((a, r) => a + runs(r), 0);
+      if (added !== runs(before[0]))
+        fail(
+          where,
+          `a team's runs (${runs(before[0])}) are not its agents' (${added})`,
+        );
+      const share = teams.reduce((a, t) => a + parseFloat(t.cells[3]), 0);
+      if (Math.abs(share - 100) > 0.6)
+        fail(where, `the teams' shares add up to ${share}%`);
+      const shares = teams.map((t) => parseFloat(t.cells[3]));
+      if (shares.some((v, k) => k > 0 && v > shares[k - 1]))
+        fail(where, `the teams are not largest first: ${shares.join(', ')}`);
+
+      // One tab stop, and the treegrid keys.
+      await enterGrid();
+      await page.keyboard.press('ArrowDown');
+      const agent = firstAgents[0].cells[0];
+      if ((await focusedRow()) !== `2 ${firstAgents[0].cells.join('')}`)
+        fail(where, `↓ from the team landed on ${await focusedRow()}`);
+      await page.keyboard.press('ArrowRight');
+      const opened = await rows();
+      const at = opened.findIndex((r) => r.cells[0] === agent);
+      if (opened[at]?.expanded !== 'true' || opened[at + 1]?.level !== 3)
+        fail(where, '→ did not open the agent onto its models');
+      await page.keyboard.press('ArrowRight');
+      if ((await focusedRow()) !== `rowheader ${agent}`)
+        fail(where, `→ on an open agent landed on ${await focusedRow()}`);
+      await page.keyboard.press('ArrowLeft');
+
+      if (
+        device === 'mobile' &&
+        (await page.evaluate(
+          () => document.documentElement.scrollWidth > window.innerWidth,
+        ))
+      )
+        fail(where, 'the page scrolls sideways');
+
+      await page.addScriptTag({ content: axeSource });
+      const violations = await page.evaluate(async () => {
+        const result = await window.axe.run(document, {
+          resultTypes: ['violations'],
+        });
+        return result.violations.map((v) => `${v.impact} ${v.id}`);
+      });
+      for (const v of violations) fail(where, `axe ${v}`);
+
+      // Enter on an agent opens it.
+      await page.keyboard.press('Enter');
+      await page
+        .getByRole('heading', { name: agent, level: 1 })
+        .waitFor({ timeout: 5_000 })
+        .catch(() => fail(where, `Enter did not open ${agent}`));
+
+      // Enter on a team opens Agents, filtered to it.
+      await page.goBack();
+      await grid.waitFor({ timeout: 10_000 });
+      await enterGrid();
+      await page.keyboard.press('Home');
+      await page.keyboard.press('Enter');
+      await page
+        .getByRole('heading', { name: 'Agents', level: 1 })
+        .waitFor({ timeout: 5_000 })
+        .catch(() => fail(where, 'Enter on a team did not open Agents'));
+      const hash = await page.evaluate(() => window.location.hash);
+      if (!/^#\/agents\?team=[a-z]+$/.test(hash))
+        fail(where, `Enter on a team went to ${hash}`);
+      // The listing says which team, in the words the row had.
+      const tag = page
+        .getByRole('grid', { name: 'Active filters' })
+        .getByRole('row', { name: `Team: ${before[0].cells[0]}` });
+      await tag
+        .waitFor({ timeout: 5_000 })
+        .catch(() =>
+          fail(where, `Agents is not filtered to ${before[0].cells[0]}`),
+        );
+    } catch (e) {
+      fail(where, `did not run: ${e.message.split('\n')[0]}`);
+    }
+    groupsChecked++;
+    await context.close();
+  }
+
+  /*
    * Timeline, as an agent's History on its Overview. An ordered list named
    * History, newest first; each event says what happened, who, and when in
    * a <time> with the exact instant; the markers are hidden. A purpose saved

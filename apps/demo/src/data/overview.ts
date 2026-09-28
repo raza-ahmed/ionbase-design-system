@@ -1,4 +1,5 @@
 import { addDays, dayCount, eachDay, type IsoDay } from '../lib/dates';
+import { listAgentLinks, TEAMS } from './agents';
 import { listRecentRuns, listWaitingRuns, type RunSummary } from './runs';
 
 export interface Kpi {
@@ -11,6 +12,23 @@ export interface AgentBudget {
   agent: string;
   usedTokens: number;
   limitTokens: number;
+}
+
+/**
+ * Tokens spent, as a tree: each team, the agents in it, and the models each
+ * agent called. A team's figures are its agents' added up, and an agent's its
+ * models'. Largest first at every level.
+ */
+export interface TokenUse {
+  /** `team:finance`, an agent's id, or `agt_x/atlas-m` — unique in the tree. */
+  id: string;
+  kind: 'team' | 'agent' | 'model';
+  name: string;
+  /** The team a team row stands for, or the agent an agent or model row is. */
+  target: string;
+  runs: number;
+  tokens: number;
+  children?: TokenUse[];
 }
 
 export interface OverviewData {
@@ -27,6 +45,7 @@ export interface OverviewData {
   /** `null` alongside `successRate`. */
   successByDay: { day: IsoDay; rate: number }[] | null;
   budgets: AgentBudget[];
+  tokenUse: TokenUse[];
 }
 
 /** Mulberry32 — a seeded PRNG, so the same range always shows the same numbers. */
@@ -50,6 +69,66 @@ const AGENTS = [
   { agent: 'Churn-risk scorer', limitTokens: 300_000 },
   { agent: 'Release notes writer', limitTokens: 150_000 },
 ];
+
+const MODELS = [
+  { id: 'swift-s', name: 'Swift S', perRun: 900 },
+  { id: 'atlas-m', name: 'Atlas M', perRun: 4_200 },
+  { id: 'atlas-l', name: 'Atlas L', perRun: 11_000 },
+  { id: 'sage-xl', name: 'Sage XL', perRun: 26_000 },
+];
+
+const sum = (rows: TokenUse[], key: 'runs' | 'tokens') =>
+  rows.reduce((a, r) => a + r[key], 0);
+const largestFirst = (a: TokenUse, b: TokenUse) => b.tokens - a.tokens;
+
+/** Every agent that ran, under its team, split by the models it called. */
+function tokenUseOf(random: () => number, scale: number): TokenUse[] {
+  const byTeam = new Map<string, TokenUse[]>();
+  for (const agent of listAgentLinks()) {
+    // A few agents did not run in any range: a team shows who did.
+    if (random() < 0.2) continue;
+    const first = Math.floor(random() * MODELS.length);
+    const used =
+      random() < 0.5
+        ? [MODELS[first]]
+        : [MODELS[first], MODELS[(first + 1) % MODELS.length]];
+    const models: TokenUse[] = used.map((m) => {
+      const runs = Math.max(1, Math.round((20 + random() * 180) * scale));
+      return {
+        id: `${agent.id}/${m.id}`,
+        kind: 'model',
+        name: m.name,
+        target: agent.id,
+        runs,
+        tokens: Math.round(runs * m.perRun * (0.7 + random() * 0.6)),
+      };
+    });
+    const row: TokenUse = {
+      id: agent.id,
+      kind: 'agent',
+      name: agent.name,
+      target: agent.id,
+      runs: sum(models, 'runs'),
+      tokens: sum(models, 'tokens'),
+      children: models.sort(largestFirst),
+    };
+    byTeam.set(agent.team, [...(byTeam.get(agent.team) ?? []), row]);
+  }
+  return TEAMS.filter((t) => byTeam.has(t.value))
+    .map((t): TokenUse => {
+      const agents = byTeam.get(t.value)!.sort(largestFirst);
+      return {
+        id: `team:${t.value}`,
+        kind: 'team',
+        name: t.label,
+        target: t.value,
+        runs: sum(agents, 'runs'),
+        tokens: sum(agents, 'tokens'),
+        children: agents,
+      };
+    })
+    .sort(largestFirst);
+}
 
 export function generateOverview(
   start: IsoDay,
@@ -98,6 +177,9 @@ export function generateOverview(
     },
     runsByWeekdayHour,
     successByDay: partial || empty ? null : successByDay,
+    tokenUse: empty
+      ? []
+      : tokenUseOf(rng(seedOf(`tokens${start}${end}`)), scale),
     budgets: AGENTS.map((a) => ({
       ...a,
       usedTokens: empty

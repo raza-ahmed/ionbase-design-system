@@ -1,0 +1,116 @@
+{
+  "status": "stable",
+  "summary": "Rows that open to show the rows under them, in columns compared down — spend by agent and then by task, a budget by team and then by person. The WAI-ARIA treegrid, drawn as a Table.",
+  "useWhen": [
+    "the records nest — a total and the parts it is made of — and each level has the same columns to compare",
+    "the reader starts from the totals and opens only the branch that matters",
+    "a TreeView would do but each row has figures beside its name — size, owner, cost"
+  ],
+  "useInstead": [
+    {
+      "when": "the hierarchy has one column — names only",
+      "use": "TreeView",
+      "why": "a tree grid's header and columns are overhead with nothing to compare down them"
+    },
+    {
+      "when": "the rows are flat, with nothing under them",
+      "use": "Table",
+      "why": "a Table sorts, resizes, holds its header and first column, and needs no expand keys"
+    },
+    {
+      "when": "a row opens to show more about that one record — its payload, its log",
+      "use": "Table",
+      "why": "that is a TableRow's `detail`: one record's own content, where a tree grid opens more rows of the same kind"
+    },
+    {
+      "when": "the levels are sections of a page — groups of settings, a FAQ",
+      "use": "Accordion",
+      "why": "content under headings is not rows in columns"
+    }
+  ],
+  "composition": {
+    "order": ["TreeGrid"],
+    "note": "Pass the rows as `items`, each with an `id` unique in the whole tree and its `children`; pass `columns`, each with a `header` and a `cell(item)`. The first column holds the tree — the indent and the chevron — and is the row's name, so make it the name. `align: 'end'` for figures. Open the path to what matters with `defaultExpandedKeys`.",
+    "example": "<TreeGrid aria-label=\"Spend by agent\" items={spend} columns={[{ id: 'name', header: 'Agent', cell: (r) => r.name }, { id: 'cost', header: 'Cost', cell: (r) => r.cost, align: 'end' }]} defaultExpandedKeys={['support']} onAction={openAgent} />"
+  },
+  "variants": {
+    "density": {
+      "compact": {
+        "use": "a long breakdown scanned by eye, where more rows on screen matter more than room"
+      },
+      "default": {
+        "use": "the default"
+      },
+      "relaxed": {
+        "use": "a short breakdown where each row deserves attention"
+      }
+    },
+    "selectionMode": {
+      "none": {
+        "use": "the default: rows are read and opened, and Enter or a press is `onAction`"
+      },
+      "single": {
+        "use": "one row is the subject of what is beside the grid — a detail panel, a chart"
+      },
+      "multiple": {
+        "use": "rows are picked for a bulk action; a Checkbox per row and a select-all in the header"
+      }
+    }
+  },
+  "slots": {
+    "columns": {
+      "accepts": "any",
+      "note": "each column's `cell(item)` is the row's content in that column. The first column's cell names the row: keep it text, or give the item a `textValue`"
+    },
+    "renderEmptyState": {
+      "accepts": "EmptyState",
+      "note": "shown in one row across every column when `items` is empty; the grid keeps its name and header"
+    }
+  },
+  "a11y": {
+    "requires": [
+      "`aria-label` or `aria-labelledby` — the grid's name, such as \"Spend by agent\"",
+      "a unique `id` on every item across the whole tree — expansion and selection are held by id",
+      "a first column whose cell is text, or a `textValue` on each item — it is the row's name and what typeahead matches"
+    ],
+    "guarantees": [
+      "a `<table>` with `role=\"treegrid\"`: only open rows are rendered, flat, each with `aria-level`, `aria-posinset` and `aria-setsize` among its siblings, and `aria-expanded` only when it has rows under it",
+      "one tab stop: ↑ ↓ move between rows, and between cells in a column; → opens a closed row and, on an open one or a leaf, moves into its cells and across them; ← moves back out to the row, closes an open row, and on a closed one or a leaf moves to its parent; Home and End go to the first and last row; typing jumps to a row by its first column",
+      "each row is named by its first column's text alone — not the chevron's name with it",
+      "each parent's chevron is a button named \"Expand\" or \"Collapse\" and the row's name, in the user's locale, out of the tab order; a press opens the row and puts the grid's focus on it",
+      "`multiple` gives each row a Checkbox named \"Select\" and the row's name, and the header a \"Select All\" that is indeterminate when some rows are picked; a click on the drawn box changes it once",
+      "select-all is every row that can be selected, open or not, and `onSelectionChange` always gets a Set of ids",
+      "selection does not cascade: a parent is a row of its own",
+      "a disabled item cannot be selected; it can still be focused, opened and activated, so the rows under it stay reachable",
+      "every level indents by spacing/20 and a leaf keeps the chevron's width, so labels at one level line up; in right-to-left the indent is from the right, the chevron points left, and ← opens",
+      "the focus ring is drawn inside the focused row or cell; in forced colours a selected row is Highlight, and its ring, chevron and checked box take HighlightText"
+    ],
+    "notes": [
+      "It draws as a Table does — the same container, density, header, rules and selected tint — but it is not composed of TableRow and TableCell: the rows come from `items`, so the keyboard model can know the tree.",
+      "No sorting and no column resizing. Sort `items` yourself, within each level, before passing them; a tree whose levels need resizable columns is a Table's job once flattened.",
+      "Built on React Aria's tree-table state, which 3.50 ships as `UNSTABLE_useTreeGridState` behind a flag. TreeGrid turns the flag on; it gates that hook and nothing else."
+    ]
+  },
+  "antiPatterns": [
+    {
+      "dont": "a Table whose rows are indented by hand, with a chevron button in the first cell",
+      "do": "<TreeGrid items={…} columns={…} />",
+      "why": "indentation is not structure: a screen reader hears a flat table with no levels, and the rows under a closed one are still there to land on"
+    },
+    {
+      "dont": "a Table of TableRows, each with a `detail` that holds another Table",
+      "do": "<TreeGrid> with the child rows as `children`",
+      "why": "a nested table is a second grid with its own header and tab stop, and its columns do not line up with the parent's"
+    },
+    {
+      "dont": "ids that repeat under different parents — two \"run-1\" rows under two agents",
+      "do": "ids from the path or the record — \"support/run-1\", \"run_4821\"",
+      "why": "expansion and selection are held by id, so two rows with one id open and select together"
+    },
+    {
+      "dont": "a first column of icons or badges, with the name in the second",
+      "do": "the name first",
+      "why": "the first column holds the tree and names the row; a row named by an icon is announced as nothing"
+    }
+  ]
+}
