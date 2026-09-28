@@ -47,34 +47,34 @@ IonBase column names the component that covers it.
 
 ### Inputs and forms
 
-| Component                         | Carbon | M3  | SLDS | IonBase                         |
-| --------------------------------- | :----: | :-: | :--: | ------------------------------- |
-| Text input                        |   ●    |  ●  |  ●   | `Input`                         |
-| Password input (reveal)           |   ●    |     |      | `PasswordInput`                 |
-| Search field                      |   ●    |  ●  |  ◐   | `SearchField`                   |
-| Textarea                          |   ●    |  ●  |  ●   | `Textarea`                      |
-| Number input                      |   ●    |     |  ◐   | `NumberInput`                   |
-| Phone input                       |        |     |      | `PhoneInput`                    |
-| Select                            |   ●    |  ●  |  ●   | `Select`                        |
-| Combobox (single)                 |   ●    |  ◐  |  ●   | `Combobox`                      |
-| Multi-select                      |   ●    |  ◐  |  ●   | `MultiSelect`                   |
-| Dual listbox / dueling picklist   |        |     |  ●   | `DualListbox`                   |
-| Checkbox                          |   ●    |  ●  |  ●   | `Checkbox`                      |
-| Checkbox group                    |   ●    |     |  ●   | `CheckboxGroup`                 |
-| Radio / radio group               |   ●    |  ●  |  ●   | `Radio`, `RadioGroup`           |
-| Switch                            |   ●    |  ●  |  ●   | `Toggle`                        |
-| Selectable tile / visual picker   |   ●    |     |  ●   | `SelectableTile`                |
-| Slider (single and range)         |   ●    |  ●  |  ●   | `Slider`                        |
-| Date picker / range               |   ●    |  ●  |  ●   | `DatePicker`, `DateRangePicker` |
-| Time picker                       |   ●    |  ●  |  ●   | `TimeField`                     |
-| Date-time picker                  |        |     |  ●   | `DateTimePicker`                |
-| Color picker                      |        |     |  ●   | `ColorPicker`                   |
-| File uploader                     |   ●    |     |  ●   | `FileUpload`                    |
-| Fieldset / form group             |   ●    |     |  ●   | `Fieldset`                      |
-| Inline edit                       |   ●    |     |  ●   | `InlineEdit`                    |
-| Tag / pill input                  |   ●    |  ●  |  ●   | `TagGroup`, `Tag`               |
-| Rich text editor                  |        |     |  ●   | — _deferred, §4_                |
-| Fluid (borderless) input variants |   ●    |     |      | — _non-goal, §4_                |
+| Component                         | Carbon | M3  | SLDS | IonBase                                     |
+| --------------------------------- | :----: | :-: | :--: | ------------------------------------------- |
+| Text input                        |   ●    |  ●  |  ●   | `Input`                                     |
+| Password input (reveal)           |   ●    |     |      | `PasswordInput`                             |
+| Search field                      |   ●    |  ●  |  ◐   | `SearchField`                               |
+| Textarea                          |   ●    |  ●  |  ●   | `Textarea`                                  |
+| Number input                      |   ●    |     |  ◐   | `NumberInput`                               |
+| Phone input                       |        |     |      | `PhoneInput`                                |
+| Select                            |   ●    |  ●  |  ●   | `Select`                                    |
+| Combobox (single)                 |   ●    |  ◐  |  ●   | `Combobox`                                  |
+| Multi-select                      |   ●    |  ◐  |  ●   | `MultiSelect`                               |
+| Dual listbox / dueling picklist   |        |     |  ●   | `DualListbox`                               |
+| Checkbox                          |   ●    |  ●  |  ●   | `Checkbox`                                  |
+| Checkbox group                    |   ●    |     |  ●   | `CheckboxGroup`                             |
+| Radio / radio group               |   ●    |  ●  |  ●   | `Radio`, `RadioGroup`                       |
+| Switch                            |   ●    |  ●  |  ●   | `Toggle`                                    |
+| Selectable tile / visual picker   |   ●    |     |  ●   | `SelectableTile`                            |
+| Slider (single and range)         |   ●    |  ●  |  ●   | `Slider`                                    |
+| Date picker / range               |   ●    |  ●  |  ●   | `DatePicker`, `DateRangePicker`, `Calendar` |
+| Time picker                       |   ●    |  ●  |  ●   | `TimeField`                                 |
+| Date-time picker                  |        |     |  ●   | `DateTimePicker`                            |
+| Color picker                      |        |     |  ●   | `ColorPicker`                               |
+| File uploader                     |   ●    |     |  ●   | `FileUpload`                                |
+| Fieldset / form group             |   ●    |     |  ●   | `Fieldset`                                  |
+| Inline edit                       |   ●    |     |  ●   | `InlineEdit`                                |
+| Tag / pill input                  |   ●    |  ●  |  ●   | `TagGroup`, `Tag`                           |
+| Rich text editor                  |        |     |  ●   | — _deferred, §4_                            |
+| Fluid (borderless) input variants |   ●    |     |      | — _non-goal, §4_                            |
 
 ### Navigation
 
@@ -265,7 +265,7 @@ is to build:
 - **ProgressRing** — circular determinate progress: determinate only, since a ring with no value is a Spinner. Shipped 0.130.0.
 - **Coachmark / guided tour** — `Coachmark` for one callout and `Tour` for a sequence of them: opened only when asked, not modal, steps as data naming their targets by id. Shipped 0.131.0.
 - **AppSwitcher** — the grid of products in a suite's header: links to each product's home, not a menu, with the current one marked. Shipped 0.132.0.
-- **Calendar**, exported standalone — `Calendar.tsx` already exists internally.
+- **Calendar**, exported standalone — the inline one, single-date, with a label and a surface of its own: for a day chosen by where it falls, and where a picker's popover would be a second layer. The pickers' grids stay internal. Shipped 0.133.0.
 - **SplitPane** — resizable, keyboard-operable divider.
 
 ### Patterns to add

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useRef } from 'react';
+import React, { useId, useRef } from 'react';
 import {
   useButton,
   useCalendar,
@@ -24,16 +24,20 @@ import type {
 } from 'react-aria';
 import type { CalendarState, RangeCalendarState } from 'react-stately';
 import type { CalendarDate, DateValue } from '@internationalized/date';
+import { toCalendarDate, toIso, wrapUnavailable } from './iso-date.js';
+import type { IsoDate } from './iso-date.js';
 
 /*
- * The calendar grid — the overlay half of both pickers.
+ * The calendar grid — the overlay half of both pickers, and `Calendar`, the
+ * same grid in the page.
  *
- * INTERNAL, for the same reason DateField is: an always-visible calendar is a
- * different component with a different contract (it owns page space, it has no
- * trigger, it needs an answer to what "selected" looks like when there is
- * nothing to close). Shipping this one as that one would be shipping a surface
- * whose judgement has not been written. When an inline calendar is wanted, it
- * gets its own `meta/Calendar.json` and its own Figma component.
+ * `SingleCalendar` and `RangeCalendar` stay internal: they are the pickers'
+ * popover content and have no label, no surface and no helper text of their
+ * own. `Calendar` is the inline one, with the contract the pickers' popover
+ * never needed: it owns page space, so it draws its own surface; it has no
+ * trigger, so it takes a `label` that names it with the month; and nothing
+ * closes when a day is picked, so the selected day IS the answer, announced
+ * by react-aria as it changes.
  *
  * ONE FILE, TWO STATES, AND THE SEAM BETWEEN THEM
  *
@@ -139,6 +143,21 @@ function Cell({
   const isOutsideMonth = date.month !== currentMonth.month;
 
   /*
+   * The chosen day of a disabled single calendar. react-aria selects no day
+   * in a disabled calendar, so the inline Calendar lost its value the moment
+   * it was disabled — mid-save, say — where a disabled field keeps showing
+   * its own. Marked here, and drawn as disabled. The popover never reaches
+   * this: a disabled picker does not open.
+   */
+  const isHeld =
+    !isSelected &&
+    state.isDisabled &&
+    !('highlightedRange' in state) &&
+    state.value != null &&
+    isSameDay(date, state.value);
+  const isMarked = isSelected || isHeld;
+
+  /*
    * The one place the two states differ.
    *
    * `highlightedRange` is the committed range OR the one being dragged out
@@ -176,7 +195,7 @@ function Cell({
         hidden={isOutsideMonth || undefined}
         className={[
           'ion-calendar__day',
-          isSelected ? 'ion-calendar__day--selected' : '',
+          isMarked ? 'ion-calendar__day--selected' : '',
           isInRange ? 'ion-calendar__day--in-range' : '',
           isRangeStart ? 'ion-calendar__day--range-start' : '',
           isRangeEnd ? 'ion-calendar__day--range-end' : '',
@@ -185,7 +204,7 @@ function Cell({
         ]
           .filter(Boolean)
           .join(' ')}
-        data-selected={isSelected || undefined}
+        data-selected={isMarked || undefined}
         data-in-range={isInRange || undefined}
         data-range-start={isRangeStart || undefined}
         data-range-end={isRangeEnd || undefined}
@@ -324,6 +343,7 @@ function CalendarShell({
   aside,
   footer,
   refProp,
+  className,
 }: {
   calendarProps: React.HTMLAttributes<HTMLElement>;
   prevButtonProps: AriaButtonProps<'button'>;
@@ -336,12 +356,13 @@ function CalendarShell({
   /** An action row under the grids. */
   footer?: React.ReactNode;
   refProp?: React.RefObject<HTMLDivElement | null>;
+  className?: string;
 }) {
   return (
     <div
       {...calendarProps}
       ref={refProp as React.RefObject<HTMLDivElement>}
-      className="ion-calendar"
+      className={['ion-calendar', className || ''].filter(Boolean).join(' ')}
       data-months={visibleMonths}
     >
       {aside}
@@ -439,3 +460,163 @@ export function RangeCalendar({
     />
   );
 }
+
+export interface CalendarProps {
+  /**
+   * Names the calendar. It has no field and no trigger, so this is the only
+   * thing that says what the day is for — "Resume on", "Deliver on".
+   */
+  label: React.ReactNode;
+  /** Helper text under the month. */
+  description?: React.ReactNode;
+  /** Replaces the helper text while invalid — `isInvalid`, or its own bounds. */
+  errorMessage?: React.ReactNode;
+  isInvalid?: boolean;
+  isDisabled?: boolean;
+  /** Shows the day and lets it be read and moved through, not changed. */
+  isReadOnly?: boolean;
+  /** The selected day as `YYYY-MM-DD`; `null` is none yet. */
+  value?: IsoDate | null;
+  /** The initial day as `YYYY-MM-DD`, for an uncontrolled calendar. */
+  defaultValue?: IsoDate;
+  /**
+   * Fires with `YYYY-MM-DD`. Never with `null`: a day in a grid is changed
+   * by picking another, not cleared.
+   */
+  onChange?: (value: IsoDate) => void;
+  /** Earliest selectable day, `YYYY-MM-DD`. Earlier months cannot be reached. */
+  minValue?: IsoDate;
+  /** Latest selectable day, `YYYY-MM-DD`. */
+  maxValue?: IsoDate;
+  /** Single days refused inside the bounds — weekends, holidays, booked days. */
+  isDateUnavailable?: (date: IsoDate) => boolean;
+  /**
+   * The month to open on, and the day focus lands on, while nothing is
+   * selected. Defaults to today — or `minValue`, when today is before it.
+   */
+  defaultFocusedValue?: IsoDate;
+  /** Posts the value under this name, for an uncontrolled form. */
+  name?: string;
+  id?: string;
+  className?: string;
+}
+
+/**
+ * Calendar — one month in the page, for a day chosen by looking at the month.
+ *
+ * DATEPICKER FIRST
+ *
+ * A date someone knows — a birthday, an invoice date — is typed faster than
+ * it is found, and a field takes one row where this takes a month. This is
+ * for a day that is chosen by where it falls: a day to resume on, a delivery
+ * day, and for a place where a popover would be a second layer — a Modal, a
+ * SidePanel.
+ *
+ * NAMED WITH THE MONTH
+ *
+ * `label` is the calendar's name, joined by react-aria to the visible month —
+ * "Resume on October 2026" — so moving to another month says where you are.
+ * Every day's name is its full date, in the reader's language; today and the
+ * selected day are said as such.
+ */
+export function Calendar({
+  label,
+  description,
+  errorMessage,
+  isInvalid,
+  isDisabled,
+  isReadOnly,
+  value,
+  defaultValue,
+  onChange,
+  minValue,
+  maxValue,
+  isDateUnavailable,
+  defaultFocusedValue,
+  name,
+  id,
+  className,
+}: CalendarProps) {
+  const { locale } = useLocale();
+  const labelId = useId();
+  const helperId = useId();
+
+  const min = toCalendarDate(minValue, 'minValue') ?? undefined;
+  const ariaProps: AriaCalendarProps<DateValue> = {
+    // `undefined` stays uncontrolled; `null` is controlled and empty.
+    value: value === undefined ? undefined : toCalendarDate(value, 'value'),
+    defaultValue: toCalendarDate(defaultValue, 'defaultValue') ?? undefined,
+    minValue: min,
+    maxValue: toCalendarDate(maxValue, 'maxValue') ?? undefined,
+    isDateUnavailable: wrapUnavailable(isDateUnavailable),
+    defaultFocusedValue:
+      toCalendarDate(defaultFocusedValue, 'defaultFocusedValue') ?? undefined,
+    isDisabled,
+    isReadOnly,
+    isInvalid,
+    'aria-labelledby': labelId,
+    onChange: onChange ? (date: DateValue) => onChange(toIso(date)) : undefined,
+  };
+
+  const state = useCalendarState({ ...ariaProps, locale, createCalendar });
+  const { calendarProps, prevButtonProps, nextButtonProps, title } =
+    useCalendar(ariaProps, state);
+
+  /*
+   * Invalid is the prop OR a value the calendar itself refuses — before
+   * `minValue`, after `maxValue`, or unavailable — DatePicker's rule.
+   */
+  const invalid = !!isInvalid || state.isValueInvalid;
+  const helper = invalid && errorMessage ? errorMessage : description;
+
+  return (
+    <div
+      className={[
+        'ion-field',
+        'ion-calendar-field',
+        invalid ? 'ion-field--error' : '',
+        className || '',
+      ]
+        .filter(Boolean)
+        .join(' ')}
+      id={id}
+      data-invalid={invalid || undefined}
+      data-disabled={isDisabled || undefined}
+    >
+      {/* A <span>: a grid is not a form control `htmlFor` can point at. */}
+      <span id={labelId} className="ion-field__label">
+        {label}
+      </span>
+      <div className="ion-calendar-field__frame">
+        <CalendarShell
+          calendarProps={{
+            ...calendarProps,
+            // The label, then the month: react-aria lists its own month
+            // first, which reads "October 2026 Resume on".
+            'aria-labelledby': `${labelId} ${calendarProps.id}`,
+            'aria-describedby': helper ? helperId : undefined,
+          }}
+          prevButtonProps={prevButtonProps}
+          nextButtonProps={nextButtonProps}
+          title={title}
+          state={state}
+          visibleMonths={1}
+        />
+      </div>
+      {name && (
+        <input
+          type="hidden"
+          name={name}
+          value={state.value ? toIso(state.value) : ''}
+        />
+      )}
+      {helper && (
+        <span id={helperId} className="ion-field__helper">
+          {helper}
+        </span>
+      )}
+    </div>
+  );
+}
+
+Calendar.displayName = 'Calendar';

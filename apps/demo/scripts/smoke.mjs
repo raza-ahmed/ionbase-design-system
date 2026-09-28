@@ -1311,6 +1311,137 @@ try {
   }
 
   /*
+   * Calendar, as an agent's "Pause until…": a Modal whose one question is
+   * the day, so the month is in the dialog. Named "Resume on" with the month;
+   * today and before cannot be picked; the button is disabled until a day
+   * is, then names it. The 15th of next month pauses the agent: the dialog
+   * closes, a toast and the History say until when, and the card offers
+   * Resume. axe on the dialog; on a phone nothing is wider than the screen.
+   */
+  for (const [device, width, height] of [
+    ['desktop', 1280, 900],
+    ['mobile', 390, 844],
+  ]) {
+    const where = `calendar (light, ${device})`;
+    if (skip(where)) continue;
+    const context = await browser.newContext({
+      viewport: { width, height },
+      locale: 'en-US',
+    });
+    await context.addInitScript(() =>
+      localStorage.setItem(
+        'ionbase-ops:demo-settings',
+        JSON.stringify({ theme: 'light', latency: 0 }),
+      ),
+    );
+    const page = await context.newPage();
+    page.on('pageerror', (e) => fail(where, `exception: ${e.message}`));
+    const now = new Date();
+    const next = new Date(
+      Date.UTC(now.getUTCFullYear(), now.getUTCMonth() + 1, 15),
+    );
+    const monthYear = (d) =>
+      d.toLocaleDateString('en-US', {
+        month: 'long',
+        year: 'numeric',
+        timeZone: 'UTC',
+      });
+    const dayName = next.toLocaleDateString('en-US', {
+      month: 'long',
+      day: 'numeric',
+      year: 'numeric',
+      timeZone: 'UTC',
+    });
+    const short = next.toLocaleDateString('en', {
+      month: 'short',
+      day: 'numeric',
+      timeZone: 'UTC',
+    });
+    try {
+      await page.goto(`${BASE}/#/agents/agt_wx`);
+      const open = page.getByRole('button', { name: 'Pause until…' });
+      await open.waitFor({ timeout: 10_000 });
+      await open.click();
+      const dialog = page.getByRole('dialog', { name: /^Pause / });
+      await dialog.waitFor({ timeout: 5_000 });
+      const calendar = dialog.getByRole('application', {
+        name: new RegExp(`^Resume on,? ${monthYear(now)}$`),
+      });
+      if (!(await calendar.count()))
+        fail(where, 'the calendar is not named "Resume on" and the month');
+      const confirm = dialog.getByRole('button', { name: /^Pause until/ });
+      if (!(await confirm.isDisabled()))
+        fail(where, 'the confirming button is enabled before a day is picked');
+      if (
+        (await dialog
+          .locator('.ion-calendar__day[data-today]')
+          .getAttribute('data-disabled')) !== 'true'
+      )
+        fail(where, 'today can be picked');
+
+      await dialog.getByRole('button', { name: 'Next' }).click();
+      await dialog
+        .getByRole('application', {
+          name: new RegExp(`^Resume on,? ${monthYear(next)}$`),
+        })
+        .waitFor({ timeout: 2_000 });
+      await dialog.getByRole('button', { name: new RegExp(dayName) }).click();
+      if ((await confirm.textContent()) !== `Pause until ${short}`)
+        fail(where, `the button says "${await confirm.textContent()}"`);
+
+      const box = await dialog.boundingBox();
+      if (!box || box.x < 0 || box.x + box.width > width + 0.5)
+        fail(where, 'the dialog runs off the screen');
+      if (
+        await page.evaluate(
+          () => document.documentElement.scrollWidth > window.innerWidth,
+        )
+      )
+        fail(where, 'the page scrolls sideways with the dialog open');
+      if (device === 'desktop') {
+        // The button was enabled a moment ago, and its colours are still
+        // easing in: measured mid-way, it reports a contrast it never keeps.
+        await page.waitForFunction(() =>
+          document.getAnimations().every((a) => a.playState !== 'running'),
+        );
+        await page.addScriptTag({ content: axeSource });
+        const violations = await page.evaluate(async () => {
+          const result = await window.axe.run(
+            document.querySelector('[role="dialog"]'),
+            { resultTypes: ['violations'] },
+          );
+          return result.violations.map(
+            (v) => `${v.impact} ${v.id} — ${v.nodes[0].target.join(' ')}`,
+          );
+        });
+        for (const v of violations) fail(where, `axe ${v} in the dialog`);
+      }
+
+      await confirm.click();
+      await dialog.waitFor({ state: 'detached', timeout: 5_000 });
+      await page
+        .locator('.ion-toast__content', {
+          hasText: new RegExp(`^Paused .+ until ${short}`),
+        })
+        .waitFor({ timeout: 3_000 })
+        .catch(() => fail(where, 'no toast said until when'));
+      await page
+        .getByRole('list', { name: 'History' })
+        .getByText(`Paused the agent until ${short}`)
+        .waitFor({ timeout: 3_000 })
+        .catch(() => fail(where, 'the History does not say until when'));
+      if (!(await page.getByRole('button', { name: 'Resume agent' }).count()))
+        fail(where, 'the card does not offer Resume');
+      if (await page.getByRole('button', { name: 'Pause until…' }).count())
+        fail(where, 'a paused agent still offers Pause until');
+    } catch (e) {
+      fail(where, `did not run: ${e.message.split('\n')[0]}`);
+    }
+    groupsChecked++;
+    await context.close();
+  }
+
+  /*
    * AppSwitcher, in the Header before the account: "Apps" opens a dialog of
    * the IonBase products, focused, Tab kept inside it. Ops is current and
    * links home; the rest leave the demo. Escape gives focus back to the

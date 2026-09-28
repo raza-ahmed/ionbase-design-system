@@ -378,3 +378,17 @@ export const TabStaysInTheCalendar: Story = {
     await userEvent.keyboard('{Escape}');
   },
 };
+
+/** The calendar draws only its own month — April's 30 days, nothing either side. */
+export const TheCalendarDrawsOnlyItsMonth: Story = {
+  args: Default.args,
+  play: async ({ canvas }) => {
+    await open(canvas);
+    const dialog = await overlay().findByRole('dialog');
+    const shown = [...dialog.querySelectorAll('.ion-calendar__day')]
+      .filter((d) => (d as HTMLElement).offsetParent !== null)
+      .map((d) => Number(d.textContent));
+    await expect(shown).toEqual(Array.from({ length: 30 }, (_, i) => i + 1));
+    await userEvent.keyboard('{Escape}');
+  },
+};

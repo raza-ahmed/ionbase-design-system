@@ -531,24 +531,22 @@
     },
     "Calendar": {
       "page": "Date Picker",
-      "id": "1395:1102",
+      "id": "1714:1267",
       "kind": "SET",
       "props": {
-        "Mode": {
-          "type": "VARIANT",
-          "options": ["Single", "Range"],
-          "default": "Single"
+        "Description#1714:4": {
+          "type": "TEXT"
         },
-        "Months": {
-          "type": "VARIANT",
-          "options": ["One", "Two"],
-          "default": "One"
+        "Label#1714:0": {
+          "type": "TEXT"
         },
-        "Show Clear#1395:29": {
+        "Show Description#1714:8": {
           "type": "BOOLEAN"
         },
-        "Show Presets#1395:24": {
-          "type": "BOOLEAN"
+        "State": {
+          "type": "VARIANT",
+          "options": ["Default", "Invalid", "Disabled"],
+          "default": "Default"
         }
       }
     },
@@ -579,6 +577,29 @@
             "Range End"
           ],
           "default": "Default"
+        }
+      }
+    },
+    "Calendar Popover": {
+      "page": "Date Picker",
+      "id": "1395:1102",
+      "kind": "SET",
+      "props": {
+        "Mode": {
+          "type": "VARIANT",
+          "options": ["Single", "Range"],
+          "default": "Single"
+        },
+        "Months": {
+          "type": "VARIANT",
+          "options": ["One", "Two"],
+          "default": "One"
+        },
+        "Show Clear#1395:29": {
+          "type": "BOOLEAN"
+        },
+        "Show Presets#1395:24": {
+          "type": "BOOLEAN"
         }
       }
     },

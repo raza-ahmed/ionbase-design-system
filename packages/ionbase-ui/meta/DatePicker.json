@@ -26,6 +26,11 @@
       "when": "a time of day is part of the value — one moment, such as when a run starts",
       "use": "DateTimePicker",
       "why": "this picker is fixed to day granularity; a DateTimePicker holds the date and the time as one value and checks a bound such as \"not before now\" against both. A TimeField beside this is only for a time that is a separate, optional choice"
+    },
+    {
+      "when": "the day is chosen by where it falls in the month, and it is the only question — a day to resume on, in a Modal",
+      "use": "Calendar",
+      "why": "the picker's calendar is a popover, a second layer over the dialog; a Calendar shows the month in the dialog itself"
     }
   ],
   "variants": {

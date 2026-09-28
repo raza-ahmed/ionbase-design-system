@@ -16,6 +16,7 @@
     "Toggletip",
     "Toggle",
     "DateTimePicker",
+    "Calendar",
     "PhoneInput",
     "NumberInput",
     "Button",
@@ -33,6 +34,7 @@
     "Related fields that answer one question — an address, a pair of limits, a set of checkboxes — sit in a Fieldset, CheckboxGroup or RadioGroup, so the question is announced with each field and a group-level error has somewhere to live.",
     "Choices that form a hierarchy — folders, teams within departments — are one TreeView with `selectionMode=\"multiple\"` and an `aria-label` naming the question, not Checkboxes indented by hand. The tree announces each choice's level and place; indentation alone announces nothing.",
     "A moment — when a run starts, when a window opens — is one DateTimePicker, not a DatePicker beside a TimeField: one value, one error, and a bound such as \"not before now\" checked against the date and the time together through `minValue`. Its `description` names the timezone. A date and a time that are separate, optional choices — a due date with an optional reminder — stay two fields.",
+    "A day that is a dialog's whole question — the day a paused agent resumes — is a Calendar in the Modal, bounded by `minValue` and `maxValue`, with the confirming button disabled until a day is picked and naming it: \"Pause until 3 October\". A date among other fields, or one the person knows, stays a DatePicker.",
     "An error summary Alert above the form after a failed submit, listing each invalid field as a link to it.",
     "The actions in a ButtonGroup at the end: cancel first, the submit Button last — the primary last, as every action row in the system has it, so it is reached after the options it is chosen over and sits at the end of the row. `stack` on a form a phone will fill.",
     "One value on a page that is read far more often than changed — a record's name or description — is an InlineEdit where it stands, not a form of one field: Edit, then Save or Cancel, with `validate` for its rule. Several values that belong together are still a form with one submit.",
@@ -116,6 +118,14 @@
       "onChange",
       "minValue",
       "isRequired"
+    ],
+    "Calendar": [
+      "label",
+      "description",
+      "value",
+      "onChange",
+      "minValue",
+      "maxValue"
     ]
   },
   "variantsUsed": {
@@ -184,6 +194,11 @@
       "dont": "a DatePicker and a TimeField for one moment, with the TimeField's minimum moved when the date is today",
       "do": "<DateTimePicker minValue={now} description=\"Workspace time, UTC.\" … />",
       "why": "the rule spans two fields, so each form writes it again and gets an edge wrong — midnight, a date typed after the time"
+    },
+    {
+      "dont": "a DatePicker as the only field of a Modal",
+      "do": "<Calendar label=\"Resume on\" minValue={tomorrow} … />",
+      "why": "its calendar opens as a popover over the dialog, a second layer for the dialog's one question"
     }
   ]
 }

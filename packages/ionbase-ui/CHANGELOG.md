@@ -1,5 +1,72 @@
 # Changelog
 
+## 0.133.0 — 2026-09-28
+
+### Calendar — one month in the page
+
+**`Calendar`** is the inline calendar: one month in the page, single-date.
+It is for a day chosen by where it falls, such as a day to resume on or a
+delivery day. It also suits a place where a DatePicker's popover would be a
+second layer, such as a Modal. The meta sends a date someone knows to
+DatePicker, a range to DateRangePicker and a moment to DateTimePicker.
+
+**How it behaves:**
+
+- **The value:** `YYYY-MM-DD` in and out, as DatePicker. `onChange` never
+  gets `null`: a day in a grid is changed by picking another.
+- **Bounds:** `minValue`, `maxValue` and `isDateUnavailable` refuse days,
+  and the month arrows stop at the bounds.
+- **Where it opens:** with nothing selected, on today, or on `minValue` when
+  today is before it. `defaultFocusedValue` names another month.
+- **The name:** `label`, then the visible month, so it reads "Resume on
+  October 2026". Paging months says where you are.
+- **Description and errors:** `description` is its accessible description.
+  A value it refuses marks it invalid by itself; `errorMessage`, when given,
+  replaces the description, and the frame takes the error border.
+- **Its own surface:** the pickers' panel without the shadow, since it sits
+  in the page, and as wide as its month.
+- **Disabled:** it keeps showing the chosen day on the disabled surface.
+  React Aria selects no day in a disabled calendar, so this is Calendar's
+  own.
+- **Forms:** `name` posts the value.
+- **No built-in strings:** the month arrows are React Aria's, localised by
+  locale.
+
+The pickers' grids, `SingleCalendar` and `RangeCalendar`, stay internal.
+
+**Fixed: every calendar drew the neighbouring months' days.** Calendar.tsx
+marks those days `hidden`, but `display: flex` on the day beat the attribute.
+So since 0.60.0 every picker's month showed, for example, 30 and 31 August
+before September's 1st. Figma never drew them. They are hidden again in all
+three pickers.
+
+**Figma:** a new Calendar set on the Date Picker page, with Default, Invalid
+and Disabled states and Label, Description and Show Description properties.
+It is the pickers' single-month panel with a label and a description, as Form
+Field draws them. That panel's set is renamed **Calendar Popover**, which is
+what it is, and stays in `unmapped`. Calendar is mapped and its block is
+applied. The audit found 112 of 112 blocks in the file, and they are
+countersigned.
+
+**The demo:** a running agent's card has **Pause until…** beside Pause. It
+opens a Modal whose one question is the day to resume on: a Calendar from
+tomorrow to 90 days out. The confirming button is disabled until a day is
+picked, then names it ("Pause until Oct 15"). The toast and the History say
+until when. The Form pattern now says when a day is a Calendar in a Modal
+rather than a DatePicker.
+
+**Tests:**
+
+- 18 Calendar stories.
+- DatePicker's `TheCalendarDrawsOnlyItsMonth`.
+- One in Forced colours.
+- A smoke check on desktop and mobile. It checks the name with the month,
+  that today cannot be picked and the button is disabled until a day is, and
+  the 15th of next month through to the toast, the History and Resume. It
+  runs axe on the dialog and checks for sideways scroll.
+
+Mutations: 22 of 22 caught (17 in the library, 5 in the demo).
+
 ## 0.132.0 — 2026-09-28
 
 ### AppSwitcher — the other products in a suite, as links
