@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, type CSSProperties } from 'react';
 import {
   Alert,
   Button,
@@ -6,6 +6,7 @@ import {
   Card,
   Checkbox,
   CheckboxGroup,
+  ColorPicker,
   DualListbox,
   Fieldset,
   Link,
@@ -19,6 +20,7 @@ import {
 
 import { listMemberOptions } from '../../data/members';
 import { saveDefaults, type WorkspaceDefaults } from '../../data/settings';
+import { contrast, formatRatio } from '../../lib/contrast';
 import { useDemoSettings } from '../../lib/demo-settings';
 import { href } from '../../lib/router';
 
@@ -30,6 +32,24 @@ const MODEL_OPTIONS = [
 ];
 
 const SAFEGUARDS = ['redactPii', 'approvalForNewAgents'] as const;
+
+/* Northwind's own colours, every one readable under white text. */
+const BRAND_SWATCHES = [
+  { value: '#0B5FFF', label: 'Northwind blue' },
+  { value: '#0F766E', label: 'Teal' },
+  { value: '#7E22CE', label: 'Plum' },
+  { value: '#B91C1C', label: 'Crimson' },
+  { value: '#334155', label: 'Graphite' },
+];
+
+/** Why the email colour can't be saved, or null when it can. */
+function accentProblem(hex: string | null): string | null {
+  if (!hex) return 'Choose a colour for the Approve button.';
+  const ratio = contrast(hex, '#FFFFFF');
+  return ratio < 4.5
+    ? `Too light for white text: ${formatRatio(ratio)}. It needs 4.5:1.`
+    : null;
+}
 
 /* Everyone who can be asked. An invitation not yet accepted cannot answer. */
 const APPROVER_OPTIONS = listMemberOptions().map((m) => ({
@@ -62,6 +82,9 @@ export function DefaultsPanel({
   // Checked on save, then as it changes — the Form pattern's rule.
   const [triedToSave, setTriedToSave] = useState(false);
   const noApprovers = !!draft && draft.approvers.length === 0;
+  // Checked as it changes, not on save: the colour is chosen by eye, and the
+  // ratio is what the eye cannot see.
+  const accentError = draft ? accentProblem(draft.emailAccent) : null;
 
   const disabled = !draft || saving;
   const dirtyKeys =
@@ -76,6 +99,11 @@ export function DefaultsPanel({
 
   async function save() {
     if (!draft) return;
+    if (accentError) {
+      setAnnouncement('');
+      document.getElementById('d-emailAccent')?.focus();
+      return;
+    }
     if (noApprovers) {
       // Refused here, not by the server: the field says why, and focus goes
       // to the list that needs an entry.
@@ -224,6 +252,34 @@ export function DefaultsPanel({
           isDisabled={disabled}
         />
       </Fieldset>
+
+      {/* A colour other people see, with white text on it: the panel knows
+          the text, so the panel checks the pair. */}
+      <div className="demo-email-accent">
+        <ColorPicker
+          id="d-emailAccent"
+          label="Approval email colour"
+          description="The Approve button in approval emails, under white text."
+          value={draft?.emailAccent ?? null}
+          onChange={(emailAccent) => set({ emailAccent })}
+          swatches={BRAND_SWATCHES}
+          isDisabled={disabled}
+          isRequired
+          isInvalid={!!accentError}
+          errorMessage={accentError}
+        />
+        <span
+          className="demo-email-accent__preview"
+          aria-hidden="true"
+          style={
+            {
+              '--demo-email-accent': draft?.emailAccent ?? undefined,
+            } as CSSProperties
+          }
+        >
+          Approve
+        </span>
+      </div>
 
       {dirtyKeys.length > 0 && (
         <div

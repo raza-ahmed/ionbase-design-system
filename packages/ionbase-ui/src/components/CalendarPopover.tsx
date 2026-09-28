@@ -5,7 +5,10 @@ import { Overlay, usePopover, useDialog, mergeProps } from 'react-aria';
 import type { OverlayTriggerState } from 'react-stately';
 
 /*
- * The overlay both pickers open. Internal, like the calendar it holds.
+ * The overlay the date pickers open, and ColorPicker's too. Internal, like
+ * the calendar it holds. ColorPicker has no picker state of its own, so it
+ * passes an overlay trigger state; everything below holds for it as well —
+ * its area takes the arrow keys while it is open, as the grid does.
  *
  * NOT `Popover`, and the difference is not laziness. `Popover` takes a trigger
  * element, clones a ref onto it and runs its own `useOverlayTriggerState`. The
@@ -78,7 +81,15 @@ export function CalendarPopover({
   const { dialogProps: innerDialogProps } = useDialog({}, popoverRef);
 
   return (
-    <Overlay>
+    /*
+     * `shouldContainFocus`, because `usePopover` cannot turn it on from here.
+     * It asks for containment through a context that only exists INSIDE
+     * <Overlay>, and this component calls it from outside — so the request
+     * went nowhere, and Tab from the last control in the popover left it for
+     * the page behind, which `usePopover` has hidden. Wraps back to the
+     * first control, as a modal dialog must.
+     */
+    <Overlay shouldContainFocus>
       {/*
         Transparent, and only there to catch the outside click — the page stays
         visible because the field being edited is part of the context. Modal's

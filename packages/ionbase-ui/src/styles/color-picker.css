@@ -1,0 +1,209 @@
+/*
+ * ColorPicker
+ *
+ *   field     Input's box — `.ion-color-picker` rides on `.ion-input` — with
+ *             the swatch button at its start, where Input puts a start icon,
+ *             and the hex after it in Input's own field
+ *   popover   the date pickers' overlay (date-picker.css), holding a 240px
+ *             panel: the area, the hue strip, then the swatches
+ *   area      240 × 160, saturation across and brightness up, React Aria's
+ *             gradient
+ *   hue       24px strip, radius/full, React Aria's gradient
+ *   thumb     20px, filled with the colour, a 2px surface/default ring and a
+ *             1px border/strong line outside it, so it shows on any colour
+ *   swatch    24px, radius/sm, a 1px border/subtle edge for colours close to
+ *             the ground; the chosen one ringed in text/default
+ *
+ * The colour being edited is the only value from outside the token set. It
+ * arrives as `--ion-color-picker-swatch` and `--ion-color-picker-thumb` —
+ * custom properties set inline, the way Slider's ends arrive — so no inline
+ * style names a raw colour on a colour property.
+ */
+.ion-color-picker {
+  cursor: text;
+}
+
+/* ------------------------------------------------------------------ field */
+
+.ion-color-picker__button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  padding: 0;
+  background: none;
+  border: none;
+  border-radius: var(--radius-xs);
+  cursor: pointer;
+}
+
+.ion-color-picker__button:focus-visible {
+  outline: var(--border-width-thick) solid var(--border-focus);
+  outline-offset: var(--spacing-2);
+}
+
+.ion-color-picker__chip {
+  forced-color-adjust: none;
+  display: block;
+  box-sizing: border-box;
+  width: var(--ion-input-icon-size);
+  height: var(--ion-input-icon-size);
+  background-color: var(--ion-color-picker-swatch, var(--surface-default));
+  border: var(--border-width-default) solid var(--border-strong);
+  border-radius: var(--radius-2xs);
+}
+
+/*
+ * No colour yet: an empty chip struck through, the convention for "none" in
+ * every colour tool, rather than a white chip that reads as white chosen.
+ */
+.ion-color-picker__chip[data-empty='true'] {
+  background-image: linear-gradient(
+    to top right,
+    transparent calc(50% - 0.75px),
+    var(--border-strong) calc(50% - 0.75px),
+    var(--border-strong) calc(50% + 0.75px),
+    transparent calc(50% + 0.75px)
+  );
+}
+
+.ion-color-picker__field {
+  font-variant-numeric: tabular-nums;
+  text-transform: uppercase;
+}
+
+.ion-input[data-disabled='true'] .ion-color-picker__button {
+  cursor: not-allowed;
+}
+
+.ion-input[data-disabled='true'] .ion-color-picker__chip {
+  opacity: 0.4;
+}
+
+.ion-input[data-readonly='true'] .ion-color-picker__button {
+  cursor: default;
+}
+
+/* ---------------------------------------------------------------- popover */
+
+/*
+ * The panel's own measures are set here, not on `.ion-color-picker`: the
+ * popover is portalled to <body>, outside the field, and would inherit none.
+ */
+.ion-color-picker__panel {
+  --ion-color-picker-panel: calc(var(--spacing-40) * 6);
+  --ion-color-picker-thumb-size: var(--spacing-20);
+
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-12);
+  width: var(--ion-color-picker-panel);
+  background-color: var(--surface-raised);
+}
+
+.ion-color-picker__area {
+  width: 100%;
+  height: calc(var(--spacing-40) * 4);
+  border-radius: var(--radius-sm);
+  cursor: crosshair;
+}
+
+.ion-color-picker__hue {
+  width: 100%;
+  height: var(--spacing-24);
+  border-radius: var(--radius-full);
+  cursor: pointer;
+}
+
+/*
+ * React Aria places both thumbs — `left`, `top` and a -50% translate on the
+ * area's, `left` and the translate on the strip's. `top` on the strip is ours.
+ */
+.ion-color-picker__thumb {
+  forced-color-adjust: none;
+  box-sizing: border-box;
+  width: var(--ion-color-picker-thumb-size);
+  height: var(--ion-color-picker-thumb-size);
+  background-color: var(--ion-color-picker-thumb);
+  border: var(--border-width-thick) solid var(--surface-default);
+  border-radius: var(--radius-full);
+  box-shadow:
+    0 0 0 var(--border-width-default) var(--border-strong),
+    var(--ion-shadow-shadow-xs);
+  cursor: grab;
+}
+
+.ion-color-picker__thumb--hue {
+  top: 50%;
+}
+
+.ion-color-picker__thumb[data-dragging='true'] {
+  cursor: grabbing;
+}
+
+.ion-color-picker__thumb[data-focus-visible='true'] {
+  outline: var(--border-width-thick) solid var(--border-focus);
+  outline-offset: var(--spacing-2);
+}
+
+.ion-color-picker__swatches {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-8);
+}
+
+.ion-color-picker__swatch {
+  forced-color-adjust: none;
+  box-sizing: border-box;
+  width: var(--spacing-24);
+  height: var(--spacing-24);
+  background-color: var(--ion-color-picker-swatch);
+  border: var(--border-width-default) solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+}
+
+.ion-color-picker__swatch[data-selected='true'] {
+  box-shadow:
+    0 0 0 var(--border-width-thick) var(--surface-raised),
+    0 0 0 calc(var(--border-width-thick) * 2) var(--text-default);
+}
+
+.ion-color-picker__swatch[data-focus-visible='true'] {
+  outline: var(--border-width-thick) solid var(--border-focus);
+  outline-offset: var(--spacing-6);
+}
+
+/*
+ * FORCED COLOURS: the colour is the content.
+ *
+ * Forced colours would repaint every chip, swatch and thumb in the system
+ * palette, and a colour picker would show no colours. React Aria already opts
+ * the area and the strip out; the chip, the swatches and the thumbs opt out
+ * in their own rules above (`forced-color-adjust: none`), and take system
+ * colours here for the lines that are chrome — the chosen swatch's ring and
+ * every focus ring.
+ */
+@media (forced-colors: active) {
+  .ion-color-picker__chip,
+  .ion-color-picker__swatch {
+    border-color: CanvasText;
+  }
+
+  .ion-color-picker__swatch[data-selected='true'] {
+    box-shadow:
+      0 0 0 var(--border-width-thick) Canvas,
+      0 0 0 calc(var(--border-width-thick) * 2) Highlight;
+  }
+
+  .ion-color-picker__thumb {
+    border-color: Canvas;
+    box-shadow: 0 0 0 var(--border-width-default) CanvasText;
+  }
+
+  .ion-color-picker__button:focus-visible,
+  .ion-color-picker__thumb[data-focus-visible='true'],
+  .ion-color-picker__swatch[data-focus-visible='true'] {
+    outline-color: Highlight;
+  }
+}

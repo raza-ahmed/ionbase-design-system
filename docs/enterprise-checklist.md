@@ -69,7 +69,7 @@
 - [x] **DualListbox** — two listboxes and the buttons between them, `isReorderable` for an order that means something, focus handed to what moved when a button disables, every move announced, stacking below 30rem of its own width; Figma Dual Listbox (Layout × State) and Dual Listbox Option; the demo's Approval order in Settings — 0.126.0
 - [x] **TreeGrid** — the WAI-ARIA treegrid on React Aria's tree-table state: one tab stop, → opens a row and then moves into its cells, ← comes back out, closes it and goes to its parent; rows named by their first column alone, a checkbox per row and a select-all that means every row, drawn as a Table; Figma Tree Grid (Selection) and Tree Grid Row (Kind × Level × State); the demo's Token use by team on Overview — 0.127.0
 - [x] **DateTimePicker** — a component, not a pattern: one segmented field with the calendar and a TimeField in its popover, a wall-clock `YYYY-MM-DDTHH:MM` value, and `minValue` as one moment, so "not before now" spans the date and the time; Figma Date Time Picker (Size × State) and an open example; the demo wizard's First run, with DatePicker kept for Ends on and TimeField for Settings' Quiet hours — 0.128.0
-- [ ] **ColorPicker**
+- [x] **ColorPicker** — the hex field first, a swatch button opening a saturation and brightness area, a hue strip and named presets as one radio group; `#RRGGBB` in and out, no alpha, the hue kept through black and grey, and no contrast check of its own; Figma Color Picker (Size × State) and an open example; the demo's approval email colour in Settings, refused under 4.5:1 against its white text — 0.129.0
 - [ ] **ProgressRing**
 - [ ] **Coachmark / guided tour**
 - [ ] **AppSwitcher**

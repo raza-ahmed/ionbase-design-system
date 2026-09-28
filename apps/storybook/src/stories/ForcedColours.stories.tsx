@@ -8,6 +8,7 @@ import {
   Button,
   ChartLegend,
   Checkbox,
+  ColorPicker,
   Divider,
   DualListbox,
   Logo,
@@ -420,5 +421,38 @@ export const ASelectedTreeGridRowKeepsItsMarks: Story = {
       system('HighlightText'),
     );
     await expect(css(indicator, 'background-color')).toBe(system('Highlight'));
+  },
+};
+
+/**
+ * In a colour picker the colour is the content. Forced colours would repaint
+ * the chip and every swatch in the page colour, and the picker would show
+ * none; they keep their colours, and the chosen swatch's ring is Highlight.
+ */
+export const AColourPickerKeepsItsColours: Story = {
+  render: () => (
+    <ColorPicker
+      label="Brand colour"
+      defaultValue="#0B5FFF"
+      swatches={['#0B5FFF', '#B91C1C']}
+    />
+  ),
+  play: async ({ canvasElement }) => {
+    await forced();
+    const chip = canvasElement.querySelector('.ion-color-picker__chip');
+    await expect(css(chip, 'background-color')).toBe('rgb(11, 95, 255)');
+    await userEvent.click(
+      within(canvasElement).getByRole('button', { name: 'Choose a colour' }),
+    );
+    const dialog = await within(document.body).findByRole('dialog');
+    const [chosen, other] = [
+      ...dialog.querySelectorAll('.ion-color-picker__swatch'),
+    ];
+    await expect(css(other, 'background-color')).toBe('rgb(185, 28, 28)');
+    await expect(css(chosen, 'box-shadow')).toContain(system('Highlight'));
+    await expect(css(other, 'border-top-color')).toBe(system('CanvasText'));
+    const thumb = dialog.querySelector('.ion-color-picker__thumb');
+    await expect(css(thumb, 'background-color')).toBe('rgb(11, 95, 255)');
+    await userEvent.keyboard('{Escape}');
   },
 };

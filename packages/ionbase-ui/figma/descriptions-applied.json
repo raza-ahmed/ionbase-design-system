@@ -19,7 +19,7 @@
   ],
   "file": "gaLbGd0QNb1fUl6BjSpfBA",
   "appliedOn": "2026-09-28",
-  "verifiedInFigma": 107,
+  "verifiedInFigma": 108,
   "applied": {
     "1661:272": {
       "figmaComponent": "AI Label",
@@ -180,6 +180,11 @@
       "figmaComponent": "Date Picker",
       "component": "DatePicker",
       "hash": "04d975589b87b9d3"
+    },
+    "1696:834": {
+      "figmaComponent": "Color Picker",
+      "component": "ColorPicker",
+      "hash": "d8115280c7e43084"
     },
     "1691:763": {
       "figmaComponent": "Date Time Picker",

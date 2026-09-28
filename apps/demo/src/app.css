@@ -590,3 +590,31 @@ body {
 .demo-listing__progress {
   min-block-size: var(--spacing-4);
 }
+
+/*
+ * Settings' approval email colour: the field, and beside it the button as
+ * the email will draw it — the colour chosen, white text on it. The preview
+ * is decoration (aria-hidden); the field's error is what says a colour fails.
+ */
+.demo-email-accent {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: var(--spacing-16);
+}
+
+.demo-email-accent > .ion-field {
+  flex: 1 1 16rem;
+  min-width: 0;
+}
+
+.demo-email-accent__preview {
+  /* Below the label, level with the field. */
+  margin-block-start: calc(var(--type-body-sm-line-height) + var(--spacing-6));
+  padding: var(--spacing-8) var(--spacing-16);
+  background-color: var(--demo-email-accent, var(--surface-muted));
+  border-radius: var(--radius-md);
+  color: var(--text-on-color);
+  font-weight: var(--font-weight-medium);
+  forced-color-adjust: none;
+}

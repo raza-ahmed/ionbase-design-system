@@ -19,6 +19,11 @@ export interface WorkspaceDefaults {
    */
   quietFrom: string | null;
   quietUntil: string | null;
+  /**
+   * `#RRGGBB`: the Approve button in approval emails. White text sits on it,
+   * so it must keep 4.5:1 against white.
+   */
+  emailAccent: string | null;
 }
 
 export interface WorkspaceSettings {
@@ -45,6 +50,7 @@ let server: WorkspaceSettings = {
     approvers: ['usr_kwame', 'usr_ada'],
     quietFrom: '22:00',
     quietUntil: '07:00',
+    emailAccent: '#0B5FFF',
   },
   deletionScheduledFor: null,
 };

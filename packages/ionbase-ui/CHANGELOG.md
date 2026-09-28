@@ -1,5 +1,80 @@
 # Changelog
 
+## 0.129.0 — 2026-09-28
+
+### ColorPicker — a colour a person chooses
+
+**`ColorPicker`** is for a colour the user picks, such as a brand accent, a
+label's colour or a chart series. It is a hex field with a swatch button. The
+button opens a saturation and brightness area, a hue strip and any preset
+swatches.
+
+**How it behaves:**
+
+- **The field first:** typing `#0B5FFF` is the fastest way to a known colour,
+  and the only one that needs no pointer. The hex commits on Enter or blur.
+  Shorthand such as `f00` is accepted as typing and expanded; anything else
+  goes back to the last colour.
+- **The value:** `#RRGGBB`, upper case out and either case in. A name,
+  `rgb()` or shorthand passed as a prop throws with the prop's name.
+- **The popover:** a modal dialog named by the field's label, with focus in
+  the area. The arrow keys move saturation and brightness, the hue strip is a
+  slider, and Tab goes on to the presets. Escape gives focus back to the
+  button.
+- **Presets:** `swatches` are one radio group, named by each swatch's
+  `label`, or by React Aria's colour name in the reader's language.
+- **The hue is kept:** hex has no hue for black or grey, so the picker holds
+  its own HSB colour. Dragged to black and back up, a blue comes back blue.
+- **Two events:** `onChange` fires on every step of a drag, and `onChangeEnd`
+  once a change is finished. Save on `onChangeEnd`.
+- **Left out on purpose:** there is no alpha, and there is no contrast check,
+  because the picker cannot know what sits on the colour. The meta says to
+  check the pair and pass `isInvalid`.
+- **Forced colours:** the chip, the swatches and the thumbs keep their
+  colours. Their edges and the chosen swatch's ring take the system's.
+- **Strings:** the swatch button and the presets' group name, through
+  `labels`. The strings gate now counts 165.
+
+**Figma:** Color Picker is drawn on a page of its own.
+
+- **Axes:** Size × State (21 variants), cloned from Date Time Picker so every
+  binding is Input's. The swatch button sits where Input puts a start icon.
+  Default, Hover and Focus are empty, with a struck-through chip.
+- **Example:** "Example — colour, open" shows the area, the hue strip and the
+  presets, with the chosen one ringed.
+- **Mapping:** it is mapped, and its code block is applied. The audit found
+  108 of 108 blocks in the file, and they are countersigned.
+- **`components.json`:** now exactly what the export produces. Dual Listbox,
+  Dual Listbox Option and Tree Grid Row had been written by hand, with
+  defaults the export does not emit, and the file was sorted by hand.
+
+**The demo:** Settings → Workspace defaults has a new **Approval email
+colour**, with Northwind's colours as named presets and a preview of the
+Approve button. White text sits on it, so a colour under 4.5:1 is refused as
+it changes and again on save, with focus sent to the field. The SettingsPanel
+pattern now says the same.
+
+**Found on the way:**
+
+- **The date pickers' popover let focus out.** `usePopover` asks `<Overlay>`
+  for focus containment through a context, and CalendarPopover called it from
+  outside the `<Overlay>` it renders. Tab from the last control went to
+  `<body>` rather than back to the first. This was true of DatePicker,
+  DateRangePicker and DateTimePicker. The fix is `shouldContainFocus`, with a
+  story.
+- **React Aria's colour field:** it commits on blur only, ignores `id`, and
+  reads `isInvalid` from its state rather than its props. The demo's smoke
+  check found the last of these: `aria-invalid` was never set. All three are
+  handled, and written up in AGENTS.md with the hue problem.
+
+**Tests:**
+
+- 28 ColorPicker stories.
+- One each in Localised strings, Forced colours and DatePicker.
+- A smoke check of Settings' approval email colour, on desktop and mobile.
+
+Mutations: 23 of 23 caught (15 in the library, 8 in the demo).
+
 ## 0.128.0 — 2026-09-28
 
 ### DateTimePicker — a date and a time as one value
