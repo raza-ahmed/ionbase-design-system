@@ -1,0 +1,143 @@
+/*
+ * ProgressRing
+ *
+ *   ring   Small 20px (the icon ramp's md, beside text), Medium 56px,
+ *          Large 80px; the stroke is a tenth of it — see ProgressRing.tsx.
+ *          "100%" is 34.7px wide at 12px, the smallest type token, so
+ *          Medium is the first rung it fits inside with room
+ *   track  surface/muted, ProgressBar's track
+ *   fill   surface/primary, or the intent's surface, ProgressBar's fills
+ *   text   beside the ring, body/sm: the label in text/default, the value
+ *          in text/secondary, as ProgressBar's header
+ *
+ * The percentage arrives as a unitless custom property and dashes a circle
+ * whose `pathLength` is 100, so the only inline value is a number on a
+ * token-named property — ProgressBar's bargain.
+ */
+.ion-progress-ring {
+  --ion-progress-ring-size: var(--spacing-56);
+  --ion-progress-ring-fill: var(--surface-primary);
+  --ion-progress-ring-pct: 0;
+
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-8);
+  font-family: var(--font-family-sans);
+  font-size: var(--type-body-sm);
+  line-height: var(--type-body-sm-line-height);
+}
+
+.ion-progress-ring--sm {
+  --ion-progress-ring-size: var(--icon-size-md);
+
+  gap: var(--spacing-6);
+}
+
+.ion-progress-ring--lg {
+  --ion-progress-ring-size: var(--spacing-80);
+
+  gap: var(--spacing-12);
+}
+
+.ion-progress-ring--success {
+  --ion-progress-ring-fill: var(--surface-success);
+}
+
+.ion-progress-ring--warning {
+  --ion-progress-ring-fill: var(--surface-warning);
+}
+
+.ion-progress-ring--error {
+  --ion-progress-ring-fill: var(--surface-error);
+}
+
+.ion-progress-ring__ring {
+  position: relative;
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: var(--ion-progress-ring-size);
+  height: var(--ion-progress-ring-size);
+}
+
+.ion-progress-ring__ring svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+
+  /* From twelve o'clock. Not mirrored in right to left: a clock is not. */
+  transform: rotate(-90deg);
+}
+
+.ion-progress-ring__track,
+.ion-progress-ring__fill {
+  fill: none;
+  stroke-width: 10;
+}
+
+.ion-progress-ring__track {
+  stroke: var(--surface-muted);
+}
+
+.ion-progress-ring__fill {
+  stroke: var(--ion-progress-ring-fill);
+  stroke-dasharray: var(--ion-progress-ring-pct) 100;
+  transition: stroke-dasharray var(--ion-duration-base) var(--ion-ease-out);
+}
+
+/* Inside Medium and Large only; Small puts it beside the ring. */
+.ion-progress-ring__percent {
+  position: relative;
+  color: var(--text-default);
+  font-size: var(--type-caption);
+  font-variant-numeric: tabular-nums;
+  line-height: var(--type-caption-line-height);
+  font-weight: var(--font-weight-medium);
+}
+
+.ion-progress-ring--lg .ion-progress-ring__percent {
+  font-size: var(--type-body);
+  line-height: var(--type-body-line-height);
+}
+
+.ion-progress-ring__text {
+  display: inline-flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.ion-progress-ring--sm .ion-progress-ring__text {
+  flex-flow: row wrap;
+  column-gap: var(--spacing-6);
+}
+
+.ion-progress-ring__label {
+  color: var(--text-default);
+}
+
+.ion-progress-ring__value {
+  color: var(--text-secondary);
+  font-variant-numeric: tabular-nums;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ion-progress-ring__fill {
+    transition-duration: 1ms;
+  }
+}
+
+/*
+ * Forced colours leave SVG strokes set in CSS alone, so a primary fill on a
+ * muted track would keep two token colours the mode means to replace: the
+ * track goes to GrayText and the fill to Highlight, ProgressBar's fill.
+ */
+@media (forced-colors: active) {
+  .ion-progress-ring__track {
+    stroke: GrayText;
+  }
+
+  .ion-progress-ring__fill {
+    stroke: Highlight;
+  }
+}

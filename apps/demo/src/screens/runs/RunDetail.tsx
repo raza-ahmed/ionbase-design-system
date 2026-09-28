@@ -18,6 +18,7 @@ import {
   Link,
   NumberInput,
   PageHeader,
+  ProgressRing,
   Select,
   StreamingText,
   ToolCall,
@@ -124,6 +125,9 @@ export function RunDetail({ runId }: { runId: string }) {
   const doneSteps = reached
     .filter((s) => s.status === 'done')
     .map((s) => s.step.done);
+  // Done out of planned, not started: a step still running has not finished.
+  const stepsDone = state.statuses.filter((st) => st === 'done').length;
+  const stepsPlanned = script.steps.length;
   const notDone = script.steps
     .filter((_, i) => state.statuses[i] === 'skipped')
     .map((step) => step.active[0].toLowerCase() + step.active.slice(1));
@@ -141,10 +145,21 @@ export function RunDetail({ runId }: { runId: string }) {
           </Breadcrumb>
         }
         status={
-          ended && (
+          ended ? (
             <Badge intent={PHASE_BADGE[state.phase].intent}>
               {PHASE_BADGE[state.phase].text}
             </Badge>
+          ) : (
+            // How far, at a glance, above a step log that may be off screen
+            // on a phone. The log says where; the Badge replaces this at the end.
+            <ProgressRing
+              size="sm"
+              label="Run progress"
+              value={stepsDone}
+              max={stepsPlanned}
+              valueText={`${stepsDone} of ${stepsPlanned} steps done`}
+              isValueVisible
+            />
           )
         }
         actions={

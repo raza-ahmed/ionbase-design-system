@@ -1217,6 +1217,100 @@ try {
   }
 
   /*
+   * ProgressRing, in a live run's header: a progressbar named "Run
+   * progress", out of the steps planned, whose value is the log's done steps
+   * read in the same frame and whose valuetext — shown beside it — says so.
+   * Stopped, the ring gives way to the Badge. Inside the header on a phone;
+   * axe on the header.
+   */
+  for (const [device, width, height] of [
+    ['desktop', 1280, 900],
+    ['mobile', 390, 844],
+  ]) {
+    const where = `progress ring (light, ${device})`;
+    if (skip(where)) continue;
+    const context = await browser.newContext({ viewport: { width, height } });
+    await context.addInitScript(() =>
+      localStorage.setItem(
+        'ionbase-ops:demo-settings',
+        JSON.stringify({ theme: 'light', latency: 0 }),
+      ),
+    );
+    const page = await context.newPage();
+    page.on('pageerror', (e) => fail(where, `exception: ${e.message}`));
+    try {
+      await page.goto(`${BASE}/#/runs/run_4821`);
+      const header = page.locator('.ion-page-header');
+      const ring = header.getByRole('progressbar', { name: 'Run progress' });
+      await ring.waitFor({ timeout: 10_000 });
+      // Wait for the log to have a finished step, then read both at once.
+      await page.waitForFunction(
+        () => document.querySelectorAll('[data-status="done"]').length > 0,
+        null,
+        { timeout: 10_000 },
+      );
+      const read = await page.evaluate(() => {
+        const bar = document.querySelector(
+          '.ion-page-header [role="progressbar"]',
+        );
+        return {
+          now: Number(bar.getAttribute('aria-valuenow')),
+          max: Number(bar.getAttribute('aria-valuemax')),
+          text: bar.getAttribute('aria-valuetext'),
+          shown: bar.parentElement.querySelector('.ion-progress-ring__value')
+            ?.textContent,
+          done: document.querySelectorAll(
+            '.ion-agent-activity [data-status="done"]',
+          ).length,
+          inside:
+            bar.closest('.ion-page-header').getBoundingClientRect().right >=
+            bar.parentElement.getBoundingClientRect().right - 0.5,
+        };
+      });
+      if (read.now !== read.done)
+        fail(where, `the ring says ${read.now} done, the log ${read.done}`);
+      // run_4821's script plans six steps; the log shows only those reached.
+      if (read.max !== 6)
+        fail(where, `the ring is out of ${read.max} steps, not the 6 planned`);
+      const expected = `${read.now} of ${read.max} steps done`;
+      if (read.text !== expected)
+        fail(where, `the ring is spoken as "${read.text}"`);
+      if (read.shown !== expected)
+        fail(where, `the ring shows "${read.shown}" beside it`);
+      if (!read.inside) fail(where, 'the ring runs past the header');
+      if (device === 'desktop') {
+        await page.addScriptTag({ content: axeSource });
+        const violations = await page.evaluate(async () => {
+          const result = await window.axe.run(
+            document.querySelector('.ion-page-header'),
+            { resultTypes: ['violations'] },
+          );
+          return result.violations.map(
+            (v) => `${v.impact} ${v.id} — ${v.nodes[0].target.join(' ')}`,
+          );
+        });
+        for (const v of violations) fail(where, `axe ${v} in the header`);
+      }
+      await header.getByRole('button', { name: 'Stop run' }).click();
+      await header.getByText('Stopped', { exact: true }).waitFor({
+        timeout: 10_000,
+      });
+      if (await ring.count())
+        fail(where, 'the ring stayed after the run was stopped');
+      if (
+        await page.evaluate(
+          () => document.documentElement.scrollWidth > window.innerWidth,
+        )
+      )
+        fail(where, 'the page scrolls sideways');
+    } catch (e) {
+      fail(where, `did not run: ${e.message.split('\n')[0]}`);
+    }
+    groupsChecked++;
+    await context.close();
+  }
+
+  /*
    * SplitButton, on the wizard's Review step: a saved draft with the first
    * three steps done opens there. "Create agent" is the main half and makes
    * the agent paused; the menu half, "More options, Create agent", offers

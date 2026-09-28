@@ -19,7 +19,7 @@
   ],
   "file": "gaLbGd0QNb1fUl6BjSpfBA",
   "appliedOn": "2026-09-28",
-  "verifiedInFigma": 108,
+  "verifiedInFigma": 109,
   "applied": {
     "1661:272": {
       "figmaComponent": "AI Label",
@@ -330,6 +330,11 @@
       "figmaComponent": "Progress Bar",
       "component": "ProgressBar",
       "hash": "b05185a273f6eae5"
+    },
+    "1703:333": {
+      "figmaComponent": "Progress Ring",
+      "component": "ProgressRing",
+      "hash": "fda7be4ae97072e7"
     },
     "1393:387": {
       "figmaComponent": "Prompt Input",

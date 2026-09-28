@@ -13,6 +13,11 @@
       "why": "a spinner over measurable work discards information the user wants — a spinner and a 90%-complete upload look identical"
     },
     {
+      "when": "the work is measurable and has to fit a square or a line of text",
+      "use": "ProgressRing",
+      "why": "the ring is the spinner's size with the fraction in it; a spinner there discards what the user wants to know"
+    },
+    {
       "when": "a region is being replaced by content with a known shape",
       "use": "Skeleton",
       "why": "a skeleton holds the layout so it does not jump when content lands; a spinner leaves a hole that then reflows"

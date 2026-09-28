@@ -128,7 +128,7 @@ IonBase column names the component that covers it.
 | Page banner                     |   ●    |     |  ●   | `Banner`             |
 | Notifications panel             |   ●    |     |  ●   | `NotificationsPanel` |
 | Progress bar                    |   ●    |  ●  |  ●   | `ProgressBar`        |
-| Progress ring (determinate)     |        |  ●  |  ●   | —                    |
+| Progress ring (determinate)     |        |  ●  |  ●   | `ProgressRing`       |
 | Spinner                         |   ●    |  ●  |  ●   | `Spinner`            |
 | Inline loading (pending → done) |   ●    |     |      | `InlineLoading`      |
 | Skeleton                        |   ●    |     |      | `Skeleton`           |
@@ -262,7 +262,7 @@ is to build:
 - **TreeGrid** — hierarchical rows in a table. Depends on TreeView and Table work. — shipped 0.127.0.
 - **DateTimePicker** — decided: a component, because a bound such as "not before now" spans the date and the time, and two fields leave that rule to every caller. Shipped 0.128.0.
 - **ColorPicker** — a hex field first, with an area, a hue strip and named presets behind its swatch button; `#RRGGBB`, no alpha, and no contrast check of its own, because only the caller knows what sits on the colour. Shipped 0.129.0.
-- **ProgressRing** — circular determinate progress.
+- **ProgressRing** — circular determinate progress: determinate only, since a ring with no value is a Spinner. Shipped 0.130.0.
 - **Coachmark / guided tour**
 - **AppSwitcher** — the grid of products in a suite's header.
 - **Calendar**, exported standalone — `Calendar.tsx` already exists internally.

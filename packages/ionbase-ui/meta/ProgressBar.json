@@ -15,6 +15,11 @@
     {
       "when": "the region is being replaced by content",
       "use": "Skeleton"
+    },
+    {
+      "when": "measurable progress has to fit a square or a line of text — a header's status, a table cell",
+      "use": "ProgressRing",
+      "why": "a bar needs a row's width to be read; a ring holds the same fraction in the space of an icon"
     }
   ],
   "variants": {

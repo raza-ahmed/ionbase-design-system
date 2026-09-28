@@ -1,0 +1,93 @@
+{
+  "status": "stable",
+  "summary": "How far a piece of work has got, as a ring that fills clockwise from the top: a value out of `max`, a required label, an intent for the thing measured. Determinate only.",
+  "useWhen": [
+    "measurable progress has to fit a square or a line of text — a page header's status, a table cell, beside a step count",
+    "one figure is the point of a card — a setup that is 3 of 5 done, a quota at 72% — and a ring with the percentage inside reads at a glance",
+    "the work is measurable from the start; it will not begin as an unknown and become a number"
+  ],
+  "useInstead": [
+    {
+      "when": "the work cannot be measured — a wait with no fraction",
+      "use": "Spinner",
+      "why": "a ring stuck at 0% says the work has not started; a spinner says it is running and unmeasured"
+    },
+    {
+      "when": "the work starts unmeasurable and becomes measurable, such as an upload before its size is known",
+      "use": "ProgressBar",
+      "why": "ProgressBar keeps its node when the value arrives, so the change is announced; swapping a Spinner for a ring remounts it and goes silent"
+    },
+    {
+      "when": "there is room for a row, or several are compared down a list",
+      "use": "ProgressBar",
+      "why": "lengths side by side compare at a glance; rings side by side are angles, which people read far less accurately"
+    }
+  ],
+  "composition": {
+    "order": ["ProgressRing"],
+    "note": "`label` names the work and is required, shown or not. Give `valueText` whenever a count means more than a percentage — \"3 of 5 steps done\" — and it is both spoken and shown beside the ring. Small sits in a line of text and puts its value beside it; Medium and Large hold the percentage inside.",
+    "example": "<ProgressRing size=\"sm\" label=\"Run progress\" value={done} max={total} valueText={`${done} of ${total} steps done`} isValueVisible />"
+  },
+  "variants": {
+    "size": {
+      "sm": {
+        "use": "in a line of text — a header's status, a table cell; its value goes beside it"
+      },
+      "md": {
+        "use": "the default — a card, with the percentage inside"
+      },
+      "lg": {
+        "use": "the one figure a card or an empty page is about"
+      }
+    },
+    "intent": {
+      "primary": { "use": "the default — work proceeding normally" },
+      "success": {
+        "use": "work that finished, where the ring stays on screen as a record"
+      },
+      "warning": {
+        "use": "a quota approaching its limit",
+        "note": "warning describes the VALUE, not a failure of the ring"
+      },
+      "error": {
+        "use": "a quota exceeded, or a job that failed part-way",
+        "note": "reserve this for the measured thing being bad"
+      }
+    }
+  },
+  "a11y": {
+    "requires": [
+      "`label` — it is required, because role=\"progressbar\" announces a number and a number with no noun sounds like information while carrying none",
+      "`valueText` when a percentage is not what a person wants read aloud — \"3 of 5 steps done\""
+    ],
+    "guarantees": [
+      "one progressbar named by `label`, shown or not, with `aria-valuenow`, its bounds, and `aria-valuetext` from `valueText`",
+      "the drawing and the percentage inside it are hidden from assistive tech: the value is already announced",
+      "`value` is held to 0..`max`, and `max={0}` draws an empty ring rather than NaN",
+      "the ring fills clockwise from twelve o'clock in every direction; in right to left, only the text beside it moves",
+      "\"100%\" fits inside Medium and Large with room to spare",
+      "in forced colours the track is GrayText and the fill Highlight"
+    ],
+    "notes": [
+      "Not a live region. A value that changes while the reader waits for it belongs in a status message as well — \"Indexing finished\" — not in a ring that announces every step.",
+      "The fill is `surface/*`, as ProgressBar's is, and its track is `surface/muted`."
+    ]
+  },
+  "antiPatterns": [
+    {
+      "dont": "<ProgressRing label=\"Loading\" value={0} /> while the total is unknown",
+      "do": "<Spinner label=\"Loading\" />, or a ProgressBar with no `value`",
+      "why": "a ring at 0% says nothing has happened; unknown progress is a different message"
+    },
+    {
+      "dont": "a column of rings comparing agents' budgets",
+      "do": "a list of ProgressBars",
+      "why": "people compare lengths well and angles badly, so the column hides which is nearest its limit"
+    },
+    {
+      "dont": "intent=\"error\" because the request failed",
+      "do": "leave the ring and put the failure in an Alert",
+      "why": "intent describes the value being measured; a failed request is a different message"
+    }
+  ]
+}
