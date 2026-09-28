@@ -1,8 +1,10 @@
 # Demo app — IonBase as a real product
 
 _Proposal, 17 Sep 2026. Product story and chart library agreed the same day.
-Phases 0–3 done 17 Sep 2026. Phase 4 (ship it) built, awaiting review. After
-that the demo grows through the coverage loop in §5._
+Phases 0–4 done: the demo is live at
+[`/demo/`](https://raza-ahmed.github.io/ionbase-design-system/demo/), deployed
+from `main`, and CI smoke-tests every route. It grows through the coverage loop
+in §5._
 
 A showcase dashboard that lives in this repo and consumes `ionbase-ui` and
 `ionbase-icons` **exactly as an outside app would**. It has two jobs:
@@ -145,7 +147,7 @@ stand-ins and chart needs. It is the demo's feedback to the design system.
 
 ## 6. Open questions
 
-| Question                                                                                            | Default if unanswered         |
-| --------------------------------------------------------------------------------------------------- | ----------------------------- |
-| Should the demo also be an eval target (an agent builds a screen from the patterns and we diff it)? | Later — after phase 4         |
-| Separate Pages path (`/demo/`) or its own domain?                                                   | `/demo/` on the existing site |
+| Question                                                                                            | Answer                                                                   |
+| --------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------ |
+| Should the demo also be an eval target (an agent builds a screen from the patterns and we diff it)? | Open. Phase 4 is done, so it is due; tracked in the open-items checklist |
+| Separate Pages path (`/demo/`) or its own domain?                                                   | **Closed: `/demo/`** on the existing site, the default, which shipped    |
