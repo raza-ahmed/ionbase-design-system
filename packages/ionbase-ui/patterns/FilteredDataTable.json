@@ -1,0 +1,152 @@
+{
+  "summary": "The DataTable pattern with its filters, search, sort and page kept in the address — so a reload, a shared link and Back show the same listing — and a refilter that keeps the rows on screen until the new ones land.",
+  "useWhen": [
+    "a DataTable people filter to find a set and come back to: a link sent to a colleague, a bookmark, a reload after lunch",
+    "the listing is paged or sorted on a server, so the query is the whole state and the rows are its answer",
+    "Back is expected to undo a filter, the way it undoes a page"
+  ],
+  "useInstead": [
+    {
+      "when": "a table with no filters, or one short enough to read whole",
+      "use": "the DataTable pattern alone",
+      "why": "an address that says nothing a plain one does not is noise in every link"
+    },
+    {
+      "when": "a filter set that only applies once confirmed — many fields, a date range, a builder",
+      "use": "a Drawer of filters with Apply, whose applied values are then written to the address as here",
+      "why": "writing each field to the address as it changes would refetch on every half-built filter"
+    }
+  ],
+  "composes": [
+    "Table",
+    "TableHead",
+    "TableBody",
+    "TableRow",
+    "TableCell",
+    "SearchField",
+    "Select",
+    "MultiSelect",
+    "TagGroup",
+    "Tag",
+    "Button",
+    "Pagination",
+    "TableBatchBar",
+    "ProgressBar",
+    "EmptyState",
+    "Alert",
+    "Skeleton"
+  ],
+  "structure": [
+    "Everything in the DataTable pattern holds: toolbar, active filters, batch bar, sortable headers, the three states. This pattern is where its query lives and how it changes.",
+    "The address holds the listing: the search, each filter, the sort and the page size and page, as query parameters after the route — `#/agents?q=invoice&status=paused&team=finance&team=legal&sort=-runs7d&page=2&size=20`. A value at its default is left out, so the plain address is the default view and a link carries only what was chosen. A filter of several values repeats its key; a descending sort is the column with a minus.",
+    "Not in the address: the selection, which is the reader's and not the listing's — a link must not tick rows for whoever opens it — and the columns shown and their widths, which are a viewer's own view, kept in their browser and passed to `useTableColumns` as `initial`.",
+    "Read the address defensively. It is typed, pasted and kept for months: a status since renamed, a team since deleted, page \"abc\" — each falls back to its default. Never an error page for a query, and a page past the end is the last page, with the address corrected in place.",
+    "A deliberate change — a filter, a sort, a page, the page size — pushes an entry, so Back undoes it. Typing a search replaces the entry, so Back does not unspell it. Debounce the write, not the value: start the timer from the search box's `onChange`, and let only typing start it. A debounced value written by an effect fires after a Back pressed while it was waiting, and writes the old search over it.",
+    "A change to anything but the page starts again at page 1. A change to which rows match — anything but the page — clears the selection, including one that arrives by Back: acting on rows chosen from another listing is how a bulk action surprises someone.",
+    "The controls follow the address, not the other way round. When it changes by Back or a link, each control shows what it says — the SearchField its search, unless the user is mid-typing; the Select and MultiSelect their values, read from the address directly; the sort through `useTableSort`'s `setSort`, only when the address says something the hook does not, so a header press is not undone before the address catches up.",
+    "Tell the page as soon as the address is written, not on `hashchange` or `popstate`: those come a task later, and a second pick in an open MultiSelect before then is built on the first pick's stale value, and replaces it.",
+    "A refilter keeps the rows it has on screen until the next ones land, with `aria-busy` on their container and an indeterminate ProgressBar (size sm, labelled \"Updating agents\") in space kept for it above them. Skeletons are for the first load only. Swapping the table for skeletons on every change jumps the page under the pointer, and unmounts the header a sort was just pressed on, dropping focus to the page.",
+    "The result count, announced once the rows land (DataTable's live region), says what the filters found; while they load, it is empty, so nothing stale is read."
+  ],
+  "drivenBy": {
+    "hook": "useTableSort",
+    "note": "Start it from the address (`useTableSort(fromAddress)`), write its `sort` to the address when a header changes it, and call `setSort` when the address changes by Back or a link — only when the two differ. It holds the sort; the address is where the sort is kept."
+  },
+  "states": {
+    "loading": {
+      "must": "The first load: DataTable's header and skeleton rows. A refilter: the last rows stay, `aria-busy` on their container and an indeterminate ProgressBar above them, until the new ones replace them.",
+      "why": "replacing the rows on every refilter moves every control on the page and drops focus from the header that was pressed",
+      "a11y": "the ProgressBar has a `label`; the count's live region is empty while loading and says the new count once the rows land"
+    },
+    "empty": {
+      "must": "No rows match: an EmptyState, `reason=\"no-results\"`, saying what was searched for and offering Clear filters. The address keeps the filters, so a shared link to an empty listing still says what matched nothing.",
+      "why": "clearing the filters from the address on an empty result would turn a colleague's link into a different listing with no explanation"
+    },
+    "error": {
+      "must": "An Alert with Try again; the controls and the address keep the query, so Try again and a reload retry the same listing.",
+      "why": "an error that resets the filters makes the user rebuild the query they were retrying",
+      "a11y": "Alert takes `role=\"alert\"` from its intent — do not add your own"
+    }
+  },
+  "propsUsed": {
+    "SearchField": ["size", "value", "onChange", "placeholder", "aria-label"],
+    "Select": ["size", "options"],
+    "MultiSelect": [
+      "size",
+      "aria-label",
+      "options",
+      "value",
+      "onChange",
+      "hideTags",
+      "placeholder"
+    ],
+    "TagGroup": ["label", "items", "onRemove"],
+    "Pagination": [
+      "page",
+      "pageCount",
+      "onPageChange",
+      "showPageSize",
+      "pageSize",
+      "pageSizeOptions",
+      "onPageSizeChange",
+      "labels"
+    ],
+    "TableCell": ["sortDirection", "onSort"],
+    "TableBatchBar": ["count", "total", "onClear"],
+    "ProgressBar": ["label", "size"],
+    "EmptyState": ["reason", "title", "description", "action"],
+    "Alert": ["intent", "title", "actions"]
+  },
+  "variantsUsed": {
+    "ProgressBar": {
+      "size": ["sm"]
+    },
+    "EmptyState": {
+      "reason": ["no-results"]
+    },
+    "Alert": {
+      "intent": ["error"]
+    }
+  },
+  "a11y": {
+    "requires": [
+      "focus kept where it was through a refilter — on the header pressed, in the search box being typed in — which is why the rows are kept rather than remounted",
+      "a `label` on the refilter's ProgressBar, saying what is updating",
+      "the result count in DataTable's live region once the rows land"
+    ],
+    "notes": [
+      "Back undoing a filter is announced by the count's live region like any other refilter, and the controls show the value Back restored."
+    ]
+  },
+  "antiPatterns": [
+    {
+      "dont": "filters held only in component state",
+      "do": "the address, with defaults left out",
+      "why": "a reload throws the listing away, a link opens someone else's default view, and Back leaves the page instead of undoing the last filter"
+    },
+    {
+      "dont": "a history entry for each keystroke of a search",
+      "do": "replace the entry while typing; push a filter, a sort or a page",
+      "why": "Back unspells the search letter by letter before it undoes anything the user chose"
+    },
+    {
+      "dont": "a debounced value written to the address by an effect",
+      "do": "a timer started from the search box's `onChange`",
+      "why": "a Back pressed while it waits is overwritten a quarter of a second later by the old search"
+    },
+    {
+      "dont": "the selection in the address",
+      "why": "a shared link would tick rows for the colleague who opens it, and a bulk action would reach rows they never chose"
+    },
+    {
+      "dont": "an error page for a query value the app no longer knows",
+      "do": "that value's default",
+      "why": "an old bookmark is still the way someone gets to the list; one renamed status should not lock them out of it"
+    },
+    {
+      "dont": "skeletons on every refilter",
+      "do": "the last rows, busy, until the next land",
+      "why": "the header just pressed is unmounted, focus falls to the page, and every control below the table jumps twice"
+    }
+  ]
+}

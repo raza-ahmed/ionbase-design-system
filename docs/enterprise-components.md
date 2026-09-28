@@ -275,8 +275,9 @@ A missing pattern is a gap in the same way as a missing component — see
 
 - **FullPageError** — 403, 404, 500 and offline. Shipped 0.123.0, `patterns/FullPageError.json`.
 - **ListDetail** — a List beside a SidePanel. The shape of most admin UIs. Shipped 0.124.0, `patterns/ListDetail.json`; a Table beside a SidePanel stays in `DataTable`.
-- **FilteredDataTable** — extend `DataTable` with filters, search and batch actions
-  once the components exist.
+- **FilteredDataTable** — shipped 0.125.0, `patterns/FilteredDataTable.json`:
+  the filters, search and batch actions had already landed in `DataTable`, so it
+  covers the listing in the address and a refilter that keeps its rows.
 
 ### Cross-cutting — enterprise buyers audit these, not just components
 

@@ -80,7 +80,7 @@
 
 - [x] **FullPageError** — 404, 403, 500 and offline as one pattern, always inside the shell; the demo's four kinds on one component, an error boundary, a Member role and real offline paths, with a smoke check of each — 0.123.0
 - [x] **ListDetail** — a List beside the selected record in a SidePanel: the selection follows focus and the panel follows it without taking focus (SidePanel `autoFocus`), the selection in the address and replaced rather than pushed, rows opened on a press below 768px; the demo's Members page — 0.124.0
-- [ ] **FilteredDataTable** — _needs SearchField, MultiSelect, Table: row selection_
+- [x] **FilteredDataTable** — scoped to what DataTable lacked: the listing in the address (search, filters, sort, page, size; defaults left out, read defensively), a filter pushed and a search replaced so Back undoes one and not the other, the selection cleared on any new listing, and a refilter that keeps its rows busy; the demo's Agents page — 0.125.0
 
 ## Cross-cutting audits
 

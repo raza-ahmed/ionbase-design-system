@@ -4344,6 +4344,252 @@ try {
   }
 
   /*
+   * FilteredDataTable, as Agents: the listing lives in the address. A link
+   * opens it with its filters, sort and page; a value that means nothing
+   * falls back to its default; a page past the end becomes the last. A
+   * filter survives a reload, and Back undoes it — and drops a selection it
+   * would have kept. Typing a search replaces the entry, never adds one, and
+   * the box follows the address on Back. A refilter keeps the rows on screen
+   * and busy, with focus still on the header just pressed.
+   */
+  check: {
+    const where = 'filtered data table (light, desktop)';
+    if (skip(where)) break check;
+    const context = await browser.newContext({
+      viewport: { width: 1280, height: 900 },
+    });
+    await context.addInitScript(() => {
+      const saved = JSON.parse(
+        localStorage.getItem('ionbase-ops:demo-settings') ?? '{}',
+      );
+      localStorage.setItem(
+        'ionbase-ops:demo-settings',
+        JSON.stringify({ theme: 'light', latency: 0, ...saved }),
+      );
+    });
+    const page = await context.newPage();
+    page.on('pageerror', (e) => fail(where, `exception: ${e.message}`));
+    const table = page.getByRole('region', { name: 'Agents', exact: true });
+    const param = (name) =>
+      page.evaluate(
+        (n) =>
+          new window.URLSearchParams(
+            window.location.hash.split('?')[1] ?? '',
+          ).getAll(n),
+        name,
+      );
+    const tags = () =>
+      page
+        .getByRole('grid', { name: 'Active filters' })
+        .getByRole('row')
+        .allTextContents()
+        .catch(() => []);
+    const status = page.locator('select[aria-label="Status"]');
+    const searchBox = page.getByRole('searchbox', { name: 'Search agents' });
+    const statuses = () =>
+      table
+        .locator('tbody tr')
+        .evaluateAll((rows) =>
+          rows.map((r) => r.querySelector('.ion-status')?.textContent?.trim()),
+        );
+    try {
+      // A link opens the listing it names.
+      await page.goto(
+        `${BASE}/#/agents?status=paused&team=growth&sort=-runs7d`,
+      );
+      await table.waitFor({ timeout: 10_000 });
+      if ((await status.inputValue()) !== 'paused')
+        fail(where, 'a link: the Status filter did not follow the address');
+      const linked = await tags();
+      if (
+        !linked.some((t) => t.includes('Status: Paused')) ||
+        !linked.some((t) => t.includes('Team: Growth'))
+      )
+        fail(where, `a link: the active filters are ${JSON.stringify(linked)}`);
+      const shown = await statuses();
+      if (!shown.length || shown.some((s) => s !== 'Paused'))
+        fail(where, `a link: rows are ${JSON.stringify(shown)}`);
+      const sorted = await page
+        .locator('th[aria-sort]')
+        .evaluate((th) => [th.textContent, th.getAttribute('aria-sort')]);
+      if (!sorted[0].includes('Runs') || sorted[1] !== 'descending')
+        fail(where, `a link: sorted by ${JSON.stringify(sorted)}`);
+
+      // Values that mean nothing are defaults, not an error page.
+      await page.goto(
+        `${BASE}/#/agents?status=bogus&team=nope&sort=x&page=abc`,
+      );
+      await page.reload();
+      await table.waitFor({ timeout: 10_000 });
+      if (await page.locator('[data-page-error]').count())
+        fail(where, 'unknown values in the address showed an error page');
+      if ((await status.inputValue()) !== 'all' || (await tags()).length)
+        fail(where, 'unknown values in the address were applied');
+
+      // A page past the end is the last page.
+      await page.goto(`${BASE}/#/agents?page=99`);
+      await page.reload();
+      await table.waitFor({ timeout: 10_000 });
+      await page
+        .waitForFunction(
+          () => !window.location.hash.includes('page=99'),
+          null,
+          {
+            timeout: 5_000,
+          },
+        )
+        .catch(() => {});
+      const last = (await param('page'))[0];
+      if (!last || Number(last) >= 99)
+        fail(where, `page 99 stayed page ${last}`);
+
+      // A filter survives a reload; Back undoes the next one.
+      await page.goto(`${BASE}/#/agents`);
+      await page.reload();
+      await table.waitFor({ timeout: 10_000 });
+      await status.selectOption('running');
+      await page.waitForFunction(() =>
+        window.location.hash.includes('status=running'),
+      );
+      await page.reload();
+      await table.waitFor({ timeout: 10_000 });
+      if ((await status.inputValue()) !== 'running')
+        fail(where, 'a filter did not survive a reload');
+      // Typing replaces the entry, before any Back leaves entries ahead to
+      // be dropped — which would hide a push behind an unchanged length.
+      const entries = await page.evaluate(() => window.history.length);
+      await searchBox.fill('invoice');
+      await page.waitForFunction(() =>
+        window.location.hash.includes('q=invoice'),
+      );
+      if ((await page.evaluate(() => window.history.length)) !== entries)
+        fail(where, 'typing a search added a history entry');
+      if ((await param('status'))[0] !== 'running')
+        fail(where, 'typing a search dropped the other filters');
+      // A ticked row, then another filter: Back must undo the filter and
+      // not bring the selection back with it.
+      // The native box is hidden with pointer-events: none; click its label.
+      await table.locator('tbody .ion-checkbox').first().click();
+      await page
+        .locator('.ion-table-batch [role="status"]')
+        .filter({ hasText: '1 selected' })
+        .waitFor({ timeout: 5_000 });
+      await status.selectOption('failing');
+      await page.waitForFunction(() =>
+        window.location.hash.includes('status=failing'),
+      );
+      await page.goBack();
+      await page.waitForFunction(() =>
+        window.location.hash.includes('status=running'),
+      );
+      if ((await status.inputValue()) !== 'running')
+        fail(where, 'Back did not undo the filter');
+      if (
+        (
+          await page.locator('.ion-table-batch [role="status"]').textContent()
+        )?.includes('selected')
+      )
+        fail(where, 'Back brought a selection back');
+
+      // Back puts the box back with the address.
+      await page.evaluate(() => {
+        window.location.hash = '#/agents?q=triage';
+      });
+      await page.waitForFunction(
+        () =>
+          document.querySelector('input[aria-label="Search agents"]')?.value ===
+          'triage',
+        null,
+        { timeout: 5_000 },
+      );
+      await page.goBack();
+      await page
+        .waitForFunction(
+          () =>
+            document.querySelector('input[aria-label="Search agents"]')
+              ?.value === 'invoice',
+          null,
+          { timeout: 5_000 },
+        )
+        .catch(() => fail(where, 'the search box did not follow Back'));
+
+      await page.addScriptTag({ content: axeSource });
+      const violations = await page.evaluate(async () => {
+        const result = await window.axe.run(document, {
+          resultTypes: ['violations'],
+        });
+        return result.violations.map((v) => `${v.impact} ${v.id}`);
+      });
+      for (const v of violations) fail(where, `axe ${v}`);
+
+      // A refilter with latency: the rows stay, busy; focus stays on the header.
+      await page.getByRole('button', { name: /^Demo/ }).click();
+      await page.getByLabel('Simulated latency').selectOption('800');
+      await page.keyboard.press('Escape');
+      await page.goto(`${BASE}/#/agents`);
+      await table.waitFor({ timeout: 10_000 });
+      const header = table.getByRole('button', { name: /^Runs/ });
+      await header.focus();
+      await page.keyboard.press('Enter');
+      await page.waitForTimeout(150);
+      const during = await page.evaluate(() => ({
+        rows: document.querySelectorAll(
+          '[role="region"][aria-label="Agents"] tbody tr',
+        ).length,
+        skeleton: !!document.querySelector('[aria-label="Agents (loading)"]'),
+        busy:
+          document.querySelector('.demo-listing')?.getAttribute('aria-busy') ===
+          'true',
+        bar: !!document.querySelector('.demo-listing [role="progressbar"]'),
+        focus: document.activeElement?.textContent ?? '',
+      }));
+      if (!during.rows || during.skeleton)
+        fail(where, 'a refilter replaced the rows with skeletons');
+      if (!during.busy || !during.bar)
+        fail(
+          where,
+          `a refilter did not say the rows are updating: ${JSON.stringify(during)}`,
+        );
+      if (!during.focus.includes('Runs'))
+        fail(where, `a sort dropped focus to "${during.focus.slice(0, 30)}"`);
+      await page.waitForFunction(
+        () => !document.querySelector('.demo-listing[aria-busy]'),
+        null,
+        { timeout: 5_000 },
+      );
+      if (
+        !(
+          await page.evaluate(() => document.activeElement?.textContent ?? '')
+        ).includes('Runs')
+      )
+        fail(where, 'focus left the header when the sorted rows landed');
+      if (!(await param('sort'))[0]?.includes('runs7d'))
+        fail(where, 'the sort did not reach the address');
+      // Back after a sort puts the old order back, header and rows alike.
+      await page.goBack();
+      await page
+        .waitForFunction(
+          () => {
+            const th = document.querySelector(
+              'th[aria-sort]:not([aria-sort="none"])',
+            );
+            return (
+              th?.textContent?.includes('Agent') &&
+              th.getAttribute('aria-sort') === 'ascending'
+            );
+          },
+          null,
+          { timeout: 5_000 },
+        )
+        .catch(() => fail(where, 'Back did not undo the sort'));
+    } catch (e) {
+      fail(where, `did not run: ${e.message.split('\n')[0]}`);
+    }
+    groupsChecked++;
+    await context.close();
+  }
+
+  /*
    * Timeline, as an agent's History on its Overview. An ordered list named
    * History, newest first; each event says what happened, who, and when in
    * a <time> with the exact instant; the markers are hidden. A purpose saved

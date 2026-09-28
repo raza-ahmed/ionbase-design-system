@@ -578,3 +578,14 @@ body {
   justify-content: space-between;
   gap: var(--spacing-8);
 }
+
+/* A listing that refilters in place: the rows stay, a bar over them says
+   they are about to change. Its space is kept so nothing moves. */
+.demo-listing {
+  display: grid;
+  gap: var(--spacing-12);
+}
+
+.demo-listing__progress {
+  min-block-size: var(--spacing-4);
+}
