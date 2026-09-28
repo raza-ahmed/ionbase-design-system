@@ -20,6 +20,10 @@ announces it. One source, many pointers.
 Durable design decisions belong in [`docs/`](docs/) and the package READMEs, not
 here. This file is the map and the traps; the docs are the reasoning.
 
+**Work in progress:** what is still open across the plans is tracked in
+[`docs/open-items-checklist.md`](docs/open-items-checklist.md). Take the next
+unchecked item from there. Remove this paragraph when the checklist is deleted.
+
 ---
 
 ## Three packages, two published
