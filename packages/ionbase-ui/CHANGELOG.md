@@ -1,5 +1,55 @@
 # Changelog
 
+## 0.125.0 — 2026-09-28
+
+### FilteredDataTable — the listing in the address
+
+**`patterns/FilteredDataTable.json`** extends DataTable, which already had
+the search, filters, active-filter tags and batch bar. This pattern adds where
+the query lives and what a refilter shows:
+
+- **The address holds the search, filters, sort, page and page size.** A value
+  at its default is left out.
+- **The address is read defensively.** An unknown value is its default, and a
+  page past the end is the last page.
+- **A filter, sort or page change pushes a history entry,** so Back undoes it.
+  Typing a search replaces the entry instead.
+- **Debounce the write, not the value.** Otherwise a Back pressed while the
+  search waits is overwritten.
+- **The page is told as soon as the address is written,** not a task later on
+  `hashchange`.
+- **A change to which rows match clears the selection,** including a change
+  that arrives by Back.
+- **A refilter keeps the rows, busy, under a ProgressBar.** Skeletons are for
+  the first load only.
+- **The selection and the column view stay out of the address.**
+
+DataTable now points to it.
+
+### The demo's Agents page
+
+The listing is now in the address:
+`#/agents?q=…&status=…&team=…&sort=-runs7d&page=2&size=20`.
+
+**Found on the way:**
+
+- A second quick Teams pick lost the first, because the query store updated a
+  task late.
+- A debounced search effect could undo a Back.
+- Sorting unmounted the header just pressed, dropping focus.
+
+**Tests:** a smoke check.
+
+- A link, unknown values and a page past the end.
+- A reload, and Back undoing a filter and a sort.
+- Typing replacing the history entry, and the box following Back.
+- A sort under latency keeping the rows busy, with focus on the header.
+- axe.
+
+The existing multi-select check now covers the task-late store.
+
+Mutations: 11 of 11 caught.
+
 ## 0.124.0 — 2026-09-28
 
 ### ListDetail — a list beside the record selected in it

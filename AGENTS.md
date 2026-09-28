@@ -703,9 +703,9 @@ leave an approval pending fails `StopKeepsWhatWasDone`.
 
 ## Patterns — the tier that owns the states nothing else does
 
-`patterns/*.json` describes compositions. Eight for classic screens — `DataTable`,
-`Form`, `PageShell`, `DestructiveConfirm`, `SettingsPanel`, `Wizard`,
-`FullPageError`, `ListDetail` — and three
+`patterns/*.json` describes compositions. Nine for classic screens — `DataTable`,
+`FilteredDataTable`, `Form`, `PageShell`, `DestructiveConfirm`, `SettingsPanel`,
+`Wizard`, `FullPageError`, `ListDetail` — and three
 for the agentic tier: `AgentRun`, `HumanApproval`, `AssistantAnswer`. They are
 built and verified into `dist/meta/patterns/` by `scripts/build-patterns.mjs` and
 published beside the component pages.
@@ -841,6 +841,48 @@ through `onAction`.
   - In the `partial` state, the detail's own call fails in the panel alone.
 - Mobile: arriving in the list opens nothing, Enter opens the Drawer, and
   closing it returns focus to the row.
+
+### FilteredDataTable: the listing in the address — 28 Sep 2026
+
+**Scoped down on purpose.** By the time this item came up, DataTable had
+already absorbed search, filters, active-filter tags and the batch bar. This
+pattern covers only what was missing: where the query lives, and what a
+refilter shows. The demo's Agents page moved its listing into the address,
+`#/agents?q=…&status=…&team=…&sort=-runs7d&page=2&size=20`.
+
+**The traps the demo hit:**
+
+1. **A store that updates on `hashchange` is a task behind.** Two quick picks
+   in the Teams MultiSelect lost the first: the second was built on a
+   `value` that had not updated yet. The existing multi-select smoke check
+   caught it. `setHashQuery` now tells its subscribers as soon as it writes.
+2. **Debounce the write, not the value.** A `useDebounced(search)` value
+   written by an effect fired after a Back pressed within 250ms, and wrote
+   the old search back over it. Now only typing starts the timer, from
+   `onChange`. The address changing any other way writes the box.
+3. **Skeletons on a refilter dropped focus.** Sorting swapped the table for
+   skeleton rows, which unmounted the header just pressed. The last rows now
+   stay, busy, with a ProgressBar above them. Skeletons are for the first
+   load, and for a forced `loading` state.
+4. **A selection must not survive Back into another listing.** It is
+   cleared whenever which rows match changes, however the change arrived.
+5. **`history.length` does not show a push made after a Back.** The push
+   drops the entry ahead and adds one, so the count stays the same. The smoke
+   check measures it before any Back.
+
+**Not in the address:** the selection, which belongs to the reader, and the
+columns and their widths, which belong to the viewer and stay in their
+browser.
+
+**Checked by the demo's smoke test,** on desktop:
+
+- A link opens with its filters and sort.
+- Unknown values fall back to defaults, and page 99 becomes the last page.
+- A filter survives a reload, and Back undoes it and drops the selection.
+- Typing adds no history entry, and the box follows Back.
+- A sort under 800ms latency keeps the rows, busy, with focus on the header.
+- Back undoes the sort.
+- axe.
 
 ---
 
