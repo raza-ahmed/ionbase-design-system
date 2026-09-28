@@ -72,7 +72,7 @@
 - [x] **ColorPicker** — the hex field first, a swatch button opening a saturation and brightness area, a hue strip and named presets as one radio group; `#RRGGBB` in and out, no alpha, the hue kept through black and grey, and no contrast check of its own; Figma Color Picker (Size × State) and an open example; the demo's approval email colour in Settings, refused under 4.5:1 against its white text — 0.129.0
 - [x] **ProgressRing** — determinate only, filling clockwise from twelve o'clock in every direction; ProgressBar's label, value, max, intent and `valueText`, with Small (20px) putting its value beside it and Medium (56px) and Large (80px) the percentage inside; Figma Progress Ring (Intent × Size); the demo's live run header, steps done out of steps planned until a Badge takes over — 0.130.0
 - [x] **Coachmark / guided tour** — `Coachmark`, a non-modal dialog pointing at a target by id, which it rings and scrolls to, taking focus because it opens only when asked; `Tour`, Coachmarks in a sequence with the count, Back, Next and Done, skipping targets not drawn, and `onComplete` for Done only; Figma Coachmark (Placement × Step) and an example step; the demo's Take the tour on Overview and What's new? in Settings — 0.131.0
-- [ ] **AppSwitcher**
+- [x] **AppSwitcher** — `AppSwitcher`, the nine-dot button and a Popover of product links, the current one `aria-current="true"` with a border as well as the tint, closing on a press; Popover now contains focus; Figma App Switcher and a private tile (four states); the demo's Header, between the bell and the account — 0.132.0
 - [ ] **Calendar** — export the existing internal one
 - [ ] **SplitPane**
 

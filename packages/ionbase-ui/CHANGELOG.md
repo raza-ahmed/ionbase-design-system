@@ -1,5 +1,66 @@
 # Changelog
 
+## 0.132.0 — 2026-09-28
+
+### AppSwitcher — the other products in a suite, as links
+
+**`AppSwitcher`** is the nine-dot button in a suite's header and the grid of
+products it opens. It goes in Header's `end`, before the account.
+
+**How it behaves:**
+
+- **The button:** icon only, named by `label` ("Apps" by default), with a
+  tooltip showing the name. The tooltip does not also describe it, so a screen
+  reader does not hear "Apps, Apps". `aria-expanded` says whether it is open.
+- **The panel:** a Popover (Large), a dialog named by `label`. Focus moves
+  into it and stays there. Escape or a click outside closes it, and focus
+  goes back to the button.
+- **Links, not a menu:** each product is a link to its home, reached with
+  Tab, so it opens in a new tab with a modifier and its address can be
+  copied. The meta sends a product's own sections to Sidebar, and a
+  workspace choice to MenuTrigger.
+- **Where you are:** `currentApp` marks one product `aria-current="true"`
+  (not "page": it is a product, not this page). It is drawn with a border as
+  well as the selected tint, and in forced colours the border is Highlight.
+- **Names and descriptions:** a product's `name` is its link's name, and its
+  `description` is the link's description, not part of the name. `icon` sits
+  on a 40px tinted square. A product without one shows its initial there.
+- **A press on a product closes the panel.** A same-document route would
+  otherwise leave it open over the page it went to.
+- **Strings:** one, `label`. The strings gate now counts 172.
+
+**Fixed: Popover let focus out.** `usePopover` asks for focus containment
+through a context that only exists inside `<Overlay>`, and Popover called it
+outside, as CalendarPopover did until 0.129.0. Tab from a Popover's last
+control went to the page behind, which Popover hides from assistive tech.
+Every Popover had this, the demo's Notifications included. Popover now passes
+`shouldContainFocus`. Modal and Drawer were checked and contain focus.
+
+**Figma:** App Switcher is on a page of its own, built from Popover's Large
+panel. It has a Label and a Show Footer property, and a grid of the private
+`.App Switcher Tile`. The tile has four states (Default, Hover, Current,
+Focus) and Name, Description, Show Description and Icon properties. An
+example shows the switcher open under a dark header's nine-dot button. App
+Switcher is mapped and its block is applied; the tile is in `unmapped`. The
+audit found 111 of 111 blocks in the file, and they are countersigned.
+
+**The demo:** the Header has the switcher between the bell and the account.
+It lists five IonBase products: Ops, which is current and links to Overview,
+then Docs, Billing, Status and Trust at `.example` addresses. The PageShell
+pattern now says where it goes.
+
+**Tests:**
+
+- 12 AppSwitcher stories.
+- Popover's `TabStaysInThePopover`.
+- One each in Forced colours and Localised strings.
+- A smoke check on desktop and mobile covering the button's state, the
+  products and which one is current, Tab kept in the panel, focus back on
+  Escape, and Ops from Agents landing on Overview with the panel closed. It
+  runs axe on the panel and checks for sideways scroll.
+
+Mutations: 21 of 21 caught (16 in the library, 5 in the demo).
+
 ## 0.131.0 — 2026-09-28
 
 ### Coachmark and Tour — pointing at the page, when asked

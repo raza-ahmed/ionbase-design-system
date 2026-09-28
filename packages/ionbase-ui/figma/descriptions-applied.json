@@ -19,7 +19,7 @@
   ],
   "file": "gaLbGd0QNb1fUl6BjSpfBA",
   "appliedOn": "2026-09-28",
-  "verifiedInFigma": 110,
+  "verifiedInFigma": 111,
   "applied": {
     "1661:272": {
       "figmaComponent": "AI Label",
@@ -185,6 +185,11 @@
       "figmaComponent": "Coachmark",
       "component": "Coachmark",
       "hash": "c1f73ad08213059d"
+    },
+    "1711:6649": {
+      "figmaComponent": "App Switcher",
+      "component": "AppSwitcher",
+      "hash": "0ec2516ad5d96eec"
     },
     "1696:834": {
       "figmaComponent": "Color Picker",

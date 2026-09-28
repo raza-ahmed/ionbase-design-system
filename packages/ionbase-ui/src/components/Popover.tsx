@@ -123,7 +123,14 @@ function PopoverPanel({
   const side = (resolvedPlacement ?? placement).split(' ')[0];
 
   return (
-    <Overlay>
+    /*
+     * `shouldContainFocus`, as CalendarPopover has: `usePopover` asks for
+     * containment through a context that exists only inside <Overlay>, and
+     * it is called out here, so the request went nowhere. Tab from the last
+     * control left the panel for the page behind — which `usePopover` has
+     * hidden from assistive tech.
+     */
+    <Overlay shouldContainFocus>
       {/*
         The underlay is what makes an outside click close it. It is transparent
         and covers the viewport — unlike Modal's scrim, which is visible because

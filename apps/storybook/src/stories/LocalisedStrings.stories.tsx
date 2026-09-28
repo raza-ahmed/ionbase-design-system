@@ -14,6 +14,7 @@ import {
   CommandPalette,
   ColorPicker,
   Tour,
+  AppSwitcher,
   DateTimePicker,
   DualListbox,
   ConfidenceIndicator,
@@ -781,6 +782,33 @@ export const ATour: Story = {
     });
     await expectNoEnglish(dialog);
     await expectSaid(dialog, m('2/2'), m('back'), m('done'));
+    await userEvent.keyboard('{Escape}');
+  },
+};
+
+/** The switcher's one string, `label`: the button, its tooltip, the panel. */
+export const AnAppSwitcher: Story = {
+  render: () => (
+    <AppSwitcher
+      label={m('apps')}
+      currentApp="ops"
+      apps={[
+        { id: 'ops', name: m('ops'), href: '#ops', description: m('d') },
+        { id: 'docs', name: m('docs'), href: '#docs' },
+      ]}
+    />
+  ),
+  play: async ({ canvasElement }) => {
+    const button = within(canvasElement).getByRole('button', {
+      name: m('apps'),
+    });
+    await expectNoEnglish(canvasElement);
+    await userEvent.click(button);
+    const dialog = await within(document.body).findByRole('dialog', {
+      name: m('apps'),
+    });
+    await expectNoEnglish(dialog);
+    await expectSaid(dialog, m('apps'), m('ops'), m('d'));
     await userEvent.keyboard('{Escape}');
   },
 };

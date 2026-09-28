@@ -5,6 +5,7 @@ import {
   type ReactNode,
 } from 'react';
 import {
+  AppSwitcher,
   Avatar,
   Banner,
   Button,
@@ -28,6 +29,7 @@ import { AppCommands } from './AppCommands';
 import { DemoControls } from './DemoControls';
 import { NavSidebar } from './NavSidebar';
 import { NotificationsBell } from './NotificationsBell';
+import { SUITE } from './suite';
 
 /**
  * The PageShell pattern, sidebar form: Header keeps the brand and account
@@ -161,6 +163,9 @@ export function AppShell({
                 <span className="demo-search__label">Search</span>
               </Button>
               <NotificationsBell />
+              {/* The other IonBase products, before the account: Ops is one
+                  of a suite, and says which. */}
+              <AppSwitcher apps={SUITE} currentApp="ops" />
               <Avatar size="sm" initials="AR" alt="Ada Reyes" />
             </>
           }

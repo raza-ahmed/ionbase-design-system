@@ -233,6 +233,8 @@ export { Coachmark } from './Coachmark.js';
 export type { CoachmarkProps, CoachmarkPlacement } from './Coachmark.js';
 export { Tour } from './Tour.js';
 export type { TourProps, TourStep, TourLabels } from './Tour.js';
+export { AppSwitcher } from './AppSwitcher.js';
+export type { AppSwitcherProps, AppSwitcherApp } from './AppSwitcher.js';
 export { Modal } from './Modal.js';
 export type { ModalProps, ModalSize, ModalAlign } from './Modal.js';
 export { Link } from './Link.js';
