@@ -4916,6 +4916,240 @@ try {
   }
 
   /*
+   * DateTimePicker, as the wizard's First run — one field where Start date
+   * and Runs at were two. Empty, Next refuses it and the summary's link lands
+   * on its first segment. Today's date at midnight — a past time on a valid
+   * day, which two fields could not catch — is invalid in the field and
+   * refused on Next. Tomorrow keeps the time; the popover's time field sets
+   * it; Review says the moment. The browser runs in UTC, the workspace's
+   * zone, so the calendar's today is the field's. Nothing sideways; axe.
+   */
+  for (const [device, width, height] of [
+    ['desktop', 1280, 900],
+    ['mobile', 390, 844],
+  ]) {
+    const where = `date time picker (light, ${device})`;
+    if (skip(where)) continue;
+    const context = await browser.newContext({
+      viewport: { width, height },
+      timezoneId: 'UTC',
+      locale: 'en-US',
+    });
+    await context.addInitScript(() => {
+      localStorage.setItem(
+        'ionbase-ops:demo-settings',
+        JSON.stringify({ theme: 'light', latency: 0 }),
+      );
+      localStorage.setItem(
+        'ionbase-ops:new-agent-draft',
+        JSON.stringify({
+          values: { name: 'Smoke test agent', trigger: 'schedule' },
+          completed: 0,
+          model: 'atlas-m',
+        }),
+      );
+    });
+    const page = await context.newPage();
+    page.on('pageerror', (e) => fail(where, `exception: ${e.message}`));
+    const field = page.getByRole('group', { name: 'First run' });
+    const next = page.getByRole('button', { name: /^Next:/ });
+    const summary = () =>
+      page
+        .getByRole('alert')
+        .filter({ hasText: /to continue/ })
+        .textContent();
+    const pickDay = async (name) => {
+      await field.getByRole('button', { name: 'Open calendar' }).click();
+      const dialog = page.getByRole('dialog');
+      await dialog.waitFor({ timeout: 5_000 });
+      const day = dialog.getByRole('button', { name });
+      if (!(await day.count()))
+        await dialog.getByRole('button', { name: /^Next/ }).click();
+      await day.first().click();
+      return dialog;
+    };
+    try {
+      await page.goto(`${BASE}/#/agents/new`);
+      await field.waitFor({ timeout: 10_000 });
+      const schedule = page.getByRole('group', { name: 'Schedule' });
+      for (const gone of ['Start date', 'Runs at'])
+        if (await schedule.getByText(gone, { exact: true }).count())
+          fail(where, `"${gone}" is still a field of its own`);
+
+      // Empty: refused, and the summary's link lands on the first segment.
+      await next.click();
+      if (!/First run — Choose when it first runs\./.test(await summary()))
+        fail(where, `empty, the summary says "${await summary()}"`);
+      await page
+        .getByRole('button', { name: 'First run', exact: true })
+        .click();
+      if (
+        !(await field.evaluate(
+          (g) =>
+            g.contains(document.activeElement) &&
+            document.activeElement.getAttribute('role') === 'spinbutton',
+        ))
+      )
+        fail(where, 'the summary link did not land on a segment');
+
+      // Today at midnight: a real day, a past time — invalid in the field.
+      // `minValue` is now, so the calendar cannot page back into the past.
+      const first = await pickDay(/^Today/);
+      if (
+        !(await first.getByRole('button', { name: /^Previous/ }).isDisabled())
+      )
+        fail(where, 'the calendar pages back before today');
+      await page.keyboard.press('Escape');
+      await page
+        .waitForFunction(
+          () =>
+            document
+              .querySelector('#field-firstRun')
+              ?.getAttribute('data-invalid') === 'true',
+          null,
+          { timeout: 5_000 },
+        )
+        .catch(() => fail(where, 'today at midnight is not invalid'));
+      await next.click();
+      if (!/can’t be in the past/.test(await summary()))
+        fail(where, `a past time is not refused: "${await summary()}"`);
+
+      // Tomorrow keeps the time; the popover's time field moves it on.
+      const tomorrow = new Date(Date.now() + 86_400_000).toLocaleDateString(
+        'en-US',
+        { month: 'long', day: 'numeric', year: 'numeric', timeZone: 'UTC' },
+      );
+      const dialog = await pickDay(new RegExp(tomorrow));
+      if (!(await dialog.isVisible()))
+        fail(where, 'the popover closed on a picked day');
+      const [hour] = await dialog
+        .getByRole('group', { name: 'Time' })
+        .getByRole('spinbutton')
+        .all();
+      await hour.focus();
+      await page.keyboard.press('ArrowUp');
+      if (device === 'mobile') {
+        const box = await dialog.boundingBox();
+        if (!box || box.x < 0 || box.x + box.width > width)
+          fail(where, 'the popover runs off a phone');
+      }
+      await page.addScriptTag({ content: axeSource });
+      const violations = await page.evaluate(async () => {
+        const result = await window.axe.run(document, {
+          resultTypes: ['violations'],
+        });
+        return result.violations.map((v) => `${v.impact} ${v.id}`);
+      });
+      for (const v of violations) fail(where, `axe ${v}`);
+      await page.keyboard.press('Escape');
+      if (
+        await page.evaluate(
+          () => document.documentElement.scrollWidth > window.innerWidth,
+        )
+      )
+        fail(where, 'the page scrolls sideways');
+
+      // Ends on is a day with no time, and none before the first run.
+      const ends = page.getByRole('group', { name: 'Ends on (optional)' });
+      await ends.getByRole('button', { name: 'Open calendar' }).click();
+      const endsCal = page.getByRole('dialog');
+      await endsCal.waitFor({ timeout: 5_000 });
+      if (
+        (await endsCal
+          .getByRole('button', { name: /^Today/ })
+          .getAttribute('aria-disabled')) !== 'true'
+      )
+        fail(where, 'Ends on offers a day before the first run');
+      await page.keyboard.press('Escape');
+
+      // Accepted, and Review says the moment.
+      await next.click();
+      await page
+        .getByRole('button', { name: /^Next:/ })
+        .waitFor({ timeout: 5_000 });
+      await page.getByRole('button', { name: /^Next:/ }).click();
+      const short = new Date(Date.now() + 86_400_000).toLocaleDateString(
+        'en-US',
+        { month: 'short', day: 'numeric', timeZone: 'UTC' },
+      );
+      await page
+        .getByText(`Every day, first on ${short}, 1:00 AM UTC`)
+        .waitFor({ timeout: 5_000 })
+        .catch(() => fail(where, `Review does not say ${short}, 1:00 AM`));
+    } catch (e) {
+      fail(where, `did not run: ${e.message.split('\n')[0]}`);
+    }
+    groupsChecked++;
+    await context.close();
+  }
+
+  /*
+   * TimeField, as Settings' Quiet hours: a time every day, From and Until
+   * in one Fieldset, saved with the other defaults. From reads 10:00 PM;
+   * ↑ on its hour makes it 11:00 PM and one unsaved change; saved, it is
+   * still 11:00 PM after leaving the page.
+   */
+  for (const [device, width, height] of [
+    ['desktop', 1280, 900],
+    ['mobile', 390, 844],
+  ]) {
+    const where = `time field (light, ${device})`;
+    if (skip(where)) continue;
+    const context = await browser.newContext({
+      viewport: { width, height },
+      locale: 'en-US',
+    });
+    await context.addInitScript(() =>
+      localStorage.setItem(
+        'ionbase-ops:demo-settings',
+        JSON.stringify({ theme: 'light', latency: 0 }),
+      ),
+    );
+    const page = await context.newPage();
+    page.on('pageerror', (e) => fail(where, `exception: ${e.message}`));
+    const quiet = page.getByRole('group', { name: 'Quiet hours' });
+    const from = quiet.getByRole('group', { name: 'From' });
+    const shown = () =>
+      from.evaluate((g) => g.textContent.replace(/[⁦-⁩]/g, ''));
+    try {
+      await page.goto(`${BASE}/#/settings`);
+      await from.waitFor({ timeout: 10_000 });
+      await quiet.scrollIntoViewIfNeeded();
+      if ((await shown()) !== '10:00 PM')
+        fail(where, `From reads "${await shown()}"`);
+      const [hour] = await from.getByRole('spinbutton').all();
+      await hour.focus();
+      await page.keyboard.press('ArrowUp');
+      if ((await shown()) !== '11:00 PM')
+        fail(where, `↑ made it "${await shown()}"`);
+      const bar = page.getByRole('region', { name: 'Unsaved changes' });
+      await bar.getByText('1 unsaved change').waitFor({ timeout: 5_000 });
+      await bar.getByRole('button', { name: 'Save changes' }).click();
+      await bar.waitFor({ state: 'detached', timeout: 5_000 });
+      await page.evaluate(() => {
+        window.location.hash = '#/overview';
+      });
+      await page.getByRole('heading', { name: 'Overview', level: 1 }).waitFor();
+      await page.evaluate(() => {
+        window.location.hash = '#/settings';
+      });
+      await from.waitFor({ timeout: 10_000 });
+      if ((await shown()) !== '11:00 PM')
+        fail(where, `saved, From came back as "${await shown()}"`);
+      if (
+        await page.evaluate(
+          () => document.documentElement.scrollWidth > window.innerWidth,
+        )
+      )
+        fail(where, 'the page scrolls sideways');
+    } catch (e) {
+      fail(where, `did not run: ${e.message.split('\n')[0]}`);
+    }
+    groupsChecked++;
+    await context.close();
+  }
+
+  /*
    * Timeline, as an agent's History on its Overview. An ordered list named
    * History, newest first; each event says what happened, who, and when in
    * a <time> with the exact instant; the markers are hidden. A purpose saved

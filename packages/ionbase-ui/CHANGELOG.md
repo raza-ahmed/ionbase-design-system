@@ -1,5 +1,73 @@
 # Changelog
 
+## 0.128.0 — 2026-09-28
+
+### DateTimePicker — a date and a time as one value
+
+**`DateTimePicker`** is one field for a moment: when a run starts, when a
+window opens. It is a component rather than a pattern over DatePicker and
+TimeField. The reason is that a bound such as "not before now" spans the date
+and the time, and two fields leave that rule to every caller.
+
+**How it behaves:**
+
+- **The field:** one labelled group of segments, day, month, year, hour and
+  minute, plus AM/PM in a 12-hour locale, in the reader's own order and
+  clock. It is DatePicker's box and segments.
+- **The value:** `YYYY-MM-DDTHH:MM` (`:SS` at `granularity="second"`), a
+  wall-clock reading with no zone. A `Date`, a timestamp or a string with a
+  zone throws with the prop's name. Say which zone in the `description`.
+- **Bounds:** `minValue` and `maxValue` are moments of the same shape, checked
+  against the date and the time together. The field names the bound when it
+  is broken, and keeps the value rather than clamping it.
+- **The popover:** the calendar, then a TimeField reached by Tab. A day picked
+  keeps the time already set, and the popover stays open for the time. A day
+  picked with no time takes midnight when the popover closes.
+- **Strings:** the calendar button and the time field's label, through
+  `labels`. The strings gate now counts 163.
+
+**Figma:** Date Time Picker is drawn on the Date Picker page.
+
+- **Axes:** Size × State (21 variants), cloned from Date Picker's so every
+  binding is the same.
+- **Example:** "Example — date and time, open" shows the calendar with a Time
+  Field under a rule.
+- **Mapping:** it is mapped, and its code block is applied. The audit found
+  107 of 107 blocks in the file, and they are countersigned.
+
+**The demo:**
+
+- **New agent → Trigger:** the schedule's **First run** is one
+  DateTimePicker, where Start date and Runs at were two. Today at a time
+  already past is now refused; before, only the date was checked.
+- **Ends on:** a new optional DatePicker for the schedule's last day. It
+  cannot fall before the first run.
+- **Settings → Workspace defaults:** new **Quiet hours**, a From and an Until
+  TimeField, saved with the other defaults. A time every day is a TimeField's
+  job, not a DateTimePicker's.
+
+**Found on the way:**
+
+- **Calendar hover:** a selected day under the pointer lost its fill. The
+  hover tint's `:not()` gave it more specificity than the selected fill, so
+  the day just clicked showed white on grey, at 1.11:1. This was in
+  DatePicker, DateRangePicker's endpoints and the new picker alike.
+- **React Aria:** Escape and an outside click close the popover through
+  `close()`, which skips the step where React Aria commits a day picked
+  without a time. Written up in AGENTS.md.
+- **Meta:** DatePicker's and TimeField's meta used to send a date and a time to
+  "TimeField beside it". They now send it to DateTimePicker, and the Form
+  pattern says the same.
+
+**Tests:**
+
+- 16 DateTimePicker stories and a pseudo-localised story.
+- A hover story each for DatePicker and DateRangePicker.
+- Smoke checks for the wizard's First run and Ends on, and Settings' Quiet
+  hours, on desktop and mobile.
+
+Mutations: 22 of 22 caught (13 in the library, 9 in the demo).
+
 ## 0.127.0 — 2026-09-28
 
 ### TreeGrid — rows that open onto rows, in columns

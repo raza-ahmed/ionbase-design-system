@@ -412,6 +412,14 @@ export type {
 
 export { DatePicker } from './DatePicker.js';
 export type { DatePickerProps, DatePickerSize } from './DatePicker.js';
+export { DateTimePicker } from './DateTimePicker.js';
+export type {
+  DateTimePickerProps,
+  DateTimePickerSize,
+  DateTimePickerGranularity,
+  DateTimePickerLabels,
+} from './DateTimePicker.js';
+export type { IsoDateTime } from './iso-date-time.js';
 
 export { DateRangePicker } from './DateRangePicker.js';
 export type {

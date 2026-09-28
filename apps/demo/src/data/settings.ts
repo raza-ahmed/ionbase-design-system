@@ -13,6 +13,12 @@ export interface WorkspaceDefaults {
   approvalForNewAgents: boolean;
   /** Members asked to approve, in the order they are asked. */
   approvers: string[];
+  /**
+   * Quiet hours, `HH:MM` each day in workspace time (UTC): no agent pages
+   * anyone between them. Until may be earlier than From — overnight.
+   */
+  quietFrom: string | null;
+  quietUntil: string | null;
 }
 
 export interface WorkspaceSettings {
@@ -37,6 +43,8 @@ let server: WorkspaceSettings = {
     redactPii: true,
     approvalForNewAgents: true,
     approvers: ['usr_kwame', 'usr_ada'],
+    quietFrom: '22:00',
+    quietUntil: '07:00',
   },
   deletionScheduledFor: null,
 };

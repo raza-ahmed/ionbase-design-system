@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { expect, userEvent, waitFor, within } from 'storybook/test';
 import { DatePicker } from 'ionbase-ui';
+import { userEvent as browserUser } from 'vitest/browser';
 
 const meta: Meta<typeof DatePicker> = {
   title: 'Components/DatePicker',
@@ -326,5 +327,25 @@ export const OutOfBoundsIsShownNotClamped: Story = {
     await expect(
       canvas.getByText(/5\/31\/2026 or earlier/),
     ).toBeInTheDocument();
+  },
+};
+
+/**
+ * The day under the pointer keeps its fill. A click leaves the pointer on the
+ * day it picked, and the hover tint used to outrank the selected fill there:
+ * white on grey, 1.11:1.
+ */
+export const ASelectedDayKeepsItsFillUnderThePointer: Story = {
+  args: Default.args,
+  play: async ({ canvas }) => {
+    await open(canvas);
+    const dialog = await overlay().findByRole('dialog');
+    const day = within(dialog).getByRole('button', { name: /April 12, 2026/ });
+    const fill = () => getComputedStyle(day).backgroundColor;
+    const before = fill();
+    await browserUser.hover(day);
+    await waitFor(() => expect(fill()).toBe(before));
+    await expect(before).not.toBe('rgba(0, 0, 0, 0)');
+    await userEvent.keyboard('{Escape}');
   },
 };

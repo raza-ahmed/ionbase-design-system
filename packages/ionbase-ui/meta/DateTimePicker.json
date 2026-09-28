@@ -1,0 +1,104 @@
+{
+  "status": "stable",
+  "summary": "A date and a time of day as one field — day, month, year, hour and minute in segments, with the calendar and a time field in its popover — taking and returning a wall-clock YYYY-MM-DDTHH:MM string.",
+  "useWhen": [
+    "the value is a moment on the calendar: when a run starts, when a maintenance window opens, when a message is sent",
+    "the moment has a bound that spans the date and the time together — not before now, not after the window closes",
+    "the date and the time are one value to the product, saved, validated and posted together"
+  ],
+  "useInstead": [
+    {
+      "when": "the value is a date with no time",
+      "use": "DatePicker",
+      "why": "hour and minute segments ask for a time nobody meant, and default to midnight"
+    },
+    {
+      "when": "the value is a time of day that repeats — every day at 09:00",
+      "use": "TimeField",
+      "why": "a recurring time has no date; a DateTimePicker would ask for one and store it"
+    },
+    {
+      "when": "the date and the time are separate choices, each optional — a due date with an optional reminder time",
+      "use": "DatePicker",
+      "why": "put a TimeField beside it: two fields can each be empty, where this one value is whole or absent"
+    },
+    {
+      "when": "a start and an end",
+      "use": "DateRangePicker",
+      "why": "two DateTimePickers cannot keep the end after the start or show the days between; for a window with times, a DateRangePicker with TimeFields for its ends"
+    }
+  ],
+  "composition": {
+    "order": ["DateTimePicker"],
+    "note": "One field. `value` is `YYYY-MM-DDTHH:MM` — a wall-clock reading with no zone — so say which zone in `description` (\"Workspace time, UTC.\"). `minValue` and `maxValue` are moments of the same shape; pass the current reading as `minValue` for \"not before now\". `granularity=\"second\"` only when seconds matter to the reader.",
+    "example": "<DateTimePicker label=\"Run starts\" description=\"Workspace time, UTC.\" value={startsAt} onChange={setStartsAt} minValue={nowInWorkspace} isRequired />"
+  },
+  "variants": {
+    "size": {
+      "sm": {
+        "use": "dense forms, table filters"
+      },
+      "md": {
+        "use": "the default"
+      },
+      "lg": {
+        "use": "prominent single-field forms"
+      }
+    },
+    "granularity": {
+      "minute": {
+        "use": "the default — almost every moment a person sets"
+      },
+      "second": {
+        "use": "a moment read to the second, such as the point in a log to start from"
+      }
+    }
+  },
+  "slots": {
+    "description": {
+      "accepts": "text",
+      "note": "which timezone the moment is in, whenever the reader could be in another; replaced by `errorMessage` while the field is invalid"
+    },
+    "labels": {
+      "accepts": "text",
+      "note": "the calendar button's name and the time field's label"
+    }
+  },
+  "a11y": {
+    "requires": [
+      "`label`, or an `aria-label` when no visible label is rendered",
+      "a `description` naming the timezone whenever the reader could be in a different one from the thing being scheduled"
+    ],
+    "guarantees": [
+      "one labelled group of spinbuttons — day, month, year, hour, minute, and AM/PM in a 12-hour locale — each its own tab stop and each announcing its name, value and bounds, as DatePicker's do",
+      "the order, the separators and the 12- or 24-hour clock come from the reader's locale; the value is 24-hour and Gregorian either way",
+      "the calendar button is named by `labels.calendar`, not by the field's label, and opens a modal popover: the calendar, then a time field labelled `labels.time`, reached by Tab",
+      "a day picked keeps the time already set, and the popover stays open for the time; Escape or a click outside closes it and focus returns to the button",
+      "a day picked with no time takes midnight when the popover closes, shown in the field to change — it is never dropped",
+      "a moment before `minValue` or after `maxValue` turns the field invalid and names the bound in the reader's own format, without `isInvalid`; the date and the time are checked together, and the value is kept, not clamped",
+      "a `Date`, a timestamp or a string with a zone or offset throws with the prop's name, rather than rendering an empty field",
+      "`name` posts the ISO value as a hidden input"
+    ],
+    "notes": [
+      "The value is a wall-clock reading, never an instant. Convert to and from an instant where the zone is known — on the server, or beside the zone setting — not in the field.",
+      "`isDateUnavailable` refuses whole days; a time bound within a day is `minValue` and `maxValue`."
+    ]
+  },
+  "antiPatterns": [
+    {
+      "dont": "a DatePicker and a TimeField side by side, with TimeField's `minValue` moved whenever the date is today",
+      "do": "<DateTimePicker minValue={now} … />",
+      "why": "the rule spans both fields, so every caller writes it again, and each gets a different edge wrong — midnight, the day it changes, a date typed after the time"
+    },
+    {
+      "dont": "`value={new Date()}`, `value={Date.now()}` or `value=\"2026-04-12T14:30Z\"`",
+      "do": "`value=\"2026-04-12T14:30\"`, the reading in the zone the description names",
+      "why": "an instant is shown in the reader's zone, so two people see and save two different moments from one form"
+    },
+    {
+      "dont": "a DateTimePicker with no word on the timezone",
+      "do": "`description=\"Workspace time, UTC.\"`",
+      "why": "a time with no zone is read in the reader's own, and a run scheduled for 09:00 starts at someone else's"
+    }
+  ]
+}

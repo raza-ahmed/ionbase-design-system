@@ -5,9 +5,14 @@
   "useWhen": [
     "the user sets a time of day — a schedule, a reminder, the start of a window",
     "any minute is allowed, so a list of choices would be long or would leave times out",
-    "beside a DatePicker when the value is a date and a time; the two sit side by side and share one box"
+    "beside a DatePicker only when the time is a separate, optional choice — a due date with an optional reminder time"
   ],
   "useInstead": [
+    {
+      "when": "the value is a date and a time — one moment, such as when a run starts",
+      "use": "DateTimePicker",
+      "why": "one field holds both and checks a bound such as \"not before now\" against the date and the time together; a TimeField beside a DatePicker leaves that rule to the caller"
+    },
     {
       "when": "only a handful of times are allowed — delivery slots, office hours",
       "use": "Select",

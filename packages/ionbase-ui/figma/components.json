@@ -945,6 +945,31 @@
         }
       }
     },
+    "Date Time Picker": {
+      "page": "Date Picker",
+      "id": "1691:763",
+      "kind": "SET",
+      "props": {
+        "Size": {
+          "type": "VARIANT",
+          "options": ["Small", "Medium", "Large"],
+          "default": "Small"
+        },
+        "State": {
+          "type": "VARIANT",
+          "options": [
+            "Default",
+            "Hover",
+            "Focus",
+            "Filled",
+            "Invalid",
+            "Disabled",
+            "Read-only"
+          ],
+          "default": "Default"
+        }
+      }
+    },
     "Description List": {
       "page": "Description List",
       "id": "1549:294",

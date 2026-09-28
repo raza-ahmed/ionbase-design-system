@@ -1,5 +1,5 @@
 import { nameTaken, type AgentDraft } from '../../data/agents';
-import { today } from '../../lib/dates';
+import { nowMinute } from '../../lib/dates';
 
 export type FieldErrors = Partial<Record<string, string>>;
 
@@ -24,11 +24,11 @@ export function validateStep(
   }
   if (step === 1) {
     if (v.trigger === 'schedule') {
-      if (!v.startDate) e.startDate = 'Choose when the schedule starts.';
-      else if (v.startDate < today())
-        e.startDate = 'The start date can’t be in the past.';
-      if (v.frequency !== 'hourly' && !v.runAt)
-        e.runAt = 'Choose the time it runs.';
+      if (!v.firstRun) e.firstRun = 'Choose when it first runs.';
+      else if (v.firstRun < nowMinute())
+        e.firstRun = 'The first run can’t be in the past.';
+      if (v.endsOn && v.firstRun && v.endsOn < v.firstRun.slice(0, 10))
+        e.endsOn = 'It can’t end before its first run.';
     }
     const digits = v.escalationPhone.replace(/\D/g, '');
     if (digits && digits.length < 7)
@@ -52,8 +52,8 @@ export const FIELD_LABELS: Record<string, string> = {
   purpose: 'What it does',
   team: 'Owning team',
   model: 'Model',
-  startDate: 'Start date',
-  runAt: 'Runs at',
+  firstRun: 'First run',
+  endsOn: 'Ends on',
   escalationPhone: 'Escalation phone',
   notifyOn: 'Notify the team when',
   monthlyTokenBudget: 'Monthly token budget',

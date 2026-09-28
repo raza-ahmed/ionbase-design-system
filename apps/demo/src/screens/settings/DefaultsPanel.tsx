@@ -7,11 +7,13 @@ import {
   Checkbox,
   CheckboxGroup,
   DualListbox,
+  Fieldset,
   Link,
   Radio,
   RadioGroup,
   Select,
   SettingRow,
+  TimeField,
   Toggletip,
 } from 'ionbase-ui';
 
@@ -199,6 +201,29 @@ export function DefaultsPanel({
           empty: 'No one yet',
         }}
       />
+
+      {/* A time every day, not a moment: TimeField, not DateTimePicker. */}
+      <Fieldset
+        label="Quiet hours"
+        description="Workspace time, UTC. No agent pages anyone between these times; what needs a human waits for the morning."
+        orientation="horizontal"
+        className="demo-quiet-hours"
+      >
+        <TimeField
+          id="d-quietFrom"
+          label="From"
+          value={draft?.quietFrom ?? null}
+          onChange={(quietFrom) => set({ quietFrom })}
+          isDisabled={disabled}
+        />
+        <TimeField
+          id="d-quietUntil"
+          label="Until"
+          value={draft?.quietUntil ?? null}
+          onChange={(quietUntil) => set({ quietUntil })}
+          isDisabled={disabled}
+        />
+      </Fieldset>
 
       {dirtyKeys.length > 0 && (
         <div

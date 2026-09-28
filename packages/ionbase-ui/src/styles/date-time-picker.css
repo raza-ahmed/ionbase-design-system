@@ -1,0 +1,18 @@
+/*
+ * DateTimePicker
+ *
+ * The field is DatePicker's — `.ion-date-picker` on `.ion-input`, the same
+ * segments and button, from date-picker.css — and the popover is its
+ * calendar popover. This file adds only the time field under the calendar,
+ * set off by a rule so the two read as two steps: the day, then the time.
+ *
+ * Its own file because build-meta resolves a component's tokens from
+ * `<kebab name>.css`, and `date-picker` is not a prefix of this name — see
+ * date-picker.css.
+ */
+.ion-date-time-picker__time {
+  margin-block-start: var(--spacing-12);
+  padding-block-start: var(--spacing-12);
+  background-color: var(--surface-raised);
+  border-block-start: var(--border-width-default) solid var(--border-subtle);
+}

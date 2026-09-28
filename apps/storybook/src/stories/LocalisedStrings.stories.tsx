@@ -12,6 +12,7 @@ import {
   CitationList,
   CitationListItem,
   CommandPalette,
+  DateTimePicker,
   DualListbox,
   ConfidenceIndicator,
   FileUpload,
@@ -678,5 +679,30 @@ export const TreeGridSpeaksTheLocale: Story = {
       ).toBeVisible();
     for (const box of c.getAllByRole('checkbox'))
       await expect(box.getAttribute('aria-label')).toMatch(/\S/);
+  },
+};
+
+/**
+ * DateTimePicker's two strings — the calendar button and the time field's
+ * label — through `labels`; the segments, the month and the weekdays are the
+ * locale's own. Open, the popover has no English either.
+ */
+export const WhenARunStarts: Story = {
+  render: () => (
+    <DateTimePicker
+      label={m('starts')}
+      description={m('zone')}
+      defaultValue="2026-04-12T14:30"
+      labels={{ calendar: m('calendar'), time: m('time') }}
+    />
+  ),
+  play: async ({ canvasElement }) => {
+    await expectNoEnglish(canvasElement);
+    const c = within(canvasElement);
+    await userEvent.click(c.getByRole('button', { name: m('calendar') }));
+    const dialog = await within(document.body).findByRole('dialog');
+    await expectNoEnglish(dialog);
+    await expectSaid(dialog, m('time'));
+    await userEvent.keyboard('{Escape}');
   },
 };

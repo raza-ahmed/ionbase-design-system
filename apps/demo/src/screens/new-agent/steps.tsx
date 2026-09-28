@@ -5,6 +5,7 @@ import {
   CheckboxGroup,
   Combobox,
   DatePicker,
+  DateTimePicker,
   DescriptionList,
   DescriptionListItem,
   Divider,
@@ -18,12 +19,11 @@ import {
   Select,
   SelectableTile,
   Textarea,
-  TimeField,
   type FileUploadLabels,
 } from 'ionbase-ui';
 
 import { TEAMS, type AgentDraft } from '../../data/agents';
-import { formatDay, formatTime, today } from '../../lib/dates';
+import { formatDay, formatMoment, nowMinute } from '../../lib/dates';
 import type { FieldErrors } from './validate';
 
 const MODELS = [
@@ -192,17 +192,19 @@ export function TriggerStep({ values, errors, onChange, onBlur }: StepProps) {
           orientation="horizontal"
           className="demo-form__schedule"
         >
-          <DatePicker
-            id="field-startDate"
-            label="Start date"
+          {/* One moment, so "not before now" spans the day and the time. */}
+          <DateTimePicker
+            id="field-firstRun"
+            label="First run"
+            description="Workspace time, UTC. Later runs keep its time of day."
             isRequired
-            minValue={today()}
-            value={values.startDate}
-            onChange={(startDate) => {
-              onChange({ startDate });
-              onBlur('startDate');
+            minValue={nowMinute()}
+            value={values.firstRun ?? null}
+            onChange={(firstRun) => {
+              onChange({ firstRun });
+              onBlur('firstRun');
             }}
-            {...invalid(errors, 'startDate')}
+            {...invalid(errors, 'firstRun')}
           />
           <Select
             label="Repeats"
@@ -210,21 +212,18 @@ export function TriggerStep({ values, errors, onChange, onBlur }: StepProps) {
             value={values.frequency}
             onChange={(e) => onChange({ frequency: e.target.value })}
           />
-          {/* Hourly runs at every hour, so a time of day would mean nothing. */}
-          {values.frequency !== 'hourly' && (
-            <TimeField
-              id="field-runAt"
-              label="Runs at"
-              description="Workspace time, UTC."
-              isRequired
-              value={values.runAt}
-              onChange={(runAt) => {
-                onChange({ runAt });
-                onBlur('runAt');
-              }}
-              {...invalid(errors, 'runAt')}
-            />
-          )}
+          {/* A day with no time: the last runs are that day's. */}
+          <DatePicker
+            id="field-endsOn"
+            label="Ends on (optional)"
+            minValue={values.firstRun?.slice(0, 10) ?? undefined}
+            value={values.endsOn ?? null}
+            onChange={(endsOn) => {
+              onChange({ endsOn });
+              onBlur('endsOn');
+            }}
+            {...invalid(errors, 'endsOn')}
+          />
         </Fieldset>
       )}
 
@@ -381,11 +380,9 @@ export function ReviewStep({
         [
           'Starts',
           values.trigger === 'schedule'
-            ? `${FREQUENCIES.find((f) => f.value === values.frequency)?.label}${
-                values.frequency !== 'hourly' && values.runAt
-                  ? ` at ${formatTime(values.runAt)} UTC`
-                  : ''
-              }, from ${values.startDate ? formatDay(values.startDate) : '—'}`
+            ? `${FREQUENCIES.find((f) => f.value === values.frequency)?.label}, first on ${
+                values.firstRun ? `${formatMoment(values.firstRun)} UTC` : '—'
+              }${values.endsOn ? `, until ${formatDay(values.endsOn)}` : ''}`
             : values.trigger === 'webhook'
               ? 'When its webhook is called'
               : 'Only when someone starts it',

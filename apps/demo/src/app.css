@@ -515,6 +515,7 @@ body {
 
 /* A horizontal Fieldset wraps its fields at their natural width; the schedule
    wants them to share the row evenly instead, as the old two-column pair did. */
+.demo-quiet-hours > .ion-fieldset__content > *,
 .demo-form__schedule > .ion-fieldset__content > * {
   flex: 1 1 12rem;
   min-width: 0;
