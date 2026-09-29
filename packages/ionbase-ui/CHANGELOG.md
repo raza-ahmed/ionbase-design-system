@@ -1,5 +1,28 @@
 # Changelog
 
+## 0.136.0 — 2026-09-29
+
+### Button's shadow snaps, and stops repainting
+
+**`box-shadow` is off Button's transition list.** Press, focus and disabled
+change the shadow at once; the colour still fades over it, and hover, which
+never touched the shadow, is unchanged.
+
+In practice the shadow mostly didn't animate before either. A shadow list
+only interpolates when every layer pairs with one of the same kind, inset
+with inset, and Button's raised bevel, its insets and the focus ring don't.
+So press and focus already snapped on Primary Brand, Destructive and Success.
+**Three changes did pair, and morphed** one shadow into an unrelated one over
+200ms, repainting every frame:
+
+- Primary Neutral's press: the bevel into the flush inset.
+- Primary Soft's and Secondary's focus: the drop shadow into the ring.
+
+Those now snap like the rest. Figma draws no shadow motion.
+
+**Storybook:** Button's `TheShadowSnaps` checks the three cases that used to
+morph.
+
 ## 0.135.0 — 2026-09-29
 
 ### Motion has a gate — and reduced motion keeps a spinner turning

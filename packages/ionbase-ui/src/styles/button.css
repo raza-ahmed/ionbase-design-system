@@ -111,11 +111,19 @@
    * symmetric — its slow tail means a colour appears to arrive late and then
    * snap. `ease-out` leaves immediately and decelerates in, so the same change
    * reads as settling.
+   *
+   * THE SHADOW SNAPS, ON PURPOSE. `box-shadow` was on this list until 0.136.0
+   * and did almost nothing: a shadow list only interpolates when every layer
+   * pairs with one of the same kind, inset with inset, and the raised bevel,
+   * the insets and the ring do not pair. So press and focus already snapped on
+   * four variants, while three changes that did pair — Primary Neutral's press,
+   * Primary Soft's and Secondary's focus — morphed one shadow into an unrelated
+   * one, repainting every frame. Figma draws no shadow motion at all. Hover,
+   * the one change that is animated, does not touch the shadow.
    */
   transition:
     background-color var(--ion-duration-base) var(--ion-ease-out),
-    border-color var(--ion-duration-base) var(--ion-ease-out),
-    box-shadow var(--ion-duration-base) var(--ion-ease-out);
+    border-color var(--ion-duration-base) var(--ion-ease-out);
 }
 
 /*
