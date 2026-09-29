@@ -104,7 +104,11 @@ the same PR.
 ## 3. Which rung to pick
 
 1. **State changes (hover, focus, selected, disabled) get `base` + `out`.** No
-   design decision needed; this is the default and every stylesheet uses it.
+   design decision needed; this is the default. **The same curve both ways**:
+   a quicker enter and gentler leave was considered and declined on 29 Sep
+   2026 (§6). Not every stylesheet follows this rule yet: 18 of the 48 with a
+   hover rule have no transition at all. Some of those are deliberate, some
+   are gaps, and they are being sorted in the open-items checklist.
 
 2. **Press gets `fast`.** A press must resolve while the pointer is still down
    or the feedback reads as lag. Button does this with a single
@@ -208,9 +212,12 @@ its own. Two lines are exempt, each with a `stylelint-disable` giving its
 reason: the `0.01ms` in the global reduced-motion block, which is the "no
 motion" value itself, and StreamingText's `1s` caret blink.
 
-## 6. Still open
+## 6. Decided against
 
-- **Asymmetric hover enter/leave.** Standard practice is a quicker in and a
-  gentler out. Not implemented, because Figma specifies only the enter
-  direction and the value of the change is small next to §2's two fixes. It is
-  roughly three lines per component if wanted.
+- **Asymmetric hover, enter vs leave** (29 Sep 2026). Common practice is a
+  quicker enter and a gentler leave. It was declined because:
+  - **Figma:** Button's and Nav Item's hover reactions were set to the
+    code's 200ms ease-out, which Figma plays both ways. Asymmetry would put
+    them out of step again.
+  - **Cost:** it would touch 30 stylesheets and 113 hover selectors.
+  - **Payoff:** the gain is small next to §2's two fixes.
