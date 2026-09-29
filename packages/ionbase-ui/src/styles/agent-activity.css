@@ -65,7 +65,8 @@
 
 .ion-agent-activity__step--active .ion-agent-activity__glyph {
   color: var(--icon-primary);
-  animation: ion-agent-activity-spin 1.2s linear infinite;
+  animation: ion-agent-activity-spin var(--ion-duration-cycle)
+    var(--ion-ease-linear) infinite;
 }
 
 .ion-agent-activity__step--done .ion-agent-activity__glyph {

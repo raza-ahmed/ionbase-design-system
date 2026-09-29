@@ -54,6 +54,7 @@ would have thrown it away.
 --ion-duration-fast     120ms   press and release
 --ion-duration-base     200ms   any state colour change — the default
 --ion-duration-slow     320ms   things that travel or resize
+--ion-duration-cycle   1200ms   one turn of a loop that runs until the work ends
 
 --ion-ease-out          cubic-bezier(0.2, 0, 0, 1)     entering a state — the default
 --ion-ease-in           cubic-bezier(0.4, 0, 1, 1)     leaving: dismiss, collapse
@@ -128,6 +129,12 @@ the same PR.
 6. **Nothing animates on mount by default.** A component appearing because its
    parent re-rendered is not the same event as a user opening it.
 
+7. **A loop gets `cycle` + `linear`.** The working glyphs in AgentActivity,
+   StatusIndicator and ToolCall turn once per `cycle`. Added in 0.135.0, when
+   the gate below found all three on a raw `1.2s`; nothing finishes on it, so
+   it is not for a state change. Spinner and the indeterminate ProgressBar
+   predate it and turn on `slow`.
+
 ## 4. `prefers-reduced-motion`
 
 Already handled, and better than the proposal suggested. The proposal wanted
@@ -139,8 +146,10 @@ single global block in the package's `index.css`:
   [class^='ion-'],
   [class*=' ion-'],
   [class^='ion-'] *,
-  [class*=' ion-'] * {
+  [class*=' ion-'] *,
+  /* …and the ::before / ::after of each */ {
     animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     /* … */
   }
@@ -152,21 +161,46 @@ not yet adopted the ladder. `0.01ms` rather than `0` so the browser still fires
 `transitionend` / `animationend` for code that listens. **Do not** add a second
 reduced-motion override in `motion.css` — one place, not two.
 
+**Nor in a component stylesheet.** Six carried their own
+`transition-duration: 1ms`; the global block already beat five of them, and
+they were removed in 0.135.0. The sixth, Slider's thumb halo, was the one
+doing work, because `*` does not match `::before` — so the block now lists the
+pseudo-elements, which also caught Table's resize handle, which nothing
+covered.
+
+**Two loops out-rank it, deliberately.** A still spinner cannot be told from a
+hung one, so Spinner and the indeterminate ProgressBar are slowed, not
+stopped: `calc(var(--ion-duration-cycle) * 2)` and `* 2.5`, with
+`animation-iteration-count: infinite`. Both need `!important` and two classes
+to get there. Until 0.135.0 they had neither, the global block won, and under
+reduced motion both stopped after one frame — since Spinner shipped in
+0.55.0. A loop whose shape carries the meaning without moving — the working
+glyphs — sets `animation: none` instead, which the block does not fight.
+
+`Foundations/Reduced motion` in Storybook checks all of this with the query
+emulated (`commands.reducedMotion`, reset before every story).
+
 ## 5. Adoption
 
 All 16 hardcoded `150ms cubic-bezier(0.4, 0, 0.2, 1)` literals across the 12
-component stylesheets now read from the ladder. The only remaining `ms`
-literals in `packages/ionbase-ui/src/styles` are the `0.01ms` reduced-motion
-values and prose in comments.
+component stylesheets read from the ladder since 0.4.0.
 
-Nothing enforces that. The gate worth adding, and not yet built, is a check
-that fails the build on a raw `ms` literal in a component stylesheet —
-otherwise the ladder decays back into magic numbers the first time someone is
-in a hurry. Colour and geometry both have gates; motion does not.
+**It had decayed anyway.** By 0.134.0 there were 14 raw durations again, in
+components that shipped after the ladder: three glyphs at `1.2s`, a cursor at
+`1s`, two reduced-motion loops at `2400ms` and `3000ms`, and six
+`transition-duration: 1ms`. Nothing enforced the ladder, so nothing noticed.
+
+**The gate, since 0.135.0,** is `declaration-property-unit-disallowed-list` in
+the published `ionbase-ui/stylelint-config`: no `ms` or `s` in any
+`transition*` or `animation*` declaration. A consumer's own CSS gets it too,
+which is the point — an agent writing an app reaches for `150ms` as readily as
+the system once did. `calc()` over a rung passes, since it carries no unit of
+its own. Two lines are exempt, each with a `stylelint-disable` giving its
+reason: the `0.01ms` in the global reduced-motion block, which is the "no
+motion" value itself, and StreamingText's `1s` caret blink.
 
 ## 6. Still open
 
-- **The gate above.**
 - **Asymmetric hover enter/leave.** Standard practice is a quicker in and a
   gentler out. Not implemented, because Figma specifies only the enter
   direction and the value of the change is small next to §2's two fixes. It is

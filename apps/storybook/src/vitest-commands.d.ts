@@ -9,5 +9,6 @@ declare module 'vitest/browser' {
   interface BrowserCommands {
     parkMouse: () => Promise<void>;
     forcedColors: (on: boolean) => Promise<void>;
+    reducedMotion: (on: boolean) => Promise<void>;
   }
 }

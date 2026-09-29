@@ -41,6 +41,15 @@ const forcedColors: BrowserCommand<[on: boolean]> = async ({ page }, on) => {
   await page.emulateMedia({ forcedColors: on ? 'active' : 'none' });
 };
 
+/*
+ * prefers-reduced-motion, emulated, for the same reason and with the same
+ * reset: the global block in index.css and the loops that out-rank it can
+ * only be checked with the query really matching.
+ */
+const reducedMotion: BrowserCommand<[on: boolean]> = async ({ page }, on) => {
+  await page.emulateMedia({ reducedMotion: on ? 'reduce' : 'no-preference' });
+};
+
 // More info at: https://storybook.js.org/docs/next/writing-tests/integrations/vitest-addon
 export default defineConfig({
   test: {
@@ -69,7 +78,7 @@ export default defineConfig({
             headless: true,
             provider: playwright({}),
             instances: [{ browser: 'chromium' }],
-            commands: { parkMouse, forcedColors },
+            commands: { parkMouse, forcedColors, reducedMotion },
           },
           setupFiles: ['./.storybook/vitest.setup.ts'],
         },

@@ -5,6 +5,7 @@ declare module 'vitest/browser' {
   interface BrowserCommands {
     parkMouse: () => Promise<void>;
     forcedColors: (on: boolean) => Promise<void>;
+    reducedMotion: (on: boolean) => Promise<void>;
   }
 }
 
@@ -13,4 +14,5 @@ declare module 'vitest/browser' {
 beforeEach(async () => {
   await commands.parkMouse();
   await commands.forcedColors(false);
+  await commands.reducedMotion(false);
 });

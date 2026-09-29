@@ -793,8 +793,8 @@ function tarballIndex() {
       'contrast failures, competing primary actions.',
   );
   p(
-    '- `ionbase-ui/stylelint-config` — bans raw colour and spacing values in ' +
-      'favour of tokens.',
+    '- `ionbase-ui/stylelint-config` — bans raw colour, spacing and duration ' +
+      'values in favour of tokens.',
   );
   p();
   p('Turn both on. They encode the same judgement as the contracts, enforced.');

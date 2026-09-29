@@ -36,6 +36,8 @@
   margin-inline-start: 0.1em;
   vertical-align: text-bottom;
   background-color: var(--text-tertiary);
+  /* stylelint-disable-next-line declaration-property-unit-disallowed-list --
+     a text cursor's blink, which reads as a caret at about 1s; not a rung. */
   animation: ion-streaming-blink 1s step-end infinite;
 }
 

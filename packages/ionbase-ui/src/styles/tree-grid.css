@@ -117,12 +117,6 @@
   text-align: center;
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .ion-tree-grid__toggle svg {
-    transition-duration: 1ms;
-  }
-}
-
 /*
  * Forced colours paint a selected row Highlight and keep its own colours
  * (index.css). On that fill the focus ring — blue on blue — and the grey

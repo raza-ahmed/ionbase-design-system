@@ -94,9 +94,3 @@
   font-size: var(--type-body);
   line-height: var(--type-body-line-height);
 }
-
-@media (prefers-reduced-motion: reduce) {
-  .ion-accordion__indicator {
-    transition-duration: 1ms;
-  }
-}

@@ -42,6 +42,10 @@
     "slow": {
       "ms": 320,
       "use": "Anything that travels or changes size: panels, overlays, disclosure. Distance needs time; a colour does not."
+    },
+    "cycle": {
+      "ms": 1200,
+      "use": "One turn of a loop that runs until the work it reports ends — a working glyph spinning in AgentActivity, StatusIndicator or ToolCall. Not for a state change: nothing finishes on it. Under reduced motion Spinner and ProgressBar keep moving at 2x and 2.5x this, rather than stop."
     }
   },
 

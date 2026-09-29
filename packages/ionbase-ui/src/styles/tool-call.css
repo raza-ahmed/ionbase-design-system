@@ -170,7 +170,8 @@ button.ion-tool-call__header:focus-visible {
 /* Status: the colour is the second signal — glyph shape and hidden text first. */
 .ion-tool-call--active .ion-tool-call__glyph {
   color: var(--icon-primary);
-  animation: ion-tool-call-spin 1.2s linear infinite;
+  animation: ion-tool-call-spin var(--ion-duration-cycle) var(--ion-ease-linear)
+    infinite;
 }
 
 .ion-tool-call--done .ion-tool-call__glyph {

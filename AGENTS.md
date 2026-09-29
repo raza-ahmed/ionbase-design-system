@@ -1199,6 +1199,15 @@ reactions: Button (Primary Brand, Small and Medium — 300ms Ease In until 29 Se
 `base` + `out`, 200ms `cubic-bezier(0.2, 0, 0, 1)`. Change the ladder and those
 reactions together — see [docs/motion-system.md](docs/motion-system.md) §2.
 
+**A raw duration fails lint** (`ms` or `s` in any `transition*` / `animation*`,
+from the published stylelint config, since 0.135.0). Use a rung, or `calc()`
+over one. **Do not add a component-level `prefers-reduced-motion` duration** —
+the global block in `index.css` covers every `ion-*` element, descendant and
+pseudo-element. The only rules that out-rank it are Spinner's and the
+indeterminate ProgressBar's slowed loops, and they need `!important` and two
+classes to do it; a loop that should simply stop sets `animation: none`. See
+[docs/motion-system.md](docs/motion-system.md) §4–5.
+
 ## Token architecture v2 — LIVE in Figma since 29 Jul 2026
 
 Full inventory: [docs/token-architecture-v2.md](docs/token-architecture-v2.md).

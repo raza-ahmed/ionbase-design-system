@@ -66,7 +66,8 @@
 }
 
 .ion-status--progress .ion-status__icon svg {
-  animation: ion-status-spin 1.2s linear infinite;
+  animation: ion-status-spin var(--ion-duration-cycle) var(--ion-ease-linear)
+    infinite;
 }
 
 @keyframes ion-status-spin {

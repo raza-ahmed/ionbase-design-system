@@ -85,14 +85,14 @@
   }
 }
 
+/*
+ * Still moving, still slow — see Spinner for the reasoning, and for why this
+ * needs `!important` to get past the global block.
+ */
 @media (prefers-reduced-motion: reduce) {
-  .ion-progress-bar__fill {
-    transition-duration: 1ms;
-  }
-
-  /* Still moving, still slow — see Spinner for the same reasoning. */
   .ion-progress-bar--indeterminate .ion-progress-bar__fill {
-    animation-duration: 3000ms;
+    animation-duration: calc(var(--ion-duration-cycle) * 2.5) !important;
+    animation-iteration-count: infinite !important;
   }
 }
 
