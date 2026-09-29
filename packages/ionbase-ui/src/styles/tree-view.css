@@ -213,12 +213,6 @@
   transform: rotate(180deg);
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .ion-tree-view__toggle svg {
-    transition-duration: 1ms;
-  }
-}
-
 @media (forced-colors: active) {
   .ion-tree-view__row--selected {
     outline: var(--border-width-default) solid;

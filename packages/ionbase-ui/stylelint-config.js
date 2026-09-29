@@ -197,6 +197,26 @@ const config = {
     ],
 
     /*
+     * No raw durations. Motion reads from the ladder — `--ion-duration-*` and
+     * `--ion-ease-*` in `ionbase-ui/tokens` — or it decays back into magic
+     * numbers the first time someone is in a hurry, which is what 150ms was
+     * in sixteen places before 0.4.0. Colour and geometry have gates; this is
+     * motion's.
+     *
+     * Correct:  transition: opacity var(--ion-duration-base) var(--ion-ease-out);
+     *           animation-duration: calc(var(--ion-duration-cycle) * 2);
+     * Rejected: transition: opacity 150ms ease;
+     *           animation: spin 1.2s linear infinite;
+     */
+    'declaration-property-unit-disallowed-list': [
+      { '/^transition/': ['ms', 's'], '/^animation/': ['ms', 's'] },
+      {
+        message: (property, unit) =>
+          `No raw duration in "${property}" (a value in ${unit}). Use a rung of the motion ladder: var(--ion-duration-fast | base | slow | cycle), with var(--ion-ease-*).`,
+      },
+    ],
+
+    /*
      * Right-to-left. `inset-inline-start` for `left`, `margin-inline-end` for
      * `margin-right`, `border-start-end-radius` for `border-top-right-radius`:
      * the logical forms follow `dir`, so a component written with them needs

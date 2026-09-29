@@ -34,10 +34,10 @@
       `cubic-bezier(0.2, 0, 0, 1)`, the code's `base` + `out`, on Small,
       Medium and the one instance that inherits it. Nav Item's hover swap,
       which had no transition, got the same.
-- [ ] **Raw `ms` gate.** A build gate or stylelint rule that fails on a
-      raw `ms` value in a component stylesheet. It allows the timing tokens
-      and the `0.01ms` reduced-motion values. Colour and geometry already
-      have gates; motion doesn't.
+- [x] **Raw `ms` gate** — 0.135.0. A published stylelint rule: no `ms` or
+      `s` in `transition*` / `animation*`. It found 14 raw durations, a new
+      `cycle` rung for loops, and Spinner and ProgressBar stopping dead under
+      reduced motion since 0.55.0.
 - [ ] **Take `box-shadow` off Button's transition.** Move the elevation onto
       a `::before` and animate only its `opacity`. That lets the compositor
       handle it instead of repainting a four-layer shadow on every frame.

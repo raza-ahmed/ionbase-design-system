@@ -1,5 +1,36 @@
 # Changelog
 
+## 0.135.0 — 2026-09-29
+
+### Motion has a gate — and reduced motion keeps a spinner turning
+
+**A raw duration now fails lint.** `ionbase-ui/stylelint-config` rejects `ms`
+or `s` in any `transition*` or `animation*` declaration and names the rungs to
+use instead. Colour and geometry already had gates; motion didn't, and it had
+decayed: 14 raw durations had crept back in since the ladder shipped in 0.4.0.
+**Your own CSS gets the rule too** if you extend the config, so a
+`transition: opacity 150ms` there now fails. Use
+`var(--ion-duration-*)` with `var(--ion-ease-*)`, or `calc()` over a rung.
+
+**`--ion-duration-cycle` (1200ms)** is a new rung: one turn of a loop that
+runs until its work ends. The working glyphs in AgentActivity,
+StatusIndicator and ToolCall turn on it, instead of a raw `1.2s` each.
+
+**Fixed — under reduced motion, Spinner and the indeterminate ProgressBar
+stopped after one frame.** Both are meant to slow, not stop, because a still
+spinner looks hung. The global reduced-motion block is `!important` and
+overrode them, and had since Spinner shipped in 0.55.0. They now out-rank it
+and keep moving, at 2.4s and 3s a turn as intended.
+
+**Fixed — reduced motion now reaches `::before` and `::after`.** Slider's
+thumb halo relied on a rule of its own, and Table's column-resize handle kept
+fading with nothing covering it. The global block now covers pseudo-elements,
+and the five component-level `transition-duration: 1ms` rules it already made
+redundant are gone.
+
+**Storybook:** `Foundations/Reduced motion` checks each of these with
+`prefers-reduced-motion` emulated.
+
 ## 0.134.0 — 2026-09-28
 
 ### SplitPane — two panes, and a divider a person moves

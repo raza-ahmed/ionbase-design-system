@@ -53,10 +53,17 @@
  * Slowed, not stopped. A stationary spinner is not a calmer spinner; it is
  * indistinguishable from a hung one, and it removes the only signal a sighted
  * user has that the wait is still live.
+ *
+ * `!important`, and two classes, because the global reduced-motion block in
+ * index.css is `!important` too: it sets every `ion-*` animation to one
+ * 0.01ms run, and until 0.135.0 it beat this rule, so under reduced motion the
+ * spinner stopped after one frame. Two classes out-rank its one, whatever
+ * order the stylesheets load in.
  */
 @media (prefers-reduced-motion: reduce) {
-  .ion-spinner__ring {
-    animation-duration: 2400ms;
+  .ion-spinner .ion-spinner__ring {
+    animation-duration: calc(var(--ion-duration-cycle) * 2) !important;
+    animation-iteration-count: infinite !important;
   }
 }
 

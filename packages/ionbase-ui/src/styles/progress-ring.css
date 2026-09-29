@@ -121,12 +121,6 @@
   font-variant-numeric: tabular-nums;
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .ion-progress-ring__fill {
-    transition-duration: 1ms;
-  }
-}
-
 /*
  * Forced colours leave SVG strokes set in CSS alone, so a primary fill on a
  * muted track would keep two token colours the mode means to replace: the

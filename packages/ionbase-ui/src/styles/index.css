@@ -188,20 +188,37 @@ body {
 /*
  * Reduced motion — WCAG 2.3.3.
  *
- * Ten component stylesheets carry transitions; none of them individually
- * gated on the query. One global block covers every `ion-*` rule rather than
- * duplicating the media query ten times. `0.01ms` rather than `0` so the
- * browser still fires `transitionend` / `animationend` for anything that
- * listens.
+ * One global block covers every `ion-*` element, its descendants and their
+ * `::before` / `::after`, rather than a media query per stylesheet. The
+ * pseudo-elements were missing until 0.135.0: `*` does not match them, so
+ * Slider's thumb and Table's resize handle kept animating. `0.01ms` rather
+ * than `0` so the browser still fires `transitionend` / `animationend` for
+ * anything that listens.
+ *
+ * The only rules that out-rank it are loops that must keep moving to mean
+ * anything — Spinner and the indeterminate ProgressBar, slowed rather than
+ * stopped. Anything else that needs its own reduced-motion rule sets
+ * `animation: none` or a static end state, which this block does not fight.
  */
 @media (prefers-reduced-motion: reduce) {
   [class^='ion-'],
   [class*=' ion-'],
   [class^='ion-'] *,
-  [class*=' ion-'] * {
+  [class*=' ion-'] *,
+  [class^='ion-']::before,
+  [class^='ion-']::after,
+  [class*=' ion-']::before,
+  [class*=' ion-']::after,
+  [class^='ion-'] *::before,
+  [class^='ion-'] *::after,
+  [class*=' ion-'] *::before,
+  [class*=' ion-'] *::after {
+    /* stylelint-disable declaration-property-unit-disallowed-list --
+       the one place a raw duration belongs: the "no motion" value itself. */
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+    /* stylelint-enable declaration-property-unit-disallowed-list */
     scroll-behavior: auto !important;
   }
 }

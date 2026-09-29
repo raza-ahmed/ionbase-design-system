@@ -147,12 +147,6 @@
   box-shadow: none;
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .ion-slider__thumb::before {
-    transition-duration: 1ms;
-  }
-}
-
 @media (forced-colors: active) {
   .ion-slider__rail {
     background-color: CanvasText;
