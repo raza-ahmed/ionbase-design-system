@@ -1194,10 +1194,10 @@ tracks are three separate places, and `getLocalVariablesAsync` sees none of
 them.
 
 It is still not a variable, so it stays repo-owned rather than becoming a fifth
-collection. The values also deliberately **disagree** with the one reaction
-authored in Figma (Button, 300ms Ease In) — see
-[docs/motion-system.md](docs/motion-system.md) §2. That is a recorded decision,
-not drift.
+collection. **The code is the source, and Figma follows it.** Two components carry hover
+reactions: Button (Primary Brand, Small and Medium — 300ms Ease In until 29 Sep 2026) and Nav Item (`State=Default`, which had no transition). Both now read
+`base` + `out`, 200ms `cubic-bezier(0.2, 0, 0, 1)`. Change the ladder and those
+reactions together — see [docs/motion-system.md](docs/motion-system.md) §2.
 
 ## Token architecture v2 — LIVE in Figma since 29 Jul 2026
 
