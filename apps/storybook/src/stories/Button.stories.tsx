@@ -531,3 +531,51 @@ export const TertiaryHasNoElevation: Story = {
     );
   },
 };
+
+/** Whatever is still transitioning on the element, by property. */
+const transitioning = (el: Element) =>
+  el
+    .getAnimations()
+    .filter((a): a is CSSTransition => a instanceof CSSTransition)
+    .map((a) => a.transitionProperty);
+
+/**
+ * The shadow snaps; the colour fades. Focus and press change the elevation or
+ * add the ring, and no shadow transition runs for either. These are the three
+ * that used to morph one shadow into another, frame by frame.
+ *
+ * Press is set as the attribute useButton writes: a held pointer does not
+ * hold in this harness (see `PressFires`), and it is the CSS under test.
+ */
+export const TheShadowSnaps: Story = {
+  render: () => (
+    <div style={{ display: 'flex', gap: '16px' }}>
+      <Button variant="secondary">secondary</Button>
+      <Button variant="primary-soft">primary-soft</Button>
+      <Button variant="primary-neutral">primary-neutral</Button>
+    </div>
+  ),
+  play: async ({ canvas, userEvent }) => {
+    for (const name of ['secondary', 'primary-soft']) {
+      const button = canvas.getByRole('button', { name });
+      await userEvent.tab();
+      await expect(button).toHaveAttribute('data-focused', 'true');
+      await expect(transitioning(button)).not.toContain('box-shadow');
+      await expect(getComputedStyle(button).boxShadow).toContain('4px');
+    }
+
+    // Its press changes the shadow and nothing else: one frame on, the
+    // pressed shadow is already there, with nothing in between.
+    const neutral = canvas.getByRole('button', { name: 'primary-neutral' });
+    const rest = getComputedStyle(neutral).boxShadow;
+    neutral.setAttribute('data-pressed', 'true');
+    await new Promise((r) => requestAnimationFrame(r));
+    await expect(transitioning(neutral)).not.toContain('box-shadow');
+    const pressed = getComputedStyle(neutral).boxShadow;
+    await expect(pressed).not.toBe(rest);
+    // Settled well past `base`, it has not moved since that first frame.
+    await new Promise((r) => setTimeout(r, 300));
+    await expect(getComputedStyle(neutral).boxShadow).toBe(pressed);
+    neutral.removeAttribute('data-pressed');
+  },
+};

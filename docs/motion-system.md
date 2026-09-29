@@ -129,7 +129,16 @@ the same PR.
 6. **Nothing animates on mount by default.** A component appearing because its
    parent re-rendered is not the same event as a user opening it.
 
-7. **A loop gets `cycle` + `linear`.** The working glyphs in AgentActivity,
+7. **A shadow does not transition — it snaps.** A `box-shadow` list only
+   interpolates when every layer pairs with one of the same kind, inset with
+   inset. Button's raised bevel, its insets and the focus ring do not, so its
+   `box-shadow` transition mostly never ran, and the three changes that did
+   pair morphed one shadow into an unrelated one, repainting every frame.
+   Measured and removed in 0.136.0; the colour still fades over it. If a
+   shadow ever needs to move, crossfade two layers' `opacity` — do not
+   interpolate the list.
+
+8. **A loop gets `cycle` + `linear`.** The working glyphs in AgentActivity,
    StatusIndicator and ToolCall turn once per `cycle`. Added in 0.135.0, when
    the gate below found all three on a raw `1.2s`; nothing finishes on it, so
    it is not for a state change. Spinner and the indeterminate ProgressBar
@@ -205,8 +214,3 @@ motion" value itself, and StreamingText's `1s` caret blink.
   gentler out. Not implemented, because Figma specifies only the enter
   direction and the value of the change is small next to §2's two fixes. It is
   roughly three lines per component if wanted.
-- **Getting `box-shadow` off Button's transition list.** The raised/inset
-  shadows are four-layer composites; interpolating four layers per frame
-  repaints rather than composites. Moving the elevation to a `::before` and
-  transitioning its `opacity` would make it compositor-only. Independent of the
-  ladder.

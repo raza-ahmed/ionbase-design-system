@@ -38,9 +38,10 @@
       `s` in `transition*` / `animation*`. It found 14 raw durations, a new
       `cycle` rung for loops, and Spinner and ProgressBar stopping dead under
       reduced motion since 0.55.0.
-- [ ] **Take `box-shadow` off Button's transition.** Move the elevation onto
-      a `::before` and animate only its `opacity`. That lets the compositor
-      handle it instead of repainting a four-layer shadow on every frame.
+- [x] **Take `box-shadow` off Button's transition** — 0.136.0. Measured
+      first: the shadow mostly never animated, because its layers don't pair,
+      and the three cases that did were accidental morphs. Chosen: it snaps
+      everywhere, rather than adding a crossfade Figma doesn't draw.
 - [ ] **Asymmetric hover, enter vs leave.** Faster in, gentler out. Build
       it, about three lines per component, or strike it with a reason.
 
