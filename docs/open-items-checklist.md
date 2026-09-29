@@ -45,15 +45,12 @@
 - [x] ~~**Asymmetric hover, enter vs leave**~~ — declined. Figma's hover
       reactions now match the code's single curve, and it would touch 30
       stylesheets for a small gain. See motion-system §6.
-- [ ] **Hover with no transition.** 18 stylesheets with a hover rule have no
-      transition, so their hover snaps while the rest fade: app-switcher,
-      breadcrumb, citation, command-palette, date-picker, date-range-picker,
-      drawer, dual-listbox, list, notifications-panel, number-input,
-      password-input, search-field, selectable-tile, side-panel, split-pane,
-      stepper and toggletip. Sort them into deliberate and missed. Rows that
-      track the pointer in a list or menu are probably meant to be instant;
-      give the missed ones `base` + `out`, and say why the deliberate ones
-      stay instant.
+- [x] **Hover with no transition** — 0.137.0. The rule chosen: the
+      pointer's hover fades; a highlight the keys move snaps. 16 of the 18
+      now fade their hover. CommandPalette's row is moved by the keys, so it
+      stays instant. NotificationsPanel only underlines, and an underline
+      can't fade. Menu's highlight moves with the keys, so it stopped
+      fading.
 
 ## 3. Agent readiness — [`agent-readiness-plan.md`](agent-readiness-plan.md)
 

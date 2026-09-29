@@ -58,6 +58,7 @@
   flex: none;
   background-color: var(--border-default);
   touch-action: none;
+  transition: background-color var(--ion-duration-base) var(--ion-ease-out);
 }
 
 .ion-split-pane--horizontal > .ion-split-pane__divider {
@@ -124,6 +125,9 @@
 .ion-split-pane__divider:focus-visible,
 .ion-split-pane__divider[data-resizing='true'] {
   background-color: var(--border-focus);
+
+  /* Focus and a drag show at once: this colour is the focus indicator. */
+  transition: none;
 }
 
 .ion-split-pane__divider:focus-visible {

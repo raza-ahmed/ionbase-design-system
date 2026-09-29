@@ -1,5 +1,37 @@
 # Changelog
 
+## 0.137.0 — 2026-09-29
+
+### Hover fades everywhere; a highlight the keys move snaps
+
+**One rule, now followed everywhere.** The pointer's hover fades on `base` +
+`out`, like any state change. A highlight the keys move arrives at once: the
+row you arrow to, a focus indicator drawn as a colour, a day you choose.
+Someone moving by keyboard is waiting on it, as they are on a press.
+
+**Hover now fades** where it used to snap:
+
+| Where            | What                                                                   |
+| ---------------- | ---------------------------------------------------------------------- |
+| Rows and options | List rows, DualListbox options                                         |
+| Links            | Breadcrumb, Citation, Stepper step labels                              |
+| Calendar         | the month arrows, days, range presets and Clear                        |
+| Tiles            | SelectableTile                                                         |
+| Close buttons    | Drawer and SidePanel, matching Modal's and Popover's                   |
+| Icon buttons     | inside NumberInput, PasswordInput and SearchField, and Toggletip's "ⓘ" |
+| Other            | AppSwitcher's apps, SplitPane's divider                                |
+
+**Now snaps:**
+
+- **Menu's highlighted row.** It was the only arrow-key highlight that faded:
+  Combobox, MultiSelect and CommandPalette already snapped.
+- **SplitPane's divider, on focus and during a drag.** Its colour is the focus
+  indicator.
+- **Choosing a day in a Calendar.** The fill arrives at once, and a range
+  growing under a drag doesn't trail the pointer.
+
+**Storybook:** `Foundations/Motion` checks the rule.
+
 ## 0.136.0 — 2026-09-29
 
 ### Button's shadow snaps, and stops repainting

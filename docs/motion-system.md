@@ -106,15 +106,25 @@ the same PR.
 1. **State changes (hover, focus, selected, disabled) get `base` + `out`.** No
    design decision needed; this is the default. **The same curve both ways**:
    a quicker enter and gentler leave was considered and declined on 29 Sep
-   2026 (§6). Not every stylesheet follows this rule yet: 18 of the 48 with a
-   hover rule have no transition at all. Some of those are deliberate, some
-   are gaps, and they are being sorted in the open-items checklist.
+   2026 (§6). The pointer's hover always fades. Until 0.137.0, 16 stylesheets
+   let it snap by accident, including Breadcrumb, SelectableTile, the close
+   buttons on Drawer and SidePanel, and the icon buttons inside NumberInput,
+   PasswordInput and SearchField.
 
 2. **Press gets `fast`.** A press must resolve while the pointer is still down
    or the feedback reads as lag. Button does this with a single
    `transition-duration` override on `:active` / `[data-pressed]`; release
    returns to `base` automatically, because the override only holds while the
    pressed state does.
+
+   **A highlight the keys move snaps, for the same reason.** Someone arrowing
+   through Menu, Combobox, MultiSelect or CommandPalette is waiting on the
+   row, so `data-focused` arrives at once. Pointer movement sets the same
+   attribute on those rows, so it snaps under the mouse too. Menu faded until
+   0.137.0, the only one of the four that did. The same goes for a focus
+   indicator drawn as a colour, such as SplitPane's divider, and for a chosen
+   calendar day, which transitions only while unselected. `Foundations/Motion`
+   in Storybook checks each case.
 
 3. **Two-way travel on one path gets `in-out`.** Currently only the Toggle
    knob. A symmetric curve is what makes on and off feel like one gesture
