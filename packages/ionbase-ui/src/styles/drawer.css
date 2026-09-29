@@ -131,6 +131,7 @@
   background: none;
   color: var(--icon-secondary);
   cursor: pointer;
+  transition: background-color var(--ion-duration-base) var(--ion-ease-out);
 }
 
 /*

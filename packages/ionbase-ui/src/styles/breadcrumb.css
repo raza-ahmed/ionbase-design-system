@@ -43,6 +43,7 @@
   color: var(--text-secondary);
   text-decoration: none;
   border-radius: var(--radius-xs);
+  transition: color var(--ion-duration-base) var(--ion-ease-out);
 }
 
 .ion-breadcrumb__link:hover {

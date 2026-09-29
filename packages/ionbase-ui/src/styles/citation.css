@@ -25,6 +25,7 @@
   font-weight: var(--font-weight-medium);
   text-decoration: none;
   vertical-align: baseline;
+  transition: background-color var(--ion-duration-base) var(--ion-ease-out);
 }
 
 a.ion-citation:hover {

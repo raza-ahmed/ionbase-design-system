@@ -19,6 +19,7 @@
   background-color: var(--surface-default);
   font-family: var(--font-family-sans);
   cursor: pointer;
+  transition: background-color var(--ion-duration-base) var(--ion-ease-out);
 }
 
 @media (hover: hover) {

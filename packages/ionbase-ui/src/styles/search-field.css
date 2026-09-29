@@ -45,6 +45,9 @@
   background-color: transparent;
   color: var(--icon-secondary);
   cursor: pointer;
+  transition:
+    background-color var(--ion-duration-base) var(--ion-ease-out),
+    color var(--ion-duration-base) var(--ion-ease-out);
 }
 
 .ion-search-field__clear svg {

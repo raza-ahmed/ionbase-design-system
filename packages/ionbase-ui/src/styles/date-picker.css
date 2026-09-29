@@ -273,6 +273,7 @@
   border-radius: var(--radius-sm);
   color: var(--icon-secondary);
   cursor: pointer;
+  transition: background-color var(--ion-duration-base) var(--ion-ease-out);
 }
 
 .ion-calendar__nav-button svg {
@@ -384,6 +385,16 @@
     ):hover {
     background-color: var(--surface-hover);
   }
+}
+
+/*
+ * The pointer's hover fades; choosing a day does not. The transition sits on
+ * unselected days only, so a day becoming selected takes its fill at once,
+ * as a press does. A range's days stay off it too: they are selected, and a
+ * drag grows the range under the pointer, where a fade would trail it.
+ */
+.ion-calendar__day:not([data-selected]) {
+  transition: background-color var(--ion-duration-base) var(--ion-ease-out);
 }
 
 /*
