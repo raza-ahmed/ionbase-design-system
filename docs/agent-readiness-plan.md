@@ -645,8 +645,14 @@ decoration.
 > Expected effort: 4a ~1–2 weeks. 4b ~2–3 weeks, and it is a product decision
 > about IonBase's positioning as much as an engineering one.
 
-### Phase 5 — HARNESS DONE 18 Aug 2026. A/B RUN 15 Sep 2026.
+### Phase 5 — HARNESS DONE 18 Aug 2026. RUNS OF 15 AND 29 SEP HAD REPO ACCESS; RE-RUN PENDING.
 
+> **Superseded, 30 Sep 2026.** Both runs below were made by a generator that
+> could read this repo — the real type definitions and the full contracts —
+> whatever pack it was given. See [`evals/README.md`](../evals/README.md). They
+> do not measure the packs, and the re-run under the fixed harness replaces
+> them. What follows is kept as the record of what was reported at the time.
+>
 > **The result, and the caveat that governs how much to read into it.**
 >
 > Contracts beat the README: 97% of checks against 90%, better on 14 tasks,
@@ -706,6 +712,9 @@ why the other eight checks exist.
 
 #### What the first run did not settle
 
+**Above all: it was run with repo access (see the note at the top of this
+phase), so even questions 1 and 2 are open again until the re-run.**
+
 The run is written up in [`evals/README.md`](../evals/README.md): `claude-opus-5`
 through `--provider claude-cli`, 31 tasks × 3 packs, one sample per cell. It
 answered questions 1 and 2 below. Still open:
@@ -735,7 +744,7 @@ repo) and money; `--provider claude-cli` and `--provider files` do not.
 Phase 0  ▓  DONE                                  manifest live: 26 components, 249 stories
 Phase 1  ▓▓▓▓▓▓▓▓▓▓  DONE                          ionbase-ui/meta, 48 of 48 with intent
 Phase 2c ▓▓  DONE                                 2308 pairings; 0 outstanding defects
-Phase 5  ▓▓▓▓▓▓▓▓  A/B RUN 15 Sep 2026            31 tasks, 10 checks; see the result below
+Phase 5  ▓▓▓▓▓▓    RE-RUN PENDING                  runs of 15 + 29 Sep had repo access
 Phase 2  ▓▓▓▓▓▓  DONE                             5 lint rules + stylelint config, shipped
 Phase 3a ▓▓▓▓  DONE                                llms.txt + 48 mirrors, hosted + in-tarball
 Phase 3b ▓▓▓▓  REPLACED                            figma-map.json — Code Connect without the plan

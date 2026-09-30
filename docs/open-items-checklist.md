@@ -54,13 +54,14 @@
 
 ## 3. Agent readiness — [`agent-readiness-plan.md`](agent-readiness-plan.md)
 
-- [ ] **Phase 5: settle what the first run left open.** The 14 Sep run
-      answered questions 1 and 2: the contracts beat the README, and the rules
-      brief added nothing. Still open: question 3 (does trimming the inherited
-      ARIA props help?) and how big the gaps really are, since each cell ran
-      once. Re-run with `--samples N` through `--provider claude-cli`, which
-      needs no API key but does use model time, so it's your call. Also:
-      a quarter to a third of every pack fails `tsc`.
+- [ ] **Phase 5: a clean run.** The 29 Sep re-run found that the generator
+      could read this repo, which also voids the 14 Sep answers. The harness
+      is fixed in PR #105. Re-run all 279 cells, 3 packs × 3 samples, into
+      `results/2026-09-30`. That answers questions 1–3 afresh and shows how
+      big the gaps are.
+- [ ] **Document `useToast()`'s return.** No contract says it returns
+      `{ toast, dismiss }`, and generations guessed `show`. This holds
+      whatever the model could see.
 - [ ] **4a: a worked TSX example per pattern**, 6 patterns. The plan says
       it's worth building only if the eval shows it helps. _Needs_ Phase 5.
       Without the run, you choose.

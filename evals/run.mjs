@@ -36,8 +36,11 @@ import {
   writeFileSync,
   existsSync,
   mkdirSync,
+  mkdtempSync,
   readdirSync,
+  rmSync,
 } from 'node:fs';
+import { tmpdir } from 'node:os';
 import { execFile } from 'node:child_process';
 import { join, dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -140,12 +143,12 @@ const userPrompt = (task) =>
  * usage limit, a rate limit, an auth failure — is on stderr, and without it a
  * failed run is undiagnosable.
  */
-const claude = (args, input) =>
+const claude = (args, input, cwd) =>
   new Promise((ok, fail) => {
     const child = execFile(
       'claude',
       args,
-      { encoding: 'utf8', maxBuffer: 32 * 1024 * 1024 },
+      { encoding: 'utf8', maxBuffer: 32 * 1024 * 1024, cwd },
       (e, stdout, stderr) => {
         if (!e) return ok(stdout);
         const why = String(stderr || stdout || e.message)
@@ -181,8 +184,20 @@ const providers = {
    * across tasks. A run costs roughly (pack size x tasks) input tokens. The `api`
    * provider caches the pack and is much cheaper per task at scale.
    *
-   * Tools are disabled. The task is pure generation, and a model that goes off
-   * to read files would be scored on something other than what it was given.
+   * Tools are disabled, and this is now checked rather than assumed. Until
+   * 30 Sep 2026 the call passed `--allowedTools ''`, which lists tools to
+   * allow WITHOUT PROMPTING and disables none. Every generation ran in
+   * evals/ with read access to this repo, including the real type definitions
+   * and the full contracts, whatever pack it had been given. It showed up as
+   * lean-pack output that began "I checked the Combobox, Button and Stack
+   * type definitions". A probe confirmed it: asked to read
+   * packages/ionbase-ui/package.json, the model answered 0.137.0.
+   *
+   * Three changes close it. `--tools ""` removes every built-in tool, and
+   * `--strict-mcp-config` removes MCP servers. The child runs in an empty
+   * temporary directory, so there is nothing to find even if a tool leaked.
+   * And `--output-format json` reports `num_turns`: a generation that used a
+   * tool takes more than one turn, so it is rejected instead of scored.
    */
   async claudeCli(task, pack, sample) {
     const dir = join(outDir, 'generated', pack);
@@ -211,10 +226,34 @@ const providers = {
     // queue behind one call and --concurrency silently means 1. Measured at
     // 7.4 minutes per generation serially: 11 hours for a 93-job run that takes
     // under two when the flag does what it says.
-    const raw = await claude(
-      ['-p', '--model', model, '--allowedTools', ''],
-      prompt,
-    );
+    const sandbox = mkdtempSync(join(tmpdir(), 'ionbase-gen-'));
+    let raw;
+    try {
+      const out = JSON.parse(
+        await claude(
+          [
+            '-p',
+            '--model',
+            model,
+            '--tools',
+            '',
+            '--strict-mcp-config',
+            '--output-format',
+            'json',
+          ],
+          prompt,
+          sandbox,
+        ),
+      );
+      if (out.num_turns !== 1) {
+        throw new Error(
+          `generation took ${out.num_turns} turns — a tool ran, so it is not scored`,
+        );
+      }
+      raw = String(out.result ?? '');
+    } finally {
+      rmSync(sandbox, { recursive: true, force: true });
+    }
 
     const code = raw
       .replace(/^```(?:tsx?|typescript|jsx?)?\n/, '')
