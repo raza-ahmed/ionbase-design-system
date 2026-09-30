@@ -80,6 +80,17 @@ let groupsChecked = 0;
  */
 const only = process.env.SMOKE_ONLY?.trim() || null;
 const skip = (where) => only !== null && !where.includes(only);
+/*
+ * SMOKE_NOW="2026-09-30T12:00:00Z" pins the date checks' clock — the page's
+ * and this script's — to that moment. The calendars open on the first day
+ * that can be picked, so on a month's last day they open on the next month,
+ * and two checks that assumed "this month" failed only then (30 Sep 2026).
+ * Run both sides of a month boundary before trusting a date check.
+ */
+const NOW = process.env.SMOKE_NOW ? new Date(process.env.SMOKE_NOW) : null;
+const pinClock = async (context) => {
+  if (NOW) await context.clock.setFixedTime(NOW);
+};
 // The route loads are counted up front; every other check counts itself as
 // it runs, so only a skipped route load comes off the total.
 let skippedRoutes = 0;
@@ -1410,8 +1421,10 @@ try {
     if (skip(where)) continue;
     const context = await browser.newContext({
       viewport: { width, height },
+      timezoneId: 'UTC',
       locale: 'en-US',
     });
+    await pinClock(context);
     await context.addInitScript(() =>
       localStorage.setItem(
         'ionbase-ops:demo-settings',
@@ -1420,9 +1433,15 @@ try {
     );
     const page = await context.newPage();
     page.on('pageerror', (e) => fail(where, `exception: ${e.message}`));
-    const now = new Date();
+    const now = NOW ?? new Date();
+    // The calendar opens on its first pickable day, tomorrow — which on a
+    // month's last day is in the next month.
+    const opens = new Date(
+      Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + 1),
+    );
+    const todayShown = opens.getUTCMonth() === now.getUTCMonth();
     const next = new Date(
-      Date.UTC(now.getUTCFullYear(), now.getUTCMonth() + 1, 15),
+      Date.UTC(opens.getUTCFullYear(), opens.getUTCMonth() + 1, 15),
     );
     const monthYear = (d) =>
       d.toLocaleDateString('en-US', {
@@ -1449,19 +1468,26 @@ try {
       const dialog = page.getByRole('dialog', { name: /^Pause / });
       await dialog.waitFor({ timeout: 5_000 });
       const calendar = dialog.getByRole('application', {
-        name: new RegExp(`^Resume on,? ${monthYear(now)}$`),
+        name: new RegExp(`^Resume on,? ${monthYear(opens)}$`),
       });
       if (!(await calendar.count()))
         fail(where, 'the calendar is not named "Resume on" and the month');
       const confirm = dialog.getByRole('button', { name: /^Pause until/ });
       if (!(await confirm.isDisabled()))
         fail(where, 'the confirming button is enabled before a day is picked');
-      if (
-        (await dialog
-          .locator('.ion-calendar__day[data-today]')
-          .getAttribute('data-disabled')) !== 'true'
+      // Today, where it is shown, is disabled; where it is not, the month
+      // it is in cannot be reached.
+      if (todayShown) {
+        if (
+          (await dialog
+            .locator('.ion-calendar__day[data-today]')
+            .getAttribute('data-disabled')) !== 'true'
+        )
+          fail(where, 'today can be picked');
+      } else if (
+        !(await dialog.getByRole('button', { name: /^Previous/ }).isDisabled())
       )
-        fail(where, 'today can be picked');
+        fail(where, 'the calendar pages back to today');
 
       await dialog.getByRole('button', { name: 'Next' }).click();
       await dialog
@@ -5539,6 +5565,8 @@ try {
       timezoneId: 'UTC',
       locale: 'en-US',
     });
+    await pinClock(context);
+    const nowMs = (NOW ?? new Date()).getTime();
     await context.addInitScript(() => {
       localStorage.setItem(
         'ionbase-ops:demo-settings',
@@ -5619,7 +5647,7 @@ try {
         fail(where, `a past time is not refused: "${await summary()}"`);
 
       // Tomorrow keeps the time; the popover's time field moves it on.
-      const tomorrow = new Date(Date.now() + 86_400_000).toLocaleDateString(
+      const tomorrow = new Date(nowMs + 86_400_000).toLocaleDateString(
         'en-US',
         { month: 'long', day: 'numeric', year: 'numeric', timeZone: 'UTC' },
       );
@@ -5658,12 +5686,16 @@ try {
       await ends.getByRole('button', { name: 'Open calendar' }).click();
       const endsCal = page.getByRole('dialog');
       await endsCal.waitFor({ timeout: 5_000 });
-      if (
-        (await endsCal
-          .getByRole('button', { name: /^Today/ })
-          .getAttribute('aria-disabled')) !== 'true'
+      // It opens on the first run's month. Today, where shown, is disabled;
+      // on a month's last day it is not shown, and the month is unreachable.
+      const endsToday = endsCal.getByRole('button', { name: /^Today/ });
+      if (await endsToday.count()) {
+        if ((await endsToday.getAttribute('aria-disabled')) !== 'true')
+          fail(where, 'Ends on offers a day before the first run');
+      } else if (
+        !(await endsCal.getByRole('button', { name: /^Previous/ }).isDisabled())
       )
-        fail(where, 'Ends on offers a day before the first run');
+        fail(where, 'Ends on pages back before the first run');
       await page.keyboard.press('Escape');
 
       // Accepted, and Review says the moment.
@@ -5672,10 +5704,11 @@ try {
         .getByRole('button', { name: /^Next:/ })
         .waitFor({ timeout: 5_000 });
       await page.getByRole('button', { name: /^Next:/ }).click();
-      const short = new Date(Date.now() + 86_400_000).toLocaleDateString(
-        'en-US',
-        { month: 'short', day: 'numeric', timeZone: 'UTC' },
-      );
+      const short = new Date(nowMs + 86_400_000).toLocaleDateString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        timeZone: 'UTC',
+      });
       await page
         .getByText(`Every day, first on ${short}, 1:00 AM UTC`)
         .waitFor({ timeout: 5_000 })
