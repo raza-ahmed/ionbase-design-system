@@ -35,8 +35,13 @@ pack it had been given.
 - `--tools ""` removes every built-in tool, and `--strict-mcp-config` removes
   MCP servers.
 - Each generation runs in an empty temporary directory.
-- `--output-format json` reports `num_turns`. A generation that takes more
-  than one turn used a tool, and it is rejected, not scored.
+- The eval's own system prompt replaces Claude Code's. Claude Code's prompt
+  describes an agent with tools, and with the tools switched off the model
+  still reached for one on the bigger tasks. The CLI then failed the cell with
+  "The model's tool call could not be parsed".
+- The full message stream is read, and saved under `streams/`. A generation
+  with any `tool_use` block is rejected, not scored. Counting turns is not the
+  same test: the failed retries above reported 2 turns with no tool at all.
 
 ### 29 Sep 2026 run — with repo access, kept for the record
 
