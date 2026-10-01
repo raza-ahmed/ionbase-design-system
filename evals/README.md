@@ -13,16 +13,62 @@ structured data over prose, but that was their design system, not this one.
 bad implementation from a good one — 2/7 checks and 5 lint errors against 10/10
 and 0 — and the pipeline carries that through to a per-pack report.
 
-## First full run — 14 Sep 2026
+## Until 30 Sep 2026 the generator could read this repo
+
+**Read every result below with this in mind.** `--provider claude-cli` passed
+`--allowedTools ''`. That flag lists the tools allowed _without prompting_; it
+disables none. Each generation ran in `evals/` with read access to the whole
+repo: the real `ionbase-ui` type definitions and every full contract, whatever
+pack it had been given.
+
+- **How it surfaced:** three lean-pack generations on 29 Sep began with
+  prose, such as "I checked the Combobox, Button and Stack type definitions"
+  and "The API is confirmed".
+- **The proof:** a probe asked to read `packages/ionbase-ui/package.json`
+  answered `0.137.0`.
+- **What it means:** there is no record of which generations looked, so the
+  14 Sep and 29 Sep runs don't measure what their packs contain. The fixed
+  harness re-runs both.
+
+**The fix:**
+
+- `--tools ""` removes every built-in tool, and `--strict-mcp-config` removes
+  MCP servers.
+- Each generation runs in an empty temporary directory.
+- The eval's own system prompt replaces Claude Code's. Claude Code's prompt
+  describes an agent with tools, and with the tools switched off the model
+  still reached for one on the bigger tasks. The CLI then failed the cell with
+  "The model's tool call could not be parsed".
+- The full message stream is read, and saved under `streams/`. A generation
+  with any `tool_use` block is rejected, not scored. Counting turns is not the
+  same test: the failed retries above reported 2 turns with no tool at all.
+
+### 29 Sep 2026 run — with repo access, kept for the record
+
+`claude-opus-5-5`, 31 tasks × 3 packs × 3 samples, all 279 cells. The new
+`contract-indexed-lean` pack is the question 3 pack.
+
+| pack                    | checks | all pass | compiles | compiles by sample |
+| ----------------------- | ------ | -------- | -------- | ------------------ |
+| `readme`                | 79%    | 12/93    | 17%      | 16 / 16 / 19%      |
+| `contract-indexed`      | 95%    | 54/93    | 91%      | 94 / 90 / 90%      |
+| `contract-indexed-lean` | 95%    | 56/93    | 82%      | 84 / 74 / 87%      |
+
+**Its one finding that holds regardless** is a gap in the contracts, not a
+comparison. No contract says `useToast()` returns `{ toast, dismiss }`, and
+generations guessed `show`.
+
+## First full run — 14 Sep 2026 — with repo access
 
 `claude-opus-5` via `--provider claude-cli`, 31 tasks x 3 packs, every cell
 scored. One model, one sample per cell.
 
-| pack                     | checks | all checks pass | compiles | lint errors |
-| ------------------------ | ------ | --------------- | -------- | ----------- |
-| `readme`                 | 90%    | 15/31           | 20/31    | 2           |
-| `contract-indexed`       | 97%    | 25/31           | 23/31    | 1           |
-| `contract-indexed-rules` | 95%    | 21/31           | 21/31    | 0           |
+| pack                     | checks | all checks pass | compiles                                                                     | lint errors |
+| ------------------------ | ------ | --------------- | ---------------------------------------------------------------------------- | ----------- |
+| `readme`                 | 90%    | 15/31           | 20/31                                                                        | 2           |
+| `contract-indexed`       | 97%    | 25/31           | 23/31                                                                        | 1           |
+| `contract-indexed-rules` | 95%    | 21/31           | 21/31                                                                        | 0           |
+| `contract-indexed-lean`  | 67,227 | 8%              | the indexed pack with every inherited (React Aria) prop removed — question 3 |
 
 Per task, against `readme`: `contract-indexed` scored higher on 14, lower on
 **0**, tied 17. `contract-indexed-rules` scored higher on 13, lower on 3.
@@ -52,7 +98,7 @@ pre-fix run is kept for comparison; generations were not repeated.
 
 ### Context packs — `context/build-packs.mjs`
 
-Assembles the five variants the A/B compares and measures each exactly. This is
+Assembles the six variants the A/B compares and measures each exactly. This is
 the cheap half of the answer and needs no model:
 
 | pack                     | chars   | vs contract-all | what it is                                                  |

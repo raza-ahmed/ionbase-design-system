@@ -36,8 +36,11 @@ import {
   writeFileSync,
   existsSync,
   mkdirSync,
+  mkdtempSync,
   readdirSync,
+  rmSync,
 } from 'node:fs';
+import { tmpdir } from 'node:os';
 import { execFile } from 'node:child_process';
 import { join, dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -140,17 +143,19 @@ const userPrompt = (task) =>
  * usage limit, a rate limit, an auth failure — is on stderr, and without it a
  * failed run is undiagnosable.
  */
-const claude = (args, input) =>
+const claude = (args, input, cwd) =>
   new Promise((ok, fail) => {
     const child = execFile(
       'claude',
       args,
-      { encoding: 'utf8', maxBuffer: 32 * 1024 * 1024 },
+      { encoding: 'utf8', maxBuffer: 32 * 1024 * 1024, cwd },
       (e, stdout, stderr) => {
         if (!e) return ok(stdout);
+        // The END: with stream-json the reason is in the last event, and the
+        // start is only the init line.
         const why = String(stderr || stdout || e.message)
           .trim()
-          .slice(0, 400);
+          .slice(-400);
         fail(new Error(why || 'claude exited non-zero with no output'));
       },
     );
@@ -181,8 +186,23 @@ const providers = {
    * across tasks. A run costs roughly (pack size x tasks) input tokens. The `api`
    * provider caches the pack and is much cheaper per task at scale.
    *
-   * Tools are disabled. The task is pure generation, and a model that goes off
-   * to read files would be scored on something other than what it was given.
+   * Tools are disabled, and this is now checked rather than assumed. Until
+   * 30 Sep 2026 the call passed `--allowedTools ''`, which lists tools to
+   * allow WITHOUT PROMPTING and disables none. Every generation ran in
+   * evals/ with read access to this repo, including the real type definitions
+   * and the full contracts, whatever pack it had been given. It showed up as
+   * lean-pack output that began "I checked the Combobox, Button and Stack
+   * type definitions". A probe confirmed it: asked to read
+   * packages/ionbase-ui/package.json, the model answered 0.137.0.
+   *
+   * Three changes close it. `--tools ""` removes every built-in tool, and
+   * `--strict-mcp-config` removes MCP servers. The child runs in an empty
+   * temporary directory, so there is nothing to find even if a tool leaked.
+   * And the full message stream is read, and saved under streams/: a
+   * generation with any `tool_use` block is rejected instead of scored.
+   * Counting turns is not the same test. Long generations report
+   * `num_turns: 2` with no tool at all, and a guard built on turns threw
+   * away four of the first seven cells.
    */
   async claudeCli(task, pack, sample) {
     const dir = join(outDir, 'generated', pack);
@@ -194,9 +214,13 @@ const providers = {
       return { file, resumed: true };
     }
 
+    // SYSTEM goes in as the session's system prompt, REPLACING Claude Code's
+    // own. That prompt describes an agent with tools, and with the tools
+    // switched off the model still reached for one on the bigger tasks: the
+    // CLI could not parse the call, retried, and failed the cell with "The
+    // model's tool call could not be parsed". A plain generation needs a
+    // plain system prompt.
     const prompt = [
-      SYSTEM,
-      '',
       'Reference material about the design system:',
       '',
       packContext(pack, task),
@@ -211,10 +235,50 @@ const providers = {
     // queue behind one call and --concurrency silently means 1. Measured at
     // 7.4 minutes per generation serially: 11 hours for a 93-job run that takes
     // under two when the flag does what it says.
-    const raw = await claude(
-      ['-p', '--model', model, '--allowedTools', ''],
-      prompt,
-    );
+    const sandbox = mkdtempSync(join(tmpdir(), 'ionbase-gen-'));
+    let raw;
+    try {
+      const stream = await claude(
+        [
+          '-p',
+          '--model',
+          model,
+          '--system-prompt',
+          `${SYSTEM}\n\nYou have no tools and no files: everything you know about IonBase is in the reference material. Do not try to call a tool.`,
+          '--tools',
+          '',
+          '--strict-mcp-config',
+          '--output-format',
+          'stream-json',
+          '--verbose',
+        ],
+        prompt,
+        sandbox,
+      );
+      // Kept beside the file, so any generation can be audited later.
+      const streams = join(outDir, 'streams', pack);
+      mkdirSync(streams, { recursive: true });
+      writeFileSync(
+        join(streams, `${sampleFile(task.id, sample)}.jsonl`),
+        stream,
+      );
+      const events = stream
+        .split('\n')
+        .filter(Boolean)
+        .map((line) => JSON.parse(line));
+      const toolUses = events
+        .filter((e) => e.type === 'assistant')
+        .flatMap((e) => e.message?.content ?? [])
+        .filter((b) => b.type === 'tool_use');
+      if (toolUses.length) {
+        throw new Error(
+          `generation called ${toolUses.map((b) => b.name).join(', ')} — not scored`,
+        );
+      }
+      raw = String(events.find((e) => e.type === 'result')?.result ?? '');
+    } finally {
+      rmSync(sandbox, { recursive: true, force: true });
+    }
 
     const code = raw
       .replace(/^```(?:tsx?|typescript|jsx?)?\n/, '')

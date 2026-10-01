@@ -71,14 +71,32 @@ const corpus = JSON.parse(
   readFileSync(join(ROOT, 'evals', 'prompts', 'corpus.json'), 'utf8'),
 );
 
+/**
+ * A contract without its inherited props — question 3 of the A/B.
+ *
+ * 86% of Button's props block is React Aria's (`origin: "aria"`), and across
+ * every contract the inherited props are 410 of 1454. Dropping them is 11%
+ * smaller. `propCounts` stays, so a reader still knows they exist; what goes is
+ * their names and types — `onPress` and `isDisabled` among them, which is
+ * exactly what the lean pack is testing.
+ */
+const lean = (json) => {
+  const c = JSON.parse(json);
+  if (!c.props) return json;
+  c.props = Object.fromEntries(
+    Object.entries(c.props).filter(([, p]) => p.origin === 'own'),
+  );
+  return JSON.stringify(c, null, 2);
+};
+
 /** Contracts for one task, as `meta-<Name>.json` parts. */
-const contractsFor = (task) =>
+const contractsFor = (task, transform = (json) => json) =>
   Object.fromEntries(
     (task?.expects?.components ?? [])
       .filter((c) => existsSync(join(META_DIR, `${c}.json`)))
       .map((c) => [
         `meta-${c}.json`,
-        readFileSync(join(META_DIR, `${c}.json`), 'utf8'),
+        transform(readFileSync(join(META_DIR, `${c}.json`), 'utf8')),
       ]),
   );
 
@@ -120,6 +138,18 @@ const packs = {
       'meta-index.json': JSON.stringify(index),
     },
     perTask: true,
+  },
+
+  /* Question 3: the same, with each contract's inherited props removed. */
+  'contract-indexed-lean': {
+    describes:
+      'The indexed contract pack with every inherited (React Aria) prop removed from each contract — question 3.',
+    parts: {
+      'README.md': README,
+      'meta-index.json': JSON.stringify(index),
+    },
+    perTask: true,
+    transform: lean,
   },
 
   /* Phase 2 on top: the rules the output will actually be judged by. */
@@ -186,7 +216,9 @@ for (const [name, pack] of Object.entries(packs)) {
       const tdir = join(dir, 'tasks', task.id);
       mkdirSync(tdir, { recursive: true });
       let tchars = 0;
-      for (const [file, content] of Object.entries(contractsFor(task))) {
+      for (const [file, content] of Object.entries(
+        contractsFor(task, pack.transform),
+      )) {
         writeFileSync(join(tdir, file), content);
         tchars += content.length;
       }
