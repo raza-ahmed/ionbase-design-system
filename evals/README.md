@@ -13,6 +13,79 @@ structured data over prose, but that was their design system, not this one.
 bad implementation from a good one — 2/7 checks and 5 lint errors against 10/10
 and 0 — and the pipeline carries that through to a per-pack report.
 
+## Clean run — 30 Sep to 5 Oct 2026
+
+The first run with no access to the repo. Setup:
+
+- `claude-opus-5-5` through `--provider claude-cli`, under the fixed harness.
+- 31 tasks × 3 packs × 3 samples: all 279 cells, none rejected.
+- Every saved stream was audited: no `tool_use` block, one turn each, and each
+  session started with no tools and no MCP servers.
+
+| pack                    | checks | all checks pass | compiles | compiles by sample | lint errors |
+| ----------------------- | ------ | --------------- | -------- | ------------------ | ----------- |
+| `readme`                | 81%    | 6/93            | 17%      | 19 / 19 / 13%      | 10          |
+| `contract-indexed`      | 96%    | 62/93           | 92%      | 94 / 97 / 87%      | 5           |
+| `contract-indexed-lean` | 96%    | 67/93           | 89%      | 87 / 90 / 90%      | 4           |
+
+Per task, on the median of three samples:
+
+| comparison                                    | checks better | worse | tied | compiles more often | less often |
+| --------------------------------------------- | ------------- | ----- | ---- | ------------------- | ---------- |
+| `contract-indexed` vs `readme`                | 27            | 0     | 4    | 26                  | 2          |
+| `contract-indexed-lean` vs `contract-indexed` | 3             | 1     | 27   | 4                   | 6          |
+
+**Question 1 — does the contract pack beat the README? Yes, and widely.**
+
+- It was better on 27 tasks and worse on none, and the gap holds in every
+  sample.
+- The checks it wins are the ones contracts are for. The README pack misses
+  an expected component 84 times, against 11 with contracts, and hand-builds
+  one the system provides 63 times, against 14.
+- **The compile gap is mostly one line of the package README.** Its quick
+  start shows `<Button intent="primary">`, but the prop is `variant`, and
+  `primary` is not one of its values. 75 of the README pack's 77 failing
+  files have that error. The 14 Sep run reported the same error, and the
+  README was not fixed.
+
+**Question 2 — the rules brief — was not re-run.** Its earlier answer came
+from a run with repo access, so it is open again. It is cheap to leave open:
+the brief is 1% of a pack, and the same rules ship as lint.
+
+**Question 3 — keep the inherited props.**
+
+- Removing them gives the same checks (96%) and a pack 40% smaller on the
+  contracts these tasks use, but it compiles less often: 89% against 92%,
+  and worse on 6 tasks, better on 4.
+- **Every failure unique to the lean pack has one cause.** `spellCheck` on
+  Input and Textarea is an inherited React Aria prop typed `string`, where
+  React's own DOM typing is a boolean. With the full contract, generations
+  write `spellCheck="false"` (14 files). Without it they write
+  `spellCheck={false}` (5 lean files, all failing; the README pack does it in
+  25 files).
+- The inherited block carries exactly the types an agent cannot guess, so
+  trimming it saves size and costs correctness.
+
+**Question 4 — what fails most, given contracts.**
+
+| failure                                                | count               |
+| ------------------------------------------------------ | ------------------- |
+| hand-building a component the system provides          | 14                  |
+| missing an expected component                          | 11                  |
+| a state not handled                                    | 9 in each pack      |
+| `JSX.Element` with no `JSX` namespace (React 19 types) | most `tsc` failures |
+| imports of `lucide-react`, which is not a dependency   | most of the rest    |
+
+None of those last two is about IonBase.
+
+**Harness notes from this run:**
+
+- A resume re-scores every finished cell before generating anything. That
+  took about 10 minutes each time, and made progress look as though it had
+  started again.
+- When a session limit stops the run, its "remaining" count misses the cells
+  that were cut off: it said 3 when 5 were left.
+
 ## Until 30 Sep 2026 the generator could read this repo
 
 **Read every result below with this in mind.** `--provider claude-cli` passed

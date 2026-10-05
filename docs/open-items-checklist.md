@@ -54,11 +54,16 @@
 
 ## 3. Agent readiness — [`agent-readiness-plan.md`](agent-readiness-plan.md)
 
-- [ ] **Phase 5: a clean run.** The 29 Sep re-run found that the generator
-      could read this repo, which also voids the 14 Sep answers. The harness
-      is fixed in PR #105. Re-run all 279 cells, 3 packs × 3 samples, into
-      `results/2026-09-30`. That answers questions 1–3 afresh and shows how
-      big the gaps are.
+- [x] **Phase 5: a clean run** — finished 5 Oct 2026, 279 cells, with no
+      repo access (harness fixed in #105).
+  - Q1: the contracts beat the README on 27 tasks and lose on none.
+  - Q3: keep the inherited props. Without them, `spellCheck` (typed
+    `string`) is written as a boolean and fails to compile.
+  - Q2 was not re-run.
+- [ ] **Fix the package README's quick start.** It shows
+      `<Button intent="primary">`, but the prop is `variant` and `primary`
+      is not one of its values. It caused 75 of the README pack's 77 compile
+      failures, and the 14 Sep run had reported it.
 - [ ] **Document `useToast()`'s return.** No contract says it returns
       `{ toast, dismiss }`, and generations guessed `show`. This holds
       whatever the model could see.
