@@ -48,8 +48,17 @@ import { score, lint, typecheck } from './score/score.mjs';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const PACKS = join(HERE, 'context', 'packs');
+// --corpus prompts/demo-screens.json runs the demo screens instead.
 const corpus = JSON.parse(
-  readFileSync(join(HERE, 'prompts', 'corpus.json'), 'utf8'),
+  readFileSync(
+    resolve(
+      HERE,
+      process.argv.includes('--corpus')
+        ? process.argv[process.argv.indexOf('--corpus') + 1]
+        : join('prompts', 'corpus.json'),
+    ),
+    'utf8',
+  ),
 );
 
 const arg = (name, fallback) => {
