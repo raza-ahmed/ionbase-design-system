@@ -1,5 +1,29 @@
 # Changelog
 
+## 0.137.1 — 2026-10-05
+
+### The README's first example compiles, and `useToast` says what it returns
+
+Both were found by the clean Phase 5 eval (`evals/README.md`).
+
+**The quick start used a prop Button doesn't have.** It showed
+`<Button intent="primary">`, but the prop is `variant`, and `primary` isn't
+one of its values. It is now `<Button variant="primary-brand">`. This one
+example was behind 75 of the 77 README-pack generations that failed to
+compile.
+
+**A new build gate, `verify-readme`,** keeps the README right. For every
+IonBase component in a README code block, each prop must exist in the
+component's contract, and a quoted value must be one of the prop's values.
+
+**Toast's and ToastProvider's contracts now document `useToast()`.** It
+returns `{ toast, dismiss }`:
+
+- `toast(options)` takes Toast's own props, queues a toast and returns its id.
+- `dismiss(id)` removes one.
+- There is no `show` or `success`, which generations had guessed. Both
+  contracts list that as an anti-pattern.
+
 ## 0.137.0 — 2026-09-29
 
 ### Hover fades everywhere; a highlight the keys move snaps

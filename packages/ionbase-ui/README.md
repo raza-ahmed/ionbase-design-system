@@ -20,7 +20,7 @@ import 'ionbase-ui/styles';
 import { Button } from 'ionbase-ui';
 
 export function App() {
-  return <Button intent="primary">Save</Button>;
+  return <Button variant="primary-brand">Save</Button>;
 }
 ```
 

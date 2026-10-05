@@ -19,14 +19,19 @@
       "top-right": {
         "use": "the common desktop choice, out of the way of primary content"
       },
-      "bottom-left": { "use": "keeps toasts clear of a right-hand panel" },
+      "bottom-left": {
+        "use": "keeps toasts clear of a right-hand panel"
+      },
       "bottom-right": {
         "use": "close to where a save or submit action usually sits"
       }
     }
   },
   "slots": {
-    "children": { "accepts": "any", "note": "your app — the provider wraps it" }
+    "children": {
+      "accepts": "any",
+      "note": "your app — the provider wraps it. Anywhere inside, `const { toast, dismiss } = useToast()`: `toast(options)` takes Toast's own props (`intent`, `title`, `message`, `action`, `duration`, `dismissLabel`), queues one and returns its id; `dismiss(id)` removes it. Outside a ToastProvider, useToast throws."
+    }
   },
   "a11y": {
     "guarantees": [
@@ -50,6 +55,10 @@
     {
       "dont": "raising `limit` to keep everything",
       "why": "an unbounded stack covers the content the toasts are about"
+    },
+    {
+      "dont": "calling `useToast().show(...)` or `useToast().success(...)`",
+      "why": "neither exists. `useToast()` returns `{ toast, dismiss }`: call `toast({ intent: 'success', title })`"
     }
   ]
 }
