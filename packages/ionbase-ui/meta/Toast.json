@@ -1,6 +1,6 @@
 {
   "status": "stable",
-  "summary": "A transient notification on neutral chrome. Intent is carried by the icon, not by a tinted panel.",
+  "summary": "A transient notification on neutral chrome. Intent is carried by the icon, not by a tinted panel. Show one with `const { toast, dismiss } = useToast()` inside a ToastProvider: `toast({ intent, title, message, action, duration })` queues it and returns its id, and `dismiss(id)` removes it. You rarely render `<Toast>` yourself: the provider renders the queue.",
   "useWhen": [
     "confirming that something the user just did succeeded or failed",
     "the message is short, transient, and not required to complete a task"
@@ -24,17 +24,33 @@
   ],
   "variants": {
     "intent": {
-      "neutral": { "use": "a plain fact with no status attached" },
-      "primary": { "use": "brand-flavoured confirmations" },
-      "success": { "use": "the action completed" },
-      "warning": { "use": "it completed with a caveat worth knowing" },
-      "error": { "use": "it failed — pair with a way to retry" },
-      "information": { "use": "the default — a neutral update" }
+      "neutral": {
+        "use": "a plain fact with no status attached"
+      },
+      "primary": {
+        "use": "brand-flavoured confirmations"
+      },
+      "success": {
+        "use": "the action completed"
+      },
+      "warning": {
+        "use": "it completed with a caveat worth knowing"
+      },
+      "error": {
+        "use": "it failed — pair with a way to retry"
+      },
+      "information": {
+        "use": "the default — a neutral update"
+      }
     }
   },
   "slots": {
-    "title": { "accepts": "text" },
-    "message": { "accepts": "text" },
+    "title": {
+      "accepts": "text"
+    },
+    "message": {
+      "accepts": "text"
+    },
     "action": {
       "accepts": "{ label, onPress }",
       "note": "exactly one action. A second choice belongs in a Modal, which will still be there"
@@ -62,6 +78,10 @@
     {
       "dont": "stacking several toasts for one operation",
       "why": "the stack covers the page and the last one is the only one read"
+    },
+    {
+      "dont": "calling `useToast().show(...)` or `useToast().success(...)`",
+      "why": "neither exists. `useToast()` returns `{ toast, dismiss }`: call `toast({ intent: 'success', title })`"
     }
   ]
 }

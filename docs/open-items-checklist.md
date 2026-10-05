@@ -60,13 +60,13 @@
   - Q3: keep the inherited props. Without them, `spellCheck` (typed
     `string`) is written as a boolean and fails to compile.
   - Q2 was not re-run.
-- [ ] **Fix the package README's quick start.** It shows
-      `<Button intent="primary">`, but the prop is `variant` and `primary`
-      is not one of its values. It caused 75 of the README pack's 77 compile
-      failures, and the 14 Sep run had reported it.
-- [ ] **Document `useToast()`'s return.** No contract says it returns
-      `{ toast, dismiss }`, and generations guessed `show`. This holds
-      whatever the model could see.
+- [x] **Fix the package README's quick start** — 0.137.1. It now reads
+      `<Button variant="primary-brand">`. A new build gate, `verify-readme`,
+      checks every IonBase prop and value in the README's code against the
+      contracts.
+- [x] **Document `useToast()`'s return** — 0.137.1. Both Toast's and
+      ToastProvider's contracts now say it returns `{ toast, dismiss }`, and
+      list guessing `show` or `success` as an anti-pattern.
 - [ ] **4a: a worked TSX example per pattern**, 6 patterns. The plan says
       it's worth building only if the eval shows it helps. _Needs_ Phase 5.
       Without the run, you choose.
