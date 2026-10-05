@@ -645,7 +645,21 @@ decoration.
 > Expected effort: 4a ~1–2 weeks. 4b ~2–3 weeks, and it is a product decision
 > about IonBase's positioning as much as an engineering one.
 
-### Phase 5 — HARNESS DONE 18 Aug 2026. RUNS OF 15 AND 29 SEP HAD REPO ACCESS; RE-RUN PENDING.
+### Phase 5 — HARNESS DONE 18 Aug 2026. CLEAN RUN 5 Oct 2026.
+
+> **The clean run, 30 Sep to 5 Oct 2026.** The setup: `claude-opus-5-5`, 31
+> tasks × 3 packs × 3 samples, with no access to the repo. It is written up in
+> [`evals/README.md`](../evals/README.md).
+>
+> - **Question 1: the contracts beat the README** on 27 tasks, worse on 0.
+>   Checks are 96% against 81%; compiling is 92% against 17%. The compile gap
+>   is mostly the package README's own quick start, which shows
+>   `<Button intent="primary">`: the prop is `variant`.
+> - **Question 3: keep the inherited props.** Without them the checks are the
+>   same, but compiling falls from 92% to 89%. The failures unique to the
+>   lean pack all come from `spellCheck`, an inherited prop typed `string`
+>   where React's DOM typing is a boolean.
+> - **Question 2 was not re-run** and is open again.
 
 > **Superseded, 30 Sep 2026.** Both runs below were made by a generator that
 > could read this repo — the real type definitions and the full contracts —
@@ -744,7 +758,7 @@ repo) and money; `--provider claude-cli` and `--provider files` do not.
 Phase 0  ▓  DONE                                  manifest live: 26 components, 249 stories
 Phase 1  ▓▓▓▓▓▓▓▓▓▓  DONE                          ionbase-ui/meta, 48 of 48 with intent
 Phase 2c ▓▓  DONE                                 2308 pairings; 0 outstanding defects
-Phase 5  ▓▓▓▓▓▓    RE-RUN PENDING                  runs of 15 + 29 Sep had repo access
+Phase 5  ▓▓▓▓▓▓▓▓  CLEAN RUN 5 Oct 2026            279 cells, 3 samples; Q1 yes, Q3 keep, Q2 open
 Phase 2  ▓▓▓▓▓▓  DONE                             5 lint rules + stylelint config, shipped
 Phase 3a ▓▓▓▓  DONE                                llms.txt + 48 mirrors, hosted + in-tarball
 Phase 3b ▓▓▓▓  REPLACED                            figma-map.json — Code Connect without the plan
