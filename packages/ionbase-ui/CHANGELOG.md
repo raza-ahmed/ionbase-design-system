@@ -1,5 +1,35 @@
 # Changelog
 
+## 0.137.2 — 2026-10-12
+
+### Collection children: the contracts name the forms that compile
+
+The demo eval found this (`evals/README.md`). On 2 of 3 Agents screens,
+contracts-only generations collected the row actions or filter tags into
+`const rows: React.ReactElement[] = []`, then passed the array as the
+children. That doesn't compile. Menu, TagGroup, Tabs and SplitButton type
+their children as `CollectionChildren`, and `ReactElement` defaults its props
+to `unknown`, which is not an item's props.
+
+**What compiles and what doesn't**, now in the four contracts:
+
+| Form                                             | Compiles |
+| ------------------------------------------------ | -------- |
+| Rows written out, or a ternary between two       | yes      |
+| `cond ? <MenuItem /> : null`                     | yes      |
+| `items` with a render function                   | yes      |
+| A `.map()` as the only child, or a MenuSection's | yes      |
+| An array typed `React.ReactElement[]`            | no       |
+| `cond && <MenuItem />`                           | no       |
+| Written-out rows beside a `.map()`               | no       |
+
+**A type test holds the contracts to it.**
+`apps/storybook/src/collection-children.typecheck.tsx` has each working form,
+and each failing one under `@ts-expect-error`. If a failing form starts
+compiling, the directive itself becomes an error and the contracts need
+updating. Menu's new story `RowsThatDependOnState` shows the working forms
+running.
+
 ## 0.137.1 — 2026-10-05
 
 ### The README's first example compiles, and `useToast` says what it returns

@@ -88,6 +88,10 @@
       "dont": "<SplitButton label=\"Actions\">…edit, delete, share…</SplitButton>",
       "do": "<MenuTrigger> with a Button named for what it opens",
       "why": "\"Actions\" is not an action; pressing the main half has to do something"
+    },
+    {
+      "dont": "collecting MenuItems into a `React.ReactElement[]` and passing the array as the children",
+      "why": "the children are typed `CollectionChildren`: one collection element, an array of them, or a render function. `ReactElement` defaults its props to `unknown`, which is not an item's props, so the array fails to compile. Write the variations out, with `cond ? <MenuItem /> : null` for one that comes and goes"
     }
   ]
 }

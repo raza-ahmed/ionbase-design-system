@@ -76,6 +76,10 @@
     {
       "dont": "one tab",
       "why": "a tablist with a single tab is chrome with no choice in it"
+    },
+    {
+      "dont": "collecting TabItems into a `React.ReactElement[]` and passing the array as the children",
+      "why": "the children are typed `CollectionChildren`: one collection element, an array of them, or a render function. `ReactElement` defaults its props to `unknown`, which is not an item's props, so the array fails to compile. Write the tabs out, or `.map()` them as Tabs' only child"
     }
   ]
 }

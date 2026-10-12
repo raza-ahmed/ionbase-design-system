@@ -68,8 +68,10 @@ namespace, `lucide-react` imports and one syntax error.
 
 **For 4a:** a worked example is worth building where the composition is
 intricate: the DataTable family and ListDetail. It is not worth building for
-all six. The collection-children trap also belongs in Menu's and TagGroup's
-contracts, whatever 4a decides.
+all six. The collection-children trap went into the contracts in 0.137.2:
+Menu, TagGroup, Tabs and SplitButton now name the forms of children that
+compile, and `apps/storybook/src/collection-children.typecheck.tsx` holds them
+to it.
 
 ## Clean run — 30 Sep to 5 Oct 2026
 

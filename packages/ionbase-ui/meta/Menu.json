@@ -32,7 +32,7 @@
   ],
   "composition": {
     "order": ["Menu", "MenuSection", "MenuItem"],
-    "note": "MenuItem and MenuSection are collection elements: Menu reads them from its DIRECT children to build the collection, and neither renders anything itself. Every MenuItem needs a `key`, and `onAction`, `selectedKeys` and `disabledKeys` all speak in those keys. To open it from a button, put the Button and the Menu inside a MenuTrigger.",
+    "note": "MenuItem and MenuSection are collection elements: Menu reads them from its DIRECT children to build the collection, and neither renders anything itself. Every MenuItem needs a `key`, and `onAction`, `selectedKeys` and `disabledKeys` all speak in those keys. To open it from a button, put the Button and the Menu inside a MenuTrigger. Rows that depend on state are written out, not collected into an array: a ternary between two rows, or `cond ? <MenuItem /> : null` for a row that comes and goes. A list that comes from data is `items` with a render function, or a `.map()` that is a MenuSection's only child.",
     "example": "<Menu aria-label=\"Row actions\" onAction={(key) => run(key)}><MenuSection title=\"Edit\"><MenuItem key=\"rename\" icon={<Icon as={Pencil} />}>Rename</MenuItem><MenuItem key=\"duplicate\">Duplicate</MenuItem></MenuSection><MenuSection aria-label=\"Danger\"><MenuItem key=\"archive\" isDisabled>Archive</MenuItem></MenuSection></Menu>"
   },
   "variants": {
@@ -74,6 +74,14 @@
     {
       "dont": "wrapping MenuItems in a <div>, a fragment or your own component inside Menu",
       "why": "Menu reads its collection from its direct children; a wrapped row is invisible to it and renders nothing"
+    },
+    {
+      "dont": "collecting rows into `const rows: React.ReactElement[] = []` with `push`, then `<Menu>{rows}</Menu>`",
+      "why": "the children are typed `CollectionChildren`: one collection element, an array of them, or a render function. `ReactElement` defaults its props to `unknown`, which is not an item's props, so the array fails to compile. Contracts-only generations of the demo's Agents screen did this on 2 of 3 tries. Write the rows out, with a ternary for one that changes."
+    },
+    {
+      "dont": "`{cond && <MenuItem />}`, or written-out rows beside a `.map()`",
+      "why": "neither compiles: `false` is not a collection element, and an array beside elements is not one either. Write `cond ? <MenuItem /> : null`, and put the mapped rows in a MenuSection of their own"
     },
     {
       "dont": "an `onClick` on MenuItem",
