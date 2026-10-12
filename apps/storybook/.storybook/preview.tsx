@@ -51,6 +51,31 @@ const withDirection: Decorator = (Story, context) => {
 
 const preview: Preview = {
   parameters: {
+    /*
+     * The sidebar reads in the order someone learns the system: what it is,
+     * the demo, the tokens, the screens, then each component.
+     */
+    options: {
+      storySort: {
+        order: [
+          'Introduction',
+          'Live demo',
+          'Foundations',
+          [
+            'Colour',
+            'Typography',
+            'Spacing',
+            'Radius',
+            'Elevation',
+            'Breakpoints',
+            'Motion',
+            'Reduced motion',
+          ],
+          'Patterns',
+          'Components',
+        ],
+      },
+    },
     controls: {
       matchers: {
         color: /(background|color)$/i,

@@ -36,7 +36,12 @@ the generators and the five token gates; its output is copied into
 published, and it must keep `"private": true` — publishing it would put a
 second, competing source of token values on npm.
 
-## First publish (and every publish after)
+## Releasing
+
+The version is set in the PR that changes the package: its `package.json`
+version and its `CHANGELOG.md` entry land together. So `main` is always
+releasable at the version it says, and a release is publishing a commit that
+is already there. Nothing is committed after it, except the tag.
 
 ### 1. Log in to npm (once per machine)
 
@@ -45,44 +50,49 @@ npm login
 npm whoami
 ```
 
-`ionbase-ui` is unscoped, so no organisation membership is required. The
-`ionbase-ui` org exists and owning it does no harm, but nothing depends on it.
+`ionbase-ui` is unscoped, so no organisation membership is required.
 
-### 2. Set the version
-
-```bash
-pnpm sync:version 0.1.0
-```
-
-### 3. Build and publish
+### 2. Check `main`
 
 ```bash
-pnpm publish:package
+git checkout main && git pull --ff-only
+pnpm build
+pnpm release:check
 ```
 
-That runs `pnpm build` — which runs the token pipeline first, then syncs its
-output into the package — and then publishes with `--access public`.
+`release:check` (`scripts/verify-release.mjs`) is everything but the upload.
+It checks:
 
-Check it landed: https://www.npmjs.com/package/ionbase-ui
+- the tree is clean, on `main`, level with `origin`;
+- the version is not on npm yet, and is the changelog's top entry;
+- the tarball, packed the way `pnpm publish` packs it, has no `workspace:`
+  range;
+- installed into an empty project outside the monorepo, every export
+  resolves to a real file, the package runs in Node and server-renders
+  Button, and the patterns' worked examples type-check against its types.
 
-### 4. Commit and tag
+Lint, typecheck and the stories prove the code; this proves the tarball. It
+ends by printing the next three commands.
+
+### 3. Publish
 
 ```bash
-git add packages/ionbase-ui/package.json
-git commit -m "chore: release 0.1.0"
-git push
-git tag v0.1.0 && git push origin v0.1.0
+pnpm --filter ionbase-ui publish --access public
 ```
 
-## Verify from outside the monorepo
+If npm asks for a one-time password and fails with `EOTP`, add
+`--otp <code>`. Check it landed: `npm view ionbase-ui version`.
 
-Worth doing on a first release, because a broken entry point is invisible to
-lint, typecheck and format:
+### 4. Tag it
 
 ```bash
-cd $(mktemp -d) && npm init -y && npm i ionbase-ui react react-dom
-node -e "import('ionbase-ui').then(m => console.log(Object.keys(m)))"
+git tag v0.138.0 && git push origin v0.138.0
 ```
+
+Tags stopped at v0.74.0: the releases after it, up to 0.138.0, were
+published untagged.
+
+`pnpm sync:version <semver>` still exists, for a version set outside a PR.
 
 ## Using it in a product
 
