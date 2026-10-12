@@ -23,7 +23,8 @@
  * the tokens had moved to `ionbase-ui/tokens-js`: the first line a reader
  * copied failed.
  *
- * Runs against dist/meta/components.json, so build-meta.mjs must run first.
+ * Runs against dist/meta/components.json and the patterns, so build-meta.mjs
+ * and build-patterns.mjs must run first: the README imports from both.
  */
 import { readFileSync, existsSync } from 'node:fs';
 import { join, dirname, resolve } from 'node:path';

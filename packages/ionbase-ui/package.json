@@ -62,7 +62,7 @@
   },
   "scripts": {
     "dev": "tsc --watch",
-    "build": "node scripts/sync-tokens.mjs && tsc --build --force && node scripts/copy-css.mjs && node scripts/verify-client-boundaries.mjs && node scripts/verify-strings.mjs && node scripts/verify-contrast.mjs && node scripts/build-meta.mjs && node scripts/verify-meta.mjs && node scripts/verify-readme.mjs && tsc -p patterns/examples && node scripts/build-patterns.mjs && node scripts/verify-figma-map.mjs && node scripts/build-figma-descriptions.mjs && node scripts/verify-figma-descriptions.mjs && node scripts/build-llms.mjs",
+    "build": "node scripts/sync-tokens.mjs && tsc --build --force && node scripts/copy-css.mjs && node scripts/verify-client-boundaries.mjs && node scripts/verify-strings.mjs && node scripts/verify-contrast.mjs && node scripts/build-meta.mjs && node scripts/verify-meta.mjs && tsc -p patterns/examples && node scripts/build-patterns.mjs && node scripts/verify-readme.mjs && node scripts/verify-figma-map.mjs && node scripts/build-figma-descriptions.mjs && node scripts/verify-figma-descriptions.mjs && node scripts/build-llms.mjs",
     "typecheck": "tsc --noEmit && tsc --noEmit -p patterns/examples",
     "lint": "eslint . && stylelint \"src/styles/*.css\"",
     "format": "prettier --check .",
