@@ -74,11 +74,12 @@
 - [x] **Demo as an eval target** — 12 Oct 2026. Six screens, 36 cells, with
       contracts against contracts + patterns: recall 84% against 85%, ahead
       on Agents (+9) and Members (+6). See `evals/README.md`.
-- [ ] **React Aria collection children in Menu's and TagGroup's
-      contracts.** An array of elements, `<Menu>{items}</Menu>`, fails
-      their types. Contract-only generations hit it on 2 of 3 Agents
-      screens. Name the working forms: the `items` prop with a render
-      function, or elements written out.
+- [x] **React Aria collection children in the contracts** — 0.137.2. The
+      failing form was narrower than it looked: an array typed
+      `React.ReactElement[]`, not arrays in general. Also failing:
+      `cond && <MenuItem />`, and written-out rows beside a `.map()`. Menu,
+      TagGroup, Tabs and SplitButton now name the forms that compile, and a
+      type test holds both lists to it.
 
 ## Parked — not to be done now
 

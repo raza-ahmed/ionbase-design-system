@@ -576,7 +576,9 @@ The patterns came out about even with the component contracts across six
 demo screens. They were ahead on the table and list screens: Agents +9
 recall, and no collection-children compile errors where the contracts alone
 had 2 of 3. Elsewhere they were level. So a worked example is worth it for
-the DataTable family and ListDetail, not for all six.
+the DataTable family and ListDetail, not for all six. The collection-children
+error is fixed at the contract instead, in 0.137.2: Menu's, TagGroup's,
+Tabs' and SplitButton's contracts name the forms of children that compile.
 
 Still open in 4a: no worked TSX example per pattern. The composition is
 described and every name in it is verified, but an agent still writes the JSX.

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { expect, fn, userEvent } from 'storybook/test';
-import { Menu, MenuItem, MenuSection, Icon } from 'ionbase-ui';
+import { Button, Menu, MenuItem, MenuSection, Icon } from 'ionbase-ui';
 import {
   Archive,
   Bell,
@@ -406,5 +406,52 @@ export const DeprecatedDisabledIsSkipped: Story = {
     await userEvent.tab();
     await userEvent.keyboard('{ArrowDown}');
     await expect(canvas.getByRole('menuitem', { name: 'Three' })).toHaveFocus();
+  },
+};
+
+/**
+ * An agent's row actions, which depend on its state: Pause while it runs,
+ * Resume while it is paused, and Archive only once it is paused. The children
+ * are typed `CollectionChildren`, so the forms that compile are rows written
+ * out, a ternary between two rows, and `cond ? <MenuItem /> : null`. A
+ * `React.ReactElement[]` built up with `push`, or `cond && <MenuItem />`, fails
+ * the types (collection-children.typecheck.tsx). The demo eval's
+ * contracts-only generations wrote the first on 2 of 3 Agents screens.
+ */
+function AgentRowActions() {
+  const [paused, setPaused] = useState(false);
+  return (
+    <div style={{ display: 'grid', gap: '0.75rem', width: 240 }}>
+      <Button
+        size="sm"
+        variant="secondary"
+        onPress={() => setPaused((p) => !p)}
+      >
+        {paused ? 'Start the agent' : 'Pause the agent'}
+      </Button>
+      <Menu aria-label="Agent actions">
+        {paused ? (
+          <MenuItem key="resume">Resume</MenuItem>
+        ) : (
+          <MenuItem key="pause">Pause</MenuItem>
+        )}
+        {paused ? <MenuItem key="archive">Archive</MenuItem> : null}
+        <MenuItem key="delete">Delete…</MenuItem>
+      </Menu>
+    </div>
+  );
+}
+
+export const RowsThatDependOnState: Story = {
+  render: () => <AgentRowActions />,
+  play: async ({ canvas }) => {
+    const rows = () =>
+      canvas.getAllByRole('menuitem').map((row) => row.textContent);
+    await expect(rows()).toEqual(['Pause', 'Delete…']);
+
+    await userEvent.click(
+      canvas.getByRole('button', { name: 'Pause the agent' }),
+    );
+    await expect(rows()).toEqual(['Resume', 'Archive', 'Delete…']);
   },
 };

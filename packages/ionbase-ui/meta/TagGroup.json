@@ -23,7 +23,7 @@
   ],
   "composition": {
     "order": ["TagGroup", "Tag"],
-    "note": "Tag is react-stately's collection Item: `key` identifies it and is what `onRemove` hands back, children are its label. Pass `items` and a render function for a list that changes.",
+    "note": "Tag is react-stately's collection Item: `key` identifies it and is what `onRemove` hands back, children are its label. Pass `items` and a render function for a list that changes. The children are one of three forms: tags written out, `items` with a render function, or a `.map()` that is the only child. Filters that are on or off are a list you build as data (`items`), not elements pushed into an array.",
     "example": "<TagGroup label=\"Active filters\" onRemove={(keys) => drop(keys)}><Tag key=\"status\">Status: Failing</Tag><Tag key=\"team\">Team: Finance</Tag></TagGroup>"
   },
   "variants": {
@@ -64,6 +64,10 @@
     {
       "dont": "a filter row with no way to clear everything at once",
       "why": "removing six filters one by one is six targets; pair the group with a \"Clear filters\" Button"
+    },
+    {
+      "dont": "collecting tags into `const tags: React.ReactElement[] = []` with `push`, then `<TagGroup>{tags}</TagGroup>`",
+      "why": "the children are typed `CollectionChildren`: one collection element, an array of them, or a render function. `ReactElement` defaults its props to `unknown`, which is not an item's props, so the array fails to compile. Contracts-only generations of the demo's Agents screen did this on 2 of 3 tries. Build the active filters as data and pass them as `items`, with `(f) => <Tag key={f.id}>…</Tag>` as the children"
     }
   ]
 }
