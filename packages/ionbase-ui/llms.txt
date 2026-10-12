@@ -2,7 +2,7 @@
 
 > IonBase is a React design system for enterprise SaaS, built to be consumed by an agent rather than read by a developer. Every component ships a machine-readable contract carrying the judgement a type signature cannot: when to use it, what to use instead, the anti-patterns, and what it guarantees for accessibility versus what it requires of you.
 
-Version 0.137.2. 131 components.
+Version 0.138.0. 131 components.
 
 ## Read these, in this order
 
@@ -20,6 +20,8 @@ Both are importable: `ionbase-ui/meta/index` and `ionbase-ui/meta/<Name>.json`. 
 Compositions of the components above, in `dist/meta/patterns/`. Read `dist/meta/patterns/index.json`, then one recipe. They are the only place the empty, loading and error states are specified — no component owns those, which is why they are the part that gets left out.
 
 `AgentRun`, `AssistantAnswer`, `DataTable`, `DestructiveConfirm`, `FilteredDataTable`, `Form`, `FullPageError`, `HumanApproval`, `ListDetail`, `PageShell`, `SettingsPanel`, `Wizard`
+
+`DataTable`, `FilteredDataTable`, `ListDetail` also have a worked example: one complete screen in TSX, type-checked against these types, in `dist/meta/patterns/examples/` and in the recipe as `example.source`. Copy one and change the record, not the structure.
 
 ## Drawing a chart?
 

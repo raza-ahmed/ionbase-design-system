@@ -3,8 +3,9 @@
  * Phase 4a — the tier between components and screens.
  *
  * A pattern here is a DOCUMENTED COMPOSITION, not a new component: Brad Frost's
- * distinction, and the reason nothing in patterns/ ships React code or tokens of
- * its own. The `control/<size>/*` deletion recorded in AGENTS.md is the
+ * distinction, and the reason nothing in patterns/ is a package export or has
+ * tokens of its own. The worked examples in patterns/examples/ are TSX, but
+ * they ship as text: documentation that happens to compile. The `control/<size>/*` deletion recorded in AGENTS.md is the
  * precedent — a tier that grows its own tokens stops being a composition of the
  * tier below it and starts being a fork of it.
  *
@@ -23,12 +24,14 @@ import {
   readdirSync,
   mkdirSync,
   existsSync,
+  copyFileSync,
 } from 'node:fs';
 import { join, dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const PKG = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const SRC = join(PKG, 'patterns');
+const EXAMPLES = join(SRC, 'examples');
 const OUT = join(PKG, 'dist', 'meta', 'patterns');
 const DOC = join(PKG, 'dist', 'meta', 'components.json');
 
@@ -50,6 +53,10 @@ const version = JSON.parse(
  * an agent leaves out, and a recipe that omits one is the failure this tier
  * exists to prevent. */
 const REQUIRED_STATES = ['loading', 'empty', 'error'];
+
+/* Layout and the icon wrapper: every example uses them, and a pattern that
+ * listed them would be listing the page, not its composition. */
+const LAYOUT = new Set(['Stack', 'Grid', 'Icon']);
 
 const errors = [];
 const err = (p, m) => errors.push(`${p}: ${m}`);
@@ -169,7 +176,42 @@ for (const file of readdirSync(SRC)
       );
   }
 
-  patterns[name] = { name, ...p };
+  /* 6. A worked example, where there is one: patterns/examples/<Name>.tsx.
+   * `tsc -p patterns/examples` has already type-checked it against the
+   * published types, and ESLint holds it to the consumer rule set. Here: it
+   * imports nothing an app might not have, and it composes what the pattern
+   * says it does. An example using a component the pattern never names
+   * teaches a composition the pattern does not document. */
+  const exampleFile = join(EXAMPLES, `${name}.tsx`);
+  let example;
+  if (existsSync(exampleFile)) {
+    const source = readFileSync(exampleFile, 'utf8');
+    for (const [, from] of source.matchAll(/^import [^;]*? from '([^']+)';/gms))
+      if (from !== 'react' && from !== 'ionbase-ui')
+        err(
+          name,
+          `example imports "${from}" — an example may import only react and ionbase-ui, or it does not compile in an app without that package`,
+        );
+    const named = source.match(/^import \{([^}]*)\} from 'ionbase-ui';/m)?.[1];
+    if (!named) err(name, 'example does not import from ionbase-ui');
+    for (const raw of (named ?? '').split(',')) {
+      const id = raw.trim();
+      if (!id || id.startsWith('type ')) continue;
+      if (hooks.includes(id)) continue;
+      if (!components[id]) {
+        err(
+          name,
+          `example imports "${id}", which is not an exported component or hook`,
+        );
+        continue;
+      }
+      if (!LAYOUT.has(id) && !composes.includes(id))
+        err(name, `example uses ${id}, which is absent from "composes"`);
+    }
+    example = { file: `dist/meta/patterns/examples/${name}.tsx`, source };
+  }
+
+  patterns[name] = { name, ...p, ...(example ? { example } : {}) };
 }
 
 if (errors.length) {
@@ -180,7 +222,25 @@ if (errors.length) {
 
 /* ------------------------------------------------------------------ write */
 
+/* An example with no pattern of that name is documentation nobody can find. */
+if (existsSync(EXAMPLES))
+  for (const f of readdirSync(EXAMPLES).filter((f) => f.endsWith('.tsx')))
+    if (!patterns[f.replace(/\.tsx$/, '')] && !errors.length)
+      errors.push(`examples/${f}: no pattern of that name`);
+if (errors.length) {
+  for (const e of errors) console.error(`  ERROR ${e}`);
+  console.error(`\nPatterns: ${errors.length} errors`);
+  process.exit(1);
+}
+
 mkdirSync(OUT, { recursive: true });
+mkdirSync(join(OUT, 'examples'), { recursive: true });
+for (const [name, p] of Object.entries(patterns))
+  if (p.example)
+    copyFileSync(
+      join(EXAMPLES, `${name}.tsx`),
+      join(OUT, 'examples', `${name}.tsx`),
+    );
 for (const [name, p] of Object.entries(patterns))
   writeFileSync(join(OUT, `${name}.json`), `${JSON.stringify(p, null, 2)}\n`);
 
@@ -199,6 +259,7 @@ const index = {
         ...(p.drivenBy ? { drivenBy: p.drivenBy.hook } : {}),
         states: Object.keys(p.states ?? {}),
         detail: `dist/meta/patterns/${name}.json`,
+        ...(p.example ? { example: p.example.file } : {}),
       },
     ]),
   ),

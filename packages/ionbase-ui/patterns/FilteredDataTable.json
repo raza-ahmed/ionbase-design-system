@@ -34,7 +34,8 @@
     "ProgressBar",
     "EmptyState",
     "Alert",
-    "Skeleton"
+    "Skeleton",
+    "StatusIndicator"
   ],
   "structure": [
     "Everything in the DataTable pattern holds: toolbar, active filters, batch bar, sortable headers, the three states. This pattern is where its query lives and how it changes.",

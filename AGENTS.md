@@ -20,10 +20,6 @@ announces it. One source, many pointers.
 Durable design decisions belong in [`docs/`](docs/) and the package READMEs, not
 here. This file is the map and the traps; the docs are the reasoning.
 
-**Work in progress:** what is still open across the plans is tracked in
-[`docs/open-items-checklist.md`](docs/open-items-checklist.md). Take the next
-unchecked item from there. Remove this paragraph when the checklist is deleted.
-
 ---
 
 ## Three packages, two published
@@ -864,7 +860,7 @@ together. Adding a component to that tier means asking which recipe it belongs
 to, or writing one.
 
 **A pattern is a documented composition, not a component.** Nothing in
-`patterns/` ships React code, and nothing in it may define a token. That is Brad
+`patterns/` is a package export, and nothing in it may define a token. That is Brad
 Frost's distinction, and the `control/<size>/*` deletion recorded further down
 this file is the precedent for why it matters: a tier that grows its own tokens
 has stopped composing the tier below it and started forking it.
@@ -883,6 +879,26 @@ that quietly went stale.
 
 Adding a pattern means adding all three states. If you cannot say what the empty
 state is, the pattern is not understood well enough to write down yet.
+
+**Worked examples** live in `patterns/examples/<Name>.tsx`. There are three,
+for DataTable, FilteredDataTable and ListDetail, the patterns the demo eval
+found worth one. They are documentation, written as code:
+
+- **Shipped as text.** Each ships as `example.source` in its pattern's JSON
+  and as a file in `dist/meta/patterns/examples/`.
+- **Compiled, but not exported.** `tsc -p patterns/examples` compiles them
+  into `dist/pattern-examples/`, which no export points at, so an app cannot
+  import an example in place of composing one. Storybook imports that compiled
+  copy by path, so the stories run the file an agent reads.
+- **Held to the consumer's rules.** `eslint.config.js` gives them
+  `recommended`, every rule an error. This is the only consumer code in the
+  repo.
+- **Gated by build-patterns.** An example may import only `react` and
+  `ionbase-ui`. Every component it uses, except Stack, Grid and Icon, must be
+  in its pattern's `composes`. An example with no pattern of its name fails.
+
+Change a component an example uses, and the build tells you which example to
+fix.
 
 ### FullPageError: four kinds, and the traps the demo hit — 28 Sep 2026
 

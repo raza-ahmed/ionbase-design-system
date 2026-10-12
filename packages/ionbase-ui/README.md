@@ -244,6 +244,22 @@ Six components carry full intent today (`Button`, `Input`, `Select`, `Modal`,
 `Table`, `Alert`). The rest ship the generated API plus their source
 documentation, and are being filled in.
 
+### Patterns
+
+A screen is more than its components. The loading, empty and error states
+belong to no single component, so they are written down one level up, as
+patterns: twelve compositions, from DataTable to AgentRun.
+
+```ts
+import patterns from 'ionbase-ui/patterns' with { type: 'json' };
+import listDetail from 'ionbase-ui/patterns/ListDetail.json' with { type: 'json' };
+```
+
+DataTable, FilteredDataTable and ListDetail also have a worked example. Each
+is one complete screen in TSX, type-checked against these types, and found in
+the pattern as `example.source`. Copy one and change the record, not the
+structure.
+
 Token values are also available as JavaScript, as `var(--…)` references:
 
 ```ts
