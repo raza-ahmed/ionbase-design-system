@@ -580,10 +580,25 @@ the DataTable family and ListDetail, not for all six. The collection-children
 error is fixed at the contract instead, in 0.137.2: Menu's, TagGroup's,
 Tabs' and SplitButton's contracts name the forms of children that compile.
 
-Still open in 4a: no worked TSX example per pattern. The composition is
-described and every name in it is verified, but an agent still writes the JSX.
-Whether a full example earns its maintenance cost is a question for the eval
-harness, not an assumption to build on.
+**Worked examples, 0.138.0, for the three patterns the eval pointed at:**
+DataTable, FilteredDataTable and ListDetail. Each is one complete screen in
+`patterns/examples/<Name>.tsx`:
+
+- **What an agent gets:** the pattern's JSON carries the source as
+  `example.source`, and the package ships the file in
+  `dist/meta/patterns/examples/`.
+- **What keeps it true:**
+  - the build type-checks each example against the published types, and
+    fails on an import from anything but `react` and `ionbase-ui`, or on a
+    component missing from the pattern's `composes`;
+  - ESLint holds it to the consumer rule set;
+  - 29 stories run the compiled file through every state.
+- **Still to measure:** whether the examples move the demo eval's numbers. The
+  patterns pack picks them up as they are, so a re-run of Agents and Members
+  answers it.
+
+The other nine patterns have no example, on the evidence that the patterns
+alone were level there.
 
 Follow Brad Frost's distinction — a pattern is a documented composition of
 components, not a new component. It must not acquire tokens of its own; the
@@ -771,7 +786,7 @@ Phase 5  ▓▓▓▓▓▓▓▓  CLEAN RUN 5 Oct 2026            279 cells, 3 
 Phase 2  ▓▓▓▓▓▓  DONE                             5 lint rules + stylelint config, shipped
 Phase 3a ▓▓▓▓  DONE                                llms.txt + 48 mirrors, hosted + in-tarball
 Phase 3b ▓▓▓▓  REPLACED                            figma-map.json — Code Connect without the plan
-Phase 4a ▓▓▓▓▓  CONTRACTS DONE                     6 recipes, 7-check gate; no TSX examples yet
+Phase 4a ▓▓▓▓▓▓▓  DONE                            12 recipes; worked TSX for 3, compiled + run
 Phase 4b ▓▓▓▓▓▓▓▓▓▓  DONE                          all 6 shipped; 48 components
 Phase 3c ░░░░                                     MCP server — only if measured need
 ```

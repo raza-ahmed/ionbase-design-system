@@ -68,7 +68,9 @@ namespace, `lucide-react` imports and one syntax error.
 
 **For 4a:** a worked example is worth building where the composition is
 intricate: the DataTable family and ListDetail. It is not worth building for
-all six. The collection-children trap went into the contracts in 0.137.2:
+all six. They shipped in 0.138.0, and the `contract-indexed-patterns` pack
+includes them, since it reads the pattern JSON. They have not been measured
+yet: re-running Agents and Members is the test. The collection-children trap went into the contracts in 0.137.2:
 Menu, TagGroup, Tabs and SplitButton now name the forms of children that
 compile, and `apps/storybook/src/collection-children.typecheck.tsx` holds them
 to it.

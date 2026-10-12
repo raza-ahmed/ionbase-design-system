@@ -73,5 +73,15 @@ export default tseslint.config(
       'ionbase-ui/one-primary-action': 'error',
     },
   },
+  {
+    /*
+     * The patterns' worked examples are the one place this repo writes
+     * consumer app code, so they get exactly what a consumer gets:
+     * `recommended`, every rule an error. An example the rules reject would be
+     * teaching the thing they exist to catch.
+     */
+    files: ['packages/ionbase-ui/patterns/examples/**/*.tsx'],
+    ...ionbase.configs.recommended,
+  },
   storybook.configs['flat/recommended'],
 );

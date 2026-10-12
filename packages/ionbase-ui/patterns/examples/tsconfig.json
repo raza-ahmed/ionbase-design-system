@@ -1,0 +1,12 @@
+{
+  "extends": "../../../../tsconfig.base.json",
+  "compilerOptions": {
+    "rootDir": ".",
+    "outDir": "../../dist/pattern-examples",
+    "jsx": "react-jsx",
+    "composite": false,
+    "declarationMap": false,
+    "sourceMap": false
+  },
+  "include": ["*.tsx"]
+}

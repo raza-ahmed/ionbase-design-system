@@ -499,6 +499,22 @@ function renderPattern(name) {
     p();
   }
 
+  if (c.example) {
+    p('## Worked example');
+    p();
+    p(
+      'The pattern as one complete screen, to copy and change the record of. ' +
+        'Its only imports are `react` and `ionbase-ui`; the build type-checks ' +
+        'it against the published types and lints it with the consumer rule ' +
+        `set, and its stories run it. Also at \`${c.example.file}\`.`,
+    );
+    p();
+    p('```tsx');
+    p(c.example.source.trimEnd());
+    p('```');
+    p();
+  }
+
   p('---');
   p();
   p(
@@ -572,7 +588,8 @@ function hostedIndex() {
     for (const n of patternNames) {
       p(
         `- [${n}](${baseUrl}/patterns/${slug(n)}/index.html.md): ` +
-          `${patternIndex.patterns[n].summary}`,
+          `${patternIndex.patterns[n].summary}` +
+          (patternIndex.patterns[n].example ? ' With a worked example.' : ''),
       );
     }
     p();
@@ -770,6 +787,16 @@ function tarballIndex() {
     p();
     p(patternNames.map((n) => `\`${n}\``).join(', '));
     p();
+    const worked = patternNames.filter((n) => patternIndex.patterns[n].example);
+    if (worked.length) {
+      p(
+        `${worked.map((n) => `\`${n}\``).join(', ')} also have a worked ` +
+          'example: one complete screen in TSX, type-checked against these ' +
+          'types, in `dist/meta/patterns/examples/` and in the recipe as ' +
+          '`example.source`. Copy one and change the record, not the structure.',
+      );
+      p();
+    }
   }
 
   chartSection(p);

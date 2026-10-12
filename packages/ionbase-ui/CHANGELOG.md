@@ -1,5 +1,41 @@
 # Changelog
 
+## 0.138.0 — 2026-10-12
+
+### Worked examples for DataTable, FilteredDataTable and ListDetail
+
+Three patterns now come with one complete screen in TSX each: an invoice
+table, the same table paged on a server with its query in the address, and a
+members list with the selected person beside it. The demo eval found the
+patterns ahead on exactly these screens, and level elsewhere, so the other
+nine have no example.
+
+**Where an agent finds them:**
+
+- in the pattern's JSON, as `example.source`;
+- as files, in `dist/meta/patterns/examples/`;
+- on the pattern's page on the docs site, under Worked example;
+- and in `llms.txt`.
+
+They are documentation, not exports. Nothing imports an example: an app
+copies one and changes the record.
+
+**What keeps them true:**
+
+| Check                                    | Fails when                                                                                                                        |
+| ---------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
+| `tsc -p patterns/examples`, in the build | an example stops compiling against the published types                                                                            |
+| `build-patterns`                         | an example imports anything but `react` and `ionbase-ui`, uses a component its pattern's `composes` leaves out, or has no pattern |
+| ESLint, `recommended`                    | an example breaks a consumer rule                                                                                                 |
+| 29 stories                               | an example's behaviour changes: each state, sort, paging, selection, Back, a mangled address                                      |
+
+The `composes` check found two lists short. DataTable's left out seven
+components its own structure names: EmptyState, Skeleton, Pagination, Tag and
+the row menu's Menu, MenuItem and MenuTrigger. FilteredDataTable's left out
+StatusIndicator.
+
+The package README now has a Patterns section.
+
 ## 0.137.2 — 2026-10-12
 
 ### Collection children: the contracts name the forms that compile
