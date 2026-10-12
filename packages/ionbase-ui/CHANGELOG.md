@@ -1,5 +1,36 @@
 # Changelog
 
+## 0.138.1 — 2026-10-12
+
+### The README's token import works, and the README gate checks imports
+
+**The README told you to `import { tokens } from 'ionbase-ui'`.** Nothing by
+that name has been exported there since the tokens moved to their own entry
+point, so the line failed in any app that copied it. It now reads:
+
+```ts
+import { tokens, tokenValues } from 'ionbase-ui/tokens-js';
+```
+
+**`verify-readme` now checks imports as well as props.** Each import from
+`ionbase-ui` in a README code block must:
+
+- resolve through the package's `exports`;
+- point at a file the build wrote;
+- for a named import, be something that module exports.
+
+Run against the old README, it fails on exactly that line.
+
+**Also in the README:**
+
+- "Six components carry full intent today" is now "Every component carries
+  full intent". It has been 131 of 131 for weeks.
+- The token paragraph, which had ended up inside the new Patterns section,
+  moves back out.
+
+The `import { semantic }` example in `src/index.ts`'s header comment now says
+`semantics`, the real export.
+
 ## 0.138.0 — 2026-10-12
 
 ### Worked examples for DataTable, FilteredDataTable and ListDetail

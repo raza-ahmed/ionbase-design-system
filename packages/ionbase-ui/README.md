@@ -240,9 +240,19 @@ agent rather than a person reading documentation. **Start from
 the single contract you need. Loading all of them costs 180KB to answer a
 question the index already answered.
 
-Six components carry full intent today (`Button`, `Input`, `Select`, `Modal`,
-`Table`, `Alert`). The rest ship the generated API plus their source
-documentation, and are being filled in.
+Every component carries full intent: when to use it, what to use instead, and
+the accessibility it guarantees and requires. The build fails on a component
+without it.
+
+Token values are also available as JavaScript, as `var(--…)` references, from
+their own entry point so that importing a component does not pull them in:
+
+```ts
+import { tokens, tokenValues } from 'ionbase-ui/tokens-js';
+
+tokens.ui['surface/default']; // 'var(--surface-default)'
+tokenValues['spacing/16']; // { Value: 16 }
+```
 
 ### Patterns
 
@@ -259,12 +269,6 @@ DataTable, FilteredDataTable and ListDetail also have a worked example. Each
 is one complete screen in TSX, type-checked against these types, and found in
 the pattern as `example.source`. Copy one and change the record, not the
 structure.
-
-Token values are also available as JavaScript, as `var(--…)` references:
-
-```ts
-import { tokens } from 'ionbase-ui';
-```
 
 ## Tokens come from Figma
 

@@ -9,7 +9,7 @@
  *
  *   import 'ionbase-ui/styles';            // tokens + components, one import
  *   import { Button, Icon } from 'ionbase-ui';
- *   import { semantic } from 'ionbase-ui/tokens-js';  // JS token values
+ *   import { semantics } from 'ionbase-ui/tokens-js'; // JS token values
  *
  * Icons are still not bundled here, and that is a different decision from the
  * one above. `Icon` takes the icon as a prop, so any SVG component works —

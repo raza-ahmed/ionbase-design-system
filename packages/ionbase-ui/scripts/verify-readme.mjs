@@ -16,11 +16,18 @@
  * every element takes (key, ref, style, className, children, aria-*, data-*)
  * pass.
  *
+ * Imports are checked too, in every ts, tsx and js block. Each specifier from
+ * `ionbase-ui` must resolve through the package's `exports` to a file the
+ * build wrote, and each named import must be something that module exports.
+ * The README said `import { tokens } from 'ionbase-ui'` until 0.138.1, after
+ * the tokens had moved to `ionbase-ui/tokens-js`: the first line a reader
+ * copied failed.
+ *
  * Runs against dist/meta/components.json, so build-meta.mjs must run first.
  */
 import { readFileSync, existsSync } from 'node:fs';
 import { join, dirname, resolve } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 
 const PKG = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const DOC = join(PKG, 'dist', 'meta', 'components.json');
@@ -69,11 +76,66 @@ for (const code of blocks) {
   }
 }
 
+/* -------------------------------------------------------------- imports */
+
+const { exports: EXPORTS } = JSON.parse(
+  readFileSync(join(PKG, 'package.json'), 'utf8'),
+);
+
+/** `ionbase-ui/meta/Button.json` → the file its export points at, or null. */
+function resolveExport(specifier) {
+  const sub = `.${specifier.slice('ionbase-ui'.length)}`;
+  for (const [key, value] of Object.entries(EXPORTS)) {
+    const target = typeof value === 'string' ? value : value.default;
+    if (key === sub) return target;
+    if (key.endsWith('/*') && sub.startsWith(key.slice(0, -1)))
+      return target.replace('*', sub.slice(key.length - 1));
+  }
+  return null;
+}
+
+const scripts = [
+  ...readme.matchAll(/```(?:ts|tsx|js|jsx)\n([\s\S]*?)```/g),
+].map((m) => m[1]);
+let imports = 0;
+for (const code of scripts)
+  for (const m of code.matchAll(
+    /^import\s+(type\s+)?(?:([\w$]+)\s*,?\s*)?(?:\{([^}]*)\})?\s*(?:from\s*)?'(ionbase-ui(?:\/[^']*)?)'/gm,
+  )) {
+    const [, typeOnly, defaultName, named, specifier] = m;
+    imports++;
+    const target = resolveExport(specifier);
+    if (!target) {
+      errors.push(`import from '${specifier}': no such export in package.json`);
+      continue;
+    }
+    const file = join(PKG, target);
+    if (!existsSync(file)) {
+      errors.push(
+        `import from '${specifier}': resolves to ${target}, which the build did not write`,
+      );
+      continue;
+    }
+    if (typeOnly || !file.endsWith('.js')) continue;
+    const mod = await import(pathToFileURL(file).href);
+    const names = (named ?? '')
+      .split(',')
+      .map((n) => n.trim())
+      .filter((n) => n && !n.startsWith('type '))
+      .map((n) => n.split(/\s+as\s+/)[0]);
+    if (defaultName) names.push('default');
+    for (const n of names)
+      if (!(n in mod))
+        errors.push(
+          `import { ${n} } from '${specifier}': '${specifier}' does not export ${n}`,
+        );
+  }
+
 if (errors.length) {
   console.error(`README: ${errors.length} error(s) in its code\n`);
   for (const e of errors) console.error(`  ✖ ${e}`);
   process.exit(1);
 }
 console.log(
-  `README: ${checked} IonBase elements in ${blocks.length} code blocks, every prop and value in its contract — 0 errors`,
+  `README: ${checked} IonBase elements in ${blocks.length} code blocks, every prop and value in its contract; ${imports} imports, every one resolving — 0 errors`,
 );

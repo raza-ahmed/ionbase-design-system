@@ -34,3 +34,13 @@ declare module '*.avif' {
   const src: string;
   export default src;
 }
+
+/**
+ * A stylesheet as text, for the Foundations pages that read what the token
+ * pipeline generated (the shadows, the breakpoints' media queries) rather than
+ * repeat it.
+ */
+declare module '*.css?raw' {
+  const css: string;
+  export default css;
+}

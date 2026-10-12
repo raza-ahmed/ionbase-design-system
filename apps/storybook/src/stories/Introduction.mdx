@@ -1,0 +1,132 @@
+import { Meta, Unstyled } from '@storybook/addon-docs/blocks';
+import { Card, Grid, Link } from 'ionbase-ui';
+import pkg from '../../../../packages/ionbase-ui/package.json';
+import index from '../../../../packages/ionbase-ui/dist/meta/index.json';
+import patterns from '../../../../packages/ionbase-ui/dist/meta/patterns/index.json';
+
+<Meta title="Introduction" />
+
+# IonBase
+
+Accessible React components, their stylesheets, and the design tokens they are
+built on, in one package: **`ionbase-ui` {pkg.version}**, with{' '}
+{Object.keys(index.components).length} components and{' '}
+{Object.keys(patterns.patterns).length} patterns.
+
+IonBase is built for enterprise software, and for the way it is now written:
+often by a coding agent, with no one reading the docs first. So every
+component ships a contract saying when to use it and what goes wrong, every
+screen-level composition is written down with its loading, empty and error
+states, and a lint plugin turns the rules into errors.
+
+## Install
+
+```bash
+npm i ionbase-ui
+```
+
+React 18 or 19 is a peer dependency. Import the stylesheet once, at your app's
+entry:
+
+```tsx
+import 'ionbase-ui/styles';
+import { Button } from 'ionbase-ui';
+
+export function App() {
+  return <Button variant="primary-brand">Save</Button>;
+}
+```
+
+Dark mode is `data-theme="dark"` on any ancestor, the whole page or one panel.
+Icons are any SVG component; [`ionbase-icons`](https://www.npmjs.com/package/ionbase-icons)
+is the optional set drawn for it.
+
+## What is here
+
+<Unstyled>
+  <Grid columns={2} gap={16} collapse="mobile">
+    <Card title="Foundations" headingLevel={3}>
+      <p
+        className="ion-text-body-sm"
+        style={{ margin: 'var(--spacing-8) 0 var(--spacing-16)' }}
+      >
+        Colour, typography, spacing, radius, elevation, breakpoints and motion:
+        every token, as the stylesheet resolves it, in both themes.
+      </p>
+      <Link
+        variant="standalone"
+        target="_top"
+        href="./?path=/story/foundations-colour--interface"
+      >
+        Start with colour
+      </Link>
+    </Card>
+    <Card title="Components" headingLevel={3}>
+      <p
+        className="ion-text-body-sm"
+        style={{ margin: 'var(--spacing-8) 0 var(--spacing-16)' }}
+      >
+        Each with its variants, its states and the keyboard and screen-reader
+        behaviour it guarantees, tested in every story.
+      </p>
+      <Link
+        variant="standalone"
+        target="_top"
+        href="./?path=/docs/components-button--docs"
+      >
+        Start with Button
+      </Link>
+    </Card>
+    <Card title="Patterns" headingLevel={3}>
+      <p
+        className="ion-text-body-sm"
+        style={{ margin: 'var(--spacing-8) 0 var(--spacing-16)' }}
+      >
+        Screens made of components: a data table, a list beside its detail, an
+        agent's run. DataTable, FilteredDataTable and ListDetail come as worked
+        examples.
+      </p>
+      <Link
+        variant="standalone"
+        target="_top"
+        href="./?path=/story/patterns-data-table-worked-example--default"
+      >
+        See the data table
+      </Link>
+    </Card>
+    <Card title="Live demo" headingLevel={3}>
+      <p
+        className="ion-text-body-sm"
+        style={{ margin: 'var(--spacing-8) 0 var(--spacing-16)' }}
+      >
+        Ionbase Ops, a fictional AI operations console built only from these
+        components, with every screen's loading, empty and error states a click
+        away.
+      </p>
+      <Link
+        variant="standalone"
+        target="_top"
+        href="https://raza-ahmed.github.io/ionbase-design-system/demo/"
+      >
+        Open the demo
+      </Link>
+    </Card>
+  </Grid>
+</Unstyled>
+
+## For coding agents
+
+- **`ionbase-ui/llms.txt`**: the index, every component and pattern in one line each.
+- **`ionbase-ui/meta/index`**: every component with its variants, in 12KB. Read it, then the one contract you need.
+- **`ionbase-ui/meta/<Name>.json`**: one component's contract: when to use it, what to use instead, its accessibility, its anti-patterns.
+- **`ionbase-ui/patterns/<Name>.json`**: a screen-level composition and its three states.
+- **`ionbase-ui/eslint-plugin`**: the same rules as lint errors, for an app's ESLint config.
+
+The same pages are hosted at
+[`/llms.txt`](https://raza-ahmed.github.io/ionbase-design-system/llms.txt).
+
+## Links
+
+- [npm: `ionbase-ui`](https://www.npmjs.com/package/ionbase-ui)
+- [Source on GitHub](https://github.com/raza-ahmed/ionbase-design-system)
+- [Changelog](https://github.com/raza-ahmed/ionbase-design-system/blob/main/packages/ionbase-ui/CHANGELOG.md)
