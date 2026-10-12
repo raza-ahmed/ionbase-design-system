@@ -56,7 +56,6 @@ npm whoami
 
 ```bash
 git checkout main && git pull --ff-only
-pnpm build
 pnpm release:check
 ```
 
@@ -65,6 +64,13 @@ It checks:
 
 - the tree is clean, on `main`, level with `origin`;
 - the version is not on npm yet, and is the changelog's top entry;
+- the package builds from an empty `dist/`, with its own build script, not
+  turbo's. A turbo cache hit restores `dist/` on top of what is already there
+  and skips the build's clean step, so a file an older build wrote would
+  survive it and be packed. That is how 0.138.0 shipped a stale
+  `dist/meta/pageItems.json`;
+- the files the tarball adds and drops, against the version on npm, are
+  listed: read them before publishing;
 - the tarball, packed the way `pnpm publish` packs it, has no `workspace:`
   range;
 - installed into an empty project outside the monorepo, every export

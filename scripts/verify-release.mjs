@@ -2,7 +2,7 @@
 /**
  * Is `main` ready to publish? Everything but the upload.
  *
- *   pnpm build && pnpm release:check
+ *   pnpm release:check
  *
  * Lint, typecheck and the stories prove the code; none of them prove the
  * tarball. A file left out of `files`, an export pointing at a path the build
@@ -13,7 +13,8 @@
  *
  *   1. the tree is clean, on main, level with origin, and the version is new
  *      to npm and is the changelog's top entry;
- *   2. the tarball has no `workspace:` range and every export resolves;
+ *   2. the tarball has no `workspace:` range and every export resolves, and
+ *      the files it adds and drops against the published version are listed;
  *   3. the package imports in Node and server-renders a component;
  *   4. the patterns' worked examples type-check against the installed types,
  *      as an app's `tsc` would see them.
@@ -87,12 +88,30 @@ check(
   `CHANGELOG's top entry is ${version}`,
   `CHANGELOG's top entry is ${top}, not ${version}`,
 );
+/* Built here, by the package's own script, not taken from whatever dist/
+ * holds. `pnpm build` goes through turbo, and a turbo cache hit restores dist/
+ * on top of what is there without running the build's clean step, so a file
+ * from an older build survives it. The package's script always starts from an
+ * empty dist/. */
+console.log('  … building the package from an empty dist/');
+let built = true;
+try {
+  run('pnpm', ['--filter', name, 'run', 'build']);
+} catch (e) {
+  built = false;
+  console.error(
+    String(e.stdout ?? '')
+      .split('\n')
+      .slice(-15)
+      .join('\n'),
+  );
+}
 check(
-  existsSync(join(PKG, 'dist', 'index.js')),
-  'dist/ is built',
-  'no dist/index.js — run pnpm build first',
+  built && existsSync(join(PKG, 'dist', 'index.js')),
+  'built from an empty dist/',
+  'the build failed',
 );
-if (!existsSync(join(PKG, 'dist', 'index.js'))) process.exit(1);
+if (!built) process.exit(1);
 
 /* 2. The tarball. */
 const tmp = mkdtempSync(join(tmpdir(), 'ionbase-release-'));
@@ -103,6 +122,48 @@ try {
     readdirSync(tmp).find((f) => f.endsWith('.tgz')),
   );
   const manifest = run('tar', ['-xOzf', tarball, 'package/package.json']);
+
+  /* What changes for someone upgrading: the files this tarball adds and drops
+   * against the one on npm now. Not a failure, a list to read before
+   * publishing. A file nobody meant to ship or to drop shows up here; 0.138.0
+   * shipped a stale contract that this would have listed. */
+  try {
+    const latest = run('npm', ['view', name, 'version']);
+    // Its own directory: at the same version the two tarballs share a name.
+    const was = join(tmp, 'published');
+    run('mkdir', ['-p', was]);
+    run('npm', [
+      'pack',
+      '--silent',
+      `${name}@${latest}`,
+      '--pack-destination',
+      was,
+    ]);
+    const list = (file) =>
+      new Set(
+        run('tar', ['-tzf', file])
+          .split('\n')
+          .filter((f) => !f.endsWith('/')),
+      );
+    const next = list(tarball);
+    const prev = list(join(was, `${name}-${latest}.tgz`));
+    const added = [...next].filter((f) => !prev.has(f));
+    const dropped = [...prev].filter((f) => !next.has(f));
+    console.log(
+      `  · against ${latest} on npm: ${next.size} files, ${added.length} added, ${dropped.length} dropped`,
+    );
+    for (const [sign, files] of [
+      ['+', added],
+      ['-', dropped],
+    ]) {
+      for (const f of files.slice(0, 12))
+        console.log(`      ${sign} ${f.replace(/^package\//, '')}`);
+      if (files.length > 12)
+        console.log(`      ${sign} …and ${files.length - 12} more`);
+    }
+  } catch {
+    console.log('  · no published version to compare files against');
+  }
   check(
     !manifest.includes('workspace:'),
     'no workspace: ranges in the packed manifest',
