@@ -13,6 +13,64 @@ structured data over prose, but that was their design system, not this one.
 bad implementation from a good one — 2/7 checks and 5 lint errors against 10/10
 and 0 — and the pipeline carries that through to a per-pack report.
 
+## The demo as an eval target — 5 to 12 Oct 2026
+
+**Do the pattern contracts add anything over the component contracts?**
+
+The test: an agent builds six screens of `apps/demo` from a product brief,
+and the result is compared with the real screen.
+
+- **Briefs:** `prompts/demo-screens.json` has six screens. Each brief says
+  what the screen does, not which components it uses, and gives the data
+  layer as declarations to copy in.
+- **Reference:** each screen's IonBase imports, read from its source by
+  `prompts/demo-screens.mjs`. `build-packs` fails if it drifts.
+- **Packs:** `contract-indexed` against `contract-indexed-patterns`. The
+  second adds the patterns the screen implements.
+- **Size:** `claude-opus-5-5`, 6 screens × 2 packs × 3 samples = 36 cells.
+  All 36 streams were audited: no tool calls, one turn each.
+- **Scoring:** `score/demo-compare.mjs`.
+
+| screen    | recall, contracts | recall, + patterns | compiles, contracts | compiles, + patterns |
+| --------- | ----------------- | ------------------ | ------------------- | -------------------- |
+| Members   | 88%               | 94%                | 3/3                 | 2/3                  |
+| Agents    | 85%               | 94%                | 1/3                 | 2/3                  |
+| New agent | 83%               | 79%                | 3/3                 | 3/3                  |
+| Runs      | 77%               | 79%                | 3/3                 | 3/3                  |
+| Assistant | 94%               | 88%                | 3/3                 | 3/3                  |
+| Settings  | 74%               | 71%                | 2/3                 | 3/3                  |
+| **all**   | **84%**           | **85%**            | **15/18**           | **16/18**            |
+
+Recall is the share of the real screen's IonBase components a generation
+used, as the median of three. It is a comparison, not a grade: the briefs
+leave out some of what the real screens do, such as New agent's phone
+field.
+
+**Overall: about even.** Every generation in both packs handled every
+required state, so the patterns' `states` add nothing the contracts didn't.
+
+**Where the patterns help, they help on the data screens.** The two biggest
+gains are the table and list screens:
+
+- **Agents (FilteredDataTable + DataTable):** recall up 9 points, from 2
+  extra components to 0. The only IonBase-specific compile failure in the
+  run is here. With contracts alone, 2 of 3 generations passed a
+  `ReactElement[]` as a React Aria collection's children
+  (`<Menu>{menuItems}</Menu>`, `<TagGroup>{filterTags}</TagGroup>`), which
+  the types reject. With the pattern, none did.
+- **Members (ListDetail):** recall up 6 points.
+
+On Assistant, New agent and Settings the pattern pack is slightly lower,
+within the spread of three samples.
+
+**The other compile failures are not about IonBase:** React 19's `JSX`
+namespace, `lucide-react` imports and one syntax error.
+
+**For 4a:** a worked example is worth building where the composition is
+intricate: the DataTable family and ListDetail. It is not worth building for
+all six. The collection-children trap also belongs in Menu's and TagGroup's
+contracts, whatever 4a decides.
+
 ## Clean run — 30 Sep to 5 Oct 2026
 
 The first run with no access to the repo. Setup:

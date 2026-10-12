@@ -571,6 +571,13 @@ not doing the thing. `AssistantAnswer.partial` is the answer built on half its
 sources, which looks identical to one built on all of them unless `basis` says
 so.
 
+**The demo eval, 12 Oct 2026, answers part of this** (`evals/README.md`).
+The patterns came out about even with the component contracts across six
+demo screens. They were ahead on the table and list screens: Agents +9
+recall, and no collection-children compile errors where the contracts alone
+had 2 of 3. Elsewhere they were level. So a worked example is worth it for
+the DataTable family and ListDetail, not for all six.
+
 Still open in 4a: no worked TSX example per pattern. The composition is
 described and every name in it is verified, but an agent still writes the JSX.
 Whether a full example earns its maintenance cost is a question for the eval

@@ -147,7 +147,7 @@ stand-ins and chart needs. It is the demo's feedback to the design system.
 
 ## 6. Open questions
 
-| Question                                                                                            | Answer                                                                   |
-| --------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------ |
-| Should the demo also be an eval target (an agent builds a screen from the patterns and we diff it)? | Open. Phase 4 is done, so it is due; tracked in the open-items checklist |
-| Separate Pages path (`/demo/`) or its own domain?                                                   | **Closed: `/demo/`** on the existing site, the default, which shipped    |
+| Question                                                                                            | Answer                                                                                                                      |
+| --------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| Should the demo also be an eval target (an agent builds a screen from the patterns and we diff it)? | **Done, 12 Oct 2026.** Six screens; see `evals/README.md`. Patterns about even overall, ahead on the table and list screens |
+| Separate Pages path (`/demo/`) or its own domain?                                                   | **Closed: `/demo/`** on the existing site, the default, which shipped                                                       |

@@ -48,8 +48,17 @@ import { score, lint, typecheck } from './score/score.mjs';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const PACKS = join(HERE, 'context', 'packs');
+// --corpus prompts/demo-screens.json runs the demo screens instead.
 const corpus = JSON.parse(
-  readFileSync(join(HERE, 'prompts', 'corpus.json'), 'utf8'),
+  readFileSync(
+    resolve(
+      HERE,
+      process.argv.includes('--corpus')
+        ? process.argv[process.argv.indexOf('--corpus') + 1]
+        : join('prompts', 'corpus.json'),
+    ),
+    'utf8',
+  ),
 );
 
 const arg = (name, fallback) => {
@@ -374,8 +383,11 @@ const resultsPath = join(outDir, 'results.json');
  * recorded: 23 of 93 cells scored, the other 70 marked errored, none of them
  * ever attempted against a working session. Stop pulling work instead.
  */
+// The wording is the CLI's and it changes: "weekly limit" was missed on
+// 5 Oct 2026, and 19 demo cells drained into error rows before the run ended
+// at exit 0. The HTTP status is the stable signal, so it is matched too.
 const isLimit = (m) =>
-  /usage limit|session limit|rate limit|quota|overloaded|too many requests|529/i.test(
+  /usage limit|session limit|weekly limit|hit your .{0,20}limit|rate limit|quota|overloaded|too many requests|529|"api_error_status":\s*429/i.test(
     m,
   );
 

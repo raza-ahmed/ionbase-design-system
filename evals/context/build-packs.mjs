@@ -71,6 +71,26 @@ const corpus = JSON.parse(
   readFileSync(join(ROOT, 'evals', 'prompts', 'corpus.json'), 'utf8'),
 );
 
+/*
+ * The demo screens are a second corpus (prompts/demo-screens.json). Their
+ * per-task directories sit beside the main corpus's in every per-task pack.
+ * Their reference components are read from the screens, so a stale list is
+ * an error here, not a quiet mis-score.
+ */
+const demo = JSON.parse(
+  readFileSync(join(ROOT, 'evals', 'prompts', 'demo-screens.json'), 'utf8'),
+);
+{
+  const { drifted } = await import('../prompts/demo-screens.mjs');
+  const stale = drifted(demo);
+  if (stale.length) {
+    throw new Error(
+      `demo-screens.json no longer matches ${stale.map((d) => d.task.screen).join(', ')}. Run: node prompts/demo-screens.mjs --write`,
+    );
+  }
+}
+const PATTERN_DIR = join(META_DIR, 'patterns');
+
 /**
  * A contract without its inherited props — question 3 of the A/B.
  *
@@ -152,6 +172,23 @@ const packs = {
     transform: lean,
   },
 
+  /*
+   * The demo-screen question: do the pattern contracts add anything over the
+   * component contracts? The same as contract-indexed, plus the patterns the
+   * task's screen implements. Only demo tasks name patterns, so for the main
+   * corpus this pack is identical to contract-indexed.
+   */
+  'contract-indexed-patterns': {
+    describes:
+      'The indexed contract pack plus the pattern contracts the screen implements — the demo-screen question.',
+    parts: {
+      'README.md': README,
+      'meta-index.json': JSON.stringify(index),
+    },
+    perTask: true,
+    withPatterns: true,
+  },
+
   /* Phase 2 on top: the rules the output will actually be judged by. */
   'contract-indexed-rules': {
     describes:
@@ -212,17 +249,23 @@ for (const [name, pack] of Object.entries(packs)) {
   let perTaskAvg = null;
   if (pack.perTask) {
     let total = 0;
-    for (const task of corpus.tasks) {
+    for (const task of [...corpus.tasks, ...demo.tasks]) {
       const tdir = join(dir, 'tasks', task.id);
       mkdirSync(tdir, { recursive: true });
       let tchars = 0;
-      for (const [file, content] of Object.entries(
-        contractsFor(task, pack.transform),
-      )) {
+      const files = { ...contractsFor(task, pack.transform) };
+      if (pack.withPatterns)
+        for (const name of task.patterns ?? [])
+          files[`pattern-${name}.json`] = readFileSync(
+            join(PATTERN_DIR, `${name}.json`),
+            'utf8',
+          );
+      for (const [file, content] of Object.entries(files)) {
         writeFileSync(join(tdir, file), content);
         tchars += content.length;
       }
-      total += tchars;
+      // The size columns describe the main corpus, as they always have.
+      if (corpus.tasks.includes(task)) total += tchars;
     }
     perTaskAvg = Math.round(total / corpus.tasks.length);
   }
