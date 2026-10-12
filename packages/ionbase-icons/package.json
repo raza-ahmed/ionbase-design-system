@@ -44,7 +44,7 @@
   "scripts": {
     "icons:audit": "node scripts/audit-svgs.mjs",
     "icons:generate": "node scripts/generate.mjs",
-    "build": "node scripts/generate.mjs && tsc --build --force",
+    "build": "node scripts/clean-dist.mjs && node scripts/generate.mjs && tsc --build --force",
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
     "format": "prettier --check ."
