@@ -67,13 +67,18 @@
 - [x] **Document `useToast()`'s return** — 0.137.1. Both Toast's and
       ToastProvider's contracts now say it returns `{ toast, dismiss }`, and
       list guessing `show` or `success` as an anti-pattern.
-- [ ] **4a: a worked TSX example per pattern**, 6 patterns. The plan says
-      it's worth building only if the eval shows it helps. _Needs_ Phase 5.
-      Without the run, you choose.
-- [ ] **Demo as an eval target.** An agent builds a demo screen from the
-      patterns, and we diff the result against the real screen
-      ([`demo-app-plan.md`](demo-app-plan.md) §6, "later — after phase 4",
-      and phase 4 is done). _Needs_ Phase 5.
+- [ ] **4a: worked TSX examples, for the DataTable family and ListDetail
+      only.** The demo eval found the patterns ahead on exactly those
+      screens and level on the rest, so examples for all six aren't worth
+      their upkeep.
+- [x] **Demo as an eval target** — 12 Oct 2026. Six screens, 36 cells, with
+      contracts against contracts + patterns: recall 84% against 85%, ahead
+      on Agents (+9) and Members (+6). See `evals/README.md`.
+- [ ] **React Aria collection children in Menu's and TagGroup's
+      contracts.** An array of elements, `<Menu>{items}</Menu>`, fails
+      their types. Contract-only generations hit it on 2 of 3 Agents
+      screens. Name the working forms: the `items` prop with a render
+      function, or elements written out.
 
 ## Parked — not to be done now
 
